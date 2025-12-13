@@ -1,9 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using O24OpenAPI.Contracts.Events;
 using O24OpenAPI.EventBus.Abstractions;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace O24OpenAPI.EventBus.Extensions;
 
 public static class EventBusBuilderExtensions
 {

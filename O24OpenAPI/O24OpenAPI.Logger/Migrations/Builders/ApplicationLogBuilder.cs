@@ -15,7 +15,7 @@ public class ApplicationLogBuilder : O24OpenAPIEntityBuilder<ApplicationLog>
         table.WithColumn(nameof(ApplicationLog.LogTimestamp)).AsDateTimeOffset().Nullable();
         table.WithColumn(nameof(ApplicationLog.LogLevel)).AsString(50).Nullable();
         table.WithColumn(nameof(ApplicationLog.ServiceName)).AsString(100).Nullable();
-        table.WithColumn(nameof(ApplicationLog.CorrelationId)).AsString(100).NotNullable();
+        table.WithColumn(nameof(ApplicationLog.CorrelationId)).AsString(100).Nullable();
         table.WithColumn(nameof(ApplicationLog.LogType)).AsString(50).Nullable();
         table.WithColumn(nameof(ApplicationLog.Direction)).AsString(50).Nullable();
         table.WithColumn(nameof(ApplicationLog.ActionName)).AsString(100).Nullable();

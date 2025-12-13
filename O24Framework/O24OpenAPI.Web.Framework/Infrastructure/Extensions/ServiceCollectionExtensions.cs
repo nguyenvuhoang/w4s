@@ -12,6 +12,7 @@ using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Core.Logging.Abstractions;
 using O24OpenAPI.Core.Logging.Extensions;
 using O24OpenAPI.Data.Configuration;
+using O24OpenAPI.EventBus.Extensions;
 using O24OpenAPI.EventBus.Submitters;
 using O24OpenAPI.GrpcContracts.Extensions;
 using O24OpenAPI.O24OpenAPIClient.Infisical;
