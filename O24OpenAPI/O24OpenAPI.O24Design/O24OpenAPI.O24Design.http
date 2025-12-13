@@ -1,0 +1,6 @@
+@O24OpenAPI.Sample_HostAddress = http://localhost:5281
+
+GET {{O24OpenAPI.O24OpenAPI.O24Design}}/weatherforecast/
+Accept: application/json
+
+###

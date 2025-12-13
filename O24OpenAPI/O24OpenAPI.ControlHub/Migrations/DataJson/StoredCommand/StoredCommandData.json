@@ -1,0 +1,184 @@
+[
+  {
+    "type": "header",
+    "command": "Export data to Json"
+  },
+  {
+    "exported_time": "2025-09-06T13:14:13.0851078Z",
+    "host": "localhost:5070",
+    "db_properties": [
+      {
+        "name": "server",
+        "value": "server=192.168.1.138"
+      },
+      {
+        "name": "port",
+        "value": "1433"
+      },
+      {
+        "name": "database",
+        "value": "CTH"
+      },
+      {
+        "name": "entity",
+        "value": "StoredCommand"
+      }
+    ],
+    "exported_by_fields": [
+      {
+        "additionalProp1": "string",
+        "additionalProp2": "string",
+        "additionalProp3": "string"
+      }
+    ]
+  },
+  {
+    "type": "data",
+    "data": [
+      {
+        "Name": "getuserbycontractnumber",
+        "Query": "SELECT (\r\n    SELECT \r\n        u.Id AS id,\r\n        u.ChannelId AS channelid,\r\n        u.UserId AS userid,\r\n        u.UserName AS username,\r\n        u.UserCode AS usercode,\r\n        u.LoginName AS loginname,\r\n        u.FirstName AS firstname,\r\n        u.MiddleName AS middlename,\r\n        u.LastName AS lastname,\r\n        u.RoleChannel AS rolechannel,\r\n        u.Gender AS gender,\r\n        u.Address AS address,\r\n        u.Email AS email,\r\n        u.Birthday AS birthday,\r\n        u.Status AS status,\r\n\t\t\t\t[dbo].__GET_SYSTEM_CODE_CAPTION(u.STATUS, 'USERSTATUS', 'BO') AS statuscaption,\r\n        u.UserCreated AS usercreated,\r\n        u.LastLoginTime AS lastlogintime,\r\n        u.UserModified AS usermodified,\r\n        u.IsLogin AS islogin,\r\n        u.ExpireTime AS expiretime,\r\n        u.BranchID AS branchid,\r\n        u.DepartmentCode AS departmentcode,\r\n        u.UserLevel AS userlevel,\r\n        u.UserType AS usertype,\r\n        u.IsShow AS isshow,\r\n        u.PolicyID AS policyid,\r\n        u.UUID AS uuid,\r\n        u.Failnumber AS failnumber,\r\n        u.IsSuperAdmin AS issuperadmin,\r\n        u.UpdatedOnUtc AS updatedonutc,\r\n        u.CreatedOnUtc AS createdonutc,\r\n        u.Phone AS phone,\r\n        u.ContractNumber AS contractnumber\r\n    FROM \r\n        o24cth.dbo.UserAccount u\r\n    WHERE \r\n        u.ContractNumber = @id\r\n    FOR JSON PATH, WITHOUT_ARRAY_WRAPPER\r\n) AS Result;",
+        "Type": "SELECT",
+        "Description": null,
+        "CreatedOnUtc": "2025-05-23T10:36:36.6633333",
+        "UpdatedOnUtc": "2025-05-23T10:36:59.0033333",
+        "id": 1
+      },
+      {
+        "Name": "getuserauthenbyusercode",
+        "Query": "SELECT (\r\n    SELECT \r\n        u.Id AS id,\r\n\t\t\t\tU.AuthenType AS authentype,\r\n\t\t\t\tu.ChannelId AS channelid,\r\n\t\t\t\tu.Phone AS phone,\r\n    FROM \r\n        o24cth.dbo.UserAuthen u\r\n    WHERE \r\n        u.UserCode = @id\r\n    FOR JSON PATH, WITHOUT_ARRAY_WRAPPER\r\n) AS Result;",
+        "Type": "SELECT",
+        "Description": null,
+        "CreatedOnUtc": "2025-05-23T10:36:36.6633333",
+        "UpdatedOnUtc": "2025-05-23T10:36:59.0033333",
+        "id": 2
+      },
+      {
+        "Name": "SimpleSearchLoginDeviceInformation",
+        "Query": "SELECT \r\n    (SELECT A.ID AS id,\r\n            A.UserCode AS usercode, \r\n            A.DeviceId AS deviceid,\r\n            A.DeviceType AS devicetype,\r\n            A.Status AS status, \r\n            A.PushId AS pushid,\r\n            A.OsVersion AS osversion, \r\n            A.Brand AS brand, \r\n            A.LastSeenDateUtc  AS lastseenupdate,\r\n            COUNT(*) OVER () AS TotalCount\r\n     FROM \r\n         o24cth.dbo.UserDevice A\r\n     WHERE \r\n         @searchtext IS NULL OR @searchtext = '' \r\n         OR A.UserCode LIKE '%' + @searchtext + '%'\r\n     ORDER BY A.ID \r\n     OFFSET @Offset ROWS\r\n     FETCH NEXT @PageSize ROWS ONLY\r\n     FOR JSON PATH\r\n) AS Result;",
+        "Type": "SELECT",
+        "Description": null,
+        "CreatedOnUtc": "2025-05-23T10:36:36.6633333",
+        "UpdatedOnUtc": "2025-05-23T10:36:59.0033333",
+        "id": 3
+      },
+      {
+        "Name": "getuserbyphonenumber",
+        "Query": "SELECT (\r\n    SELECT \r\n        u.Id AS id,\r\n        u.UserCode AS usercode\r\n    FROM \r\n        o24cth.dbo.UserAccount u\r\n    WHERE \r\n        u.Phone = @id\r\n        AND u.ChannelId = @channel\r\n    FOR JSON PATH, WITHOUT_ARRAY_WRAPPER\r\n) AS Result;",
+        "Type": "SELECT",
+        "Description": null,
+        "CreatedOnUtc": "2025-05-23T10:36:36.6633333",
+        "UpdatedOnUtc": "2025-05-23T10:36:59.0033333",
+        "id": 5
+      },
+      {
+        "Name": "SimpleSearchUser",
+        "Query": "WITH Filtered AS (\r\n    SELECT *\r\n    FROM dbo.UserAccount A\r\n    WHERE \r\n        A.ChannelId = @channel\r\n        AND (\r\n            @searchtext IS NULL OR LTRIM(RTRIM(@searchtext)) = ''\r\n            OR A.UserName LIKE '%' + @searchtext + '%'\r\n            OR A.UserCode LIKE '%' + @searchtext + '%'\r\n            OR A.LoginName LIKE '%' + @searchtext + '%'\r\n            OR A.FirstName LIKE '%' + @searchtext + '%'\r\n            OR A.MiddleName LIKE '%' + @searchtext + '%'\r\n            OR A.LastName LIKE '%' + @searchtext + '%'\r\n            OR A.Email LIKE '%' + @searchtext + '%'\r\n            OR A.Phone LIKE '%' + @searchtext + '%'\r\n        )\r\n)\r\nSELECT (\r\n    SELECT \r\n        A.Id AS id,\r\n        A.ChannelId AS channelid,\r\n        A.UserId AS userid,\r\n        A.UserName AS username,\r\n        A.UserCode AS usercode,\r\n        A.LoginName AS loginname,\r\n        A.FirstName AS firstname,\r\n        A.MiddleName AS middlename,\r\n        A.LastName AS lastname,\r\n        A.RoleChannel AS rolechannel,\r\n        A.Gender AS gender,\r\n        A.Address AS address,\r\n        A.Email AS email,\r\n        A.Birthday AS birthday,\r\n        A.Status as status,\r\n        A.UserCreated AS usercreated,\r\n        A.LastLoginTime AS lastlogintime,\r\n        A.UserModified AS usermodified,\r\n        A.IsLogin AS islogin,\r\n        A.ExpireTime AS expiretime,\r\n        A.BranchID AS branchid,\r\n        A.DepartmentCode AS departmentcode,\r\n        A.UserLevel AS userlevel,\r\n        A.UserType AS usertype,\r\n        A.IsShow AS isshow,\r\n        A.PolicyID AS policyid,\r\n        A.UUID AS uuid,\r\n        A.Failnumber AS failnumber,\r\n        A.IsSuperAdmin AS issuperadmin,\r\n        A.UpdatedOnUtc AS updatedonutc,\r\n        A.CreatedOnUtc AS createdonutc,\r\n        A.Phone AS phone,\r\n        A.ContractNumber AS contractnumber,\r\n        A.IsBiometricSupported AS isbiometricsupported,\r\n        A.LockedUntil AS lockeduntil,\r\n        COUNT(*) OVER () AS TotalCount\r\n    FROM Filtered A\r\n    ORDER BY A.ID\r\n    OFFSET @Offset ROWS\r\n    FETCH NEXT @PageSize ROWS ONLY\r\n    FOR JSON PATH\r\n) AS Result\r\nOPTION (RECOMPILE);\r\n",
+        "Type": "SELECT",
+        "Description": null,
+        "CreatedOnUtc": "2025-05-23T10:36:36.6633333",
+        "UpdatedOnUtc": "2025-05-23T10:36:59.0033333",
+        "id": 8
+      },
+      {
+        "Name": "SimpleSearchUserLevel",
+        "Query": "SELECT (\r\n    SELECT \r\n        A.Id AS id,\r\n        a.LevelCode AS levelcode,\r\n\t\t\t\ta.LevelName AS levelname,\r\n\t\t\t\ta.Description AS description,\r\n        COUNT(*) OVER () AS TotalCount\r\n    FROM o24cth.dbo.UserLevel A\r\n    WHERE \r\n        @searchtext IS NULL OR @searchtext = '' \r\n    ORDER BY A.LevelCode\r\n    OFFSET @Offset ROWS\r\n    FETCH NEXT @PageSize ROWS ONLY\r\n    FOR JSON PATH\r\n) AS Result;",
+        "Type": "SELECT",
+        "Description": null,
+        "CreatedOnUtc": "2025-05-23T10:36:36.6633333",
+        "UpdatedOnUtc": "2025-05-23T10:36:59.0033333",
+        "id": 9
+      },
+      {
+        "Name": "SimpleSearchUserPolicy",
+        "Query": "SELECT (\r\n    SELECT \r\n        A.ID AS id,\r\n        A.policycode AS policycode,\r\n        A.serviceID AS serviceid,\r\n        A.descr AS description,\r\n        A.isdefault AS isdefault,\r\n        A.effrom AS effrom,\r\n        A.efto AS efto,\r\n        A.pwdhis AS pwdhis,\r\n        A.pwdagemax AS pwdagemax,\r\n        A.minpwdlen AS minpwdlen,\r\n        A.pwdcplx AS pwdcplx,\r\n        A.pwdcplxlc AS pwdcplxlc,\r\n        A.pwdcplxuc AS pwdcplxuc,\r\n        A.pwdcplxsc AS pwdcplxsc,\r\n        A.pwdcplxsn AS pwdcplxsn,\r\n        A.timelginrequire AS timelginrequire,\r\n        A.lginfr AS lginfr,\r\n        A.lginto AS lginto,\r\n        A.llkoutthrs AS llkoutthrs,\r\n        A.resetlkout AS resetlkout,\r\n        A.UserCreate AS usercreate,\r\n        A.DateCreate AS datecreate,\r\n        A.UserModify AS usermodify,\r\n        A.DateModify AS datemodify,\r\n        A.contractID AS contractid,\r\n        A.IsBankEdit AS isbankedit,\r\n        A.IsCorpEdit AS iscorpedit,\r\n        A.BaseOnPolicy AS baseonpolicy,\r\n        COUNT(*) OVER () AS TotalCount\r\n    FROM dbo.userpolicy A\r\n    WHERE \r\n        @searchtext IS NULL OR @searchtext = ''\r\n        OR A.serviceID LIKE '%' + @searchtext + '%'\r\n        OR A.descr LIKE '%' + @searchtext + '%'\r\n    ORDER BY A.policycode\r\n    OFFSET @Offset ROWS\r\n    FETCH NEXT @PageSize ROWS ONLY\r\n    FOR JSON PATH\r\n) AS Result;\r\n",
+        "Type": "SELECT",
+        "Description": null,
+        "CreatedOnUtc": "2025-05-23T10:36:36.6633333",
+        "UpdatedOnUtc": "2025-05-23T10:36:59.0033333",
+        "id": 10
+      },
+      {
+        "Name": "SimpleSearchUserRole",
+        "Query": "SELECT (\r\n    SELECT \r\n        A.Id AS id,\r\n        A.RoleId AS roleid,\r\n        A.RoleName AS rolename,\r\n        A.RoleDescription AS roledescription,\r\n        A.UserType AS usertype,\r\n        A.ContractNo AS contractno,\r\n        A.UserCreated AS usercreated,\r\n        A.DateCreated AS datecreated,\r\n        A.UserModified AS usermodified,\r\n        A.DateModified AS datemodified,\r\n        A.ServiceID AS serviceid,\r\n        A.RoleType AS roletype,\r\n        A.Status AS status,\r\n        A.IsShow AS isshow,\r\n        A.SortOrder AS sortorder,\r\n        COUNT(*) OVER () AS TotalCount\r\n    FROM dbo.UserRole A\r\n    WHERE \r\n        @searchtext IS NULL OR @searchtext = ''\r\n        OR A.RoleName LIKE '%' + @searchtext + '%'\r\n        OR A.RoleDescription LIKE '%' + @searchtext + '%'\r\n        OR A.UserType LIKE '%' + @searchtext + '%'\r\n    ORDER BY A.RoleId\r\n    OFFSET @Offset ROWS\r\n    FETCH NEXT @PageSize ROWS ONLY\r\n    FOR JSON PATH\r\n) AS Result;",
+        "Type": "SELECT",
+        "Description": null,
+        "CreatedOnUtc": "2025-05-23T10:36:36.6633333",
+        "UpdatedOnUtc": "2025-05-23T10:36:59.0033333",
+        "id": 11
+      },
+      {
+        "Name": "userview",
+        "Query": "SELECT (\r\n    SELECT \r\n        u.Id AS id,\r\n        u.ChannelId AS channelid,\r\n        u.UserId AS userid,\r\n        u.UserName AS username,\r\n        u.UserCode AS usercode,\r\n        u.LoginName AS loginname,\r\n        u.FirstName AS firstname,\r\n        u.MiddleName AS middlename,\r\n        u.LastName AS lastname,\r\n        u.RoleChannel AS rolechannel,\r\n        CASE WHEN u.Gender = 1 THEN 'M' ELSE 'F' END AS gender,\r\n        u.Address AS address,\r\n        u.Email AS email,\r\n        u.Birthday AS birthday,\r\n        u.Status AS status,\r\n\t\t\t\t[dbo].__GET_SYSTEM_CODE_CAPTION(u.STATUS, 'USERSTATUS', 'BO') AS statuscaption,\r\n        u.UserCreated AS usercreated,\r\n        u.LastLoginTime AS lastlogintime,\r\n        u.UserModified AS usermodified,\r\n        u.IsLogin AS islogin,\r\n        u.ExpireTime AS expiretime,\r\n        u.BranchID AS branchid,\r\n        u.DepartmentCode AS departmentcode,\r\n        CAST(u.UserLevel AS NVARCHAR) AS userlevel,\r\n        u.UserType AS usertype,\r\n        u.IsShow AS isshow,\r\n        u.PolicyID AS policyid,\r\n        u.UUID AS uuid,\r\n        u.Failnumber AS failnumber,\r\n        u.IsSuperAdmin AS issuperadmin,\r\n        u.UpdatedOnUtc AS updatedonutc,\r\n        u.CreatedOnUtc AS createdonutc,\r\n        u.Phone AS phone,\r\n        u.ContractNumber AS contractnumber,\r\n\t\t\t\t(\r\n\t\t\t\t\t\tSELECT \r\n\t\t\t\t\t\t\t\tr.[RoleName] AS [rolename],\r\n\t\t\t\t\t\t\t\tr.[RoleID] AS [roleid]\r\n\t\t\t\t\t\tFROM dbo.UserInRole ur\r\n\t\t\t\t\t\tINNER JOIN dbo.UserRole r ON ur.RoleID = r.RoleID\r\n\t\t\t\t\t\tWHERE ur.UserCode = u.UserCode\r\n\t\t\t\t\t\tORDER BY r.roleid\r\n\t\t\t\t\t\tFOR JSON PATH\r\n\t\t\t\t) AS [usergroup]\r\n    FROM \r\n        o24cth.dbo.UserAccount u\r\n     \r\n    WHERE \r\n    (\r\n        TRY_CAST(@id AS INT) IS NOT NULL AND u.Id = TRY_CAST(@id AS INT)\r\n    )\r\n    OR (\r\n        TRY_CAST(@id AS INT) IS NULL AND u.UserCode = @id\r\n    )\r\n\r\n    FOR JSON PATH, WITHOUT_ARRAY_WRAPPER\r\n) AS Result;",
+        "Type": "SELECT",
+        "Description": null,
+        "CreatedOnUtc": "2025-05-23T10:36:36.6633333",
+        "UpdatedOnUtc": "2025-05-23T10:36:59.0033333",
+        "id": 12
+      },
+      {
+        "Name": "SimpleSearchUserSession",
+        "Query": "SELECT (\r\n    SELECT \r\n        U.Id AS id,\r\n        U.UserId AS userid,\r\n        U.LoginName AS loginname,\r\n        U.Token AS token,\r\n        U.RefreshToken AS refreshtoken,\r\n        U.RefreshTokenExpiresAt AS refreshtokenexpiresat,\r\n        U.Reference AS reference,\r\n        U.IpAddress AS ipaddress,\r\n        U.Device AS device,\r\n        U.ExpiresAt AS expiresat,\r\n        U.IsRevoked AS isrevoked,\r\n        U.ChannelId AS channelid,\r\n        U.CreatedOnUtc AS createdonutc,\r\n        U.UpdatedOnUtc AS updatedonutc,\r\n        U.ChannelRoles AS channelroles,\r\n        U.UserCode AS usercode,\r\n        U.BranchCode AS branchcode,\r\n        U.UserName AS username,\r\n        U.SignatureKey AS signaturekey,\r\n        COUNT(*) OVER () AS TotalCount\r\n    FROM dbo.UserSession U\r\n    WHERE (\r\n        @searchtext IS NULL OR @searchtext = ''\r\n        OR U.LoginName LIKE '%' + @searchtext + '%'\r\n        OR U.UserName LIKE '%' + @searchtext + '%'\r\n        OR U.UserCode LIKE '%' + @searchtext + '%'\r\n        OR U.IpAddress LIKE '%' + @searchtext + '%'\r\n        OR U.Device LIKE '%' + @searchtext + '%'\r\n\t\t\t\t) AND u.ChannelId = @channel\r\n    ORDER BY U.CreatedOnUtc DESC\r\n    OFFSET @Offset ROWS\r\n    FETCH NEXT @PageSize ROWS ONLY\r\n    FOR JSON PATH\r\n) AS Result;\r\n",
+        "Type": "SELECT",
+        "Description": null,
+        "CreatedOnUtc": "2025-05-23T10:36:36.6633333",
+        "UpdatedOnUtc": "2025-05-23T10:36:59.0033333",
+        "id": 14
+      },
+      {
+        "Name": "SimpleSearchRole",
+        "Query": "WITH Filtered AS (\r\n    SELECT *\r\n    FROM dbo.UserRole R\r\n    WHERE \r\n        (@searchtext IS NULL OR LTRIM(RTRIM(@searchtext)) = ''\r\n         OR R.RoleName LIKE '%' + @searchtext + '%'\r\n         OR R.RoleDescription LIKE '%' + @searchtext + '%'\r\n         OR R.UserType LIKE '%' + @searchtext + '%'\r\n         OR R.ContractNo LIKE '%' + @searchtext + '%'\r\n         OR R.ServiceID LIKE '%' + @searchtext + '%'\r\n         OR R.RoleType LIKE '%' + @searchtext + '%'\r\n         OR R.Status LIKE '%' + @searchtext + '%')\r\n)\r\nSELECT (\r\n    SELECT \r\n        R.Id AS id,\r\n        R.RoleId AS roleid,\r\n        R.RoleName AS rolename,\r\n        R.RoleDescription AS roledescription,\r\n        R.UserType AS usertype,\r\n        R.ContractNo AS contractno,\r\n        R.UserCreated AS usercreated,\r\n        R.DateCreated AS datecreated,\r\n        R.UserModified AS usermodified,\r\n        R.DateModified AS datemodified,\r\n        R.ServiceID AS serviceid,\r\n        R.RoleType AS roletype,\r\n        R.Status AS status,\r\n        R.IsShow AS isshow,\r\n        R.SortOrder AS [order],\r\n        COUNT(*) OVER () AS TotalCount\r\n    FROM Filtered R\r\n    ORDER BY R.Id\r\n    OFFSET @Offset ROWS\r\n    FETCH NEXT @PageSize ROWS ONLY\r\n    FOR JSON PATH\r\n) AS Result\r\nOPTION (RECOMPILE);\r\n",
+        "Type": "SELECT",
+        "Description": null,
+        "CreatedOnUtc": "2025-06-17T09:36:25",
+        "UpdatedOnUtc": "2025-06-17T09:36:28",
+        "id": 18
+      },
+      {
+        "Name": "DeleteUserPolicyById",
+        "Query": "DELETE dbo.S_USER_POLICY WHERE id = @id",
+        "Type": "DELETE",
+        "Description": null,
+        "CreatedOnUtc": null,
+        "UpdatedOnUtc": null,
+        "id": 19
+      },
+      {
+        "Name": "DeleteRoleById",
+        "Query": "DELETE dbo.UserRole WHERE id = @id",
+        "Type": "DELETE",
+        "Description": null,
+        "CreatedOnUtc": "2025-06-17T09:56:40",
+        "UpdatedOnUtc": "2025-06-17T09:56:43",
+        "id": 20
+      },
+      {
+        "Name": "SimpleSearchRoleType",
+        "Query": "SELECT (\r\n    SELECT \r\n        RoleTypeCode AS roletypecode,\r\n        RoleTypeName AS roletypename,\r\n        Description AS description,\r\n        SortOrder AS [order],\r\n        ServiceID AS serviceid,\r\n        IsActive AS isactive,\r\n        COUNT(*) OVER () AS TotalCount\r\n    FROM (\r\n        SELECT *\r\n        FROM dbo.RoleType\r\n        WHERE @searchtext IS NULL OR @searchtext = ''\r\n        ORDER BY [Order]\r\n        OFFSET @Offset ROWS\r\n        FETCH NEXT @PageSize ROWS ONLY\r\n    ) AS Paged\r\n    FOR JSON PATH\r\n) AS Result;\r\n",
+        "Type": "SELECT",
+        "Description": null,
+        "CreatedOnUtc": "2025-06-17T11:36:07",
+        "UpdatedOnUtc": "2025-06-17T11:36:10",
+        "id": 21
+      },
+      {
+        "Name": "GetDbFunctions",
+        "Query": "SELECT\r\n    SCHEMA_NAME(o.schema_id) COLLATE DATABASE_DEFAULT + '.' + o.[name] COLLATE DATABASE_DEFAULT AS [ObjectName],\r\n    CASE o.[type]\r\n        WHEN 'P' THEN 'Stored Procedure'\r\n        WHEN 'FN' THEN 'Scalar Function'\r\n        WHEN 'TF' THEN 'Table Function'\r\n        WHEN 'IF' THEN 'Inline Table Function'\r\n    END AS [ObjectType],\r\n    'USE O24CMS' + CHAR(13) + CHAR(10) +\r\n    'GO' + CHAR(13) + CHAR(10) +\r\n    'IF OBJECT_ID(''' + SCHEMA_NAME(o.schema_id) COLLATE DATABASE_DEFAULT + '.' +\r\n    o.[name] COLLATE DATABASE_DEFAULT + ''', ''' + o.[type] COLLATE DATABASE_DEFAULT + ''') IS NOT NULL ' +\r\n    'DROP ' +\r\n    CASE o.[type]\r\n        WHEN 'P' THEN 'PROCEDURE '\r\n        WHEN 'FN' THEN 'FUNCTION '\r\n        WHEN 'TF' THEN 'FUNCTION '\r\n        WHEN 'IF' THEN 'FUNCTION '\r\n    END +\r\n    SCHEMA_NAME(o.schema_id) COLLATE DATABASE_DEFAULT + '.' +\r\n    o.[name] COLLATE DATABASE_DEFAULT + ';' + CHAR(13) + CHAR(10) +\r\n    'GO' + CHAR(13) + CHAR(10) +\r\n    m.[definition] COLLATE DATABASE_DEFAULT + CHAR(13) + CHAR(10) +\r\n    'GO' AS [Script]\r\nFROM\r\n    sys.sql_modules m\r\nINNER JOIN\r\n    sys.objects o ON m.object_id = o.object_id\r\nWHERE\r\n    o.[type] IN ('P', 'FN', 'TF', 'IF')\r\n    AND SCHEMA_NAME(o.schema_id) = 'dbo'\r\nORDER BY\r\n    o.[type], o.[name];\r\n",
+        "Type": "Query",
+        "Description": "GetDbFunctions",
+        "CreatedOnUtc": "2025-06-19T06:34:36",
+        "UpdatedOnUtc": "2025-06-19T06:34:36",
+        "id": 22
+      },
+      {
+        "Name": "UpdateIsBiometricSupported",
+        "Query": "UPDATE dbo.UserAccount SET IsBiometricSupported = @value WHERE UserId = @id",
+        "Type": "UPDATE",
+        "Description": null,
+        "CreatedOnUtc": null,
+        "UpdatedOnUtc": null,
+        "id": 23
+      }
+    ]
+  }
+]

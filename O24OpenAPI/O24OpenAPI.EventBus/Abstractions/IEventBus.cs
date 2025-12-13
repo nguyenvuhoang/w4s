@@ -1,0 +1,8 @@
+﻿using O24OpenAPI.Contracts.Events;
+
+namespace O24OpenAPI.EventBus.Abstractions;
+
+public interface IEventBus
+{
+    Task PublishAsync(IntegrationEvent @event, CancellationToken cancellationToken);
+}

@@ -1,0 +1,31 @@
+﻿syntax = "proto3";
+
+package common;
+
+option csharp_namespace = "O24OpenAPI.Grpc.Common";
+
+message GrpcRequest {
+  string data = 1;
+}
+
+message GrpcResponse {
+  // Mã kết quả: 0 = OK, >0 = lỗi nghiệp vụ, <0 = lỗi hệ thống
+  GrpcResponseCode code = 1;
+
+  // Thông điệp cho developer (hoặc client log)
+  string message = 2;
+
+  // Mô tả chi tiết hơn (stacktrace nếu là exception)
+  string detail = 3;
+
+  // Dữ liệu kết quả trả về (JSON nếu cần động)
+  string data = 4;
+
+  // Mã lỗi nghiệp vụ nếu có (ví dụ: "ERR_USER_NOT_FOUND")
+  string error_code = 5;
+}
+
+enum GrpcResponseCode{
+	SUCCESS = 0;
+	FAIL = -1;
+}

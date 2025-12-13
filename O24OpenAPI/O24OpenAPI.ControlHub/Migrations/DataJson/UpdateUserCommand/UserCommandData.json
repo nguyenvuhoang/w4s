@@ -1,0 +1,107 @@
+[
+  {
+    "type": "header",
+    "command": "Export data to Json"
+  },
+  {
+    "exported_time": "2025-09-18T08:43:15.3972925Z",
+    "host": "localhost:5070",
+    "db_properties": [
+      {
+        "name": "server",
+        "value": "server=192.168.1.138"
+      },
+      {
+        "name": "port",
+        "value": "1433"
+      },
+      {
+        "name": "database",
+        "value": "CTH"
+      },
+      {
+        "name": "entity",
+        "value": "UserCommand"
+      }
+    ],
+    "exported_by_fields": [
+      {
+        "ApplicationCode": "BO",
+        "CommandId": "104003",
+        "ParentId": "104"
+      },
+      {
+        "ApplicationCode": "BO",
+        "CommandId": "104004",
+        "ParentId": "104"
+      },
+      {
+        "ApplicationCode": "BO",
+        "CommandId": "106007",
+        "ParentId": "106"
+      }
+    ]
+  },
+  {
+    "type": "data",
+    "data": [
+      {
+        "ApplicationCode": "BO",
+        "CommandId": "104003",
+        "ParentId": "104",
+        "CommandName": "Core Inbound",
+        "CommandNameLanguage": "{\"en\":\"Core Inbound\",\"vi\":\"Core Inbound\",\"la\":\"Core Inbound\"}",
+        "CommandType": "M",
+        "CommandURI": "/core-inbound",
+        "Enabled": true,
+        "IsVisible": false,
+        "DisplayOrder": 3,
+        "GroupMenuIcon": "HistoryToggleOff",
+        "GroupMenuVisible": "1",
+        "GroupMenuId": null,
+        "GroupMenuListAuthorizeForm": "",
+        "CreatedOnUtc": "1900-01-01T00:00:00",
+        "UpdatedOnUtc": "2025-09-10T06:28:23",
+        "id": 20107
+      },
+      {
+        "ApplicationCode": "BO",
+        "CommandId": "104004",
+        "ParentId": "104",
+        "CommandName": "Core Outbound",
+        "CommandNameLanguage": "{\"en\":\"Core Outbound\",\"vi\":\"Core Outbound\",\"la\":\"Core Outbound\"}",
+        "CommandType": "M",
+        "CommandURI": "/core-outbound",
+        "Enabled": true,
+        "IsVisible": false,
+        "DisplayOrder": 4,
+        "GroupMenuIcon": "HistoryToggleOff",
+        "GroupMenuVisible": "1",
+        "GroupMenuId": null,
+        "GroupMenuListAuthorizeForm": "",
+        "CreatedOnUtc": "1900-01-01T00:00:00",
+        "UpdatedOnUtc": "2025-09-10T06:28:23",
+        "id": 20108
+      },
+      {
+        "ApplicationCode": "BO",
+        "CommandId": "106007",
+        "ParentId": "106",
+        "CommandName": "Core session",
+        "CommandNameLanguage": "{\"en\":\"Core Session\",\"vi\":\"Core Session\",\"la\":\"Core Session\"}",
+        "CommandType": "M",
+        "CommandURI": "/core-session",
+        "Enabled": true,
+        "IsVisible": false,
+        "DisplayOrder": 7,
+        "GroupMenuIcon": "Webhook",
+        "GroupMenuVisible": "1",
+        "GroupMenuId": null,
+        "GroupMenuListAuthorizeForm": "",
+        "CreatedOnUtc": "1900-01-01T00:00:00",
+        "UpdatedOnUtc": "1900-01-01T00:00:00",
+        "id": 20111
+      }
+    ]
+  }
+]

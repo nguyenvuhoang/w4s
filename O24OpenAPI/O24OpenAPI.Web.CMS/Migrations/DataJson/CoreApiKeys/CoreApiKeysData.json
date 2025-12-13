@@ -1,0 +1,64 @@
+[
+  {
+    "type": "header",
+    "command": "Export data to Json"
+  },
+  {
+    "exported_time": "2025-09-04T04:40:37.1633713Z",
+    "host": "localhost:5000",
+    "db_properties": [
+      {
+        "name": "server",
+        "value": "server=192.168.1.138"
+      },
+      {
+        "name": "port",
+        "value": "1433"
+      },
+      {
+        "name": "database",
+        "value": "CMS"
+      },
+      {
+        "name": "entity",
+        "value": "CoreApiKeys"
+      }
+    ],
+    "exported_by_fields": [
+      {
+        "additionalProp1": "string",
+        "additionalProp2": "string",
+        "additionalProp3": "string"
+      }
+    ]
+  },
+  {
+    "type": "data",
+    "data": [
+      {
+        "ClientId": "api-ldp-7f92c389",
+        "ClientSecret": "I2ee0f5PkxxC7GwzgJihcVSXgbasl1B22PcX1xw6VSs=",
+        "BICCode": "SEBDBDDHLDP",
+        "DisplayName": "LDP OpenAPI Keys",
+        "Environment": "DEV",
+        "Scopes": "GET_INFO,FO",
+        "ExpiredOnUtc": "2025-12-31T10:00:00",
+        "IsRevoked": false,
+        "Status": "N",
+        "IsActive": true,
+        "CreatedOnUtc": "2025-07-01T04:03:40",
+        "CreatedBy": "admin",
+        "LastUsedOnUtc": "2025-08-24T17:01:38",
+        "UsageCount": 0,
+        "AccessTokenTtlSeconds": 2592000,
+        "AccessTokenMaxTtlSeconds": 2592000,
+        "AccessTokenMaxUses": 0,
+        "AccessTokenTrustedIPs": "192.168.1.180",
+        "ClientSecretTrustedIPs": "192.168.1.180",
+        "ClientSecretDescription": null,
+        "ClientSecretExpiresOnUtc": "2025-08-31T02:32:00",
+        "id": 1
+      }
+    ]
+  }
+]

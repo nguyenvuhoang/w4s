@@ -1,0 +1,16 @@
+﻿syntax = "proto3";
+
+package cms;
+
+option csharp_namespace = "O24OpenAPI.Grpc.CMS";
+
+import "Common/common.proto";
+
+// CMS gRPC service
+service CMSGrpcService {
+  rpc GetUserSession (GetUserSessionRequest) returns (common.GrpcResponse);
+}
+
+message GetUserSessionRequest {
+  string token = 1;
+}

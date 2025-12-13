@@ -1,0 +1,136 @@
+[
+  {
+    "type": "header",
+    "command": "Export data to Json"
+  },
+  {
+    "exported_time": "2025-11-30T13:57:56.2859272Z",
+    "host": "localhost:105",
+    "db_properties": [
+      {
+        "name": "server",
+        "value": "server=192.168.1.90"
+      },
+      {
+        "name": "port",
+        "value": "1433"
+      },
+      {
+        "name": "database",
+        "value": "cms"
+      },
+      {
+        "name": "entity",
+        "value": "Setting"
+      }
+    ],
+    "exported_by_fields": "Initial data"
+  },
+  {
+    "type": "data",
+    "data": [
+      {
+        "Name": "WebApiSettings.DeveloperMode",
+        "Value": "true",
+        "OrganizationId": 0,
+        "id": 1
+      },
+      {
+        "Name": "WebApiSettings.TokenLifetimeDays",
+        "Value": "7",
+        "OrganizationId": 0,
+        "id": 2
+      },
+      {
+        "Name": "WebApiSettings.StaticTokenLifetimeDays",
+        "Value": "7",
+        "OrganizationId": 0,
+        "id": 3
+      },
+      {
+        "Name": "WebApiSettings.SecretKey",
+        "Value": "X5hGbJ9X8JH6S1TJpJ0t4zP+xJb+7pZoN8L9xJm4Qj8=",
+        "OrganizationId": 0,
+        "id": 4
+      },
+      {
+        "Name": "WebApiSettings.CurrentVersion",
+        "Value": "1.0",
+        "OrganizationId": 0,
+        "id": 5
+      },
+      {
+        "Name": "WebApiSettings.TokenLifetimeMinutes",
+        "Value": "10",
+        "OrganizationId": 0,
+        "id": 6
+      },
+      {
+        "Name": "WFOSetting.MessageBrokerHostName",
+        "Value": "localhost",
+        "OrganizationId": 0,
+        "id": 7
+      },
+      {
+        "Name": "WFOSetting.MessageBrokerPort",
+        "Value": "5672",
+        "OrganizationId": 0,
+        "id": 8
+      },
+      {
+        "Name": "WFOSetting.MessageBrokerUserName",
+        "Value": "admin",
+        "OrganizationId": 0,
+        "id": 9
+      },
+      {
+        "Name": "WFOSetting.MessageBrokerPassword",
+        "Value": "admin",
+        "OrganizationId": 0,
+        "id": 10
+      },
+      {
+        "Name": "WFOSetting.MessageBrokerPasswordEncryptionMethod",
+        "Value": "SHA256",
+        "OrganizationId": 0,
+        "id": 11
+      },
+      {
+        "Name": "WFOSetting.MessageBrokerVirtualHost",
+        "Value": "/",
+        "OrganizationId": 0,
+        "id": 12
+      },
+      {
+        "Name": "WFOSetting.ServerPingIntervalInSecond",
+        "Value": "60",
+        "OrganizationId": 0,
+        "id": 13
+      },
+      {
+        "Name": "WFOSetting.MessageBrokerSSLActive",
+        "Value": "false",
+        "OrganizationId": 0,
+        "id": 14
+      },
+      {
+        "Name": "WFOSetting.MessageBrokerReconnectIntervalInSecond",
+        "Value": "60",
+        "OrganizationId": 0,
+        "id": 15
+      },
+      {
+        "Name": "WFOSetting.RedisServerName",
+        "Value": "localhost",
+        "OrganizationId": 0,
+        "id": 16
+      },
+      {
+        "Name": "WFOSetting.RedisServerPort",
+        "Value": "6379",
+        "OrganizationId": 0,
+        "id": 17
+      }
+    ]
+  }
+]

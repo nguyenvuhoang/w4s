@@ -1,0 +1,123 @@
+[
+  {
+    "type": "header",
+    "command": "Export data to Json"
+  },
+  {
+    "exported_time": "2025-08-20T02:13:28.4909045Z",
+    "host": "localhost:5000",
+    "db_properties": [
+      {
+        "name": "server",
+        "value": "server=192.168.1.138"
+      },
+      {
+        "name": "port",
+        "value": "1433"
+      },
+      {
+        "name": "database",
+        "value": "CMS"
+      },
+      {
+        "name": "entity",
+        "value": "LearnApi"
+      }
+    ],
+    "exported_by_fields": [
+      {
+        "LearnApiId": "WFDEF_SIMPLE_SEARCH",
+        "App": "BO"
+      },
+      {
+        "LearnApiId": "WFSTEP_SEARCH_BY_WORKFLOW_ID",
+        "App": "BO"
+      },
+      {
+        "LearnApiId": "WFDEF_UPDATE",
+        "App": "BO"
+      },
+      {
+        "LearnApiId": "WFSTEP_UPDATE",
+        "App": "BO"
+      }
+    ]
+  },
+  {
+    "type": "data",
+    "data": [
+      {
+        "learn_api_id": "WFDEF_SIMPLE_SEARCH",
+        "learn_api_name": "WFDEF_SIMPLE_SEARCH",
+        "learn_api_data": "WFDEF_SIMPLE_SEARCH",
+        "learn_api_node_data": "",
+        "learn_api_method": "POST",
+        "learn_api_header": "{\"Authorization\":\"MapS.getToken(Bearer )\"}",
+        "learn_api_mapping": "{\r\n\t\"fields\": {\r\n\t\t\"searchtext\": \"dataS(searchtext)\",\r\n\t\t\"pageindex\": \"dataI(pageindex)\",\r\n\t\t\"pagesize\": \"dataI(pagesize)\"\r\n\t}\r\n}",
+        "IsCache": false,
+        "key_read_data": "",
+        "LearnApiIdClear": null,
+        "app": "BO",
+        "learn_api_mapping_response": "",
+        "full_interface_name": "",
+        "method_name": "",
+        "uri": "$WFO$/api/workflowdef/simplesearch",
+        "id": 239
+      },
+      {
+        "learn_api_id": "WFSTEP_SEARCH_BY_WORKFLOW_ID",
+        "learn_api_name": "WFSTEP_SEARCH_BY_WORKFLOW_ID",
+        "learn_api_data": "WFSTEP_SEARCH_BY_WORKFLOW_ID",
+        "learn_api_node_data": "",
+        "learn_api_method": "POST",
+        "learn_api_header": "{\"Authorization\":\"MapS.getToken(Bearer )\"}",
+        "learn_api_mapping": "{\r\n\t\"fields\": {\r\n\t\t\"workflowid\": \"dataS(workflowid)\"\r\n\t}\r\n}",
+        "IsCache": false,
+        "key_read_data": "",
+        "LearnApiIdClear": null,
+        "app": "BO",
+        "learn_api_mapping_response": "",
+        "full_interface_name": "",
+        "method_name": "",
+        "uri": "$WFO$/api/workflowstep/getbyworkflowid",
+        "id": 240
+      },
+      {
+        "learn_api_id": "WFSTEP_UPDATE",
+        "learn_api_name": "WFSTEP_UPDATE",
+        "learn_api_data": "WFSTEP_UPDATE",
+        "learn_api_node_data": "",
+        "learn_api_method": "POST",
+        "learn_api_header": "{\"Authorization\":\"MapS.getToken(Bearer )\"}",
+        "learn_api_mapping": "{\r\n\t\"fields\": {\r\n\t\t\"wfstep\": \"dataO(wfstep)\"\r\n\t}\r\n}",
+        "IsCache": false,
+        "key_read_data": "",
+        "LearnApiIdClear": null,
+        "app": "BO",
+        "learn_api_mapping_response": "",
+        "full_interface_name": "",
+        "method_name": "",
+        "uri": "$WFO$/api/workflowstep/update",
+        "id": 241
+      },
+      {
+        "learn_api_id": "WFDEF_UPDATE",
+        "learn_api_name": "WFDEF_UPDATE",
+        "learn_api_data": "WFDEF_UPDATE",
+        "learn_api_node_data": "",
+        "learn_api_method": "POST",
+        "learn_api_header": "{\"Authorization\":\"MapS.getToken(Bearer )\"}",
+        "learn_api_mapping": "{\r\n\t\"fields\": {\r\n\t\t\"wfdef\": \"dataO(wfdef)\"\r\n\t}\r\n}",
+        "IsCache": false,
+        "key_read_data": "",
+        "LearnApiIdClear": null,
+        "app": "BO",
+        "learn_api_mapping_response": "",
+        "full_interface_name": "",
+        "method_name": "",
+        "uri": "$WFO$/api/workflowdef/update",
+        "id": 242
+      }
+    ]
+  }
+]

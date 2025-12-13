@@ -1,0 +1,51 @@
+﻿syntax = "proto3";
+
+package cbg;
+
+option csharp_namespace = "O24OpenAPI.Grpc.CBG";
+
+import "Common/common.proto";
+
+// Dịch vụ CBG (Core Banking Gateway)
+service CBGGrpcService {
+  rpc CreateStaticToken (CreateStaticTokenRequest) returns (common.GrpcResponse);
+  rpc HasAccount (AccountRequest) returns (common.GrpcResponse);
+  rpc DepositAccountIsExisting (AccountRequest) returns (common.GrpcResponse);
+  rpc GetCommandList (TokenRequest) returns (common.GrpcResponse);
+  rpc GetUserSession (TokenRequest) returns (common.GrpcResponse);
+  rpc ExecuteRuleFunc (ExecuteRuleFuncRequest) returns (common.GrpcResponse);
+  rpc CreateFO (CBRequestJsonWrapper) returns (common.GrpcResponse);
+  rpc SimpleSearch (CBRequestJsonWrapper) returns (common.GrpcResponse);
+  rpc SearchSql (SqlSearchRequest) returns (common.GrpcResponse);
+  rpc CreateBO (CBRequestJsonWrapper) returns (common.GrpcResponse);
+  rpc CallFunction (CBRequestJsonWrapper) returns (common.GrpcResponse);
+  rpc LoanAccountIsExisting (AccountRequest) returns (common.GrpcResponse);
+}
+
+// === Request messages ===
+
+message CreateStaticTokenRequest {
+  string identifier = 1;
+}
+
+message AccountRequest {
+  string account = 1;
+}
+
+message TokenRequest {
+  string token_id = 1;
+}
+
+message ExecuteRuleFuncRequest {
+  string tx_code = 1;
+  string rule_name = 2;
+  string json_data = 3;
+}
+
+message CBRequestJsonWrapper {
+  string json_model = 1;
+}
+
+message SqlSearchRequest {
+  string sql = 1;
+}

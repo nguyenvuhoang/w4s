@@ -1,0 +1,9 @@
+﻿using O24OpenAPI.Web.Framework.Models;
+
+namespace O24OpenAPI.ControlHub.Models;
+
+public class SyncUserInfoModel : BaseTransactionModel
+{
+    public string ContractNumber { get; set; }
+    public string PhoneNumber { get; set; }
+}

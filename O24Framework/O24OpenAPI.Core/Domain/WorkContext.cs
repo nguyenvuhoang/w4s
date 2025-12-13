@@ -1,0 +1,93 @@
+using O24OpenAPI.Core.Domain.Users;
+using O24OpenAPI.Core.Extensions;
+using O24OpenAPI.Core.Utils;
+
+namespace O24OpenAPI.Core.Domain;
+
+public class WorkContext
+{
+    public string CurrentChannel { get; private set; } = default!;
+    public UserContext UserContext { get; private set; } = new();
+    public string WorkingLanguage { get; private set; } = "en";
+    public string ExecutionLogId { get; private set; } = GuildUtils.GetNewStringGuild();
+    public string ExecutionId { get; private set; } = GuildUtils.GetNewStringGuild();
+
+    public void SetWorkContext(WorkContext workContext)
+    {
+        if (workContext == null)
+        {
+            return;
+        }
+
+        CurrentChannel = workContext.CurrentChannel;
+        UserContext = workContext.UserContext;
+        WorkingLanguage = workContext.WorkingLanguage;
+        ExecutionLogId = workContext.ExecutionLogId;
+        ExecutionId = workContext.ExecutionId;
+    }
+
+    public void SetWorkContext(WorkContextTemplate workContext)
+    {
+        if (workContext == null)
+        {
+            return;
+        }
+
+        CurrentChannel = workContext.CurrentChannel ?? CurrentChannel;
+        UserContext.SetUserContext(workContext.UserContext ?? new UserContextTemplate());
+        WorkingLanguage = workContext.WorkingLanguage ?? WorkingLanguage;
+        ExecutionLogId = workContext.ExecutionLogId ?? ExecutionLogId;
+        ExecutionId = workContext.ExecutionId ?? ExecutionId;
+    }
+
+    public void SetCurrentChannel(string channel)
+    {
+        if (channel.HasValue())
+        {
+            CurrentChannel = channel;
+        }
+    }
+
+    public void SetUserContext(UserContext userContext)
+    {
+        if (userContext == null)
+        {
+            return;
+        }
+
+        UserContext = userContext;
+    }
+
+    public void SetWorkingLanguage(string language)
+    {
+        if (language.HasValue())
+        {
+            WorkingLanguage = language;
+        }
+    }
+
+    public void SetExecutionLogId(string logId)
+    {
+        if (logId.HasValue())
+        {
+            ExecutionLogId = logId;
+        }
+    }
+
+    public void SetExecutionId(string executionId)
+    {
+        if (executionId.HasValue())
+        {
+            ExecutionId = executionId;
+        }
+    }
+}
+
+public class WorkContextTemplate
+{
+    public string? CurrentChannel { get; set; }
+    public UserContextTemplate? UserContext { get; set; }
+    public string? WorkingLanguage { get; set; }
+    public string? ExecutionLogId { get; set; }
+    public string? ExecutionId { get; set; }
+}

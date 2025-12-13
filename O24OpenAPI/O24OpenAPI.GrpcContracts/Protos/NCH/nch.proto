@@ -1,0 +1,25 @@
+﻿syntax = "proto3";
+
+package nch;
+option csharp_namespace = "O24OpenAPI.Grpc.NCH";
+
+import "google/protobuf/struct.proto";
+import "Common/common.proto";
+
+// Service
+service NCHGrpcService {
+  rpc SendNotification (SendNotificationRequest) returns (common.GrpcResponse);
+}
+
+// Request message
+message SendNotificationRequest {
+  string user_code = 1;
+  string login_name = 2;
+  string purpose = 3;
+  string notification_type = 4;
+  string receiver_mail = 5;
+  string data = 6;
+  string data_template = 7;
+  string mime_entities = 8;
+  string message = 9;
+}

@@ -1,0 +1,86 @@
+DECLARE
+  v_count INTEGER;
+  v_base_path VARCHAR2(4000);
+  v_file CHAR(1) := CHR(47); 
+BEGIN
+  SELECT COUNT(*) INTO v_count 
+  FROM dba_tablespaces 
+  WHERE tablespace_name = 'O24WFO_TS_DATA';
+
+  IF v_count = 0 THEN
+    SELECT SUBSTR(file_name, 1, INSTR(file_name, v_file, -1))
+    INTO v_base_path
+    FROM dba_data_files
+    WHERE tablespace_name = 'USERS'
+    AND ROWNUM = 1;
+
+    EXECUTE IMMEDIATE '
+      CREATE BIGFILE TABLESPACE O24WFO_TS_DATA 
+      DATAFILE ''' || v_base_path || 'O24WFO_TS_DATA.DBF'' 
+      SIZE 10M 
+      AUTOEXTEND ON NEXT 10M MAXSIZE 100000M 
+      LOGGING ONLINE PERMANENT 
+      EXTENT MANAGEMENT LOCAL AUTOALLOCATE 
+      BLOCKSIZE 8K 
+      SEGMENT SPACE MANAGEMENT AUTO 
+      FLASHBACK ON';
+  END IF;
+END;
+/
+
+
+
+DECLARE
+  v_count INTEGER;
+  v_temp_path VARCHAR2(4000);
+  v_slash CHAR(1) := CHR(47);
+BEGIN
+  SELECT COUNT(*) INTO v_count 
+  FROM dba_tablespaces 
+  WHERE tablespace_name = 'TEMP_TS_O24WFO';
+
+  IF v_count = 0 THEN
+    SELECT SUBSTR(file_name, 1, INSTR(file_name, v_slash, -1))
+    INTO v_temp_path
+    FROM dba_temp_files
+    WHERE tablespace_name = 'TEMP'
+    AND ROWNUM = 1;
+
+    EXECUTE IMMEDIATE '
+      CREATE TEMPORARY TABLESPACE TEMP_TS_O24WFO
+      TEMPFILE ''' || v_temp_path || 'TEMP_TS_O24WFO.DBF'' 
+      SIZE 10M 
+      AUTOEXTEND ON NEXT 10M MAXSIZE 1000M 
+      EXTENT MANAGEMENT LOCAL UNIFORM SIZE 1M';
+  END IF;
+END;
+/
+
+
+DECLARE
+  v_count INTEGER := 0;
+BEGIN
+  SELECT COUNT(*) INTO v_count FROM dba_users WHERE username = 'O24WFO';
+
+  IF v_count = 0 THEN
+    EXECUTE IMMEDIATE '
+      CREATE USER O24WFO IDENTIFIED BY o24wfo
+      DEFAULT TABLESPACE O24WFO_TS_DATA
+      TEMPORARY TABLESPACE TEMP_TS_O24WFO
+      ACCOUNT UNLOCK';
+  END IF;
+END;
+/
+
+BEGIN
+  EXECUTE IMMEDIATE 'GRANT CONNECT, RESOURCE TO O24WFO';
+  EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO O24WFO';
+  EXECUTE IMMEDIATE 'GRANT UNLIMITED TABLESPACE TO O24WFO';
+  EXECUTE IMMEDIATE 'GRANT DBA TO O24WFO';
+EXCEPTION
+  WHEN OTHERS THEN
+    IF SQLCODE != -01919 THEN
+      RAISE;
+    END IF;
+END;
+/

@@ -1,0 +1,151 @@
+[
+  {
+    "type": "header",
+    "command": "Export data to Json"
+  },
+  {
+    "exported_time": "2025-11-30T13:57:56.1264391Z",
+    "host": "localhost:105",
+    "db_properties": [
+      {
+        "name": "server",
+        "value": "server=192.168.1.90"
+      },
+      {
+        "name": "port",
+        "value": "1433"
+      },
+      {
+        "name": "database",
+        "value": "cms"
+      },
+      {
+        "name": "entity",
+        "value": "ServiceInstance"
+      }
+    ],
+    "exported_by_fields": "Initial data"
+  },
+  {
+    "type": "data",
+    "data": [
+      {
+        "InstanceID": "f851c86e-f4dc-4e38-b8d5-097c65ca03af",
+        "GrpcUrl": "https://o24-wfo:5001",
+        "GrpcTimeout": 60,
+        "ServiceCode": "CMS",
+        "ServiceHandleName": "CMSGrpcService",
+        "EventQueueName": "event_queue:queue_CMS",
+        "CommandQueueName": "command_queue:queue_CMS",
+        "ConcurrentLimit": 32767,
+        "AssemblyName": "O24OpenAPI.Web.CMS",
+        "Status": "A",
+        "id": 1
+      },
+      {
+        "InstanceID": "6a5bd17c-434d-4a5d-8672-3f2af3932d78",
+        "GrpcUrl": "https://o24-cth:5071",
+        "GrpcTimeout": 60,
+        "ServiceCode": "CTH",
+        "ServiceHandleName": "CTHGrpcService",
+        "EventQueueName": "event_queue:queue_CTH",
+        "CommandQueueName": "command_queue:queue_CTH",
+        "ConcurrentLimit": 32767,
+        "AssemblyName": "O24OpenAPI.ControlHub",
+        "Status": "A",
+        "id": 2
+      },
+      {
+        "InstanceID": "e8f5fe74-ed63-4153-8d88-80af058eea4e",
+        "GrpcUrl": "https://o24-log:5031",
+        "GrpcTimeout": 60,
+        "ServiceCode": "LOG",
+        "ServiceHandleName": "LOGGrpcService",
+        "EventQueueName": "event_queue:queue_LOG",
+        "CommandQueueName": "command_queue:queue_LOG",
+        "ConcurrentLimit": 32767,
+        "AssemblyName": "O24OpenAPI.Logger",
+        "Status": "A",
+        "id": 3
+      },
+      {
+        "InstanceID": "69ab4bb3-0fd8-4a42-a807-728725200b30",
+        "GrpcUrl": "https://o24-buz:5081",
+        "GrpcTimeout": 60,
+        "ServiceCode": "DTS",
+        "ServiceHandleName": "DTSGrpcService",
+        "EventQueueName": "event_queue:queue_DTS",
+        "CommandQueueName": "command_queue:queue_DTS",
+        "ConcurrentLimit": 32767,
+        "AssemblyName": "O24OpenAPI.O24BUZ",
+        "Status": "A",
+        "id": 4
+      },
+      {
+        "InstanceID": "55ba9aec-c076-4aaf-8754-258d853518b3",
+        "GrpcUrl": "https://o24-buz:5081",
+        "GrpcTimeout": 60,
+        "ServiceCode": "BUZ",
+        "ServiceHandleName": "BUZGrpcService",
+        "EventQueueName": "event_queue:queue_BUZ",
+        "CommandQueueName": "command_queue:queue_BUZ",
+        "ConcurrentLimit": 32767,
+        "AssemblyName": "O24OpenAPI.O24BUZ",
+        "Status": "A",
+        "id": 5
+      },
+      {
+        "InstanceID": "4c855503-d706-42dc-9a22-36e8ad68b69a",
+        "GrpcUrl": "https://localhost:5081",
+        "GrpcTimeout": 60,
+        "ServiceCode": "BUZ",
+        "ServiceHandleName": "BUZGrpcService",
+        "EventQueueName": "event_queue:queue_BUZ",
+        "CommandQueueName": "command_queue:queue_BUZ",
+        "ConcurrentLimit": 32767,
+        "AssemblyName": "O24OpenAPI.O24BUZ",
+        "Status": "A",
+        "id": 6
+      },
+      {
+        "InstanceID": "93cb7b93-b1b5-4ff6-99e0-633ea5152cb8",
+        "GrpcUrl": "https://emi-buz:5081",
+        "GrpcTimeout": 60,
+        "ServiceCode": "BUZ",
+        "ServiceHandleName": "BUZGrpcService",
+        "EventQueueName": "event_queue:queue_BUZ",
+        "CommandQueueName": "command_queue:queue_BUZ",
+        "ConcurrentLimit": 32767,
+        "AssemblyName": "O24OpenAPI.O24BUZ",
+        "Status": "A",
+        "id": 7
+      },
+      {
+        "InstanceID": "35c14ec6-bef9-49de-bf98-c54e5ab3d722",
+        "GrpcUrl": "https://localhost:5071",
+        "GrpcTimeout": 60,
+        "ServiceCode": "CTH",
+        "ServiceHandleName": "CTHGrpcService",
+        "EventQueueName": "event_queue:queue_CTH",
+        "CommandQueueName": "command_queue:queue_CTH",
+        "ConcurrentLimit": 32767,
+        "AssemblyName": "O24OpenAPI.ControlHub",
+        "Status": "A",
+        "id": 8
+      },
+      {
+        "InstanceID": "474c7bf1-7f24-44e8-97d9-03021c03432d",
+        "GrpcUrl": "https://localhost:5001",
+        "GrpcTimeout": 60,
+        "ServiceCode": "CMS",
+        "ServiceHandleName": "CMSGrpcService",
+        "EventQueueName": "event_queue:queue_CMS",
+        "CommandQueueName": "command_queue:queue_CMS",
+        "ConcurrentLimit": 32767,
+        "AssemblyName": "O24OpenAPI.Web.CMS",
+        "Status": "A",
+        "id": 9
+      }
+    ]
+  }
+]

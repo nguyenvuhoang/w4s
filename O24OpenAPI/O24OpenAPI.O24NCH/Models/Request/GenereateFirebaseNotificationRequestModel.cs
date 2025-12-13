@@ -1,0 +1,7 @@
+﻿namespace O24OpenAPI.O24NCH.Models.Request;
+
+public class FirebaseNotificationRequestModel : PushNotificationModel
+{
+    public Dictionary<string, object> ReceiverData { get; set; } = [];
+    public Dictionary<string, object> SenderData { get; set; }
+}

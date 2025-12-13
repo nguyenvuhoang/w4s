@@ -1,0 +1,10 @@
+﻿using O24OpenAPI.Web.Framework.Models;
+
+namespace O24OpenAPI.ControlHub.Models;
+
+public class ResetPasswordRequestModel : BaseTransactionModel
+{
+    public string UserCode { get; set; }
+    public string PhoneNumber { get; set; }
+    public string DeviceId { get; set; }
+}

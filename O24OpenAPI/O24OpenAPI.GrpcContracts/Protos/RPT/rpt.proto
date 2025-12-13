@@ -1,0 +1,12 @@
+﻿syntax = "proto3";
+
+package rpt;
+
+// C# namespace khi generate
+option csharp_namespace = "O24OpenAPI.Grpc.RPT";
+
+import "Common/common.proto"; 
+
+service RPTGrpcService {
+    
+}

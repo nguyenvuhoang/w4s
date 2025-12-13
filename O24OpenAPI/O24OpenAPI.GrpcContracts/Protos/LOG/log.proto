@@ -1,0 +1,18 @@
+﻿syntax = "proto3";
+
+package log;
+
+// C# namespace khi generate
+option csharp_namespace = "O24OpenAPI.Grpc.LOG";
+
+import "Common/common.proto"; 
+
+service LOGGrpcService {
+    // Test method for gRPC
+    rpc Test(TestRequest) returns (common.GrpcResponse);
+    rpc SubmitLog(common.GrpcRequest) returns (common.GrpcResponse);
+}
+
+message TestRequest {
+  string message = 1;
+}

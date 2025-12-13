@@ -1,0 +1,15 @@
+global using System;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Threading.Tasks;
+global using O24OpenAPI.Core;
+global using O24OpenAPI.Core.Domain;
+global using O24OpenAPI.Core.Infrastructure;
+global using O24OpenAPI.Data;
+global using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
+global using O24OpenAPI.Web.CMS.Domain;
+global using O24OpenAPI.Web.CMS.Services;
+global using O24OpenAPI.Web.CMS.Utils;
+global using O24OpenAPI.Web.CMS.Utils.Common;
+global using O24OpenAPI.Web.Framework;
+global using O24OpenAPI.Web.Framework.Models;

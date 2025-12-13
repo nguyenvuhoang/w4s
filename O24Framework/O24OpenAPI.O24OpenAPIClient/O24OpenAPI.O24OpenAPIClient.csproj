@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.30.2" />
+    <PackageReference Include="Grpc.Core.Api" Version="2.71.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.71.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Elasticsearch.Net" Version="7.17.4" />
+    <PackageReference Include="Microsoft.ClearScript" Version="7.4.5" />
+    <PackageReference Include="NEST" Version="7.17.4" />
+    <PackageReference Include="Z.Expressions.Eval" Version="6.2.4" />
+    <PackageReference Include="RabbitMQ.Client" Version="7.0.0" />
+    <PackageReference Include="O24OpenAPI.KeyVault" Version="1.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Core\O24OpenAPI.Core.csproj" />
+    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Data\O24OpenAPI.Data.csproj" />
+    <!--<ProjectReference Include="..\..\O24OpenAPI\O24OpenAPI.APIContracts\O24OpenAPI.APIContracts.csproj" />-->
+    <ProjectReference Include="..\..\O24OpenAPI\O24OpenAPI.GrpcContracts\O24OpenAPI.GrpcContracts.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.Contracts\O24OpenAPI.Contracts.csproj" />
+  </ItemGroup>
+</Project>

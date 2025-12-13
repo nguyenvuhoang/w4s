@@ -1,0 +1,20 @@
+USE o24cth
+GO
+IF OBJECT_ID('dbo.__UpdateLogin', 'P ') IS NOT NULL DROP PROCEDURE dbo.__UpdateLogin;
+GO
+CREATE PROCEDURE [dbo].[__UpdateLogin]
+  @OS AS nvarchar(50) 
+AS
+BEGIN
+	DECLARE @IsLoginMB BIT
+	DECLARE @ISLoginIB BIT
+	
+	SET @IsLoginMB = CASE WHEN @OS ='PHONE' THEN 1 ELSE 0 END;
+	SET @ISLoginIB  = CASE WHEN @OS <> 'PHONE' THEN 1 ELSE 0 END;
+
+	UPDATE [dbo].[D_DIGITALBANKINGUSER] 
+		SET IsLoginMB = @IsLoginMB,
+				IsLoginIB = @ISLoginIB
+		
+END
+GO

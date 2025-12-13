@@ -1,0 +1,244 @@
+[
+  {
+    "type": "header",
+    "command": "Export data to Json"
+  },
+  {
+    "exported_time": "2025-09-06T13:13:44.7046545Z",
+    "host": "localhost:5070",
+    "db_properties": [
+      {
+        "name": "server",
+        "value": "server=192.168.1.138"
+      },
+      {
+        "name": "port",
+        "value": "1433"
+      },
+      {
+        "name": "database",
+        "value": "CTH"
+      },
+      {
+        "name": "entity",
+        "value": "UserRole"
+      }
+    ],
+    "exported_by_fields": [
+      {
+        "additionalProp1": "string",
+        "additionalProp2": "string",
+        "additionalProp3": "string"
+      }
+    ]
+  },
+  {
+    "type": "data",
+    "data": [
+      {
+        "RoleId": 1,
+        "RoleName": "Guest",
+        "RoleDescription": "Guest",
+        "UserType": "BO",
+        "ContractNo": null,
+        "UserCreated": "BEN",
+        "DateCreated": "2024-09-04T15:32:36",
+        "UserModified": null,
+        "DateModified": null,
+        "ServiceID": "BO",
+        "RoleType": "NOR",
+        "Status": "A",
+        "IsShow": "Y",
+        "SortOrder": 1,
+        "id": 1
+      },
+      {
+        "RoleId": 2,
+        "RoleName": "Administrator",
+        "RoleDescription": "Admin",
+        "UserType": "BO",
+        "ContractNo": null,
+        "UserCreated": "BEN",
+        "DateCreated": "2024-09-04T15:32:36",
+        "UserModified": null,
+        "DateModified": null,
+        "ServiceID": "BO",
+        "RoleType": "NOR",
+        "Status": "A",
+        "IsShow": "Y",
+        "SortOrder": 2,
+        "id": 2
+      },
+      {
+        "RoleId": 3,
+        "RoleName": "Manager",
+        "RoleDescription": "Manager",
+        "UserType": "BO",
+        "ContractNo": null,
+        "UserCreated": "BEN",
+        "DateCreated": "2024-09-04T16:54:48",
+        "UserModified": null,
+        "DateModified": null,
+        "ServiceID": "BO",
+        "RoleType": "NOR",
+        "Status": "A",
+        "IsShow": "Y",
+        "SortOrder": 3,
+        "id": 3
+      },
+      {
+        "RoleId": 4,
+        "RoleName": "Bank Branch Admin",
+        "RoleDescription": "Bank Branch Admin",
+        "UserType": "BO",
+        "ContractNo": null,
+        "UserCreated": "BEN",
+        "DateCreated": "2025-01-12T17:12:55",
+        "UserModified": null,
+        "DateModified": null,
+        "ServiceID": "BO",
+        "RoleType": "NOR",
+        "Status": "A",
+        "IsShow": "Y",
+        "SortOrder": 4,
+        "id": 4
+      },
+      {
+        "RoleId": 5,
+        "RoleName": "Bank Branch Teller",
+        "RoleDescription": "Bank Branch Teller",
+        "UserType": "BO",
+        "ContractNo": null,
+        "UserCreated": "BEN",
+        "DateCreated": "2025-01-12T17:13:18",
+        "UserModified": null,
+        "DateModified": null,
+        "ServiceID": "BO",
+        "RoleType": "NOR",
+        "Status": "A",
+        "IsShow": "Y",
+        "SortOrder": 5,
+        "id": 5
+      },
+      {
+        "RoleId": 6,
+        "RoleName": "Bank Branch Manager",
+        "RoleDescription": "Bank Branch Manager",
+        "UserType": "BO",
+        "ContractNo": null,
+        "UserCreated": "BEN",
+        "DateCreated": "2025-01-12T17:13:39",
+        "UserModified": null,
+        "DateModified": null,
+        "ServiceID": "BO",
+        "RoleType": "NOR",
+        "Status": "A",
+        "IsShow": "Y",
+        "SortOrder": 6,
+        "id": 6
+      },
+      {
+        "RoleId": 7,
+        "RoleName": "IT Staff",
+        "RoleDescription": "IT Staff",
+        "UserType": "BO",
+        "ContractNo": null,
+        "UserCreated": "BEN",
+        "DateCreated": "2025-01-12T17:14:05",
+        "UserModified": null,
+        "DateModified": null,
+        "ServiceID": "BO",
+        "RoleType": "NOR",
+        "Status": "A",
+        "IsShow": "Y",
+        "SortOrder": 7,
+        "id": 7
+      },
+      {
+        "RoleId": 8,
+        "RoleName": "Unblock account",
+        "RoleDescription": "Unblock account",
+        "UserType": "BO",
+        "ContractNo": null,
+        "UserCreated": "BEN",
+        "DateCreated": "2025-01-12T17:18:03",
+        "UserModified": null,
+        "DateModified": null,
+        "ServiceID": "BO",
+        "RoleType": "NOR",
+        "Status": "A",
+        "IsShow": "Y",
+        "SortOrder": 8,
+        "id": 8
+      },
+      {
+        "RoleId": 9,
+        "RoleName": "Mobile banking",
+        "RoleDescription": "Mobile banking",
+        "UserType": "MB",
+        "ContractNo": null,
+        "UserCreated": "BEN",
+        "DateCreated": "2025-04-03T09:17:51",
+        "UserModified": null,
+        "DateModified": null,
+        "ServiceID": "MB",
+        "RoleType": "NOR",
+        "Status": "A",
+        "IsShow": "Y",
+        "SortOrder": 9,
+        "id": 11
+      },
+      {
+        "RoleId": 10,
+        "RoleName": "API management",
+        "RoleDescription": "API management",
+        "UserType": "BO",
+        "ContractNo": null,
+        "UserCreated": "BEN",
+        "DateCreated": "2025-05-22T21:49:41",
+        "UserModified": null,
+        "DateModified": null,
+        "ServiceID": "BO",
+        "RoleType": "NOR",
+        "Status": "A",
+        "IsShow": "Y",
+        "SortOrder": 10,
+        "id": 12
+      },
+      {
+        "RoleId": 11,
+        "RoleName": "Supper Admin",
+        "RoleDescription": "Supper Admin",
+        "UserType": "BO",
+        "ContractNo": null,
+        "UserCreated": "BEN",
+        "DateCreated": "2025-06-17T06:17:54",
+        "UserModified": null,
+        "DateModified": null,
+        "ServiceID": "BO",
+        "RoleType": "NOR",
+        "Status": "A",
+        "IsShow": "Y",
+        "SortOrder": 11,
+        "id": 13
+      },
+      {
+        "RoleId": 12,
+        "RoleName": "SMS Group",
+        "RoleDescription": "SMS Group",
+        "UserType": "BO",
+        "ContractNo": null,
+        "UserCreated": "BEN",
+        "DateCreated": "2025-06-17T06:17:54",
+        "UserModified": null,
+        "DateModified": null,
+        "ServiceID": "BO",
+        "RoleType": "NOR",
+        "Status": "A",
+        "IsShow": "Y",
+        "SortOrder": 11,
+        "id": 15
+      }
+    ]
+  }
+]

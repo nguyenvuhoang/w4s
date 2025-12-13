@@ -1,0 +1,180 @@
+[
+  {
+    "type": "header",
+    "command": "Export data to Json"
+  },
+  {
+    "exported_time": "2025-10-15T01:23:49.9130621Z",
+    "host": "localhost:5070",
+    "db_properties": [
+      {
+        "name": "server",
+        "value": "server=192.168.1.138"
+      },
+      {
+        "name": "port",
+        "value": "1433"
+      },
+      {
+        "name": "database",
+        "value": "CTH"
+      },
+      {
+        "name": "entity",
+        "value": "ChannelScheduleInterval"
+      }
+    ],
+    "exported_by_fields": [
+      {
+        "additionalProp1": "string",
+        "additionalProp2": "string",
+        "additionalProp3": "string"
+      }
+    ]
+  },
+  {
+    "type": "data",
+    "data": [
+      {
+        "ChannelScheduleIdRef": 2,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 1
+      },
+      {
+        "ChannelScheduleIdRef": 3,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 2
+      },
+      {
+        "ChannelScheduleIdRef": 4,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 3
+      },
+      {
+        "ChannelScheduleIdRef": 5,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 4
+      },
+      {
+        "ChannelScheduleIdRef": 6,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 5
+      },
+      {
+        "ChannelScheduleIdRef": 9,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 6
+      },
+      {
+        "ChannelScheduleIdRef": 10,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 7
+      },
+      {
+        "ChannelScheduleIdRef": 11,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 8
+      },
+      {
+        "ChannelScheduleIdRef": 12,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 9
+      },
+      {
+        "ChannelScheduleIdRef": 13,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 10
+      },
+      {
+        "ChannelScheduleIdRef": 16,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 11
+      },
+      {
+        "ChannelScheduleIdRef": 17,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 12
+      },
+      {
+        "ChannelScheduleIdRef": 18,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 13
+      },
+      {
+        "ChannelScheduleIdRef": 19,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 14
+      },
+      {
+        "ChannelScheduleIdRef": 20,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 15
+      },
+      {
+        "ChannelScheduleIdRef": 23,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 16
+      },
+      {
+        "ChannelScheduleIdRef": 24,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 17
+      },
+      {
+        "ChannelScheduleIdRef": 25,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 18
+      },
+      {
+        "ChannelScheduleIdRef": 26,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 19
+      },
+      {
+        "ChannelScheduleIdRef": 27,
+        "StartTime": "07:00:00",
+        "EndTime": "19:00:00",
+        "SortOrder": 1,
+        "id": 20
+      }
+    ]
+  }
+]

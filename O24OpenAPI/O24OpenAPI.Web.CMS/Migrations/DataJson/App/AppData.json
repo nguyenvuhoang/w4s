@@ -1,0 +1,136 @@
+[
+  {
+    "type": "header",
+    "command": "Export data to Json"
+  },
+  {
+    "exported_time": "2025-06-22T12:46:02.4984223Z",
+    "host": "localhost:5000",
+    "db_properties": [
+      {
+        "name": "server",
+        "value": "server=192.168.1.138"
+      },
+      {
+        "name": "port",
+        "value": "1433"
+      },
+      {
+        "name": "database",
+        "value": "CMS"
+      },
+      {
+        "name": "entity",
+        "value": "App"
+      }
+    ],
+    "exported_by_fields": [
+      {}
+    ]
+  },
+  {
+    "type": "data",
+    "data": [
+      {
+        "AppCode": "SYS",
+        "AppName": "System",
+        "Description": "System",
+        "Order": 10,
+        "Status": false,
+        "CreatedOnUtc": null,
+        "UpdatedOnUtc": null,
+        "id": 1
+      },
+      {
+        "AppCode": "TELLERAPP",
+        "AppName": "Teller App",
+        "Description": "Teller App",
+        "Order": 5,
+        "Status": false,
+        "CreatedOnUtc": null,
+        "UpdatedOnUtc": null,
+        "id": 2
+      },
+      {
+        "AppCode": "MB",
+        "AppName": "Mobile Banking",
+        "Description": "Mobile Banking",
+        "Order": 3,
+        "Status": true,
+        "CreatedOnUtc": null,
+        "UpdatedOnUtc": null,
+        "id": 3
+      },
+      {
+        "AppCode": "IB",
+        "AppName": "Internet Banking",
+        "Description": "Internet Banking",
+        "Order": 4,
+        "Status": false,
+        "CreatedOnUtc": null,
+        "UpdatedOnUtc": null,
+        "id": 4
+      },
+      {
+        "AppCode": "OTP",
+        "AppName": "SmartOTP",
+        "Description": "SmartOTP",
+        "Order": 6,
+        "Status": false,
+        "CreatedOnUtc": null,
+        "UpdatedOnUtc": null,
+        "id": 5
+      },
+      {
+        "AppCode": "DIGITAL",
+        "AppName": "Digital",
+        "Description": "Digital  Banking",
+        "Order": 7,
+        "Status": false,
+        "CreatedOnUtc": null,
+        "UpdatedOnUtc": null,
+        "id": 6
+      },
+      {
+        "AppCode": "AM",
+        "AppName": "Agent",
+        "Description": "Agent",
+        "Order": 8,
+        "Status": false,
+        "CreatedOnUtc": null,
+        "UpdatedOnUtc": null,
+        "id": 7
+      },
+      {
+        "AppCode": "WL",
+        "AppName": "Wallet",
+        "Description": "Wallet",
+        "Order": 9,
+        "Status": false,
+        "CreatedOnUtc": null,
+        "UpdatedOnUtc": null,
+        "id": 8
+      },
+      {
+        "AppCode": "PORTAL",
+        "AppName": "Portal",
+        "Description": "Portal",
+        "Order": 2,
+        "Status": false,
+        "CreatedOnUtc": null,
+        "UpdatedOnUtc": null,
+        "id": 9
+      },
+      {
+        "AppCode": "BO",
+        "AppName": "Bank Staff",
+        "Description": "Bank Staff",
+        "Order": 1,
+        "Status": true,
+        "CreatedOnUtc": null,
+        "UpdatedOnUtc": null,
+        "id": 10
+      }
+    ]
+  }
+]

@@ -1,0 +1,20 @@
+# Build results
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ReSharper
+_ReSharper*/
+*.DotSettings.user
+
+# NuGet
+packages/
+O24OpenAPI/O24OpenAPI.CBGateway/Properties/
+O24OpenAPI/O24OpenAPI.O24DTS/Properties/
+*.pubxml
+*.txt
+*firebase-adminsdk*.json

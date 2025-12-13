@@ -1,0 +1,70 @@
+﻿syntax = "proto3";
+
+package wfo;
+
+// C# namespace khi generate
+option csharp_namespace = "O24OpenAPI.Grpc.WFO";
+
+import "Common/common.proto"; 
+
+// Dịch vụ workflow dùng gRPC để thực thi và đăng ký endpoint
+service WFOGrpcService {
+  // Thực thi luồng workflow từ phía client
+  rpc ExecuteWorkflow (ExecuteWorkflowRequest) returns (common.GrpcResponse);
+
+  // Đăng ký endpoint gRPC của 1 service
+  rpc RegisterServiceGrpcEndpoint (RegisterServiceGrpcEndpointRequest) returns (common.GrpcResponse);
+
+  rpc QueryServiceInfo(QueryServiceInfoRequest) returns(common.GrpcResponse);
+  rpc GetServiceInstanceByServiceHandleName(GetServiceInstanceByServiceHandleNameRequest) returns(common.GrpcResponse);
+  rpc Ping (HelloRequest) returns (common.GrpcResponse);
+  rpc SayHello(HelloRequest) returns(stream HelloReply);
+}
+
+// Yêu cầu thực thi workflow (dữ liệu ở dạng JSON)
+message ExecuteWorkflowRequest {
+  // JSON mô tả workflow scheme từ client
+  string workflow_input_json = 1;
+}
+
+// Yêu cầu đăng ký endpoint gRPC cho service động
+message RegisterServiceGrpcEndpointRequest {
+  // Mã định danh service (ví dụ: "EmailService")
+  string service_code = 1;
+
+  string service_handle_name =2;
+
+  // URL endpoint gRPC (ví dụ: "https://localhost:7000")
+  string grpc_endpoint_url = 3;
+
+  // ID phiên bản service (nếu có multi-instance)
+  string instance_id = 4;
+
+  // Tên assembly chứa service (dành cho gợi ý runtime nếu cần load DLL)
+  string service_assembly_name = 5;
+}
+
+message QueryServiceInfoRequest {
+  // Mã định danh service (ví dụ: "EmailService")
+  string from_service_code = 1;
+
+   // Mã định danh service (ví dụ: "EmailService")
+  string to_service_code = 2;
+
+  // ID phiên bản service (nếu có multi-instance)
+  string instance_id = 3;
+ }
+
+ message GetServiceInstanceByServiceHandleNameRequest{
+	 string service_handle_name = 1;
+ }
+
+ message HelloRequest{
+	 	 string name = 1;
+ 
+ }
+
+
+ message HelloReply{
+		string message = 1;
+ }

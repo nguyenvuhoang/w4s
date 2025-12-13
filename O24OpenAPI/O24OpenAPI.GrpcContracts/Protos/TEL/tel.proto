@@ -1,0 +1,11 @@
+﻿syntax = "proto3";
+
+package tel;
+
+// C# namespace khi generate
+option csharp_namespace = "O24OpenAPI.Grpc.TEL";
+
+import "Common/common.proto"; 
+
+service TELGrpcService {
+}

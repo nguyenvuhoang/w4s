@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <Protobuf_ProtoRoot>Protos</Protobuf_ProtoRoot>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Contracts\O24OpenAPI.Contracts.csproj" />
+    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Core.Logging\O24OpenAPI.Core.Logging.csproj" />
+    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Core\O24OpenAPI.Core.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.APIContracts\O24OpenAPI.APIContracts.csproj" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
+    <PackageReference Include="LinKit.Core" Version="2.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Protobuf Include="Protos\Common\common.proto" GrpcServices="None" ProtoRoot="Protos" />
+    <Protobuf Include="Protos\LOG\log.proto" GrpcServices="Both" ProtoRoot="Protos" />
+    <Protobuf Include="Protos\WFO\wfo.proto" GrpcServices="Both" ProtoRoot="Protos" />
+    <Protobuf Include="Protos\CBG\cbg.proto" GrpcServices="Both" ProtoRoot="Protos" />
+    <Protobuf Include="Protos\CMS\cms.proto" GrpcServices="Both" ProtoRoot="Protos" />
+    <Protobuf Include="Protos\CTH\cth.proto" GrpcServices="Both" ProtoRoot="Protos" />
+    <Protobuf Include="Protos\DTS\dts.proto" GrpcServices="Both" ProtoRoot="Protos" />
+    <Protobuf Include="Protos\NCH\nch.proto" GrpcServices="Both" ProtoRoot="Protos" />
+    <Protobuf Include="Protos\TEL\tel.proto" GrpcServices="Both" ProtoRoot="Protos" />
+    <Protobuf Include="Protos\RPT\rpt.proto" GrpcServices="Both" ProtoRoot="Protos" />
+    <Protobuf Include="Protos\DWH\dwh.proto" GrpcServices="Both" ProtoRoot="Protos" />
+    <Protobuf Include="Protos\LOG\log.proto" GrpcServices="Both" ProtoRoot="Protos" />
+  </ItemGroup>
+</Project>

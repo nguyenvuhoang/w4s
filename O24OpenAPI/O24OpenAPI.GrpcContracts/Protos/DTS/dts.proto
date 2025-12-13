@@ -1,0 +1,47 @@
+﻿syntax = "proto3";
+
+package dts;
+option csharp_namespace = "O24OpenAPI.Grpc.DTS";
+
+import "google/protobuf/timestamp.proto";
+import "Common/common.proto";
+
+service DTSGrpcService {
+  rpc IsExistingContract(IsExistingContractRequest) returns (common.GrpcResponse);
+  rpc GetContractNumberByAccountNumber(GetContractNumberByAccountNumberRequest) returns (common.GrpcResponse);
+  rpc VerifyUserAnotherDevice(VerifyUserAnotherDeviceRequest) returns (common.GrpcResponse);
+  rpc GetSMSLoanAlert(GetSMSLoanAlertRequest) returns (stream GetSMSLoanAlertReply);
+}
+
+message IsExistingContractRequest {
+  string contract_number = 1;
+  string id_card = 2;
+}
+
+message GetContractNumberByAccountNumberRequest {
+  string account_number = 1;
+}
+
+message VerifyUserAnotherDeviceRequest {
+  string contract_number = 1;
+  string dob = 2;
+  string license_type = 3;
+  string license_id = 4;
+  string language = 5;
+}
+
+message GetSMSLoanAlertRequest {
+  string type = 1;
+}
+
+message GetSMSLoanAlertReply {
+  string account_number = 1;
+  string account_name = 2;
+  string due_date = 3;         
+  string total_payment = 4;
+  string currency_code = 5;
+  string phone_number = 6;
+  string notification_type = 7;
+  string status = 8;
+  string description = 9;
+}
