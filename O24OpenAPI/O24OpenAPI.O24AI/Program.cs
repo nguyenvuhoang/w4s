@@ -1,7 +1,8 @@
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.Web.Framework.Infrastructure.Extensions;
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<RouteOptions>(options =>
 {
@@ -15,13 +16,14 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.ConfigureWebHost();
-WebApplication app = builder.Build();
+var app = builder.Build();
 app.UseHttpsRedirection();
 app.UseAuthorization();
-using IServiceScope scope = app.Services.CreateScope();
+using var scope = app.Services.CreateScope();
 AsyncScope.Scope = scope;
 app.ConfigureRequestPipeline();
 
 await app.StartEngine();
 app.ShowStartupBanner();
+
 await app.RunAsync();

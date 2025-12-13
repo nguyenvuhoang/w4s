@@ -30,6 +30,7 @@
 		</PropertyGroup>
 	</Target>
   <ItemGroup>
+    <PackageReference Include="LinKit.Core" Version="2.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.12" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     <PackageReference Include="Riok.Mapperly" Version="4.3.0" />
