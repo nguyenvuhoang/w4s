@@ -30,10 +30,7 @@
 		</PropertyGroup>
 	</Target>
   <ItemGroup>
-    <PackageReference Include="LinKit.Core" Version="2.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.12" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-    <PackageReference Include="Riok.Mapperly" Version="4.3.0" />
+	<PackageReference Include="Riok.Mapperly" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="App_Data\appsettings.json">
@@ -49,5 +46,7 @@
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.O24OpenAPIClient\O24OpenAPI.O24OpenAPIClient.csproj" />
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Web.Framework\O24OpenAPI.Web.Framework.csproj" />
     <Content Include="NT.pfx" CopyToPublishDirectory="Always" />
+    <Content Include="__jits_com_vn.pfx" CopyToPublishDirectory="Always" />
+	<Content Include="App_Data\CreateDatabase.sql" CopyToPublishDirectory="Always" />
   </ItemGroup>
 </Project>

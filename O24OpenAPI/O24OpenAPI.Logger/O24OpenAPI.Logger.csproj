@@ -61,7 +61,8 @@
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Web.Framework\O24OpenAPI.Web.Framework.csproj" />
     <ProjectReference Include="..\O24OpenAPI.EventBus\O24OpenAPI.EventBus.csproj" />
     <Content Include="NT.pfx" CopyToPublishDirectory="Always" />
-    <Content Include="App_Data\CreateDatabase.sql" CopyToPublishDirectory="Always" />
+	  <Content Include="__jits_com_vn.pfx" CopyToPublishDirectory="Always" />
+	  <Content Include="App_Data\CreateDatabase.sql" CopyToPublishDirectory="Always" />
     <Content Include="App_Data\EnableCDC.sql" CopyToPublishDirectory="Always" />
   </ItemGroup>
 </Project>

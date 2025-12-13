@@ -13,8 +13,8 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Services.ConfigureApplicationServices(builder);
 
 builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
+
 builder.ConfigureWebHost();
 var app = builder.Build();
 app.UseHttpsRedirection();

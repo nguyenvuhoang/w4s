@@ -62,7 +62,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="NT.pfx" CopyToPublishDirectory="Always" />
-    <Content Include="App_Data\CreateDatabase.sql" CopyToPublishDirectory="Always" />
+	<Content Include="__jits_com_vn.pfx" CopyToPublishDirectory="Always" />
+	<Content Include="App_Data\CreateDatabase.sql" CopyToPublishDirectory="Always" />
     <Content Include="App_Data\EnableCDC.sql" CopyToPublishDirectory="Always" />
   </ItemGroup>
 </Project>
