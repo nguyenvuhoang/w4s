@@ -1,7 +1,7 @@
-using System.Collections.Concurrent;
-using System.Text;
 using Newtonsoft.Json;
 using O24OpenAPI.KeyVault.Utility;
+using System.Collections.Concurrent;
+using System.Text;
 
 namespace O24OpenAPI.O24OpenAPIClient.Infisical;
 
@@ -28,11 +28,7 @@ public class InfisicalManager
             key =>
             {
                 var client = new InfisicalClient();
-                GetSecretResponseSecret secret = client.GetSecretsAsync(key);
-                if (secret == null)
-                {
-                    throw new Exception($"Cannot find secret with key [{key}]");
-                }
+                GetSecretResponseSecret secret = client.GetSecretsAsync(key) ?? throw new Exception($"Cannot find secret with key [{key}]");
                 byte[] data = Convert.FromBase64String(secret.SecretValue);
                 string decodedString = Encoding.UTF8.GetString(data);
                 var result = JsonConvert.DeserializeObject<T>(decodedString);
