@@ -1,100 +1,180 @@
 # O24API (O24OpenAPI)
 
-**O24API** là nền tảng **OpenAPI & Core Banking Integration Platform** được thiết kế để kết nối, mở rộng và điều phối các dịch vụ tài chính – ngân hàng trong hệ sinh thái O24.
+**O24API** là nền tảng **OpenAPI & Core Banking Integration Platform** được thiết kế để **kết nối – mở rộng – điều phối** các dịch vụ tài chính/ngân hàng trong hệ sinh thái **O24**.
 
-Hệ thống hỗ trợ kiến trúc **microservices**, **event-driven**, **real-time**, đáp ứng các nghiệp vụ như Wallet, Payment, Transfer, Loan, Notification, SMS, CDC, Reporting và Digital Channels (Web / Mobile).
+Hệ thống hỗ trợ **Microservices**, **Event-Driven**, **Transaction-Driven**, **Real-time**, phù hợp cho các nghiệp vụ ngân hàng cốt lõi như **Wallet, Payment, Transfer, Loan, Notification, SMS, CDC, Reporting** và các kênh số **Web / Mobile / Partner API**.
 
 ---
 
 ## 🚀 Key Features
 
-- 🔐 **Secure OpenAPI Gateway**
-  - API Key / Signature / Token-based Authentication
-  - End-to-end request signing & verification
-  - Rate limiting & access control
+### 🔐 Secure OpenAPI Gateway
+- API Key / Signature / Token-based Authentication
+- End-to-end request signing & verification
+- Rate limiting, IP whitelist, access control
+- Audit & request tracing
 
-- 🏦 **Core Banking Integration**
-  - Oracle / SQL Server
-  - Wallet, Deposit, Loan, Repayment, GL Posting
-  - Transaction History & Reconciliation
+### 🏦 Core Banking Integration
+- Oracle / SQL Server
+- Wallet, Deposit, Loan, Repayment, GL Posting
+- Transaction History & Reconciliation
+- Branch / Product / Currency aware
 
-- 🔄 **Event-Driven Architecture**
-  - RabbitMQ / Integration Events
-  - Transaction Queue & Fallback mechanism
-  - Reliable retry & compensation handling
+### 🔄 Event-Driven Architecture
+- RabbitMQ / Integration Events
+- Transaction Queue & Fallback mechanism
+- Reliable retry, idempotency, compensation
+- Eventual consistency cho nghiệp vụ phân tán
 
-- 📡 **Real-time Communication**
-  - SignalR for logout, notification, transaction status
-  - Firebase Push Notification (FCM)
-  - Smart OTP / SMS OTP
+### 📡 Real-time Communication
+- SignalR (logout, notification, transaction status)
+- Firebase Push Notification (FCM)
+- Smart OTP / SMS OTP
+- Multi-channel delivery
 
-- 📊 **CDC & Data Processing**
-  - SQL Server Change Data Capture (CDC)
-  - LSN-based incremental sync
-  - Audit & Data Warehouse ready
+### 📊 CDC & Data Processing
+- SQL Server Change Data Capture (CDC)
+- LSN-based incremental synchronization
+- Audit trail & Data Warehouse ready
+- Near-real-time reporting
 
-- 🌐 **Multi-channel Support**
-  - Web (Next.js / React)
-  - Mobile (React Native)
-  - API Consumers (Third-party / Partner)
+### 🌐 Multi-Channel Support
+- Web: **Next.js / React**
+- Mobile: **React Native**
+- API Consumers: **Third-party / Partner / Internal services**
 
 ---
 
 ## 🧱 Architecture Overview
 
-### 🏗️ Architecture (Clean Architecture + DDD + Microservices)
+### 🏗️ Architecture Style
 
-O24API được thiết kế theo hướng **Clean Architecture** kết hợp **DDD (Domain-Driven Design)** để đảm bảo:
-- Tách bạch rõ trách nhiệm (UI / Application / Domain / Infrastructure)
+O24API được thiết kế theo mô hình:
+
+- **Clean Architecture**
+- **DDD (Domain-Driven Design)**
+- **Microservices**
+- **Event-Driven / Transaction-Driven**
+
+Mục tiêu:
+- Tách bạch rõ ràng responsibility
 - Dễ test, dễ mở rộng, giảm coupling
-- Phù hợp cho nghiệp vụ phức tạp (transaction-heavy) và tích hợp Core Banking
-
-Đồng thời hệ thống vận hành theo **Microservices** + **Event-driven / Transaction-driven** để tối ưu:
-- Scale theo từng domain/service
-- Xử lý bất đồng bộ, retry, eventual consistency
-- Theo dõi trạng thái giao dịch theo luồng (workflow/queue)
+- Phù hợp cho transaction-heavy systems
+- Đảm bảo khả năng scale theo domain
 
 ---
 
+## 🏛️ Layered Architecture
 
-### 1) Presentation Layer
-- ASP.NET Core Web API, Swagger/OpenAPI
-- AuthN/AuthZ, request validation, middleware
-- Mapping DTO ↔ Use Case
+### 1️⃣ Presentation Layer
+- ASP.NET Core Web API
+- Swagger / OpenAPI
+- Authentication & Authorization
+- Middleware (logging, exception, versioning)
+- Mapping DTO ↔ Application Use Case
 
-### 2) Application Layer (Use Cases)
-- Orchestrate nghiệp vụ: command/query, workflow steps
+### 2️⃣ Application Layer (Use Cases)
+- CQRS: Command / Query
+- Orchestrate nghiệp vụ & workflow
 - Transaction boundary (khi cần)
-- Publish domain events / integration events
-- Không phụ thuộc DB framework cụ thể
+- Publish domain / integration events
+- Không phụ thuộc DB hay framework hạ tầng
 
-### 3) Domain Layer (DDD Core)
-- Entities / Value Objects / Aggregates
+### 3️⃣ Domain Layer (DDD Core)
+- Aggregates / Entities / Value Objects
 - Domain Services
-- Domain Events (vd: `TransactionCreated`, `OtpVerified`, `WalletDeposited`)
-- Business rules thuần nghiệp vụ, không phụ thuộc hạ tầng
+- Domain Events  
+  (vd: `TransactionCreated`, `OtpVerified`, `WalletDeposited`)
+- Business rules thuần nghiệp vụ
+- Không phụ thuộc Infrastructure
 
-### 4) Infrastructure Layer
-- Repositories (EF Core / LinqToDB)
-- Messaging (RabbitMQ)
-- Cache (Redis)
-- External providers (Core Banking, SMS SOAP, Firebase)
-- Observability (Loki/Promtail/Grafana)
-
----
-
-## 🧩 DDD Bounded Contexts (gợi ý theo O24)
-
-Mỗi domain lớn nên tách thành **Bounded Context** và thường ánh xạ thành service:
-
-- **Identity & Access** (Auth, Role, Permission)
-- **Transaction** (Transaction orchestration, history, status)
-- **Wallet** (Wallet account, mapping, sync)
-- **Payments/Transfer** (Internal/Interbank, fee, validation)
-- **Loan** (Repayment schedule, remind, posting)
-- **Notification** (SMS/Push/SignalR, template, routing)
-- **Configuration** (ConnectConfig, para, code lists)
-- **Audit/Logging** (business log, technical log, tracing)
+### 4️⃣ Infrastructure Layer
+- Persistence: EF Core / LinqToDB
+- Messaging: RabbitMQ
+- Cache: Redis
+- External Providers:
+  - Core Banking
+  - SMS (SOAP)
+  - Firebase
+- Observability: Loki / Promtail / Grafana
 
 ---
 
+## 🧩 DDD Bounded Contexts
+
+- **Identity & Access**
+  - Authentication, Authorization
+  - Role, Permission
+
+- **Transaction**
+  - Transaction orchestration
+  - Status tracking
+  - History & reconciliation
+
+- **Wallet**
+  - Wallet account
+  - Mapping & synchronization
+  - Balance management
+
+- **Payment / Transfer**
+  - Internal / Interbank
+  - Fee calculation
+  - Validation & limit
+
+- **Loan**
+  - Repayment schedule
+  - Auto posting
+  - Reminder & notification
+
+- **Notification**
+  - SMS / Push / SignalR
+  - Template & routing
+  - Multi-provider fallback
+
+- **Configuration**
+  - ConnectConfig
+  - Parameters, Code lists
+  - Dynamic form & rule config
+
+- **Audit / Logging**
+  - Business log
+  - Technical log
+  - Tracing & monitoring
+
+---
+
+## 📁 Project Structure
+
+```text
+src/
+├─ O24OpenAPI.AI.API/                      # Presentation Layer
+│  ├─ Controllers/
+│  ├─ Middleware/
+│  ├─ Extensions/
+│  └─ Program.cs
+│
+├─ O24OpenAPI.AI.Application/              # Application Layer (CQRS)
+│  ├─ Abstractions/
+│  ├─ Common/
+│  └─ Modules/
+│
+├─ O24OpenAPI.AI.Domain/                   # Domain Layer
+│  ├─ Aggregates/
+│  ├─ Entities/
+│  ├─ ValueObjects/
+│  ├─ Events/
+│  └─ Specifications/
+│
+├─ O24OpenAPI.AI.Infrastructure/           # Infrastructure Layer
+│  ├─ Persistence/
+│  ├─ Clients/
+│  ├─ Messaging/
+│  ├─ Caching/
+│  └─ DependencyInjection.cs
+│
+└─ O24OpenAPI.BuildingBlocks/              # Shared Libraries
+   ├─ Web.Framework/
+   ├─ Core/
+   ├─ Data/
+   ├─ Observability/
+   └─ Security/
