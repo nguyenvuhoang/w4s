@@ -1,6 +1,6 @@
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Domain.Logging;
-using O24OpenAPI.Data;
+using O24OpenAPI.Core.SeedWork;
 
 namespace O24OpenAPI.Web.Framework.Services.Logging;
 

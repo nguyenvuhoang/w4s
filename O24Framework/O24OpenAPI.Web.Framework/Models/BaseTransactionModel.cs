@@ -5,7 +5,7 @@ using O24OpenAPI.Web.Framework.Helpers;
 
 namespace O24OpenAPI.Web.Framework.Models;
 
-/// <summary>Represents base Neptune Transaction Model</summary>
+/// <summary>Represents base Transaction Model</summary>
 public class BaseTransactionModel : BaseO24OpenAPIModel
 {
     /// <summary>App code</summary>

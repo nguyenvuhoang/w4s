@@ -1,5 +1,4 @@
 using O24OpenAPI.Core;
-using O24OpenAPI.Data;
 using O24OpenAPI.O24ACT.Domain;
 using O24OpenAPI.Web.Framework.Localization;
 

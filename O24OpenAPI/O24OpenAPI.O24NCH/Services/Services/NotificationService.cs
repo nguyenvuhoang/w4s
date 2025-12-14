@@ -5,7 +5,6 @@ using O24OpenAPI.Core;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Core.Utils;
-using O24OpenAPI.Data;
 using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.O24NCH.Config;
 using O24OpenAPI.O24NCH.Constant;

@@ -1,7 +1,6 @@
 ﻿using LinqToDB;
 using O24OpenAPI.ControlHub.Services.Interfaces;
 using O24OpenAPI.Core.Caching;
-using O24OpenAPI.Data;
 using O24OpenAPI.O24ACT.Domain;
 
 namespace O24OpenAPI.O24ACT.Services;

@@ -1,4 +1,3 @@
-using O24OpenAPI.Data;
 using O24OpenAPI.WFO.Domain;
 using O24OpenAPI.WFO.Services.Interfaces;
 

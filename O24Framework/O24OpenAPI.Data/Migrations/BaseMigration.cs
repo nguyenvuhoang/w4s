@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+using System.Reflection;
 using FluentMigrator;
 using FluentMigrator.Infrastructure;
 using LinqToDB;
@@ -5,8 +7,6 @@ using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.Utils;
-using System.Linq.Expressions;
-using System.Reflection;
 
 namespace O24OpenAPI.Data.Migrations;
 
@@ -103,10 +103,7 @@ public abstract class BaseMigration : Migration
             {
                 var predicate = BuildPredicate(keyProperties, item);
 
-                var old = await _dataProvider
-                    .GetTable<TEntity>()
-                    .Where(predicate)
-                    .ToListAsync();
+                var old = await _dataProvider.GetTable<TEntity>().Where(predicate).ToListAsync();
                 if (old != null && old.Count > 0)
                 {
                     try

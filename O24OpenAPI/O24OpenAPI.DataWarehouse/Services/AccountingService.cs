@@ -1,9 +1,9 @@
 ﻿using O24OpenAPI.Core.Domain;
-using O24OpenAPI.Data;
 using O24OpenAPI.DataWarehouse.Domain;
 using O24OpenAPI.DataWarehouse.Services.Interfaces;
 using O24OpenAPI.Web.Framework.Domain;
 using O24OpenAPI.Web.Framework.Extensions;
+using O24OpenAPI.Core.SeedWork;
 
 namespace O24OpenAPI.DataWarehouse.Services;
 

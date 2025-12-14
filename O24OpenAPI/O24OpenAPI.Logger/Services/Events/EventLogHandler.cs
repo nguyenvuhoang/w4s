@@ -1,9 +1,9 @@
 using O24OpenAPI.APIContracts.Events;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Data;
 using O24OpenAPI.EventBus.Abstractions;
 using O24OpenAPI.Logger.Domain;
 using O24OpenAPI.Logger.Mapper;
+using O24OpenAPI.Core.SeedWork;
 
 namespace O24OpenAPI.Logger.Services.Events;
 

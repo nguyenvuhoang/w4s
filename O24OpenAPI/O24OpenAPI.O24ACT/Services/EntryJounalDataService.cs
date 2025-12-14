@@ -1,7 +1,6 @@
 ﻿using LinqToDB;
 using Newtonsoft.Json;
 using O24OpenAPI.Core.Extensions;
-using O24OpenAPI.Data;
 using O24OpenAPI.O24ACT.Common;
 using O24OpenAPI.O24ACT.Configuration;
 using O24OpenAPI.O24ACT.Domain;

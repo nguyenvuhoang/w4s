@@ -2,6 +2,7 @@ using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Domain.O24OpenAPI;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
+using O24OpenAPI.Core.SeedWork;
 
 namespace O24OpenAPI.Data.Extensions;
 

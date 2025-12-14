@@ -5,6 +5,7 @@ global using System.Threading.Tasks;
 global using O24OpenAPI.Core;
 global using O24OpenAPI.Core.Domain;
 global using O24OpenAPI.Core.Infrastructure;
+global using O24OpenAPI.Core.SeedWork;
 global using O24OpenAPI.Data;
 global using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
 global using O24OpenAPI.Web.CMS.Domain;

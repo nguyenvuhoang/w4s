@@ -1,20 +1,19 @@
-﻿namespace O24OpenAPI.ControlHub.Models
+﻿namespace O24OpenAPI.ControlHub.Models;
+
+using O24OpenAPI.Web.Framework.Models;
+
+/// <summary>
+/// Defines the <see cref="UserNotificationModel" />
+/// </summary>
+public class UserNotificationModel : BaseO24OpenAPIModel
 {
-    using O24OpenAPI.Web.Framework.Models;
+    /// <summary>
+    /// Gets or sets the UserCode
+    /// </summary>
+    public string UserCode { get; set; } = string.Empty;
 
     /// <summary>
-    /// Defines the <see cref="UserNotificationModel" />
+    /// Gets or sets the NotificationId
     /// </summary>
-    public class UserNotificationModel : BaseO24OpenAPIModel
-    {
-        /// <summary>
-        /// Gets or sets the UserCode
-        /// </summary>
-        public string UserCode { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the NotificationId
-        /// </summary>
-        public string NotificationId { get; set; } = string.Empty;
-    }
+    public string NotificationId { get; set; } = string.Empty;
 }

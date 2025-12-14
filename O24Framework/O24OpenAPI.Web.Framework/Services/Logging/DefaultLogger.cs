@@ -3,7 +3,7 @@ using O24OpenAPI.Core.Domain.Logging;
 using O24OpenAPI.Core.Domain.Users;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Data;
+using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.O24OpenAPIClient;
 using O24OpenAPI.O24OpenAPIClient.Events;
 using O24OpenAPI.O24OpenAPIClient.Events.EventData;

@@ -1,6 +1,6 @@
 ﻿using O24OpenAPI.Core;
 using O24OpenAPI.Core.Domain;
-using O24OpenAPI.Data;
+using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Web.Framework.Domain;
 using O24OpenAPI.Web.Framework.Extensions;

@@ -6,7 +6,6 @@ using O24OpenAPI.ControlHub.Models.Roles;
 using O24OpenAPI.ControlHub.Services.Interfaces;
 using O24OpenAPI.ControlHub.Utils;
 using O24OpenAPI.Core.Logging.Helpers;
-using O24OpenAPI.Data;
 using O24OpenAPI.Web.Framework.Extensions;
 
 namespace O24OpenAPI.ControlHub.Services;

@@ -5,7 +5,6 @@ using O24OpenAPI.ControlHub.Models.Channel;
 using O24OpenAPI.ControlHub.Services.Interfaces;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Caching;
-using O24OpenAPI.Data;
 
 namespace O24OpenAPI.ControlHub.Services;
 

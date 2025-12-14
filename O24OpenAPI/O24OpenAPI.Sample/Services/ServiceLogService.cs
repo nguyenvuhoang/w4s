@@ -1,7 +1,3 @@
-using O24OpenAPI.Data;
-using O24OpenAPI.Sample.Domain;
-using O24OpenAPI.Sample.Services.Interfaces;
-
 namespace O24OpenAPI.Sample.Services;
 
 //public class ServiceLogService(IRepository<ServiceLog> serviceLogRepository)

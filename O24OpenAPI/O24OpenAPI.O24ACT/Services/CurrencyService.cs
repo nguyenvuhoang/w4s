@@ -1,5 +1,4 @@
 ﻿using LinqToDB;
-using O24OpenAPI.Data;
 using O24OpenAPI.O24ACT.Domain;
 using O24OpenAPI.O24ACT.Models;
 using O24OpenAPI.O24ACT.Services.Interfaces;

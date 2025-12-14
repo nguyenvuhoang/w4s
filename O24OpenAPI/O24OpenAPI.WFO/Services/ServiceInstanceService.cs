@@ -5,7 +5,6 @@ using O24OpenAPI.Contracts.Configuration.Client;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Data;
 using O24OpenAPI.O24OpenAPIClient.Lib.Encryption;
 using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.WFO.Domain;

@@ -3,7 +3,7 @@ using System.Runtime.ExceptionServices;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Helper;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Data;
+using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Web.Framework.Extensions;
 
 namespace O24OpenAPI.Web.Framework.Helpers;

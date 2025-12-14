@@ -4,7 +4,6 @@ using O24OpenAPI.ControlHub.Services.Interfaces;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Helper;
-using O24OpenAPI.Data;
 using O24OpenAPI.O24ACT.Domain;
 using O24OpenAPI.O24ACT.Models;
 using O24OpenAPI.O24ACT.Services.Interfaces;

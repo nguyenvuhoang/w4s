@@ -1,7 +1,6 @@
 ﻿using O24OpenAPI.ControlHub.Domain;
 using O24OpenAPI.ControlHub.Models;
 using O24OpenAPI.ControlHub.Services.Interfaces;
-using O24OpenAPI.Data;
 using O24OpenAPI.Data.System.Linq;
 
 namespace O24OpenAPI.ControlHub.Services;

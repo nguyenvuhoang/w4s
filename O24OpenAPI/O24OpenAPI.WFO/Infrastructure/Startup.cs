@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Builder;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Core.Logging.Interceptors;
 using O24OpenAPI.Web.Framework.Services.Grpc;
 using O24OpenAPI.WFO.GrpcServices;
 using O24OpenAPI.WFO.Models;

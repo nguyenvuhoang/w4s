@@ -1,4 +1,3 @@
-using O24OpenAPI.Data;
 using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.Logger.Models.HttpLog;
 using O24OpenAPI.Logger.Models.Log;
@@ -6,6 +5,7 @@ using O24OpenAPI.Logger.Services.Interfaces;
 using O24OpenAPI.Web.Framework.Domain.Logging;
 using O24OpenAPI.Web.Framework.Helpers;
 using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Core.SeedWork;
 
 namespace O24OpenAPI.Logger.Services;
 

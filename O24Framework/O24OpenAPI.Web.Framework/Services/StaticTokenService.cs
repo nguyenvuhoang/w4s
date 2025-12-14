@@ -1,6 +1,6 @@
 using LinqToDB;
 using Microsoft.IdentityModel.Tokens;
-using O24OpenAPI.Data;
+using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Web.Framework.Domain;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

@@ -3,7 +3,7 @@ using LinqToDB;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Domain.Localization;
-using O24OpenAPI.Data;
+using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Web.Framework.Services.Logging;
 
 namespace O24OpenAPI.Web.Framework.Localization;

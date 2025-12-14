@@ -1,5 +1,4 @@
-﻿using O24OpenAPI.Data;
-using O24OpenAPI.Data.System.Linq;
+﻿using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.O24NCH.Domain;
 using O24OpenAPI.O24NCH.Services.Interfaces;
 

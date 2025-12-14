@@ -1,7 +1,6 @@
 ﻿using LinqToDB;
 using O24OpenAPI.APIContracts.Models.NCH;
 using O24OpenAPI.Core.Logging.Helpers;
-using O24OpenAPI.Data;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.DTS;
 using O24OpenAPI.O24NCH.Constant;
 using O24OpenAPI.O24NCH.Domain;

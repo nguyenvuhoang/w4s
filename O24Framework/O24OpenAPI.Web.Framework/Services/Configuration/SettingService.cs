@@ -9,7 +9,7 @@ using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Domain.Configuration;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Helper;
-using O24OpenAPI.Data;
+using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.Web.Framework.Models;
 

@@ -2,7 +2,6 @@ using System.Text;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.Core.Extensions;
-using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Logging.Helpers;
 using O24OpenAPI.Core.Utils;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;

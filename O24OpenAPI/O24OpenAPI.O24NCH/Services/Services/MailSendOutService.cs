@@ -1,5 +1,4 @@
-﻿using O24OpenAPI.Data;
-using O24OpenAPI.O24NCH.Domain;
+﻿using O24OpenAPI.O24NCH.Domain;
 using O24OpenAPI.O24NCH.Services.Interfaces;
 
 namespace O24OpenAPI.O24NCH.Services.Services;

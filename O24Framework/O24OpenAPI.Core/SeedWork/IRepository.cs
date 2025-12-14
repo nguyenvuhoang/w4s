@@ -1,14 +1,9 @@
-using O24OpenAPI.Core;
+﻿using System.Linq.Expressions;
 using O24OpenAPI.Core.Caching;
-using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Domain.O24OpenAPI;
-using System.Linq.Expressions;
 
-namespace O24OpenAPI.Data;
+namespace O24OpenAPI.Core.SeedWork;
 
-/// <summary>
-/// The repository interface
-/// </summary>
 public interface IRepository<TEntity>
     where TEntity : BaseEntity
 {

@@ -9,6 +9,7 @@ using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Domain.O24OpenAPI;
 using O24OpenAPI.Core.Events;
 using O24OpenAPI.Core.Extensions;
+using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.System.Linq;
 

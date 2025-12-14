@@ -1,4 +1,3 @@
-using O24OpenAPI.Data;
 using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.Web.Report.Domain;
 using O24OpenAPI.Web.Report.Services.Interfaces;

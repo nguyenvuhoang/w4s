@@ -1,7 +1,3 @@
-using FluentMigrator.Builders.Create.Table;
-using O24OpenAPI.Data.Mapping.Builders;
-using O24OpenAPI.Sample.Domain;
-
 namespace O24OpenAPI.Sample.Migrations.Builders;
 
 //public class ServiceLogBuilder : O24OpenAPIEntityBuilder<ServiceLog>

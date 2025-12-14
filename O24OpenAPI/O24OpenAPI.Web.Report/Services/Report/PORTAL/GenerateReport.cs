@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Data;
 using O24OpenAPI.Web.Framework.DBContext;
 using O24OpenAPI.Web.Framework.Services.Mapping;
 using O24OpenAPI.Web.Report.Domain;

@@ -1,6 +1,4 @@
-using System.Text.Json;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Sample.Domain;
 using O24OpenAPI.Sample.Services.Interfaces;
 
 namespace O24OpenAPI.Sample.GrpcServices;

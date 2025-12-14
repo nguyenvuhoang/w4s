@@ -1,6 +1,4 @@
 ﻿using Linh.JsonKit.Json;
-using O24OpenAPI.Core.Domain;
-using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Core.Logging.Enums;
 using Serilog;
 

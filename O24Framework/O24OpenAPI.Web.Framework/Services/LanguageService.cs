@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Domain.Localization;
-using O24OpenAPI.Data;
+using O24OpenAPI.Core.SeedWork;
 
 namespace O24OpenAPI.Web.Framework.Services;
 

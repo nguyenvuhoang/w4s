@@ -10,6 +10,7 @@ using O24OpenAPI.Core.Events;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Helper;
 using O24OpenAPI.Core.Infrastructure;
+using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data;
 using O24OpenAPI.Web.Framework.DBContext;
 using O24OpenAPI.Web.Framework.Localization;

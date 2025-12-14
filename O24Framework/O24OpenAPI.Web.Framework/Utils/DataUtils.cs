@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Data;
+using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data.Configuration;
 using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.Web.Framework.Models.UtilityModels;
