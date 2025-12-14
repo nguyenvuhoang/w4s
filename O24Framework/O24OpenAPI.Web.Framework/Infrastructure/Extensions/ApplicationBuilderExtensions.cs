@@ -1,4 +1,3 @@
-using System.Reflection;
 using Linh.CodeEngine.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +10,7 @@ using O24OpenAPI.Data;
 using O24OpenAPI.Data.Configuration;
 using O24OpenAPI.Data.Migrations;
 using O24OpenAPI.Web.Framework.Services.Logging;
+using System.Reflection;
 
 namespace O24OpenAPI.Web.Framework.Infrastructure.Extensions;
 
@@ -150,9 +150,23 @@ public static class ApplicationBuilderExtensions
             Console.WriteLine(
                 "=====================Applying service data migration====================="
             );
+
+
             if (!string.IsNullOrEmpty(o24Config.AssemblyMigration))
             {
-                ApplyMigration(o24Config.AssemblyMigration, migrationManager, environmentType);
+                var assemblies2 = AppDomain
+                .CurrentDomain.GetAssemblies()
+                .Where(ass => ass.GetName().Name.StartsWithOrdinalIgnoreCase(o24Config.AssemblyMigration))
+                .ToList();
+                foreach (Assembly assembly in assemblies2)
+                {
+                    migrationManager.ApplyUpMigrations(
+                        assembly,
+                        MigrationProcessType.NoMatter,
+                        environmentType
+                    );
+                }
+
             }
         }
         application.InitializeMessageQueue();
