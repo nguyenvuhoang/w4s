@@ -5,17 +5,19 @@ using O24OpenAPI.ControlHub.Models.User;
 using O24OpenAPI.ControlHub.Services.Interfaces;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
+using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.Web.Framework.Helpers;
 using O24OpenAPI.Web.Framework.Models;
-using O24OpenAPI.Web.Framework.Models.O24OpenAPI;
 using O24OpenAPI.Web.Framework.Services.Queue;
 
 namespace O24OpenAPI.ControlHub.Queues;
 
 public class UserQueue : BaseQueue
 {
-    private readonly IUserAccountService _userAccountService = EngineContext.Current.Resolve<IUserAccountService>();
-    private readonly IUserBannerService _userBannerService = EngineContext.Current.Resolve<IUserBannerService>();
+    private readonly IUserAccountService _userAccountService =
+        EngineContext.Current.Resolve<IUserAccountService>();
+    private readonly IUserBannerService _userBannerService =
+        EngineContext.Current.Resolve<IUserBannerService>();
 
     public async Task<WFScheme> GetUserByRoleId(WFScheme wFScheme)
     {
@@ -113,7 +115,6 @@ public class UserQueue : BaseQueue
         );
     }
 
-
     public async Task<WFScheme> VerifyPassword(WFScheme wFScheme)
     {
         var model = await wFScheme.ToModel<VerifyPasswordModel>();
@@ -126,6 +127,7 @@ public class UserQueue : BaseQueue
             }
         );
     }
+
     public async Task<WFScheme> DeleteUser(WFScheme wFScheme)
     {
         var model = await wFScheme.ToModel<DeleteUserModel>();
@@ -164,6 +166,7 @@ public class UserQueue : BaseQueue
             }
         );
     }
+
     public async Task<WFScheme> UnblockUser(WFScheme wFScheme)
     {
         var model = await wFScheme.ToModel<UnblockUserModel>();
@@ -182,7 +185,6 @@ public class UserQueue : BaseQueue
     /// </summary>
     /// <param name="wFScheme"></param>
     /// <returns></returns>
-
     public async Task<WFScheme> UpdateUserAvatar(WFScheme wFScheme)
     {
         var model = await wFScheme.ToModel<UpdateUserAvatarRequestModel>();
@@ -219,7 +221,6 @@ public class UserQueue : BaseQueue
     /// </summary>
     /// <param name="wFScheme"></param>
     /// <returns></returns>
-
     public async Task<WFScheme> UpdateUserBanner(WFScheme wFScheme)
     {
         var model = await wFScheme.ToModel<UserBannerModel>();
@@ -251,7 +252,6 @@ public class UserQueue : BaseQueue
         );
     }
 
-
     /// <summary>
     /// Get User by User Code
     /// </summary>
@@ -269,5 +269,4 @@ public class UserQueue : BaseQueue
             }
         );
     }
-
 }

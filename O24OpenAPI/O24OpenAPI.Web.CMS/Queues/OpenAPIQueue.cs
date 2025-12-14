@@ -1,8 +1,8 @@
 ﻿using O24OpenAPI.Web.CMS.Models;
 using O24OpenAPI.Web.CMS.Models.OpenAPI;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
+using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.Web.Framework.Helpers;
-using O24OpenAPI.Web.Framework.Models.O24OpenAPI;
 using O24OpenAPI.Web.Framework.Services.Queue;
 
 namespace O24OpenAPI.Web.CMS.Queues;
@@ -10,6 +10,7 @@ namespace O24OpenAPI.Web.CMS.Queues;
 public class OpenAPIQueue : BaseQueue
 {
     private readonly ICoreAPIService _service = EngineContext.Current.Resolve<ICoreAPIService>();
+
     public async Task<WFScheme> Search(WFScheme workflow)
     {
         var model = await workflow.ToModel<SimpleSearchModel>();
@@ -23,6 +24,7 @@ public class OpenAPIQueue : BaseQueue
             }
         );
     }
+
     public async Task<WFScheme> Create(WFScheme workflow)
     {
         var model = await workflow.ToModel<CreateOpenAPIRequestModel>();
@@ -35,6 +37,7 @@ public class OpenAPIQueue : BaseQueue
             }
         );
     }
+
     public async Task<WFScheme> Update(WFScheme workflow)
     {
         var model = await workflow.ToModel<OpenAPIQueueRequestModel>();
@@ -60,5 +63,4 @@ public class OpenAPIQueue : BaseQueue
             }
         );
     }
-
 }

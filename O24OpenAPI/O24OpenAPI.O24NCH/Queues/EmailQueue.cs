@@ -1,11 +1,9 @@
-﻿
-
-using O24OpenAPI.Core.Infrastructure;
+﻿using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.O24NCH.Models.Request;
 using O24OpenAPI.O24NCH.Models.Request.Mail;
 using O24OpenAPI.O24NCH.Services.Interfaces;
 using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
-using O24OpenAPI.Web.Framework.Models.O24OpenAPI;
+using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.Web.Framework.Services.Queue;
 
 namespace O24OpenAPI.O24NCH.Queues;

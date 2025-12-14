@@ -5,8 +5,8 @@ using O24OpenAPI.Logger.Models.Log;
 using O24OpenAPI.Logger.Services.QueryHandler;
 using O24OpenAPI.Logger.Utils;
 using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
+using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.Web.Framework.Models;
-using O24OpenAPI.Web.Framework.Models.O24OpenAPI;
 using O24OpenAPI.Web.Framework.Services.Queue;
 
 namespace O24OpenAPI.Logger.Queues;
@@ -62,13 +62,15 @@ public class LogQueue : BaseQueue
             {
                 var type = TypeLogUtils.GetTypeLog(model.LogType);
                 var queryType = typeof(ViewDetailQuery<>).MakeGenericType(type);
-                var queryModel = Activator.CreateInstance(queryType, model) ?? throw new InvalidOperationException($"Could not create instance of {queryType.Name}");
+                var queryModel =
+                    Activator.CreateInstance(queryType, model)
+                    ?? throw new InvalidOperationException(
+                        $"Could not create instance of {queryType.Name}"
+                    );
                 dynamic dynamicQuery = queryModel;
                 var response = await _mediator.Send(dynamicQuery);
                 return response;
             }
         );
     }
-
-
 }

@@ -2,9 +2,9 @@
 using O24OpenAPI.O24NCH.Models.Request;
 using O24OpenAPI.O24NCH.Services.Interfaces;
 using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
+using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.Web.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Web.Framework.Models;
-using O24OpenAPI.Web.Framework.Models.O24OpenAPI;
 using O24OpenAPI.Web.Framework.Services.Queue;
 
 namespace O24OpenAPI.O24NCH.Queues;
@@ -53,11 +53,11 @@ public class NotificationQueue(INotificationService notificationService) : BaseQ
         var model = await wfScheme.ToModel<NotificationRequestModel>();
         return await Invoke<NotificationRequestModel>(
             wfScheme,
-        async () =>
-        {
-            var response = await _notificationService.SendNotification(model);
-            return response;
-        }
+            async () =>
+            {
+                var response = await _notificationService.SendNotification(model);
+                return response;
+            }
         );
     }
 
@@ -66,10 +66,11 @@ public class NotificationQueue(INotificationService notificationService) : BaseQ
         var model = await wfScheme.ToModel<SendMobileDeviceRequestModel>();
         return await Invoke<SendMobileDeviceRequestModel>(
             wfScheme,
-        async () =>
-        {
-            var response = await _notificationService.SendMobileDeviceAsync(model);
-            return response;
-        });
+            async () =>
+            {
+                var response = await _notificationService.SendMobileDeviceAsync(model);
+                return response;
+            }
+        );
     }
 }

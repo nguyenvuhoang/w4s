@@ -3,8 +3,8 @@ using O24OpenAPI.ControlHub.Models.Request;
 using O24OpenAPI.ControlHub.Services.Interfaces;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
+using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.Web.Framework.Models;
-using O24OpenAPI.Web.Framework.Models.O24OpenAPI;
 using O24OpenAPI.Web.Framework.Services.Queue;
 
 namespace O24OpenAPI.ControlHub.Queues;
@@ -83,7 +83,8 @@ public class AuthQueue : BaseQueue
             {
                 var response = await _authService.ApplicationInfo(model);
                 return response;
-            });
+            }
+        );
     }
 
     /// <summary>
@@ -134,6 +135,7 @@ public class AuthQueue : BaseQueue
             }
         );
     }
+
     /// <summary>
     /// Register User Authen
     /// </summary>
@@ -169,7 +171,6 @@ public class AuthQueue : BaseQueue
             }
         );
     }
-
 
     /// <summary>
     /// RefreshToken

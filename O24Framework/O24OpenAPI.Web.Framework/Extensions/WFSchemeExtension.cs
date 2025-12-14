@@ -8,22 +8,15 @@ using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Helper;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
+using O24OpenAPI.Web.Framework.Extensions;
+using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Web.Framework.Models.O24OpenAPI;
 using O24OpenAPI.Web.Framework.Services;
 
-namespace O24OpenAPI.Web.Framework.Models.O24OpenAPI;
+namespace O24OpenAPI.Web.Framework.Extensions;
 
-/// <summary>
-///     O24OpenAPIExtensions
-/// </summary>
-public static class O24OpenAPIExtensions
+public static class WFSchemeExtension
 {
-    /// <summary>
-    /// Convert WFScheme to BaseTransactionModel
-    /// </summary>
-    /// <param name="value"></param>
-    /// <param name="jsonSerializerOptions"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns>typeof BaseTransactionModel</returns>
     public static async Task<T> ToModel<T>(
         this WFScheme value,
         JsonSerializerOptions jsonSerializerOptions = null
@@ -81,12 +74,6 @@ public static class O24OpenAPIExtensions
         return model;
     }
 
-    /// <summary>
-    /// Processes the approval execution id using the specified model
-    /// </summary>
-    /// <typeparam name="T">The </typeparam>
-    /// <param name="model">The model</param>
-    /// <param name="value">The value</param>
     private static async Task ProcessApprovalExecutionId<T>(T model, WFScheme value)
         where T : BaseTransactionModel
     {

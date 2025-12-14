@@ -4,16 +4,18 @@ using O24OpenAPI.O24NCH.Models.Request;
 using O24OpenAPI.O24NCH.Models.Response;
 using O24OpenAPI.O24NCH.Services.Interfaces;
 using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
+using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.Web.Framework.Helpers;
 using O24OpenAPI.Web.Framework.Models;
-using O24OpenAPI.Web.Framework.Models.O24OpenAPI;
 using O24OpenAPI.Web.Framework.Services.Queue;
 
 namespace O24OpenAPI.O24NCH.Queues;
 
 public class SMSProviderQueue : BaseQueue
 {
-    private readonly ISMSProviderService _smsProviderService = EngineContext.Current.Resolve<ISMSProviderService>();
+    private readonly ISMSProviderService _smsProviderService =
+        EngineContext.Current.Resolve<ISMSProviderService>();
+
     /// <summary>
     /// SimpleSearch
     /// </summary>
@@ -32,6 +34,7 @@ public class SMSProviderQueue : BaseQueue
             }
         );
     }
+
     /// <summary>
     /// Update
     /// </summary>

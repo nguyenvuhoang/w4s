@@ -1,9 +1,12 @@
+using System.Data;
+using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
+using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.Web.Framework.Helpers;
 using O24OpenAPI.Web.Framework.Models.O24OpenAPI;
 using O24OpenAPI.Web.Framework.Models.UtilityModels;
@@ -11,8 +14,6 @@ using O24OpenAPI.Web.Framework.Services;
 using O24OpenAPI.Web.Framework.Services.Queue;
 using O24OpenAPI.Web.Framework.Services.Security;
 using O24OpenAPI.Web.Framework.Utils;
-using System.Data;
-using System.Text;
 
 namespace O24OpenAPI.Web.Framework.Controllers;
 
@@ -720,7 +721,4 @@ public class ToolController(
             return StatusCode(500, new { success = false, error = ex.Message });
         }
     }
-
-
-
 }

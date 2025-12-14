@@ -1,6 +1,7 @@
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
 using O24OpenAPI.Web.Framework.Domain;
+using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.Web.Framework.Helpers;
 using O24OpenAPI.Web.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Web.Framework.Models;

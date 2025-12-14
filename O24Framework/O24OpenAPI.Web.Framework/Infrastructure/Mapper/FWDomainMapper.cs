@@ -1,6 +1,7 @@
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Domain.Configuration;
 using O24OpenAPI.Web.Framework.Domain;
+using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.Web.Framework.Models;
 using O24OpenAPI.Web.Framework.Models.O24OpenAPI;
 

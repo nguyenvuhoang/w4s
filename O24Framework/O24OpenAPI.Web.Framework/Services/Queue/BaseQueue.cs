@@ -1,3 +1,5 @@
+using System.Text.Json.Nodes;
+using System.Transactions;
 using FluentValidation.Results;
 using Linh.JsonKit.Json;
 using Microsoft.Data.SqlClient;
@@ -11,11 +13,8 @@ using O24OpenAPI.Web.Framework.DBContext;
 using O24OpenAPI.Web.Framework.Domain;
 using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.Web.Framework.Models;
-using O24OpenAPI.Web.Framework.Models.O24OpenAPI;
 using O24OpenAPI.Web.Framework.Services.Configuration;
 using O24OpenAPI.Web.Framework.Services.Logging;
-using System.Text.Json.Nodes;
-using System.Transactions;
 
 namespace O24OpenAPI.Web.Framework.Services.Queue;
 
@@ -151,9 +150,7 @@ public abstract class BaseQueue
                 var mappingService = EngineContext.Current.Resolve<IO24OpenAPIMappingService>();
                 stepConfig =
                     await mappingService.GetByStepCode(stepCode)
-                    ?? throw new O24OpenAPIException(
-                        $"Mapping not found for stepCode: {stepCode}"
-                    );
+                    ?? throw new O24OpenAPIException($"Mapping not found for stepCode: {stepCode}");
             }
 
             if (singleThread && stepConfig != null && !stepConfig.IsInquiry)
@@ -307,8 +304,7 @@ public abstract class BaseQueue
         // Database operation
         using var dbContext = new ServiceDBContext(commandTimeout);
         var baseTransactionModel = await workflow.ToModel<BaseTransactionModel>();
-        workflow.request.request_header.tx_context["base_transaction_model"] =
-            baseTransactionModel;
+        workflow.request.request_header.tx_context["base_transaction_model"] = baseTransactionModel;
 
         var response = dbContext.CallServiceStoredProcedure(
             storedProcedureName,
@@ -484,10 +480,7 @@ public abstract class BaseQueue
         var model = await workflow.ToModel<ModelWithQuery>();
         if (workflow == null)
         {
-            throw new ArgumentNullException(
-                nameof(workflow),
-                "Workflow scheme cannot be null."
-            );
+            throw new ArgumentNullException(nameof(workflow), "Workflow scheme cannot be null.");
         }
 
         var result = await Invoke<ModelWithQuery>(

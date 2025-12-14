@@ -1,6 +1,6 @@
 using O24OpenAPI.O24OpenAPIClient.Infisical;
 using O24OpenAPI.Web.CMS.Models.Infisical;
-using O24OpenAPI.Web.Framework.Models.O24OpenAPI;
+using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.Web.Framework.Services.Queue;
 
 namespace O24OpenAPI.Web.CMS.Queues;

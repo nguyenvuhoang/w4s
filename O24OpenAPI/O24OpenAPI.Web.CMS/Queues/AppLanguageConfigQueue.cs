@@ -1,6 +1,6 @@
 ﻿using O24OpenAPI.Web.CMS.Models.Digital;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Models.O24OpenAPI;
+using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.Web.Framework.Services.Queue;
 
 namespace O24OpenAPI.Web.CMS.Queues;
@@ -21,8 +21,11 @@ public class AppLanguageConfigQueue : BaseQueue
             wFScheme,
             async () =>
             {
-                bool doPaging = model.PageIndex.HasValue && model.PageSize.HasValue &&
-                                model.PageIndex.Value >= 0 && model.PageSize.Value > 0;
+                bool doPaging =
+                    model.PageIndex.HasValue
+                    && model.PageSize.HasValue
+                    && model.PageIndex.Value >= 0
+                    && model.PageSize.Value > 0;
 
                 if (doPaging)
                 {
@@ -33,7 +36,7 @@ public class AppLanguageConfigQueue : BaseQueue
                 var simpleModel = new AppLanguageConfigRequestModel
                 {
                     ChannelId = model.ChannelId,
-                    RequestChannel = model.RequestChannel
+                    RequestChannel = model.RequestChannel,
                 };
 
                 var full = await _appLanguageService.LoadAppLanguageAsync(simpleModel);

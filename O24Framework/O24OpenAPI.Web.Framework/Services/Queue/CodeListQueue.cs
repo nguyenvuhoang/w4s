@@ -1,9 +1,10 @@
 ﻿using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
 using O24OpenAPI.Web.Framework.Domain;
+using O24OpenAPI.Web.Framework.Extensions;
+using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.Web.Framework.Helpers;
 using O24OpenAPI.Web.Framework.Models;
-using O24OpenAPI.Web.Framework.Models.O24OpenAPI;
 using O24OpenAPI.Web.Framework.Services.Configuration;
 
 namespace O24OpenAPI.Web.Framework.Services.Queue;
