@@ -80,7 +80,7 @@ public partial class RagQdrantController(IHttpClientFactory factory) : BaseContr
                 }
             };
 
-            filter = new { must, should, minimum_should_match = 1 };
+            filter = new { must, should };
         }
         else
         {

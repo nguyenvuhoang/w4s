@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using O24OpenAPI.Core.Configuration;
+using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Core.Logging.Interceptors;
+using O24OpenAPI.O24AI.Configuration;
 using O24OpenAPI.Web.Framework.Infrastructure.Extensions;
 
 namespace O24OpenAPI.AI.Infrastructure;
@@ -19,6 +22,12 @@ public static class InfrastructureExtensions
             options.Interceptors.Add<GrpcLoggingInterceptor>();
         });
         services.AddLinKitDependency();
+        var qdrantSettingConfig = Singleton<AppSettings>.Instance.Get<QdrantSettingConfig>();
+        services.AddHttpClient(qdrantSettingConfig.ClientName, c =>
+        {
+            c.BaseAddress = new Uri(qdrantSettingConfig.Endpoints);
+            c.Timeout = TimeSpan.FromSeconds(qdrantSettingConfig.TimeoutInSeconds);
+        });
         return services;
     }
 
