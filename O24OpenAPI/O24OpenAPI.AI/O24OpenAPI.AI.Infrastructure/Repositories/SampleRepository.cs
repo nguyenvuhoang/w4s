@@ -6,7 +6,7 @@ using O24OpenAPI.Data;
 
 namespace O24OpenAPI.AI.Infrastructure.Repositories;
 
-[RegisterService(Lifetime = Lifetime.Scoped)]
+[RegisterService(Lifetime.Scoped)]
 public class SampleRepository(
     IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
