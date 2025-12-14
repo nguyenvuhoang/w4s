@@ -7,7 +7,7 @@ using O24OpenAPI.Web.Framework.Controllers;
 
 namespace O24OpenAPI.AI.API.Controllers;
 
-public partial class RagQdrantController([FromKeyedServices("AIService")] IMediator mediator) : BaseController
+public partial class RagQdrantController(IMediator mediator) : BaseController
 {
     private readonly IMediator _mediator = mediator;
 
@@ -25,7 +25,7 @@ public partial class RagQdrantController([FromKeyedServices("AIService")] IMedia
             DocId = req.DocId,
             Title = req.Title,
             Content = req.Content,
-            Extra = req.Extra
+            Extra = req.Extra,
         };
         var upsertPointResponse = await _mediator.SendAsync(cmd, ct);
         return Ok(upsertPointResponse);
@@ -42,7 +42,9 @@ public partial class RagQdrantController([FromKeyedServices("AIService")] IMedia
             DocType = req.DocType,
             Language = req.Language ?? "en",
             TopK = req.TopK <= 0 ? 5 : req.TopK,
-            Collection = string.IsNullOrWhiteSpace(req.Collection) ? "o24_static_knowledge_v1" : req.Collection!
+            Collection = string.IsNullOrWhiteSpace(req.Collection)
+                ? "o24_static_knowledge_v1"
+                : req.Collection!,
         };
 
         var result = await _mediator.SendAsync(searchPointCommand, ct);
@@ -63,7 +65,9 @@ public partial class RagQdrantController([FromKeyedServices("AIService")] IMedia
             LanguageFilter = req.Language,
             TopK = req.TopK <= 0 ? 5 : req.TopK,
             MinScore = req.MinScore <= 0 ? 0.70f : req.MinScore,
-            Collection = string.IsNullOrWhiteSpace(req.Collection) ? "o24_static_knowledge_v1" : req.Collection!
+            Collection = string.IsNullOrWhiteSpace(req.Collection)
+                ? "o24_static_knowledge_v1"
+                : req.Collection!,
         };
 
         var result = await _mediator.SendAsync(query, ct);
