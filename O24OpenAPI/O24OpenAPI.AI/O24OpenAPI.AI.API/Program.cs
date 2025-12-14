@@ -1,9 +1,11 @@
+using O24OpenAPI.AI.API.Application;
 using O24OpenAPI.AI.Infrastructure;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Web.Framework.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
