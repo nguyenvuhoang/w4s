@@ -13,7 +13,6 @@ using O24OpenAPI.Web.Framework.Abstractions;
 using O24OpenAPI.Web.Framework.Domain;
 using O24OpenAPI.Web.Framework.Exceptions;
 using O24OpenAPI.Web.Framework.Extensions;
-using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.Web.Framework.Helpers;
 using O24OpenAPI.Web.Framework.Models;
 using O24OpenAPI.Web.Framework.Models.Logging;
@@ -134,7 +133,7 @@ public class O24OpenAPIServiceManager
                         return await stepInvoker.InvokeAsync(
                             mapping.StepCode,
                             workflow,
-                            EngineContext.Current.Resolve<IMediator>(),
+                            EngineContext.Current.Resolve<IMediator>(mapping.MediatorKey),
                             CancellationToken.None
                         );
                     }

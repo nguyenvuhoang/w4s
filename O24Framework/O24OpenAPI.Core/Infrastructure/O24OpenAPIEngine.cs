@@ -215,7 +215,9 @@ public class O24OpenAPIEngine : IEngine
         var serviceProvider =
             GetServiceProvider(scope)
             ?? throw new InvalidOperationException("Service provider is null");
-        return serviceProvider.GetKeyedService<T>(keyed);
+        return keyed is null || string.IsNullOrWhiteSpace(keyed.ToString())
+            ? serviceProvider.GetService<T>()
+            : serviceProvider.GetKeyedService<T>(keyed);
     }
 
     public object ResolveRequired(Type type, object keyed, IServiceScope scope = null)

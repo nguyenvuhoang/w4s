@@ -8,7 +8,6 @@ internal static class ApplicationExtensions
     {
         services.AddLinKitCqrs();
         services.AddSingleton<IWorkflowStepInvoker, Workflow.Generated.WorkflowStepInvoker>();
-        services.AddKeyedScoped<LinKit.Core.Cqrs.IMediator, LinKit.Generated.Cqrs.Mediator>("AIService");
         return services;
     }
 }

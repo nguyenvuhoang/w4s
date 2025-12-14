@@ -91,16 +91,15 @@ public static class ServiceCollectionExtensions
         services.AddDynamicCodeEngineWithFileSystem(AppContext.BaseDirectory);
         services.AddGrpcContracts();
         services.AddKeyedSingleton<ILogSubmitter, RabbitMqLogSubmitter>("rabbitmq");
-        services.AddLinKitCqrs();
+        services.AddLinKitCqrs("fw");
         var assembly = AppDomain
             .CurrentDomain.GetAssemblies()
-            .Where(a =>
+            .FirstOrDefault(a =>
                 !a.IsDynamic
                 && a.FullName?.StartsWith(
                     Singleton<O24OpenAPIConfiguration>.Instance.AssemblyMigration
                 ) == true
-            )
-            .FirstOrDefault();
+            );
         builder.AddRabbitMqEventBus().AddSubscriptionsFromAssemblies(assembly);
         builder.AddBackgroundJobs("StaticConfig/BackgroundJobsConfig.json");
     }
