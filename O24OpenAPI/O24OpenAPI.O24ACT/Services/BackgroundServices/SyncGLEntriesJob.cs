@@ -14,7 +14,7 @@ internal class SyncGLEntriesJobHandler(IAccountingService accountingService)
 {
     private readonly IAccountingService _accountingService = accountingService;
 
-    public async Task HandleAsync(
+    public async Task<Unit> HandleAsync(
         SyncGLEntriesJob command,
         CancellationToken cancellationToken = default
     )
@@ -34,5 +34,7 @@ internal class SyncGLEntriesJobHandler(IAccountingService accountingService)
         {
             await ex.LogErrorAsync("SyncGLEntriesJob Exception:: " + ex.Message);
         }
+
+        return Unit.Value;
     }
 }

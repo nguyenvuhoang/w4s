@@ -9,12 +9,11 @@ namespace O24OpenAPI.Web.CMS.Services.BackgroundServices;
 public class SyncMediaJob : BackgroundJobCommand { }
 
 [CqrsHandler]
-internal class SyncMediaJobHandler(IMediaService mediaService)
-    : ICommandHandler<SyncMediaJob>
+internal class SyncMediaJobHandler(IMediaService mediaService) : ICommandHandler<SyncMediaJob>
 {
     private readonly IMediaService _mediaService = mediaService;
 
-    public async Task HandleAsync(
+    public async Task<Unit> HandleAsync(
         SyncMediaJob command,
         CancellationToken cancellationToken = default
     )
@@ -34,5 +33,6 @@ internal class SyncMediaJobHandler(IMediaService mediaService)
         {
             await ex.LogErrorAsync("SyncMediaJob Exception:: " + ex.Message);
         }
+        return Unit.Value;
     }
 }

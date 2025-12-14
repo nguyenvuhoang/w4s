@@ -21,8 +21,12 @@ internal class CDCJobHandler(ServiceDBContext serviceDBContext) : ICommandHandle
 {
     private readonly ServiceDBContext _serviceDBContext = serviceDBContext;
 
-    public async Task HandleAsync(CDCJob command, CancellationToken cancellationToken = default)
+    public async Task<Unit> HandleAsync(
+        CDCJob command,
+        CancellationToken cancellationToken = default
+    )
     {
+        var result = Unit.Value;
         try
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -40,13 +44,13 @@ internal class CDCJobHandler(ServiceDBContext serviceDBContext) : ICommandHandle
             );
             if (cdcChanges is null)
             {
-                return;
+                return result;
             }
 
             var data = cdcChanges.ToString();
             if (string.IsNullOrWhiteSpace(data) || data == "{}")
             {
-                return;
+                return result;
             }
 
             List<CDCData> listCDCData;
@@ -63,12 +67,12 @@ internal class CDCJobHandler(ServiceDBContext serviceDBContext) : ICommandHandle
             catch (Exception deserEx)
             {
                 deserEx.WriteError();
-                return;
+                return result;
             }
 
             if (listCDCData == null || listCDCData.Count == 0)
             {
-                return;
+                return result;
             }
 
             var invalids = listCDCData
@@ -100,7 +104,7 @@ internal class CDCJobHandler(ServiceDBContext serviceDBContext) : ICommandHandle
 
             if (cleaned.Count == 0)
             {
-                return;
+                return result;
             }
 
             cleaned =
@@ -139,6 +143,7 @@ internal class CDCJobHandler(ServiceDBContext serviceDBContext) : ICommandHandle
             _ = ex.LogError();
             ex.WriteError();
         }
+        return result;
     }
 
     /// <summary>So sánh mảng byte theo thứ tự lexicographic.</summary>

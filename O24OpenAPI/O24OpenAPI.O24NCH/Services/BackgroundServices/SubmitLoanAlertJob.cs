@@ -14,7 +14,7 @@ internal class SubmitLoanAlertJobHandler(ISMSLoanAlertService smsLoanAlert)
 {
     private readonly ISMSLoanAlertService _smsLoanAlert = smsLoanAlert;
 
-    public async Task HandleAsync(
+    public async Task<Unit> HandleAsync(
         SubmitLoanAlertJob command,
         CancellationToken cancellationToken = default
     )
@@ -34,5 +34,6 @@ internal class SubmitLoanAlertJobHandler(ISMSLoanAlertService smsLoanAlert)
         {
             await ex.LogErrorAsync("SubmitLoanAlertJob Exception:: " + ex.Message);
         }
+        return Unit.Value;
     }
 }

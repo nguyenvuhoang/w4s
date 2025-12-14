@@ -13,4 +13,7 @@
     <ProjectReference Include="..\..\O24OpenAPI.EventBus\O24OpenAPI.EventBus.csproj" />
     <ProjectReference Include="..\O24OpenAPI.AI.Domain\O24OpenAPI.AI.Domain.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Persistances\" />
+  </ItemGroup>
 </Project>

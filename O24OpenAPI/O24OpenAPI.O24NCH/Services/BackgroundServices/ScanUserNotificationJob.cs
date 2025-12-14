@@ -14,8 +14,7 @@ public class ScanUserNotificationJobHandler(IUserNotificationsService userNotifi
 {
     private readonly IUserNotificationsService _userNotificationsService = userNotificationsService;
 
-
-    public async Task HandleAsync(
+    public async Task<Unit> HandleAsync(
         ScanUserNotificationJob command,
         CancellationToken cancellationToken = default
     )
@@ -35,5 +34,6 @@ public class ScanUserNotificationJobHandler(IUserNotificationsService userNotifi
         {
             await ex.LogErrorAsync("ScanUserNotificationJob Exception:: " + ex.Message);
         }
+        return Unit.Value;
     }
 }
