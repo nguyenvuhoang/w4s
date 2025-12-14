@@ -42,3 +42,59 @@ Hệ thống hỗ trợ kiến trúc **microservices**, **event-driven**, **real
 
 ## 🧱 Architecture Overview
 
+### 🏗️ Architecture (Clean Architecture + DDD + Microservices)
+
+O24API được thiết kế theo hướng **Clean Architecture** kết hợp **DDD (Domain-Driven Design)** để đảm bảo:
+- Tách bạch rõ trách nhiệm (UI / Application / Domain / Infrastructure)
+- Dễ test, dễ mở rộng, giảm coupling
+- Phù hợp cho nghiệp vụ phức tạp (transaction-heavy) và tích hợp Core Banking
+
+Đồng thời hệ thống vận hành theo **Microservices** + **Event-driven / Transaction-driven** để tối ưu:
+- Scale theo từng domain/service
+- Xử lý bất đồng bộ, retry, eventual consistency
+- Theo dõi trạng thái giao dịch theo luồng (workflow/queue)
+
+---
+
+
+### 1) Presentation Layer
+- ASP.NET Core Web API, Swagger/OpenAPI
+- AuthN/AuthZ, request validation, middleware
+- Mapping DTO ↔ Use Case
+
+### 2) Application Layer (Use Cases)
+- Orchestrate nghiệp vụ: command/query, workflow steps
+- Transaction boundary (khi cần)
+- Publish domain events / integration events
+- Không phụ thuộc DB framework cụ thể
+
+### 3) Domain Layer (DDD Core)
+- Entities / Value Objects / Aggregates
+- Domain Services
+- Domain Events (vd: `TransactionCreated`, `OtpVerified`, `WalletDeposited`)
+- Business rules thuần nghiệp vụ, không phụ thuộc hạ tầng
+
+### 4) Infrastructure Layer
+- Repositories (EF Core / LinqToDB)
+- Messaging (RabbitMQ)
+- Cache (Redis)
+- External providers (Core Banking, SMS SOAP, Firebase)
+- Observability (Loki/Promtail/Grafana)
+
+---
+
+## 🧩 DDD Bounded Contexts (gợi ý theo O24)
+
+Mỗi domain lớn nên tách thành **Bounded Context** và thường ánh xạ thành service:
+
+- **Identity & Access** (Auth, Role, Permission)
+- **Transaction** (Transaction orchestration, history, status)
+- **Wallet** (Wallet account, mapping, sync)
+- **Payments/Transfer** (Internal/Interbank, fee, validation)
+- **Loan** (Repayment schedule, remind, posting)
+- **Notification** (SMS/Push/SignalR, template, routing)
+- **Configuration** (ConnectConfig, para, code lists)
+- **Audit/Logging** (business log, technical log, tracing)
+
+---
+
