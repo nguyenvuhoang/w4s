@@ -20,7 +20,7 @@ public partial class RagQdrantController(IHttpClientFactory factory) : BaseContr
         var payload = new Dictionary<string, object>
         {
             ["tenant_id"] = req.TenantId,
-            ["source_system"] = "o24cms",
+            ["source_system"] = "o24ai",
             ["doc_type"] = req.DocType,
             ["language"] = req.Language,
             ["doc_id"] = req.DocId,
@@ -29,8 +29,8 @@ public partial class RagQdrantController(IHttpClientFactory factory) : BaseContr
             ["content"] = req.Content,
             ["source_uri"] = req.SourceUri,
             ["version"] = req.Version,
-            ["tags"] = req.Tags ?? Array.Empty<string>(),
-            ["acl_roles"] = req.AclRoles ?? Array.Empty<string>()
+            ["tags"] = req.Tags ?? [],
+            ["acl_roles"] = req.AclRoles ?? []
         };
 
         var body = new
