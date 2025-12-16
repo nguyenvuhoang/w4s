@@ -1,12 +1,12 @@
 using System.Net;
 using System.Text.RegularExpressions;
 using LinqToDB;
+using O24OpenAPI.Client.Lib.Encryption;
 using O24OpenAPI.Contracts.Configuration.Client;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.O24OpenAPIClient.Lib.Encryption;
-using O24OpenAPI.Web.Framework.Extensions;
+using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.WFO.Domain;
 using O24OpenAPI.WFO.Infrastructure;
 using O24OpenAPI.WFO.Lib;

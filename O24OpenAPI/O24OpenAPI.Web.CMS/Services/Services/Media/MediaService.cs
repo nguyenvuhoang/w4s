@@ -1,9 +1,9 @@
 ﻿using Amazon.S3;
 using LinqToDB;
+using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Web.CMS.Models.Media;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
 using O24OpenAPI.Web.CMS.Services.Interfaces.Media;
-using O24OpenAPI.Web.Framework.Extensions;
 
 namespace O24OpenAPI.Web.CMS.Services.Services.Media;
 
@@ -19,14 +19,13 @@ public class MediaService(
     private readonly IWebHostEnvironment _environment = environment;
     private readonly IFileStorageService _fileStorageService = fileStorageService;
 
-
-
     public async Task<MediaStaging> GetByTrackerCode(string trackerCode)
     {
         return await _mediaStagingRepository
             .Table.Where(x => x.TrackerCode == trackerCode)
             .FirstOrDefaultAsync();
     }
+
     /// <summary>
     /// Get Media File by Tracker Code
     /// </summary>
@@ -53,7 +52,7 @@ public class MediaService(
                 CreatedOnUtc = m.CreatedOnUtc,
                 ExpiredOnUtc = m.ExpiredOnUtc,
                 CreatedBy = m.CreatedBy,
-                IsTemp = false
+                IsTemp = false,
             };
 
         // Query staging
@@ -72,14 +71,12 @@ public class MediaService(
                 CreatedOnUtc = s.CreatedOnUtc,
                 ExpiredOnUtc = s.ExpiredOnUtc,
                 CreatedBy = s.CreatedBy,
-                IsTemp = true
+                IsTemp = true,
             };
 
         var unionQuery = mainQuery.Concat(stagingQuery);
 
-        var result = await unionQuery
-            .OrderBy(x => x.IsTemp)
-            .FirstOrDefaultAsync();
+        var result = await unionQuery.OrderBy(x => x.IsTemp).FirstOrDefaultAsync();
 
         return result;
     }
@@ -94,6 +91,7 @@ public class MediaService(
         await _mediaStagingRepository.InsertAsync(entity);
         return entity;
     }
+
     /// <summary>
     /// Insert Media File
     /// </summary>
@@ -104,7 +102,6 @@ public class MediaService(
         await _mediaFileRepository.InsertAsync(entity);
         return entity;
     }
-
 
     public async Task<MediaStaging> UpdateAsync(MediaStaging entity)
     {
@@ -167,16 +164,20 @@ public class MediaService(
                     }
                     catch (Exception itemEx)
                     {
-                        Console.WriteLine($"[PromoteMedia] Promote error for TrackerCode={item?.TrackerCode}: {itemEx.Message}");
+                        Console.WriteLine(
+                            $"[PromoteMedia] Promote error for TrackerCode={item?.TrackerCode}: {itemEx.Message}"
+                        );
                     }
                 }
             }
 
             var utcNow = DateTime.UtcNow;
-            var expiredPendings = await _mediaStagingRepository.Table
-                .Where(x => x.Status == Constant.Action.PENDING
-                            && x.ExpiredOnUtc.HasValue
-                            && x.ExpiredOnUtc.Value <= utcNow)
+            var expiredPendings = await _mediaStagingRepository
+                .Table.Where(x =>
+                    x.Status == Constant.Action.PENDING
+                    && x.ExpiredOnUtc.HasValue
+                    && x.ExpiredOnUtc.Value <= utcNow
+                )
                 .ToListAsync();
 
             if (expiredPendings != null && expiredPendings.Count > 0)
@@ -191,11 +192,15 @@ public class MediaService(
                         }
                         catch (AmazonS3Exception s3Ex)
                         {
-                            await s3Ex.LogErrorAsync($"[PromoteMedia] S3 delete error for Key={item.FileUrl}: {s3Ex.Message}");
+                            await s3Ex.LogErrorAsync(
+                                $"[PromoteMedia] S3 delete error for Key={item.FileUrl}: {s3Ex.Message}"
+                            );
                         }
                         catch (Exception ex)
                         {
-                            await ex.LogErrorAsync($"[PromoteMedia] Unexpected S3 delete exception for Key={item.FileUrl}: {ex.Message}");
+                            await ex.LogErrorAsync(
+                                $"[PromoteMedia] Unexpected S3 delete exception for Key={item.FileUrl}: {ex.Message}"
+                            );
                         }
 
                         // ---- REMOVE FROM STAGING TABLE ----
@@ -209,7 +214,6 @@ public class MediaService(
                     }
                 }
             }
-
         }
         catch (Exception ex)
         {
@@ -229,8 +233,8 @@ public class MediaService(
     {
         try
         {
-
-            string _webRoot = _environment?.WebRootPath ?? Path.Combine(AppContext.BaseDirectory, "wwwroot");
+            string _webRoot =
+                _environment?.WebRootPath ?? Path.Combine(AppContext.BaseDirectory, "wwwroot");
             string _mediaRoot = Path.Combine(_webRoot, "uploads", foldername);
 
             if (!string.IsNullOrWhiteSpace(fileUrl))
@@ -285,7 +289,7 @@ public class MediaService(
                 CreatedOnUtc = m.CreatedOnUtc,
                 ExpiredOnUtc = m.ExpiredOnUtc,
                 CreatedBy = m.CreatedBy,
-                IsTemp = false
+                IsTemp = false,
             };
 
         // Query staging
@@ -305,14 +309,12 @@ public class MediaService(
                 CreatedOnUtc = s.CreatedOnUtc,
                 ExpiredOnUtc = s.ExpiredOnUtc,
                 CreatedBy = s.CreatedBy,
-                IsTemp = true
+                IsTemp = true,
             };
 
         var unionQuery = mainQuery.Concat(stagingQuery);
 
-        var result = await unionQuery
-            .OrderBy(x => x.IsTemp)
-            .FirstOrDefaultAsync();
+        var result = await unionQuery.OrderBy(x => x.IsTemp).FirstOrDefaultAsync();
 
         return result;
     }
@@ -334,7 +336,7 @@ public class MediaService(
             {
                 m.FileUrl,
                 m.TrackerCode,
-                IsTemp = false
+                IsTemp = false,
             };
 
         var stagingQuery =
@@ -344,20 +346,15 @@ public class MediaService(
             {
                 s.FileUrl,
                 s.TrackerCode,
-                IsTemp = true
+                IsTemp = true,
             };
 
         var union = mainQuery.Concat(stagingQuery);
 
-        var list = await union
-            .ToListAsync();
+        var list = await union.ToListAsync();
 
-        var dict = list
-            .GroupBy(x => x.FileUrl)
-            .ToDictionary(
-                g => g.Key,
-                g => g.OrderBy(x => x.IsTemp).First().TrackerCode
-            );
+        var dict = list.GroupBy(x => x.FileUrl)
+            .ToDictionary(g => g.Key, g => g.OrderBy(x => x.IsTemp).First().TrackerCode);
 
         return dict;
     }
@@ -380,7 +377,9 @@ public class MediaService(
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<IReadOnlyList<string>> ListCategoriesAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<string>> ListCategoriesAsync(
+        CancellationToken cancellationToken = default
+    )
     {
         var categories = await _fileStorageService.ListCategoriesAsync(cancellationToken);
         return categories;
@@ -393,11 +392,20 @@ public class MediaService(
     /// <param name="path"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<MediaBrowseResultModel> BrowseAsync(string category, string path = null, CancellationToken cancellationToken = default)
+    public async Task<MediaBrowseResultModel> BrowseAsync(
+        string category,
+        string path = null,
+        CancellationToken cancellationToken = default
+    )
     {
         var listTrackerCodeMedia = await GetListTrackerCodeMedia();
 
-        var result = await _fileStorageService.BrowseAsync(listTrackerCodeMedia, category, path, cancellationToken);
+        var result = await _fileStorageService.BrowseAsync(
+            listTrackerCodeMedia,
+            category,
+            path,
+            cancellationToken
+        );
         return result;
     }
 
@@ -407,10 +415,17 @@ public class MediaService(
     /// <param name="category"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<MediaFolderNode> BuildCategoryTreeAsync(string category, CancellationToken cancellationToken = default)
+    public async Task<MediaFolderNode> BuildCategoryTreeAsync(
+        string category,
+        CancellationToken cancellationToken = default
+    )
     {
         var listTrackerCodeMedia = await GetListTrackerCodeMedia();
-        var tree = await _fileStorageService.BuildCategoryTreeAsync(listTrackerCodeMedia, category, cancellationToken);
+        var tree = await _fileStorageService.BuildCategoryTreeAsync(
+            listTrackerCodeMedia,
+            category,
+            cancellationToken
+        );
         return tree;
     }
 
@@ -433,6 +448,7 @@ public class MediaService(
     {
         await _fileStorageService.DeleteFilesAsync(keys);
     }
+
     /// <summary>
     /// Get Media File by Tracker Code
     /// </summary>
@@ -446,7 +462,7 @@ public class MediaService(
             {
                 m.FileUrl,
                 m.TrackerCode,
-                IsTemp = false
+                IsTemp = false,
             };
 
         var stagingQuery =
@@ -455,20 +471,15 @@ public class MediaService(
             {
                 s.FileUrl,
                 s.TrackerCode,
-                IsTemp = true
+                IsTemp = true,
             };
 
         var union = mainQuery.Concat(stagingQuery);
 
-        var list = await union
-            .ToListAsync();
+        var list = await union.ToListAsync();
 
-        var dict = list
-            .GroupBy(x => x.FileUrl)
-            .ToDictionary(
-                g => g.Key,
-                g => g.OrderBy(x => x.IsTemp).First().TrackerCode
-            );
+        var dict = list.GroupBy(x => x.FileUrl)
+            .ToDictionary(g => g.Key, g => g.OrderBy(x => x.IsTemp).First().TrackerCode);
 
         return dict;
     }

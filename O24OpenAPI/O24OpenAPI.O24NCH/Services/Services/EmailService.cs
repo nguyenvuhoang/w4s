@@ -1,15 +1,15 @@
-﻿using MailKit.Security;
+﻿using System.Text.Json;
+using MailKit.Security;
 using MimeKit;
+using O24OpenAPI.Framework;
+using O24OpenAPI.Framework.Exceptions;
+using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.O24NCH.Config;
 using O24OpenAPI.O24NCH.Constant;
 using O24OpenAPI.O24NCH.Domain;
 using O24OpenAPI.O24NCH.Models.Request;
 using O24OpenAPI.O24NCH.Models.Request.Mail;
 using O24OpenAPI.O24NCH.Services.Interfaces;
-using O24OpenAPI.Web.Framework;
-using O24OpenAPI.Web.Framework.Exceptions;
-using O24OpenAPI.Web.Framework.Extensions;
-using System.Text.Json;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 using Utility = O24OpenAPI.O24NCH.Utils.Utility;
 
@@ -28,6 +28,7 @@ public class EmailService(
     private static readonly string[] separator = [";"];
     private readonly O24NCHSetting _setting = nchSetting;
     private readonly WebApiSettings _webApiSettings = webApiSettings;
+
     public async Task<bool> SendEmailAsync(SendMailRequestModel model)
     {
         EmailSendOut emailLog = new()
@@ -35,12 +36,15 @@ public class EmailService(
             ConfigId = model.ConfigId,
             TemplateId = model.TemplateId,
             Receiver = !string.IsNullOrWhiteSpace(model.Receiver)
-            ? model.Receiver
-            : (model.DataTemplate != null && model.DataTemplate.TryGetValue("email", out var emailVal)
-                ? emailVal?.ToString()
-                : null),
+                ? model.Receiver
+                : (
+                    model.DataTemplate != null
+                    && model.DataTemplate.TryGetValue("email", out var emailVal)
+                        ? emailVal?.ToString()
+                        : null
+                ),
             Status = MailSendOutStatus.PENDING,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
         };
         try
         {
@@ -49,25 +53,36 @@ public class EmailService(
 
             if (getMailConfig == null)
             {
-                throw await O24Exception.CreateAsync(O24NCHResourceCode.Validation.MailConfigNotExist, model.Language);
+                throw await O24Exception.CreateAsync(
+                    O24NCHResourceCode.Validation.MailConfigNotExist,
+                    model.Language
+                );
             }
 
             if (getMailTemplate == null)
             {
-                throw await O24Exception.CreateAsync(O24NCHResourceCode.Validation.MailTemplateNotExist, model.Language);
+                throw await O24Exception.CreateAsync(
+                    O24NCHResourceCode.Validation.MailTemplateNotExist,
+                    model.Language
+                );
             }
 
-            var email = new MimeMessage
-            {
-                Sender = MailboxAddress.Parse(getMailConfig.Sender)
-            };
+            var email = new MimeMessage { Sender = MailboxAddress.Parse(getMailConfig.Sender) };
 
             if (string.IsNullOrWhiteSpace(emailLog.Receiver))
             {
-                throw await O24Exception.CreateAsync(O24NCHResourceCode.Validation.MailReceiverNotFound, model.Language);
+                throw await O24Exception.CreateAsync(
+                    O24NCHResourceCode.Validation.MailReceiverNotFound,
+                    model.Language
+                );
             }
 
-            foreach (var address in emailLog.Receiver.Split(separator, StringSplitOptions.RemoveEmptyEntries))
+            foreach (
+                var address in emailLog.Receiver.Split(
+                    separator,
+                    StringSplitOptions.RemoveEmptyEntries
+                )
+            )
             {
                 email.To.Add(MailboxAddress.Parse(address));
             }
@@ -105,7 +120,11 @@ public class EmailService(
                     try
                     {
                         builder.LinkedResources.Add(
-                            Utility.ConvertBase64ToMimeEntity(entity.Base64, entity.ContentType, entity.ContentId)
+                            Utility.ConvertBase64ToMimeEntity(
+                                entity.Base64,
+                                entity.ContentType,
+                                entity.ContentId
+                            )
                         );
                     }
                     catch
@@ -124,24 +143,36 @@ public class EmailService(
                     var footer = new MimePart("image", "png")
                     {
                         ContentId = "logo_footer",
-                        Content = new MimeContent(new MemoryStream(Convert.FromBase64String(_webApiSettings.LogoBankFooter)))
+                        Content = new MimeContent(
+                            new MemoryStream(
+                                Convert.FromBase64String(_webApiSettings.LogoBankFooter)
+                            )
+                        ),
                     };
                     var header = new MimePart("image", "png")
                     {
                         ContentId = "logo_header",
-                        Content = new MimeContent(new MemoryStream(Convert.FromBase64String(_webApiSettings.LogoBankHeader)))
+                        Content = new MimeContent(
+                            new MemoryStream(
+                                Convert.FromBase64String(_webApiSettings.LogoBankHeader)
+                            )
+                        ),
                     };
 
                     var iconphone = new MimePart("image", "png")
                     {
                         ContentId = "iconphone",
-                        Content = new MimeContent(new MemoryStream(Convert.FromBase64String(_setting.IconPhone)))
+                        Content = new MimeContent(
+                            new MemoryStream(Convert.FromBase64String(_setting.IconPhone))
+                        ),
                     };
 
                     var iconwebsite = new MimePart("image", "png")
                     {
                         ContentId = "iconwebsite",
-                        Content = new MimeContent(new MemoryStream(Convert.FromBase64String(_setting.IconWebsite)))
+                        Content = new MimeContent(
+                            new MemoryStream(Convert.FromBase64String(_setting.IconWebsite))
+                        ),
                     };
 
                     builder.LinkedResources.Add(footer);
@@ -163,7 +194,9 @@ public class EmailService(
             await smtp.ConnectAsync(
                 getMailConfig.Host,
                 getMailConfig.Port,
-                getMailConfig.EnableTLS ? SecureSocketOptions.StartTls : SecureSocketOptions.StartTlsWhenAvailable
+                getMailConfig.EnableTLS
+                    ? SecureSocketOptions.StartTls
+                    : SecureSocketOptions.StartTlsWhenAvailable
             );
             await smtp.AuthenticateAsync(getMailConfig.Sender, getMailConfig.Password);
             await smtp.SendAsync(email);
@@ -194,13 +227,20 @@ public class EmailService(
     {
         try
         {
-            var getMailTemplate = await _contextMailTemplate.GetByTemplateId(model.TemplateId) ?? throw await O24Exception.CreateAsync(O24NCHResourceCode.Validation.MailTemplateNotExist, model.Language);
-            var email = new MimeMessage
-            {
-                Sender = MailboxAddress.Parse(model.Sender)
-            };
+            var getMailTemplate =
+                await _contextMailTemplate.GetByTemplateId(model.TemplateId)
+                ?? throw await O24Exception.CreateAsync(
+                    O24NCHResourceCode.Validation.MailTemplateNotExist,
+                    model.Language
+                );
+            var email = new MimeMessage { Sender = MailboxAddress.Parse(model.Sender) };
 
-            foreach (var address in model.EmailTest.Split(separator, StringSplitOptions.RemoveEmptyEntries))
+            foreach (
+                var address in model.EmailTest.Split(
+                    separator,
+                    StringSplitOptions.RemoveEmptyEntries
+                )
+            )
             {
                 email.To.Add(MailboxAddress.Parse(address));
             }
@@ -217,24 +257,36 @@ public class EmailService(
                     var footer = new MimePart("image", "png")
                     {
                         ContentId = "logo_footer",
-                        Content = new MimeContent(new MemoryStream(Convert.FromBase64String(_webApiSettings.LogoBankFooter)))
+                        Content = new MimeContent(
+                            new MemoryStream(
+                                Convert.FromBase64String(_webApiSettings.LogoBankFooter)
+                            )
+                        ),
                     };
                     var header = new MimePart("image", "png")
                     {
                         ContentId = "logo_header",
-                        Content = new MimeContent(new MemoryStream(Convert.FromBase64String(_webApiSettings.LogoBankHeader)))
+                        Content = new MimeContent(
+                            new MemoryStream(
+                                Convert.FromBase64String(_webApiSettings.LogoBankHeader)
+                            )
+                        ),
                     };
 
                     var iconphone = new MimePart("image", "png")
                     {
                         ContentId = "iconphone",
-                        Content = new MimeContent(new MemoryStream(Convert.FromBase64String(_setting.IconPhone)))
+                        Content = new MimeContent(
+                            new MemoryStream(Convert.FromBase64String(_setting.IconPhone))
+                        ),
                     };
 
                     var iconwebsite = new MimePart("image", "png")
                     {
                         ContentId = "iconwebsite",
-                        Content = new MimeContent(new MemoryStream(Convert.FromBase64String(_setting.IconWebsite)))
+                        Content = new MimeContent(
+                            new MemoryStream(Convert.FromBase64String(_setting.IconWebsite))
+                        ),
                     };
 
                     builder.LinkedResources.Add(footer);
@@ -256,7 +308,9 @@ public class EmailService(
             await smtp.ConnectAsync(
                 model.Host,
                 model.Port,
-                model.EnableTLS ? SecureSocketOptions.StartTls : SecureSocketOptions.StartTlsWhenAvailable
+                model.EnableTLS
+                    ? SecureSocketOptions.StartTls
+                    : SecureSocketOptions.StartTlsWhenAvailable
             );
             await smtp.AuthenticateAsync(model.Sender, model.Password);
             await smtp.SendAsync(email);

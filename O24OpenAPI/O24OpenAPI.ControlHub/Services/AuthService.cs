@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.APIContracts.Events;
@@ -15,16 +17,14 @@ using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Domain.Users;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Core.Logging.Helpers;
 using O24OpenAPI.EventBus.Abstractions;
-using O24OpenAPI.Web.Framework;
-using O24OpenAPI.Web.Framework.Constants;
-using O24OpenAPI.Web.Framework.Exceptions;
-using O24OpenAPI.Web.Framework.Extensions;
-using O24OpenAPI.Web.Framework.Services;
-using O24OpenAPI.Web.Framework.Utils;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
+using O24OpenAPI.Framework;
+using O24OpenAPI.Framework.Constants;
+using O24OpenAPI.Framework.Exceptions;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Services;
+using O24OpenAPI.Framework.Utils;
+using O24OpenAPI.Logging.Helpers;
 using StringExtensions = O24OpenAPI.ControlHub.Utils.StringExtensions;
 
 namespace O24OpenAPI.ControlHub.Services;
@@ -120,6 +120,7 @@ public class AuthService(
     /// User Role Service
     /// </summary>
     private readonly IUserRoleService _userRoleService = userRoleService;
+
     /// <summary>
     /// User Banner Service
     /// </summary>
@@ -234,7 +235,7 @@ public class AuthService(
             RefreshToken = refreshToken,
             ExpiredIn = expireTime,
             ExpiredDuration = (long)(expireTime - DateTime.Now).TotalSeconds,
-            IsFirstLogin = userAccount.IsFirstLogin
+            IsFirstLogin = userAccount.IsFirstLogin,
         };
     }
 
@@ -490,27 +491,30 @@ public class AuthService(
                 GroupMenuListAuthorizeForm = parent.GroupMenuListAuthorizeForm,
                 GroupMenuId = parent.GroupMenuId,
                 IsAgreement = parent.IsAgreement,
-                Children = [.. uniqueMenus
-                    .Where(child => child.ParentId == parent.CommandId)
-                    .Select(child => new UserCommandResponseModel
-                    {
-                        ParentId = child.ParentId,
-                        CommandId = child.CommandId,
-                        Label = child.Label,
-                        CommandType = child.CommandType,
-                        Href = child.CommandUri,
-                        RoleId = child.RoleId,
-                        RoleName = child.RoleName,
-                        Invoke = child.Invoke ? "true" : "false",
-                        Approve = child.Approve ? "true" : "false",
-                        Icon = child.Icon,
-                        GroupMenuVisible = child.GroupMenuVisible,
-                        Prefix = child.GroupMenuId,
-                        GroupMenuListAuthorizeForm = child.GroupMenuListAuthorizeForm,
-                        GroupMenuId = child.GroupMenuId,
-                        IsAgreement = child.IsAgreement,
-                        Children = null,
-                    })],
+                Children =
+                [
+                    .. uniqueMenus
+                        .Where(child => child.ParentId == parent.CommandId)
+                        .Select(child => new UserCommandResponseModel
+                        {
+                            ParentId = child.ParentId,
+                            CommandId = child.CommandId,
+                            Label = child.Label,
+                            CommandType = child.CommandType,
+                            Href = child.CommandUri,
+                            RoleId = child.RoleId,
+                            RoleName = child.RoleName,
+                            Invoke = child.Invoke ? "true" : "false",
+                            Approve = child.Approve ? "true" : "false",
+                            Icon = child.Icon,
+                            GroupMenuVisible = child.GroupMenuVisible,
+                            Prefix = child.GroupMenuId,
+                            GroupMenuListAuthorizeForm = child.GroupMenuListAuthorizeForm,
+                            GroupMenuId = child.GroupMenuId,
+                            IsAgreement = child.IsAgreement,
+                            Children = null,
+                        }),
+                ],
             })
             .ToList();
 
@@ -544,22 +548,23 @@ public class AuthService(
             role: listRoleofUser,
             isFirstLogin: userAccount.IsFirstLogin,
             userBanner: userBanner ?? ""
-
         );
         return responsedata;
     }
 
     public async Task<JToken> ChangePasswordByO24User(ChangePasswordO24OpenAPIRequestModel model)
     {
-        var userAccount = await _userAccountService.GetLoginAccount(
-            model.LoginName,
-            password: model.Password,
-            model.ChannelId,
-            model.Language
-        ) ?? throw await O24Exception.CreateAsync(
-               O24CTHResourceCode.Operation.ChangePasswordError,
-               model.Language
-           );
+        var userAccount =
+            await _userAccountService.GetLoginAccount(
+                model.LoginName,
+                password: model.Password,
+                model.ChannelId,
+                model.Language
+            )
+            ?? throw await O24Exception.CreateAsync(
+                O24CTHResourceCode.Operation.ChangePasswordError,
+                model.Language
+            );
         string hashPassword = O9Encrypt.sha_sha256(model.NewPassword, userAccount.UserCode);
 
         var userPassword = await _userPasswordService.GetByUserCodeAsync(userAccount.UserCode);
@@ -917,17 +922,19 @@ public class AuthService(
 
             if (userAccount.UserCode == model.CurrentUserCode)
             {
-                var userDevice = await _userDeviceService.GetByUserCodeAsync(userAccount.UserCode) ?? throw await O24Exception.CreateAsync(
-                    O24CTHResourceCode.Validation.UserDeviceNotExist,
-                    model.Language,
-                    [userAccount.UserCode]
-                );
+                var userDevice =
+                    await _userDeviceService.GetByUserCodeAsync(userAccount.UserCode)
+                    ?? throw await O24Exception.CreateAsync(
+                        O24CTHResourceCode.Validation.UserDeviceNotExist,
+                        model.Language,
+                        [userAccount.UserCode]
+                    );
 
                 var userPublishEvent = new DefaultModel
                 {
                     UserCode = userAccount.UserCode,
                     UserName = userAccount.UserName,
-                    DeviceId = userDevice.DeviceId ?? model.DeviceId
+                    DeviceId = userDevice.DeviceId ?? model.DeviceId,
                 };
                 await PublishEventUserLogout(userPublishEvent);
             }
@@ -1157,8 +1164,12 @@ public class AuthService(
 
     public async Task<bool> ChangeOwnerPasswordAsync(ChangeOwnerRequestModel model)
     {
-        var userAccount = await _userAccountService.GetByUserCodeAsync(model.CurrentUserCode)
-        ?? throw await O24Exception.CreateAsync(O24CTHResourceCode.Operation.ChangePasswordError, model.Language);
+        var userAccount =
+            await _userAccountService.GetByUserCodeAsync(model.CurrentUserCode)
+            ?? throw await O24Exception.CreateAsync(
+                O24CTHResourceCode.Operation.ChangePasswordError,
+                model.Language
+            );
 
         string hashPassword = O9Encrypt.sha_sha256(model.Password, userAccount.UserCode);
 
@@ -1239,7 +1250,12 @@ public class AuthService(
             UserName = userLogoutEvent.UserName,
             DeviceId = userLogoutEvent.DeviceId,
         };
-        BusinessLogHelper.Info("Publishing UserLogoutEvent: {0};{1};{2}", @event.UserCode, @event.UserName, @event.DeviceId);
+        BusinessLogHelper.Info(
+            "Publishing UserLogoutEvent: {0};{1};{2}",
+            @event.UserCode,
+            @event.UserName,
+            @event.DeviceId
+        );
         var cancellationToken = new CancellationToken();
         await eventBus.PublishAsync(@event, cancellationToken);
     }

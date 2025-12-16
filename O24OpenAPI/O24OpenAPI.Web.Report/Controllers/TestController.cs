@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CMS;
-using O24OpenAPI.Web.Framework.Controllers;
+using O24OpenAPI.Framework.Controllers;
 
 namespace O24OpenAPI.Web.Report.Controllers;
 

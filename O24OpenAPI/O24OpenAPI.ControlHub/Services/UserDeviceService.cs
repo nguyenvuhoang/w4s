@@ -4,14 +4,17 @@ using O24OpenAPI.ControlHub.Domain;
 using O24OpenAPI.ControlHub.Services.Interfaces;
 using O24OpenAPI.Core;
 using O24OpenAPI.Data.System.Linq;
-using O24OpenAPI.Web.Framework.Exceptions;
-using O24OpenAPI.Web.Framework.Extensions;
-using O24OpenAPI.Web.Framework.Models;
-using O24OpenAPI.Web.Framework.Utils;
+using O24OpenAPI.Framework.Exceptions;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Models;
+using O24OpenAPI.Framework.Utils;
 
 namespace O24OpenAPI.ControlHub.Services;
 
-public class UserDeviceService(IRepository<UserDevice> entityRepository, IRepository<UserAccount> userAccountRepository) : IUserDeviceService
+public class UserDeviceService(
+    IRepository<UserDevice> entityRepository,
+    IRepository<UserAccount> userAccountRepository
+) : IUserDeviceService
 {
     private readonly IRepository<UserDevice> _entityRepository = entityRepository;
     private readonly IRepository<UserAccount> _userAccountRepository = userAccountRepository;
@@ -45,8 +48,8 @@ public class UserDeviceService(IRepository<UserDevice> entityRepository, IReposi
             return query == null
                 ? throw new InvalidOperationException("UserDevice repository table is null.")
                 : await query
-                .Where(d => d.UserCode == userCode && d.Status == Code.ShowStatus.ACTIVE)
-                .FirstOrDefaultAsync();
+                    .Where(d => d.UserCode == userCode && d.Status == Code.ShowStatus.ACTIVE)
+                    .FirstOrDefaultAsync();
         }
         catch (Exception ex)
         {
@@ -54,8 +57,6 @@ public class UserDeviceService(IRepository<UserDevice> entityRepository, IReposi
             throw;
         }
     }
-
-
 
     public async Task UpdateAsync(UserDevice entity)
     {
@@ -77,10 +78,8 @@ public class UserDeviceService(IRepository<UserDevice> entityRepository, IReposi
         var query =
             from d in _entityRepository.Table
             where
-                (
-                    !string.IsNullOrEmpty(model.SearchText)
-                    && d.UserCode.Contains(model.SearchText)
-                ) || true
+                (!string.IsNullOrEmpty(model.SearchText) && d.UserCode.Contains(model.SearchText))
+                || true
             select d;
         return await query.ToPagedList(model.PageIndex, model.PageSize);
     }
@@ -108,11 +107,13 @@ public class UserDeviceService(IRepository<UserDevice> entityRepository, IReposi
     {
         var now = DateTime.UtcNow;
 
-        var currentDevice = await _entityRepository.Table
-            .FirstOrDefaultAsync(d => d.UserCode == userCode && d.DeviceId == deviceId && d.DeviceType == deviceType);
+        var currentDevice = await _entityRepository.Table.FirstOrDefaultAsync(d =>
+            d.UserCode == userCode && d.DeviceId == deviceId && d.DeviceType == deviceType
+        );
 
-        var activeDevice = await _entityRepository.Table
-            .FirstOrDefaultAsync(d => d.UserCode == userCode && d.Status == DeviceStatus.ACTIVE);
+        var activeDevice = await _entityRepository.Table.FirstOrDefaultAsync(d =>
+            d.UserCode == userCode && d.Status == DeviceStatus.ACTIVE
+        );
 
         if (currentDevice?.Status == DeviceStatus.ACTIVE)
         {
@@ -133,10 +134,10 @@ public class UserDeviceService(IRepository<UserDevice> entityRepository, IReposi
                     O24CTHResourceCode.Operation.HaveLoggged,
                     $"VERIFY|usercode={userCode}",
                     language,
-                    [deviceId, loginName]);
+                    [deviceId, loginName]
+                );
             }
         }
-
 
         if (currentDevice == null)
         {
@@ -158,7 +159,7 @@ public class UserDeviceService(IRepository<UserDevice> entityRepository, IReposi
                 IsRootedOrJailbroken = isRooted,
                 LastSeenDateUtc = now,
                 Network = network ?? string.Empty,
-                Memory = memory ?? string.Empty
+                Memory = memory ?? string.Empty,
             };
 
             if (activeDevice != null && activeDevice.DeviceId != currentDevice.DeviceId)
@@ -187,29 +188,28 @@ public class UserDeviceService(IRepository<UserDevice> entityRepository, IReposi
         await UpdateAsync(currentDevice);
         return currentDevice;
     }
+
     /// <summary>
     /// Get all active mobile devices
     /// </summary>
     /// <returns></returns>
-
     public virtual async Task<List<CTHUserNotificationModel>> GetMobileDevice()
     {
         var query =
             from d in _entityRepository.Table
-            join u in _userAccountRepository.Table
-                on d.UserCode equals u.UserCode into gj
+            join u in _userAccountRepository.Table on d.UserCode equals u.UserCode into gj
             from ua in gj.DefaultIfEmpty()
-            where d.ChannelId == Code.Channel.MB
-                  && d.Status == DeviceStatus.ACTIVE
-                  && !string.IsNullOrEmpty(d.PushId)
+            where
+                d.ChannelId == Code.Channel.MB
+                && d.Status == DeviceStatus.ACTIVE
+                && !string.IsNullOrEmpty(d.PushId)
             select new CTHUserNotificationModel
             {
                 UserCode = d.UserCode,
                 PushId = d.PushId ?? string.Empty,
-                PhoneNumber = ua != null && !string.IsNullOrEmpty(ua.Phone)
-                    ? ua.Phone
-                    : string.Empty,
-                UserDevice = d.DeviceId
+                PhoneNumber =
+                    ua != null && !string.IsNullOrEmpty(ua.Phone) ? ua.Phone : string.Empty,
+                UserDevice = d.DeviceId,
             };
 
         var result = await query.ToListAsync();

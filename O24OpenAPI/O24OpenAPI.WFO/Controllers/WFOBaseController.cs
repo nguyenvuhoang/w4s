@@ -1,14 +1,12 @@
-﻿using O24OpenAPI.O24OpenAPIClient.Workflow;
-using O24OpenAPI.Web.Framework.Controllers;
-using O24OpenAPI.Web.Framework.Extensions;
+﻿using O24OpenAPI.Client.Workflow;
+using O24OpenAPI.Framework.Controllers;
+using O24OpenAPI.Framework.Extensions;
 
 namespace O24OpenAPI.WFO.Controllers;
 
 public class WFOBaseController : BaseController
 {
-    protected async Task<TResult> InvokeAsync<TResult>(
-    Func<Task<WorkflowResponse>> controllerCall
-)
+    protected async Task<TResult> InvokeAsync<TResult>(Func<Task<WorkflowResponse>> controllerCall)
     {
         try
         {
@@ -33,7 +31,7 @@ public class WFOBaseController : BaseController
             var result = new WorkflowResponse
             {
                 error_code = "ERR_UNKNOWN",
-                error_message = ex.Message
+                error_message = ex.Message,
             };
             return (TResult)(object)result;
         }

@@ -1,7 +1,7 @@
 using LinqToDB;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Web.CMS.Models;
-using static O24OpenAPI.O24OpenAPIClient.Scheme.Workflow.WorkflowScheme.RESPONSE;
+using static O24OpenAPI.Client.Scheme.Workflow.WorkflowScheme.RESPONSE;
 
 namespace O24OpenAPI.Web.CMS.Services.Services.Logging;
 

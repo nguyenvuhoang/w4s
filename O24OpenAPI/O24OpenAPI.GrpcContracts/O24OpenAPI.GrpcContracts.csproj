@@ -7,7 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Contracts\O24OpenAPI.Contracts.csproj" />
-    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Core.Logging\O24OpenAPI.Core.Logging.csproj" />
+    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Logging\O24OpenAPI.Logging.csproj" />
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Core\O24OpenAPI.Core.csproj" />
     <ProjectReference Include="..\O24OpenAPI.APIContracts\O24OpenAPI.APIContracts.csproj" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />

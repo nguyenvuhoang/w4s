@@ -20,7 +20,7 @@ public sealed class WorkflowStepGenerator : ISourceGenerator
         var compilation = context.Compilation;
 
         var workflowStepAttr = compilation.GetTypeByMetadataName(
-            "O24OpenAPI.Web.Framework.Attributes.WorkflowStepAttribute"
+            "O24OpenAPI.Framework.Attributes.WorkflowStepAttribute"
         );
 
         if (workflowStepAttr is null)

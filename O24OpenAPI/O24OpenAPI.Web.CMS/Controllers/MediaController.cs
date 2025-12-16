@@ -1,27 +1,29 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Cryptography;
+using Microsoft.AspNetCore.Mvc;
+using O24OpenAPI.Framework.Controllers;
+using O24OpenAPI.Framework.Services;
+using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.Web.CMS.Configuration;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
 using O24OpenAPI.Web.CMS.Services.Interfaces.Media;
-using O24OpenAPI.Web.Framework.Controllers;
-using O24OpenAPI.Web.Framework.Services;
-using O24OpenAPI.Web.Framework.Utils;
-using System.Security.Cryptography;
 
 namespace O24OpenAPI.Web.CMS.Controllers;
 
-public class MediaController(
-    IMediaService mediaService,
-    CMSSetting cmsSetting
-) : BaseController
+public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) : BaseController
 {
     private readonly IMediaService _mediaService = mediaService;
     private readonly CMSSetting _cmsSetting = cmsSetting;
 
-
     [HttpPost("upload")]
-    public async Task<IActionResult> UploadFile(IFormFile file, [FromQuery] string folder = null, string customercode = null)
+    public async Task<IActionResult> UploadFile(
+        IFormFile file,
+        [FromQuery] string folder = null,
+        string customercode = null
+    )
     {
-        ConsoleUtil.WriteInfo($"UploadFile called with folder: {folder}, customercode: {customercode}");
+        ConsoleUtil.WriteInfo(
+            $"UploadFile called with folder: {folder}, customercode: {customercode}"
+        );
         var header = Utils.Utils.GetHeaders(HttpContext);
 
         string createdBy = null;
@@ -72,16 +74,18 @@ public class MediaController(
             var existedS3Key = existedFile.FileUrl;
             var shortUrlExisting = $"{_cmsSetting.CMSURL?.TrimEnd('/')}/m/{existedTrackerCode}";
 
-            return Ok(new
-            {
-                s3Key = existedS3Key,
-                trackerCode = existedTrackerCode,
-                expiredOnUtc = existedFile.ExpiredOnUtc,
-                temp = false,
-                folderUsed = existedFile.FolderName,
-                reused = true,
-                fileUrl = shortUrlExisting
-            });
+            return Ok(
+                new
+                {
+                    s3Key = existedS3Key,
+                    trackerCode = existedTrackerCode,
+                    expiredOnUtc = existedFile.ExpiredOnUtc,
+                    temp = false,
+                    folderUsed = existedFile.FolderName,
+                    reused = true,
+                    fileUrl = shortUrlExisting,
+                }
+            );
         }
 
         // ============================
@@ -104,60 +108,67 @@ public class MediaController(
         var s3Key = uploadResult.Key;
 
         var trackerCode = Guid.NewGuid().ToString("N");
-        var expiredOn = isTokenValid
-            ? DateTime.UtcNow.AddDays(7)
-            : DateTime.UtcNow.AddMinutes(5);
+        var expiredOn = isTokenValid ? DateTime.UtcNow.AddDays(7) : DateTime.UtcNow.AddMinutes(5);
 
         if (isTokenValid)
         {
-            await _mediaService.InserMediaFileAsync(new MediaFile
-            {
-                TrackerCode = trackerCode,
-                FileUrl = s3Key,
-                FileHash = fileHash,
-                FolderName = folder,
-                FileName = file.FileName,
-                FileExtension = extension,
-                FileSize = file.Length,
-                Status = "ACTIVE",
-                CreatedOnUtc = DateTime.UtcNow,
-                ExpiredOnUtc = expiredOn,
-                CreatedBy = createdBy,
-            });
+            await _mediaService.InserMediaFileAsync(
+                new MediaFile
+                {
+                    TrackerCode = trackerCode,
+                    FileUrl = s3Key,
+                    FileHash = fileHash,
+                    FolderName = folder,
+                    FileName = file.FileName,
+                    FileExtension = extension,
+                    FileSize = file.Length,
+                    Status = "ACTIVE",
+                    CreatedOnUtc = DateTime.UtcNow,
+                    ExpiredOnUtc = expiredOn,
+                    CreatedBy = createdBy,
+                }
+            );
         }
         else
         {
-            await _mediaService.InsertMediaStagingAsync(new MediaStaging
-            {
-                TrackerCode = trackerCode,
-                FileUrl = s3Key,
-                FileHash = fileHash,
-                FolderName = folder,
-                FileName = file.FileName,
-                FileExtension = extension,
-                FileSize = file.Length,
-                Status = "PENDING",
-                CreatedOnUtc = DateTime.UtcNow,
-                ExpiredOnUtc = expiredOn,
-                CreatedBy = createdBy,
-            });
+            await _mediaService.InsertMediaStagingAsync(
+                new MediaStaging
+                {
+                    TrackerCode = trackerCode,
+                    FileUrl = s3Key,
+                    FileHash = fileHash,
+                    FolderName = folder,
+                    FileName = file.FileName,
+                    FileExtension = extension,
+                    FileSize = file.Length,
+                    Status = "PENDING",
+                    CreatedOnUtc = DateTime.UtcNow,
+                    ExpiredOnUtc = expiredOn,
+                    CreatedBy = createdBy,
+                }
+            );
         }
 
         var shortUrl = $"{_cmsSetting.CMSURL?.TrimEnd('/')}/m/{trackerCode}";
 
-        return Ok(new
-        {
-            fileUrl = shortUrl,
-            trackerCode,
-            s3Key,
-            expiredOnUtc = expiredOn,
-            temp = !isTokenValid,
-            folderUsed = folder
-        });
+        return Ok(
+            new
+            {
+                fileUrl = shortUrl,
+                trackerCode,
+                s3Key,
+                expiredOnUtc = expiredOn,
+                temp = !isTokenValid,
+                folderUsed = folder,
+            }
+        );
     }
 
     [HttpGet("/m/{trackerCode}")]
-    public async Task<IActionResult> ShortLink(string trackerCode, CancellationToken cancellationToken)
+    public async Task<IActionResult> ShortLink(
+        string trackerCode,
+        CancellationToken cancellationToken
+    )
     {
         var (stream, contentType) = await _mediaService.ViewMedia(trackerCode);
 
@@ -166,7 +177,6 @@ public class MediaController(
 
         return File(stream, contentType);
     }
-
 
     [HttpGet]
     public async Task<IActionResult> GetCategories(CancellationToken cancellationToken)
@@ -180,7 +190,8 @@ public class MediaController(
     public async Task<IActionResult> Browse(
         [FromQuery] string category,
         [FromQuery] string path,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var result = await _mediaService.BrowseAsync(category, path, cancellationToken);
         return Ok(result);
@@ -189,10 +200,10 @@ public class MediaController(
     [HttpGet]
     public async Task<IActionResult> GetMediaTree(
         [FromQuery] string category,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var tree = await _mediaService.BuildCategoryTreeAsync(category, cancellationToken);
         return Ok(tree);
     }
-
 }

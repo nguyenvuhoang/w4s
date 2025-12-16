@@ -2,7 +2,6 @@
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Core.Logging.Helpers;
 using O24OpenAPI.Grpc.WFO;
 using O24OpenAPI.GrpcContracts.Configuration;
 using O24OpenAPI.GrpcContracts.Factory;
@@ -16,6 +15,7 @@ using O24OpenAPI.GrpcContracts.GrpcClientServices.LOG;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.NCH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.TEL;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
+using O24OpenAPI.Logging.Helpers;
 
 namespace O24OpenAPI.GrpcContracts.Extensions;
 

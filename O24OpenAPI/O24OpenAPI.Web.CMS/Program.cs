@@ -1,8 +1,8 @@
-using O24OpenAPI.Core.Logging.Extensions;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Infrastructure.Extensions;
+using O24OpenAPI.Framework.Middlewares;
+using O24OpenAPI.Logging.Extensions;
 using O24OpenAPI.Web.CMS.Services.Services;
-using O24OpenAPI.Web.Framework.Extensions;
-using O24OpenAPI.Web.Framework.Infrastructure.Extensions;
-using O24OpenAPI.Web.Framework.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 

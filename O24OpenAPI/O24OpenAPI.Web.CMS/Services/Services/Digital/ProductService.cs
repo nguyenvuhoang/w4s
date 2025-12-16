@@ -1,7 +1,7 @@
 ﻿using LinqToDB;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Web.CMS.Models.Digital;
 using O24OpenAPI.Web.CMS.Services.Interfaces.Digital;
-using O24OpenAPI.Web.Framework.Infrastructure.Mapper.Extensions;
 
 namespace O24OpenAPI.Web.CMS.Services.Services.Digital;
 
@@ -20,16 +20,14 @@ public class ProductService : IProductService
         foreach (string proID in model.ListProductID)
         {
             var product = await _productRepository
-            .Table.Where(s => s.ProductID.Equals(proID))
-            .FirstOrDefaultAsync();
+                .Table.Where(s => s.ProductID.Equals(proID))
+                .FirstOrDefaultAsync();
 
             if (product != null)
             {
                 await _productRepository.Delete(product);
             }
-
         }
-
     }
 
     public virtual async Task<D_PRODUCT> DeleteByProductId(string productID)

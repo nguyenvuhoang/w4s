@@ -1,7 +1,7 @@
 ﻿using LinqToDB;
+using O24OpenAPI.Framework.Localization;
 using O24OpenAPI.Web.CMS.Models.Digital;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Localization;
 
 namespace O24OpenAPI.Web.CMS.Services.Services;
 
@@ -60,10 +60,8 @@ public class BranchService : IBranchService
                     || string.IsNullOrEmpty(model.BranchID)
                 )
                 && (
-                    (
-                        !string.IsNullOrEmpty(model.BranchName)
-                        && model.BranchName == d.BranchName
-                    ) || string.IsNullOrEmpty(model.BranchName)
+                    (!string.IsNullOrEmpty(model.BranchName) && model.BranchName == d.BranchName)
+                    || string.IsNullOrEmpty(model.BranchName)
                 )
                 && (
                     (!string.IsNullOrEmpty(model.Address) && model.Address == d.Address)

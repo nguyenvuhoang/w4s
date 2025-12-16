@@ -1,9 +1,9 @@
 ﻿using Apache.NMS.ActiveMQ.Util.Synchronization;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Data.System.Linq;
+using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Web.CMS.Models;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Extensions;
 
 namespace O24OpenAPI.Web.CMS.Services.Services;
 
@@ -224,7 +224,10 @@ public class CodeListService(
 
     public virtual async Task<List<Domain.C_CODELIST>> GetByApp(string app)
     {
-        var key = new CacheKey(CachingKey.EntityTemplate, new object[] { nameof(Domain.C_CODELIST), app })
+        var key = new CacheKey(
+            CachingKey.EntityTemplate,
+            new object[] { nameof(Domain.C_CODELIST), app }
+        )
         {
             IsForever = true,
         };

@@ -1,11 +1,11 @@
 ﻿using Newtonsoft.Json.Linq;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Data.System.Linq;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
+using O24OpenAPI.Framework.Localization;
+using O24OpenAPI.Framework.Services;
 using O24OpenAPI.Web.CMS.Models.Digital;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Infrastructure.Mapper.Extensions;
-using O24OpenAPI.Web.Framework.Localization;
-using O24OpenAPI.Web.Framework.Services;
 
 namespace O24OpenAPI.Web.CMS.Services.Services;
 
@@ -220,10 +220,7 @@ public partial class CountryService : ICountryService
                 TimeZone = c.TimeZone,
                 PhoneCountryCode = c.PhoneCountryCode,
             }
-        )
-            .OrderBy(c => c.CountryID)
-            .AsQueryable()
-            .ToPagedList(model.PageIndex, model.PageSize);
+        ).OrderBy(c => c.CountryID).AsQueryable().ToPagedList(model.PageIndex, model.PageSize);
 
         return query;
     }
@@ -283,10 +280,7 @@ public partial class CountryService : ICountryService
                 TimeZone = c.TimeZone,
                 PhoneCountryCode = c.PhoneCountryCode,
             }
-        )
-            .OrderBy(c => c.CountryID)
-            .AsQueryable()
-            .ToPagedList(model.PageIndex, model.PageSize);
+        ).OrderBy(c => c.CountryID).AsQueryable().ToPagedList(model.PageIndex, model.PageSize);
 
         return query;
     }

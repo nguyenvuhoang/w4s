@@ -1,7 +1,14 @@
 ﻿namespace O24OpenAPI.O24NCH.Services.Services;
 
+using System.Diagnostics;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 using LinqToDB;
 using O24OpenAPI.Core;
+using O24OpenAPI.Framework.Exceptions;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.O24NCH.Common;
 using O24OpenAPI.O24NCH.Constant;
 using O24OpenAPI.O24NCH.Domain;
@@ -9,13 +16,6 @@ using O24OpenAPI.O24NCH.Models.Request;
 using O24OpenAPI.O24NCH.Models.Response;
 using O24OpenAPI.O24NCH.Services.Interfaces;
 using O24OpenAPI.O24NCH.Utils;
-using O24OpenAPI.Web.Framework.Exceptions;
-using O24OpenAPI.Web.Framework.Extensions;
-using O24OpenAPI.Web.Framework.Infrastructure.Mapper.Extensions;
-using System.Diagnostics;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
 using static QRCoder.PayloadGenerator;
 
 /// <summary>
@@ -32,7 +32,8 @@ public class SMSProviderService(
     /// <summary>
     /// Defines the _smsProviderConfigRepository
     /// </summary>
-    private readonly IRepository<SMSProviderConfig> _smsProviderConfigRepository = smsProviderConfigRepository;
+    private readonly IRepository<SMSProviderConfig> _smsProviderConfigRepository =
+        smsProviderConfigRepository;
 
     /// <summary>
     /// Defines the _smsProviderRepository
@@ -47,12 +48,14 @@ public class SMSProviderService(
     /// <summary>
     /// Defines the _smsProviderStatusRepository
     /// </summary>
-    private readonly IRepository<SMSProviderStatus> _smsProviderStatusRepository = smsProviderStatusRepository;
+    private readonly IRepository<SMSProviderStatus> _smsProviderStatusRepository =
+        smsProviderStatusRepository;
 
     /// <summary>
     /// Defines the _smsMappingResponseRepository
     /// </summary>
-    private readonly IRepository<SMSMappingResponse> _smsMappingResponseRepository = smsMappingResponseRepository;
+    private readonly IRepository<SMSMappingResponse> _smsMappingResponseRepository =
+        smsMappingResponseRepository;
 
     /// <summary>
     /// Defines the _sharedHandler
@@ -61,7 +64,7 @@ public class SMSProviderService(
     {
         PooledConnectionLifetime = TimeSpan.FromMinutes(5),
         PooledConnectionIdleTimeout = TimeSpan.FromMinutes(2),
-        MaxConnectionsPerServer = 100
+        MaxConnectionsPerServer = 100,
     };
 
     /// <summary>
@@ -69,7 +72,7 @@ public class SMSProviderService(
     /// </summary>
     private static readonly HttpClient _sharedHttpClient = new(_sharedHandler)
     {
-        Timeout = TimeSpan.FromSeconds(30)
+        Timeout = TimeSpan.FromSeconds(30),
     };
 
     /// <summary>
@@ -79,14 +82,16 @@ public class SMSProviderService(
     /// <returns>The <see cref="Task{SMSProvider}"/></returns>
     public async Task<SMSProvider> GetProviderByPhoneNumber(string phoneNumber)
     {
-        var providers = await _smsProviderRepository.Table
-            .Where(p => p.IsActive)
-            .ToListAsync();
+        var providers = await _smsProviderRepository.Table.Where(p => p.IsActive).ToListAsync();
         foreach (var provider in providers)
         {
-            var allowedPrefixes = provider.AllowedPrefix?
-                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .ToList() ?? [];
+            var allowedPrefixes =
+                provider
+                    .AllowedPrefix?.Split(
+                        ',',
+                        StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+                    )
+                    .ToList() ?? [];
             foreach (var prefix in allowedPrefixes)
             {
                 if (phoneNumber.StartsWith(prefix))
@@ -114,7 +119,8 @@ public class SMSProviderService(
         string transactionId,
         string providerName = "UNITEL",
         string endtoend = "",
-        string messagetype = "SMS")
+        string messagetype = "SMS"
+    )
     {
         string soapXml = null;
 
@@ -125,8 +131,9 @@ public class SMSProviderService(
             providerName = providerMain.ProviderName;
         }
 
-        var provider = await _smsProviderRepository.Table
-            .FirstOrDefaultAsync(p => p.ProviderName == providerName && p.IsActive);
+        var provider = await _smsProviderRepository.Table.FirstOrDefaultAsync(p =>
+            p.ProviderName == providerName && p.IsActive
+        );
 
         if (provider == null)
         {
@@ -138,7 +145,7 @@ public class SMSProviderService(
                 ErrorMessage = "Provider is not exist",
                 ProviderKey = null,
                 RawResponseCode = null,
-                IsSuccess = false
+                IsSuccess = false,
             };
         }
 
@@ -150,9 +157,7 @@ public class SMSProviderService(
                 {
                     phoneNumber = "856" + phoneNumber[1..];
                 }
-                else if (providerName == "LTC")
-                {
-                }
+                else if (providerName == "LTC") { }
                 else
                 {
                     phoneNumber = phoneNumber[1..];
@@ -160,34 +165,44 @@ public class SMSProviderService(
             }
         }
 
-
-
         try
         {
             var transactionIdFinal = endtoend ?? transactionId ?? Guid.NewGuid().ToString();
-            soapXml = await BuildSOAPRequestAsync(provider, new Dictionary<string, string>
-            {
-                { "RECEIVERPHONE", phoneNumber },
-                { "MSGCONTENT", message },
-                { "TRANSACTIONID", transactionIdFinal }
-            });
+            soapXml = await BuildSOAPRequestAsync(
+                provider,
+                new Dictionary<string, string>
+                {
+                    { "RECEIVERPHONE", phoneNumber },
+                    { "MSGCONTENT", message },
+                    { "TRANSACTIONID", transactionIdFinal },
+                }
+            );
 
-            return await SendSOAPRequestAndLogAsync(provider, phoneNumber, message, soapXml, transactionIdFinal, endtoend);
+            return await SendSOAPRequestAndLogAsync(
+                provider,
+                phoneNumber,
+                message,
+                soapXml,
+                transactionIdFinal,
+                endtoend
+            );
         }
         catch (Exception ex)
         {
             await ex.LogErrorAsync();
-            await _smsSendOutRepository.InsertAsync(new SMSSendOut
-            {
-                PhoneNumber = phoneNumber,
-                MessageContent = message,
-                SentAt = DateTime.UtcNow,
-                SMSProviderId = provider.ProviderName,
-                Status = "Failed",
-                ResponseMessage = $"Exception: {ex.Message}",
-                OtpRequestId = transactionId ?? Guid.NewGuid().ToString(),
-                RequestMessage = soapXml
-            });
+            await _smsSendOutRepository.InsertAsync(
+                new SMSSendOut
+                {
+                    PhoneNumber = phoneNumber,
+                    MessageContent = message,
+                    SentAt = DateTime.UtcNow,
+                    SMSProviderId = provider.ProviderName,
+                    Status = "Failed",
+                    ResponseMessage = $"Exception: {ex.Message}",
+                    OtpRequestId = transactionId ?? Guid.NewGuid().ToString(),
+                    RequestMessage = soapXml,
+                }
+            );
 
             return new SendSOAPResponseModel
             {
@@ -197,7 +212,7 @@ public class SMSProviderService(
                 ErrorMessage = ex.Message,
                 ProviderKey = null,
                 RawResponseCode = null,
-                IsSuccess = false
+                IsSuccess = false,
             };
         }
     }
@@ -208,10 +223,13 @@ public class SMSProviderService(
     /// <param name="provider">The provider<see cref="SMSProvider"/></param>
     /// <param name="values">The values<see cref="Dictionary{string, string}"/></param>
     /// <returns>The <see cref="Task{string}"/></returns>
-    public async Task<string> BuildSOAPRequestAsync(SMSProvider provider, Dictionary<string, string> values)
+    public async Task<string> BuildSOAPRequestAsync(
+        SMSProvider provider,
+        Dictionary<string, string> values
+    )
     {
-        var configs = await _smsProviderConfigRepository.Table
-            .Where(x => x.SMSProviderId == provider.ProviderName && x.IsActive)
+        var configs = await _smsProviderConfigRepository
+            .Table.Where(x => x.SMSProviderId == provider.ProviderName && x.IsActive)
             .ToListAsync();
 
         var configDict = configs.ToDictionary(x => x.ConfigKey, x => x.ConfigValue);
@@ -275,8 +293,10 @@ public class SMSProviderService(
     /// <returns>The <see cref="Task{string}"/></returns>
     public async Task<string> SendSOAPRequestAsync(string providerId, string soapXml)
     {
-        var wsdlUrl = await _smsProviderConfigRepository.Table
-            .Where(x => x.SMSProviderId == providerId && x.ConfigKey == "WSDL_URL" && x.IsActive)
+        var wsdlUrl = await _smsProviderConfigRepository
+            .Table.Where(x =>
+                x.SMSProviderId == providerId && x.ConfigKey == "WSDL_URL" && x.IsActive
+            )
             .Select(x => x.ConfigValue)
             .FirstOrDefaultAsync();
 
@@ -302,8 +322,8 @@ public class SMSProviderService(
     /// <returns>The <see cref="Task"/></returns>
     public async Task SyncSMSProviderStatusAsync()
     {
-        var activeProviders = await _smsProviderRepository.Table
-            .Where(p => p.IsActive)
+        var activeProviders = await _smsProviderRepository
+            .Table.Where(p => p.IsActive)
             .ToListAsync();
 
         foreach (var provider in activeProviders)
@@ -315,12 +335,18 @@ public class SMSProviderService(
 
             try
             {
-                var dummyConfig = await _smsProviderConfigRepository.Table
-                 .Where(x => x.SMSProviderId == provider.ProviderName && x.IsActive && x.ConfigKey == "DUMMY_DATA")
-                 .Select(x => x.ConfigValue)
-                 .FirstOrDefaultAsync();
+                var dummyConfig = await _smsProviderConfigRepository
+                    .Table.Where(x =>
+                        x.SMSProviderId == provider.ProviderName
+                        && x.IsActive
+                        && x.ConfigKey == "DUMMY_DATA"
+                    )
+                    .Select(x => x.ConfigValue)
+                    .FirstOrDefaultAsync();
 
-                var dummyData = string.IsNullOrWhiteSpace(dummyConfig) ? [] : JsonSerializer.Deserialize<Dictionary<string, string>>(dummyConfig) ?? [];
+                var dummyData = string.IsNullOrWhiteSpace(dummyConfig)
+                    ? []
+                    : JsonSerializer.Deserialize<Dictionary<string, string>>(dummyConfig) ?? [];
                 dummyData["TRANSACTIONID"] = Guid.NewGuid().ToString();
 
                 // Build SOAP for health check
@@ -342,7 +368,7 @@ public class SMSProviderService(
 
                 // ✅ Dùng parser phân tích response từ cả UNITEL và LTC
                 var (msgId, isSuccess, resultCode, resultDesc, providerKey, rawCode) =
-                  O24SMSResponseParser.ExtractMsgIdAndStatusFromSOAP(responseString, successMap);
+                    O24SMSResponseParser.ExtractMsgIdAndStatusFromSOAP(responseString, successMap);
 
                 isOnline = isSuccess;
 
@@ -353,7 +379,7 @@ public class SMSProviderService(
                     IsOnline = isOnline,
                     ResponseTimeMs = (int)stopwatch.ElapsedMilliseconds,
                     ResponseMessage = responseString,
-                    ErrorDetail = null
+                    ErrorDetail = null,
                 };
 
                 await _smsProviderStatusRepository.InsertAsync(status);
@@ -370,7 +396,7 @@ public class SMSProviderService(
                     IsOnline = false,
                     ResponseTimeMs = (int)stopwatch.ElapsedMilliseconds,
                     ResponseMessage = responseString ?? "",
-                    ErrorDetail = errorMessage
+                    ErrorDetail = errorMessage,
                 };
 
                 await _smsProviderStatusRepository.InsertAsync(status);
@@ -390,9 +416,16 @@ public class SMSProviderService(
     /// <param name="cancellationToken">The cancellationToken<see cref="CancellationToken"/></param>
     /// <returns>The <see cref="Task{List{SendSOAPResponseModel}}"/></returns>
     public async Task<List<SendSOAPResponseModel>> SendBulkSMSAsync(
-        List<(string ProviderName, string PhoneNumber, string Message, string TransactionId, string EndToEnd)> messages,
+        List<(
+            string ProviderName,
+            string PhoneNumber,
+            string Message,
+            string TransactionId,
+            string EndToEnd
+        )> messages,
         int maxDegreeOfParallelism = 20,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         if (messages == null || messages.Count == 0)
         {
@@ -407,92 +440,105 @@ public class SMSProviderService(
         {
             await semaphore.WaitAsync(cancellationToken);
 
-            var t = Task.Run(async () =>
-            {
-                try
+            var t = Task.Run(
+                async () =>
                 {
-                    var provider = await _smsProviderRepository.Table
-                        .FirstOrDefaultAsync(p => p.ProviderName == msg.ProviderName && p.IsActive, cancellationToken);
-
-                    if (provider == null)
+                    try
                     {
+                        var provider = await _smsProviderRepository.Table.FirstOrDefaultAsync(
+                            p => p.ProviderName == msg.ProviderName && p.IsActive,
+                            cancellationToken
+                        );
+
+                        if (provider == null)
+                        {
+                            lock (results)
+                            {
+                                results.Add(
+                                    new SendSOAPResponseModel
+                                    {
+                                        TransactionId = msg.TransactionId,
+                                        MessageId = null,
+                                        ErrorCode = 8888,
+                                        ErrorMessage = "Provider is not exist",
+                                        ProviderKey = null,
+                                        RawResponseCode = null,
+                                        IsSuccess = false,
+                                    }
+                                );
+                            }
+                            return;
+                        }
+
+                        var phoneNumber = msg.PhoneNumber;
+
+                        if (!string.IsNullOrWhiteSpace(phoneNumber))
+                        {
+                            if (phoneNumber.StartsWith('0'))
+                            {
+                                if (msg.ProviderName == Code.ProviderName.ETL)
+                                {
+                                    phoneNumber = "856" + phoneNumber[1..];
+                                }
+                                else if (msg.ProviderName == Code.ProviderName.LTC) { }
+                                else
+                                {
+                                    phoneNumber = phoneNumber[1..];
+                                }
+                            }
+                        }
+
+                        var values = new Dictionary<string, string>
+                        {
+                            { "RECEIVERPHONE", phoneNumber },
+                            { "MSGCONTENT", msg.Message },
+                            { "TRANSACTIONID", msg.EndToEnd ?? string.Empty },
+                        };
+
+                        string soapXml = await BuildSOAPRequestAsync(provider, values);
+
+                        var resp = await SendSOAPRequestAndLogAsync(
+                            provider,
+                            phoneNumber,
+                            msg.Message,
+                            soapXml,
+                            msg.TransactionId,
+                            httpClient: _sharedHttpClient,
+                            cancellationToken: cancellationToken
+                        );
+
                         lock (results)
                         {
-                            results.Add(new SendSOAPResponseModel
-                            {
-                                TransactionId = msg.TransactionId,
-                                MessageId = null,
-                                ErrorCode = 8888,
-                                ErrorMessage = "Provider is not exist",
-                                ProviderKey = null,
-                                RawResponseCode = null,
-                                IsSuccess = false
-                            });
+                            results.Add(resp);
                         }
-                        return;
                     }
-
-                    var phoneNumber = msg.PhoneNumber;
-
-                    if (!string.IsNullOrWhiteSpace(phoneNumber))
+                    catch (Exception ex)
                     {
-                        if (phoneNumber.StartsWith('0'))
+                        await ex.LogErrorAsync();
+
+                        var fallback = new SendSOAPResponseModel
                         {
-                            if (msg.ProviderName == Code.ProviderName.ETL)
-                            {
-                                phoneNumber = "856" + phoneNumber[1..];
-                            }
-                            else if (msg.ProviderName == Code.ProviderName.LTC)
-                            {
-                            }
-                            else
-                            {
-                                phoneNumber = phoneNumber[1..];
-                            }
+                            TransactionId = msg.TransactionId,
+                            MessageId = null,
+                            ErrorCode = 9999,
+                            ErrorMessage = ex.Message,
+                            ProviderKey = null,
+                            RawResponseCode = null,
+                            IsSuccess = false,
+                        };
+
+                        lock (results)
+                        {
+                            results.Add(fallback);
                         }
                     }
-
-                    var values = new Dictionary<string, string>
+                    finally
                     {
-                        { "RECEIVERPHONE", phoneNumber },
-                        { "MSGCONTENT", msg.Message },
-                        { "TRANSACTIONID", msg.EndToEnd ?? string.Empty }
-                    };
-
-                    string soapXml = await BuildSOAPRequestAsync(provider, values);
-
-                    var resp = await SendSOAPRequestAndLogAsync(provider, phoneNumber, msg.Message, soapXml, msg.TransactionId, httpClient: _sharedHttpClient, cancellationToken: cancellationToken);
-
-                    lock (results)
-                    {
-                        results.Add(resp);
+                        semaphore.Release();
                     }
-                }
-                catch (Exception ex)
-                {
-                    await ex.LogErrorAsync();
-
-                    var fallback = new SendSOAPResponseModel
-                    {
-                        TransactionId = msg.TransactionId,
-                        MessageId = null,
-                        ErrorCode = 9999,
-                        ErrorMessage = ex.Message,
-                        ProviderKey = null,
-                        RawResponseCode = null,
-                        IsSuccess = false
-                    };
-
-                    lock (results)
-                    {
-                        results.Add(fallback);
-                    }
-                }
-                finally
-                {
-                    semaphore.Release();
-                }
-            }, cancellationToken);
+                },
+                cancellationToken
+            );
 
             tasks.Add(t);
         }
@@ -525,12 +571,15 @@ public class SMSProviderService(
         int retryCount = 0,
         bool isResend = false,
         HttpClient httpClient = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         httpClient ??= _sharedHttpClient;
 
-        var wsdlUrl = await _smsProviderConfigRepository.Table
-            .Where(x => x.SMSProviderId == provider.ProviderName && x.ConfigKey == "WSDL_URL" && x.IsActive)
+        var wsdlUrl = await _smsProviderConfigRepository
+            .Table.Where(x =>
+                x.SMSProviderId == provider.ProviderName && x.ConfigKey == "WSDL_URL" && x.IsActive
+            )
             .Select(x => x.ConfigValue)
             .FirstOrDefaultAsync(cancellationToken);
 
@@ -539,13 +588,24 @@ public class SMSProviderService(
             throw new Exception("WSDL_URL not found.");
         }
 
-        var sendOut = CreateSendOut(provider.ProviderName, phoneNumber, messageContent, soapXml, transactionId, endtoend, 0, isResend);
+        var sendOut = CreateSendOut(
+            provider.ProviderName,
+            phoneNumber,
+            messageContent,
+            soapXml,
+            transactionId,
+            endtoend,
+            0,
+            isResend
+        );
 
         var stopwatch = Stopwatch.StartNew();
 
         try
         {
-            var contentType = (await GetConfigValueAsync(provider.ProviderName, "SOAP_CONTENT_TYPE"))?.Trim() ?? "application/soap+xml; charset=utf-8";
+            var contentType =
+                (await GetConfigValueAsync(provider.ProviderName, "SOAP_CONTENT_TYPE"))?.Trim()
+                ?? "application/soap+xml; charset=utf-8";
             using var content = new StringContent(soapXml, Encoding.UTF8);
             content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
             var requestHeader = await AddDynamicSoapHeaders(content, provider.ProviderName);
@@ -557,14 +617,16 @@ public class SMSProviderService(
 
             stopwatch.Stop();
 
-            var allMappings = await _smsMappingResponseRepository.Table.ToListAsync(cancellationToken);
+            var allMappings = await _smsMappingResponseRepository.Table.ToListAsync(
+                cancellationToken
+            );
             var successMap = allMappings
                 .Where(x => x.IsSuccess)
                 .GroupBy(x => x.ProviderName.ToUpper())
                 .ToDictionary(g => g.Key, g => g.Select(x => x.ResponseCode).ToHashSet());
 
             var (msgId, isSuccess, resultCode, resultDesc, providerKey, rawCode) =
-                    O24SMSResponseParser.ExtractMsgIdAndStatusFromSOAP(responseString, successMap);
+                O24SMSResponseParser.ExtractMsgIdAndStatusFromSOAP(responseString, successMap);
 
             sendOut.ElapsedMilliseconds = (int)stopwatch.ElapsedMilliseconds;
             sendOut.ResponseMessage = responseString;
@@ -581,7 +643,7 @@ public class SMSProviderService(
                 ErrorMessage = resultDesc,
                 ProviderKey = providerKey,
                 RawResponseCode = rawCode,
-                IsSuccess = isSuccess
+                IsSuccess = isSuccess,
             };
         }
         catch (Exception ex)
@@ -603,7 +665,7 @@ public class SMSProviderService(
                 ErrorMessage = ex.Message,
                 ProviderKey = null,
                 RawResponseCode = null,
-                IsSuccess = false
+                IsSuccess = false,
             };
         }
     }
@@ -613,22 +675,22 @@ public class SMSProviderService(
     /// </summary>
     /// <param name="model">The model<see cref="Web.Framework.Models.SimpleSearchModel"/></param>
     /// <returns>The <see cref="Task{IPagedList{SMSProvider}}"/></returns>
-    public async Task<IPagedList<SMSProvider>> Search(Web.Framework.Models.SimpleSearchModel model)
+    public async Task<IPagedList<SMSProvider>> Search(Framework.Models.SimpleSearchModel model)
     {
         return await _smsProviderRepository.GetAllPaged(
-           query =>
-           {
-               if (!string.IsNullOrEmpty(model.SearchText))
-               {
-                   query = query.Where(c =>
-                       c.ProviderName.Contains(model.SearchText)
-                   );
-               }
+            query =>
+            {
+                if (!string.IsNullOrEmpty(model.SearchText))
+                {
+                    query = query.Where(c => c.ProviderName.Contains(model.SearchText));
+                }
 
-               query = query.OrderBy(c => c.Id);
-               return query;
-           }, 0, 0
-       );
+                query = query.OrderBy(c => c.Id);
+                return query;
+            },
+            0,
+            0
+        );
     }
 
     /// <summary>
@@ -648,7 +710,8 @@ public class SMSProviderService(
     /// <returns></returns>
     public async Task<UpdateSMSProviderResponseModel> Update(SMSProviderUpdateModel model)
     {
-        var entity = await GetById(model.Id)
+        var entity =
+            await GetById(model.Id)
             ?? throw await O24Exception.CreateAsync(ResourceCode.Common.NotExists, model.Language);
 
         var originalEntity = entity.Clone();
@@ -662,12 +725,11 @@ public class SMSProviderService(
             var providerId = entity.ProviderName;
 
             var existingConfigs = await _smsProviderConfigRepository
-                .Table
-                .Where(x => x.SMSProviderId == providerId)
+                .Table.Where(x => x.SMSProviderId == providerId)
                 .ToListAsync();
 
-            var toDeleteKeys = model.SMSProviderConfig
-                .Where(x =>
+            var toDeleteKeys = model
+                .SMSProviderConfig.Where(x =>
                     (x.Action?.Equals("delete", StringComparison.OrdinalIgnoreCase) ?? false)
                 )
                 .Select(x => x.ConfigKey)
@@ -686,10 +748,9 @@ public class SMSProviderService(
                 }
             }
 
-            var toUpsertRaw = model.SMSProviderConfig
-                .Where(x =>
-                    !(x.Action?.Equals("delete", StringComparison.OrdinalIgnoreCase) ?? false)
-                );
+            var toUpsertRaw = model.SMSProviderConfig.Where(x =>
+                !(x.Action?.Equals("delete", StringComparison.OrdinalIgnoreCase) ?? false)
+            );
 
             var toUpsert = toUpsertRaw
                 .GroupBy(x => x.ConfigKey, StringComparer.OrdinalIgnoreCase)
@@ -700,20 +761,31 @@ public class SMSProviderService(
                     ConfigKey = x.ConfigKey,
                     ConfigValue = x.ConfigValue,
                     Description = x.Description,
-                    IsActive = x.IsActive
+                    IsActive = x.IsActive,
                 })
                 .ToList();
 
             foreach (var config in toUpsert)
             {
-                var existing = existingConfigs
-                    .FirstOrDefault(x => x.ConfigKey.Equals(config.ConfigKey, StringComparison.OrdinalIgnoreCase));
+                var existing = existingConfigs.FirstOrDefault(x =>
+                    x.ConfigKey.Equals(config.ConfigKey, StringComparison.OrdinalIgnoreCase)
+                );
 
                 if (existing != null)
                 {
-                    if (!string.Equals(existing.ConfigValue?.Trim(), config.ConfigValue?.Trim(), StringComparison.Ordinal) ||
-                        !string.Equals(existing.Description?.Trim(), config.Description?.Trim(), StringComparison.Ordinal) ||
-                        existing.IsActive != config.IsActive)
+                    if (
+                        !string.Equals(
+                            existing.ConfigValue?.Trim(),
+                            config.ConfigValue?.Trim(),
+                            StringComparison.Ordinal
+                        )
+                        || !string.Equals(
+                            existing.Description?.Trim(),
+                            config.Description?.Trim(),
+                            StringComparison.Ordinal
+                        )
+                        || existing.IsActive != config.IsActive
+                    )
                     {
                         existing.ConfigValue = config.ConfigValue;
                         existing.Description = config.Description;
@@ -739,14 +811,17 @@ public class SMSProviderService(
     /// <returns></returns>
     public async Task<bool> CreateAsync(SMSProviderCreateModel model)
     {
-        var isExisting = await _smsProviderRepository.Table
-            .AnyAsync(p => p.ProviderName == model.ProviderName);
+        var isExisting = await _smsProviderRepository.Table.AnyAsync(p =>
+            p.ProviderName == model.ProviderName
+        );
         if (isExisting)
         {
             throw await O24Exception.CreateAsync(
                 O24NCHResourceCode.Validation.SMSProviderIsExisting,
                 model.Language,
-                [model.ProviderName]); ;
+                [model.ProviderName]
+            );
+            ;
         }
 
         // Tạo entity từ model
@@ -760,22 +835,23 @@ public class SMSProviderService(
             ApiPassword = model.ApiPassword,
             ApiKey = model.ApiKey,
             BrandName = model.BrandName,
-            IsActive = true
+            IsActive = true,
         };
 
         await _smsProviderRepository.InsertAsync(entity);
 
         if (model.SMSProviderConfig?.Count > 0)
         {
-            var configEntities = model.SMSProviderConfig
-                .Select(x => new SMSProviderConfig
+            var configEntities = model
+                .SMSProviderConfig.Select(x => new SMSProviderConfig
                 {
                     SMSProviderId = model.ProviderName,
                     ConfigKey = x.ConfigKey,
                     ConfigValue = x.ConfigValue,
                     Description = x.Description,
-                    IsActive = x.IsActive
-                }).ToList();
+                    IsActive = x.IsActive,
+                })
+                .ToList();
 
             foreach (var config in configEntities)
             {
@@ -798,7 +874,16 @@ public class SMSProviderService(
     /// <param name="retryCount"></param>
     /// <param name="isResend"></param>
     /// <returns></returns>
-    public static SMSSendOut CreateSendOut(string providerName, string phoneNumber, string messageContent, string soapLogXml, string transactionId, string endtoend, int retryCount, bool isResend)
+    public static SMSSendOut CreateSendOut(
+        string providerName,
+        string phoneNumber,
+        string messageContent,
+        string soapLogXml,
+        string transactionId,
+        string endtoend,
+        int retryCount,
+        bool isResend
+    )
     {
         return new SMSSendOut
         {
@@ -852,8 +937,12 @@ public class SMSProviderService(
     /// <returns></returns>
     private async Task<string> AddDynamicSoapHeaders(StringContent content, string providerName)
     {
-        var headerConfigs = await _smsProviderConfigRepository.Table
-            .Where(x => x.SMSProviderId == providerName && x.ConfigKey.StartsWith("SOAP_HEADER_") && x.IsActive)
+        var headerConfigs = await _smsProviderConfigRepository
+            .Table.Where(x =>
+                x.SMSProviderId == providerName
+                && x.ConfigKey.StartsWith("SOAP_HEADER_")
+                && x.IsActive
+            )
             .ToListAsync();
 
         var headerLog = new StringBuilder();
@@ -876,10 +965,9 @@ public class SMSProviderService(
     /// <returns></returns>
     private async Task<string> GetConfigValueAsync(string providerName, string key)
     {
-        return await _smsProviderConfigRepository.Table
-            .Where(x => x.SMSProviderId == providerName && x.ConfigKey == key && x.IsActive)
+        return await _smsProviderConfigRepository
+            .Table.Where(x => x.SMSProviderId == providerName && x.ConfigKey == key && x.IsActive)
             .Select(x => x.ConfigValue)
             .FirstOrDefaultAsync();
     }
-
 }

@@ -1,14 +1,14 @@
-﻿using O24OpenAPI.ControlHub.Domain;
+﻿using O24OpenAPI.Client.Scheme.Workflow;
+using O24OpenAPI.ControlHub.Domain;
 using O24OpenAPI.ControlHub.Models;
 using O24OpenAPI.ControlHub.Models.Roles;
 using O24OpenAPI.ControlHub.Models.User;
 using O24OpenAPI.ControlHub.Services.Interfaces;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
-using O24OpenAPI.Web.Framework.Extensions;
-using O24OpenAPI.Web.Framework.Helpers;
-using O24OpenAPI.Web.Framework.Models;
-using O24OpenAPI.Web.Framework.Services.Queue;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Helpers;
+using O24OpenAPI.Framework.Models;
+using O24OpenAPI.Framework.Services.Queue;
 
 namespace O24OpenAPI.ControlHub.Queues;
 

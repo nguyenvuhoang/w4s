@@ -1,5 +1,5 @@
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.O24ACT.Domain;
-using O24OpenAPI.Web.Framework.Models;
 
 namespace O24OpenAPI.O24ACT.Services.Interfaces;
 
@@ -9,7 +9,7 @@ namespace O24OpenAPI.O24ACT.Services.Interfaces;
 public partial interface IAccountBalanceService
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
@@ -23,21 +23,27 @@ public partial interface IAccountBalanceService
     Task<AccountBalance> GetByAccountNumber(string accountNumber);
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="accountNumber"></param>
     /// <returns></returns>
     Task<bool> IsBalanceEqualZero(string accountNumber);
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="accountNumber"></param>
     /// <param name="amount"></param>
     /// <param name="valueDate"></param>
     /// <param name="referenceId"></param>
     /// <returns></returns>
-    Task CreditAccount(BaseTransactionModel transaction, string accountNumber, decimal amount, DateTime? valueDate = null, string referenceId = "");
+    Task CreditAccount(
+        BaseTransactionModel transaction,
+        string accountNumber,
+        decimal amount,
+        DateTime? valueDate = null,
+        string referenceId = ""
+    );
 
     /// <summary>
     /// DebitAccount
@@ -47,7 +53,13 @@ public partial interface IAccountBalanceService
     /// <param name="valueDate"></param>
     /// <param name="referenceId"></param>
     /// <returns></returns>
-    Task DebitAccount(BaseTransactionModel transaction, string accountNumber, decimal amount, DateTime? valueDate = null, string referenceId = "");
+    Task DebitAccount(
+        BaseTransactionModel transaction,
+        string accountNumber,
+        decimal amount,
+        DateTime? valueDate = null,
+        string referenceId = ""
+    );
 
     /// <summary>
     /// UpdateAccount
@@ -58,7 +70,14 @@ public partial interface IAccountBalanceService
     /// <param name="valueDate"></param>
     /// <param name="referenceId"></param>
     /// <returns></returns>
-    Task UpdateAccount(BaseTransactionModel transaction, string accountNumber, string action, decimal amount, DateTime? valueDate = null, string referenceId = "");
+    Task UpdateAccount(
+        BaseTransactionModel transaction,
+        string accountNumber,
+        string action,
+        decimal amount,
+        DateTime? valueDate = null,
+        string referenceId = ""
+    );
 
     /// <summary>
     /// UpdateAccountProcess
@@ -69,7 +88,13 @@ public partial interface IAccountBalanceService
     /// <param name="valueDate"></param>
     /// <param name="referenceId"></param>
     /// <returns></returns>
-    Task UpdateAccountProcess(string accountNumber, string action, decimal amount, DateTime? valueDate = null, string referenceId = "");
+    Task UpdateAccountProcess(
+        string accountNumber,
+        string action,
+        decimal amount,
+        DateTime? valueDate = null,
+        string referenceId = ""
+    );
 
     /// <summary>
     /// DebitAccountProcess
@@ -79,7 +104,12 @@ public partial interface IAccountBalanceService
     /// <param name="valueDate"></param>
     /// <param name="referenceId"></param>
     /// <returns></returns>
-    Task DebitAccountProcess(AccountBalance accountBalance, decimal amount, DateTime? valueDate = null, string referenceId = "");
+    Task DebitAccountProcess(
+        AccountBalance accountBalance,
+        decimal amount,
+        DateTime? valueDate = null,
+        string referenceId = ""
+    );
 
     /// <summary>
     /// CreditAccountProcess
@@ -89,10 +119,15 @@ public partial interface IAccountBalanceService
     /// <param name="valueDate"></param>
     /// <param name="referenceId"></param>
     /// <returns></returns>
-    Task CreditAccountProcess(AccountBalance accountBalance, decimal amount, DateTime? valueDate = null, string referenceId = "");
+    Task CreditAccountProcess(
+        AccountBalance accountBalance,
+        decimal amount,
+        DateTime? valueDate = null,
+        string referenceId = ""
+    );
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <value></value>
     IQueryable<AccountBalance> Table { get; }

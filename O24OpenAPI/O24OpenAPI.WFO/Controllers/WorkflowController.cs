@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using O24OpenAPI.Web.Framework.Controllers;
+using O24OpenAPI.Framework.Controllers;
 using O24OpenAPI.WFO.Models;
 using O24OpenAPI.WFO.Services;
 

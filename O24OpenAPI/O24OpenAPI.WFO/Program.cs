@@ -1,8 +1,8 @@
 using Newtonsoft.Json.Serialization;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Core.Logging.Interceptors;
-using O24OpenAPI.Web.Framework.Extensions;
-using O24OpenAPI.Web.Framework.Infrastructure.Extensions;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Infrastructure.Extensions;
+using O24OpenAPI.Logging.Interceptors;
 using O24OpenAPI.WFO.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.ControlHub.Models.User;
 
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Models;
 
 /// <summary>
 /// Defines the <see cref="UserInfoModel" />

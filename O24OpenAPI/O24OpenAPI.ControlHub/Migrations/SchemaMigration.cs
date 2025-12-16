@@ -5,7 +5,7 @@ using O24OpenAPI.Data;
 using O24OpenAPI.Data.Attributes;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.Migrations;
-using O24OpenAPI.Web.Framework.Domain;
+using O24OpenAPI.Framework.Domain;
 
 namespace O24OpenAPI.ControlHub.Migrations;
 
@@ -35,12 +35,12 @@ public class SchemaMigration : AutoReversingMigration
                 .OnTable(nameof(UserAccount))
                 .Columns(nameof(UserAccount.UserId), nameof(UserAccount.ChannelId));
             Create
-               .Index("IX_USERACCOUNT_USERCODE")
-               .OnTable(nameof(UserAccount))
-               .OnColumn(nameof(UserAccount.UserCode))
-               .Ascending()
-               .WithOptions()
-               .NonClustered();
+                .Index("IX_USERACCOUNT_USERCODE")
+                .OnTable(nameof(UserAccount))
+                .OnColumn(nameof(UserAccount.UserCode))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
         }
 
         if (!Schema.Table(nameof(UserSession)).Exists())
@@ -93,10 +93,7 @@ public class SchemaMigration : AutoReversingMigration
         if (!Schema.Table(nameof(Channel)).Exists())
         {
             Create.TableFor<Channel>();
-            Create
-                .UniqueConstraint()
-                .OnTable(nameof(Channel))
-                .Columns(nameof(Channel.ChannelId));
+            Create.UniqueConstraint().OnTable(nameof(Channel)).Columns(nameof(Channel.ChannelId));
         }
 
         if (!Schema.Table(nameof(SupperAdmin)).Exists())
@@ -116,19 +113,19 @@ public class SchemaMigration : AutoReversingMigration
                     nameof(UserCommand.ParentId)
                 );
             Create
-                   .Index("IX_USERCOMMAND_PARENTID")
-                   .OnTable(nameof(UserCommand))
-                   .OnColumn(nameof(UserCommand.ParentId))
-                   .Ascending()
-                   .WithOptions()
-                   .NonClustered();
+                .Index("IX_USERCOMMAND_PARENTID")
+                .OnTable(nameof(UserCommand))
+                .OnColumn(nameof(UserCommand.ParentId))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
             Create
-                  .Index("IX_USERCOMMAND_APP_ENABLED")
-                  .OnTable(nameof(UserCommand))
-                  .OnColumn(nameof(UserCommand.ApplicationCode))
-                  .Ascending()
-                  .WithOptions()
-                  .NonClustered();
+                .Index("IX_USERCOMMAND_APP_ENABLED")
+                .OnTable(nameof(UserCommand))
+                .OnColumn(nameof(UserCommand.ApplicationCode))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
         }
 
         if (!Schema.Table(nameof(UserRight)).Exists())
@@ -143,24 +140,20 @@ public class SchemaMigration : AutoReversingMigration
         if (!Schema.Table(nameof(UserRole)).Exists())
         {
             Create.TableFor<UserRole>();
-            Create
-                .UniqueConstraint()
-                .OnTable(nameof(UserRole))
-                .Columns(nameof(UserRole.RoleId));
+            Create.UniqueConstraint().OnTable(nameof(UserRole)).Columns(nameof(UserRole.RoleId));
         }
 
         if (!Schema.Table(nameof(UserInRole)).Exists())
         {
             Create.TableFor<UserInRole>();
             Create
-               .Index("IX_USERINROLE_USERCODE")
-               .OnTable(nameof(UserInRole))
-               .OnColumn(nameof(UserInRole.UserCode))
-               .Ascending()
-               .WithOptions()
-               .NonClustered();
+                .Index("IX_USERINROLE_USERCODE")
+                .OnTable(nameof(UserInRole))
+                .OnColumn(nameof(UserInRole.UserCode))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
         }
-
 
         if (!Schema.Table(nameof(UserDevice)).Exists())
         {
@@ -199,12 +192,12 @@ public class SchemaMigration : AutoReversingMigration
         {
             Create.TableFor<UserLevel>();
             Create
-               .Index("IX_USERLEVEL_LEVELNAME")
-               .OnTable(nameof(UserLevel))
-               .OnColumn(nameof(UserLevel.LevelName))
-               .Ascending()
-               .WithOptions()
-               .NonClustered();
+                .Index("IX_USERLEVEL_LEVELNAME")
+                .OnTable(nameof(UserLevel))
+                .OnColumn(nameof(UserLevel.LevelName))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
         }
 
         if (!Schema.Table(nameof(UserPolicy)).Exists())
@@ -235,66 +228,90 @@ public class SchemaMigration : AutoReversingMigration
             Create
                 .Index("IX_TransactionDefinition_Lookup")
                 .OnTable(nameof(TransactionDefinition))
-                .OnColumn(nameof(TransactionDefinition.TransactionCode)).Ascending()
-                .OnColumn(nameof(TransactionDefinition.WorkflowId)).Ascending()
-                .WithOptions().NonClustered();
+                .OnColumn(nameof(TransactionDefinition.TransactionCode))
+                .Ascending()
+                .OnColumn(nameof(TransactionDefinition.WorkflowId))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
         }
 
         if (!Schema.Table(nameof(UserLimit)).Exists())
         {
             Create.TableFor<UserLimit>();
-            Create.Index("IX_UserLimit_Role_Command")
+            Create
+                .Index("IX_UserLimit_Role_Command")
                 .OnTable(nameof(UserLimit))
-                .OnColumn(nameof(UserLimit.RoleId)).Ascending()
-                .OnColumn(nameof(UserLimit.CommandId)).Ascending()
-                .WithOptions().NonClustered();
+                .OnColumn(nameof(UserLimit.RoleId))
+                .Ascending()
+                .OnColumn(nameof(UserLimit.CommandId))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
         }
         if (!Schema.Table(nameof(RoleType)).Exists())
         {
             Create.TableFor<RoleType>();
 
-            Create.UniqueConstraint("UQ_RoleType_RoleTypeCode_ServiceID")
-             .OnTable(nameof(RoleType))
-             .Columns(nameof(RoleType.RoleTypeCode), nameof(RoleType.ServiceID));
-
-            Create.Index("IX_RoleType_Service_IsActive")
+            Create
+                .UniqueConstraint("UQ_RoleType_RoleTypeCode_ServiceID")
                 .OnTable(nameof(RoleType))
-                .OnColumn(nameof(RoleType.ServiceID)).Ascending()
-                .OnColumn(nameof(RoleType.IsActive)).Ascending()
-                .WithOptions().NonClustered();
+                .Columns(nameof(RoleType.RoleTypeCode), nameof(RoleType.ServiceID));
 
-            Create.Index("IX_RoleType_Order")
+            Create
+                .Index("IX_RoleType_Service_IsActive")
                 .OnTable(nameof(RoleType))
-                .OnColumn(nameof(RoleType.SortOrder)).Ascending()
-                .WithOptions().NonClustered();
+                .OnColumn(nameof(RoleType.ServiceID))
+                .Ascending()
+                .OnColumn(nameof(RoleType.IsActive))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
+
+            Create
+                .Index("IX_RoleType_Order")
+                .OnTable(nameof(RoleType))
+                .OnColumn(nameof(RoleType.SortOrder))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
         }
         if (!Schema.Table(nameof(C_CODELIST)).Exists())
         {
             Create.TableFor<C_CODELIST>();
             Create
-            .UniqueConstraint("UC_C_CODELIST_CodeId_CodeName_CodeGroup")
-            .OnTable(nameof(C_CODELIST))
-            .Columns(nameof(C_CODELIST.CodeId), nameof(C_CODELIST.CodeName), nameof(C_CODELIST.CodeGroup));
-
+                .UniqueConstraint("UC_C_CODELIST_CodeId_CodeName_CodeGroup")
+                .OnTable(nameof(C_CODELIST))
+                .Columns(
+                    nameof(C_CODELIST.CodeId),
+                    nameof(C_CODELIST.CodeName),
+                    nameof(C_CODELIST.CodeGroup)
+                );
         }
-
 
         if (!Schema.Table(nameof(Calendar)).Exists())
         {
             Create.TableFor<Calendar>();
-            Create.Index("IX_Calendar_Lookup").OnTable(nameof(Calendar))
-                .OnColumn(nameof(Calendar.SqnDate)).Ascending().WithOptions().NonClustered();
+            Create
+                .Index("IX_Calendar_Lookup")
+                .OnTable(nameof(Calendar))
+                .OnColumn(nameof(Calendar.SqnDate))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
         }
 
         if (!Schema.Table(nameof(BankWorkingCalendar)).Exists())
         {
             Create.TableFor<BankWorkingCalendar>();
 
-            Create.Index("IX_BankWorkingCalendar_Lookup")
+            Create
+                .Index("IX_BankWorkingCalendar_Lookup")
                 .OnTable(nameof(BankWorkingCalendar))
                 .OnColumn(nameof(BankWorkingCalendar.WorkingDate))
                 .Ascending()
-                .WithOptions().NonClustered();
+                .WithOptions()
+                .NonClustered();
         }
 
         if (!Schema.Table(nameof(ChannelSchedule)).Exists())
@@ -303,15 +320,19 @@ public class SchemaMigration : AutoReversingMigration
 
             Create
                 .ForeignKey("FK_ChannelSchedule_Channel")
-                .FromTable(nameof(ChannelSchedule)).ForeignColumn(nameof(ChannelSchedule.ChannelIdRef))
-                .ToTable(nameof(Channel)).PrimaryColumn("Id")
+                .FromTable(nameof(ChannelSchedule))
+                .ForeignColumn(nameof(ChannelSchedule.ChannelIdRef))
+                .ToTable(nameof(Channel))
+                .PrimaryColumn("Id")
                 .OnDeleteOrUpdate(System.Data.Rule.Cascade);
 
             Create
                 .Index("IX_ChannelSchedule_Channel_Day")
                 .OnTable(nameof(ChannelSchedule))
-                .OnColumn(nameof(ChannelSchedule.ChannelIdRef)).Ascending()
-                .OnColumn(nameof(ChannelSchedule.DayOfWeek)).Ascending();
+                .OnColumn(nameof(ChannelSchedule.ChannelIdRef))
+                .Ascending()
+                .OnColumn(nameof(ChannelSchedule.DayOfWeek))
+                .Ascending();
         }
         if (!Schema.Table(nameof(ChannelScheduleInterval)).Exists())
         {
@@ -319,15 +340,19 @@ public class SchemaMigration : AutoReversingMigration
 
             Create
                 .ForeignKey("FK_ChannelScheduleInterval_Schedule")
-                .FromTable(nameof(ChannelScheduleInterval)).ForeignColumn(nameof(ChannelScheduleInterval.ChannelScheduleIdRef))
-                .ToTable(nameof(ChannelSchedule)).PrimaryColumn("Id")
+                .FromTable(nameof(ChannelScheduleInterval))
+                .ForeignColumn(nameof(ChannelScheduleInterval.ChannelScheduleIdRef))
+                .ToTable(nameof(ChannelSchedule))
+                .PrimaryColumn("Id")
                 .OnDeleteOrUpdate(System.Data.Rule.Cascade);
 
             Create
                 .Index("IX_ChannelScheduleInterval_Schedule_Sort")
                 .OnTable(nameof(ChannelScheduleInterval))
-                .OnColumn(nameof(ChannelScheduleInterval.ChannelScheduleIdRef)).Ascending()
-                .OnColumn(nameof(ChannelScheduleInterval.SortOrder)).Ascending();
+                .OnColumn(nameof(ChannelScheduleInterval.ChannelScheduleIdRef))
+                .Ascending()
+                .OnColumn(nameof(ChannelScheduleInterval.SortOrder))
+                .Ascending();
         }
 
         if (!Schema.Table(nameof(ChannelOverride)).Exists())
@@ -337,8 +362,10 @@ public class SchemaMigration : AutoReversingMigration
             Create
                 .Index("IX_ChannelOverride_Channel_Date")
                 .OnTable(nameof(ChannelOverride))
-                .OnColumn(nameof(ChannelOverride.ChannelIdRef)).Ascending()
-                .OnColumn(nameof(ChannelOverride.Date)).Ascending();
+                .OnColumn(nameof(ChannelOverride.ChannelIdRef))
+                .Ascending()
+                .OnColumn(nameof(ChannelOverride.Date))
+                .Ascending();
         }
 
         if (!Schema.Table(nameof(ChannelOverrideInterval)).Exists())
@@ -347,8 +374,10 @@ public class SchemaMigration : AutoReversingMigration
             Create
                 .Index("IX_ChannelOverrideInterval_Override_Sort")
                 .OnTable(nameof(ChannelOverrideInterval))
-                .OnColumn(nameof(ChannelOverrideInterval.ChannelOverrideIdRef)).Ascending()
-                .OnColumn(nameof(ChannelOverrideInterval.SortOrder)).Ascending();
+                .OnColumn(nameof(ChannelOverrideInterval.ChannelOverrideIdRef))
+                .Ascending()
+                .OnColumn(nameof(ChannelOverrideInterval.SortOrder))
+                .Ascending();
         }
 
         if (!Schema.Table(nameof(ChannelUserOverride)).Exists())
@@ -358,34 +387,45 @@ public class SchemaMigration : AutoReversingMigration
             Create
                 .Index("IX_ChannelUserOverride_Sort")
                 .OnTable(nameof(ChannelUserOverride))
-                .OnColumn(nameof(ChannelUserOverride.ChannelIdRef)).Ascending()
-                .OnColumn(nameof(ChannelUserOverride.UserId)).Ascending();
+                .OnColumn(nameof(ChannelUserOverride.ChannelIdRef))
+                .Ascending()
+                .OnColumn(nameof(ChannelUserOverride.UserId))
+                .Ascending();
         }
 
         if (!Schema.Table(nameof(UserAgreement)).Exists())
         {
             Create.TableFor<UserAgreement>();
 
-            Create.Index("IX_USERAGREEMENT_AGREEMENTNUMBER")
+            Create
+                .Index("IX_USERAGREEMENT_AGREEMENTNUMBER")
                 .OnTable(nameof(UserAgreement))
-                .OnColumn(nameof(UserAgreement.AgreementNumber)).Ascending()
-                .WithOptions().NonClustered();
+                .OnColumn(nameof(UserAgreement.AgreementNumber))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
 
-            Create.UniqueConstraint("UC_USERAGREEMENT_TYPE_TXCODE_NUMBER")
+            Create
+                .UniqueConstraint("UC_USERAGREEMENT_TYPE_TXCODE_NUMBER")
                 .OnTable(nameof(UserAgreement))
-                .Columns(nameof(UserAgreement.AgreementNumber), nameof(UserAgreement.AgreementType), nameof(UserAgreement.TransactionCode));
-
+                .Columns(
+                    nameof(UserAgreement.AgreementNumber),
+                    nameof(UserAgreement.AgreementType),
+                    nameof(UserAgreement.TransactionCode)
+                );
         }
 
         if (!Schema.Table(nameof(UserBanner)).Exists())
         {
             Create.TableFor<UserBanner>();
 
-            Create.Index("IX_USERBANNER_USERCODE")
+            Create
+                .Index("IX_USERBANNER_USERCODE")
                 .OnTable(nameof(UserBanner))
-                .OnColumn(nameof(UserBanner.UserCode)).Ascending()
-                .WithOptions().NonClustered();
+                .OnColumn(nameof(UserBanner.UserCode))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
         }
-
     }
 }

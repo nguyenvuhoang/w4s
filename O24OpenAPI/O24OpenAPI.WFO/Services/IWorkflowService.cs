@@ -1,4 +1,4 @@
-using O24OpenAPI.O24OpenAPIClient.Workflow;
+using O24OpenAPI.Client.Workflow;
 using O24OpenAPI.WFO.Domain;
 using O24OpenAPI.WFO.Models;
 

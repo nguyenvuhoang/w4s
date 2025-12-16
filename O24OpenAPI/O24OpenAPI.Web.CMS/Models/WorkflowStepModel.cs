@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using O24OpenAPI.O24OpenAPIClient.Enums;
+using O24OpenAPI.Client.Enums;
 
 namespace O24OpenAPI.Web.CMS.Models;
 

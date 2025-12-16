@@ -1,12 +1,12 @@
 using System.Diagnostics;
 using LinqToDB;
 using Newtonsoft.Json;
+using O24OpenAPI.Client.Workflow;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Extensions;
-using O24OpenAPI.O24OpenAPIClient.Workflow;
-using O24OpenAPI.Web.Framework.Helpers;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Helpers;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.WFO.Domain;
 using O24OpenAPI.WFO.Models;
 using O24OpenAPI.WFO.Services.Interfaces;
@@ -169,10 +169,7 @@ public class WorkflowService(
                 JsonConvert.DeserializeObject<WorkflowDef>(defObject.ToSerialize())
                 ?? throw new InvalidOperationException("Invalid workflow definition");
             var exit =
-                await _workflowDefService.GetByWorkflowIdAsync(
-                    wfDef.WorkflowId,
-                    wfDef.ChannelId
-                )
+                await _workflowDefService.GetByWorkflowIdAsync(wfDef.WorkflowId, wfDef.ChannelId)
                 ?? throw new InvalidOperationException(
                     $"Workflow [{wfDef.WorkflowId}] does not exit."
                 );
@@ -227,10 +224,7 @@ public class WorkflowService(
                 input.Fields.ToSerialize()
             );
             var result = await _workflowDefService.SimpleSearch(searchModel);
-            var pageListModel = result.ToPagedListModel<
-                WorkflowDef,
-                WorkflowDefSearchResponse
-            >();
+            var pageListModel = result.ToPagedListModel<WorkflowDef, WorkflowDefSearchResponse>();
             stopwatch.Stop();
 
             response.data = pageListModel.ToDictionary();
@@ -268,9 +262,7 @@ public class WorkflowService(
             int id = idOb.ToInt();
             var wfDef =
                 await _workflowDefService.GetByIdAsync(id)
-                ?? throw new InvalidOperationException(
-                    $"Workflow with id [{id}] does not exit."
-                );
+                ?? throw new InvalidOperationException($"Workflow with id [{id}] does not exit.");
             await _workflowDefService.DeleteAsync(wfDef);
             await _workflowStepService.DeleteByWorkflowIdAsync(wfDef.WorkflowId);
             stopwatch.Stop();

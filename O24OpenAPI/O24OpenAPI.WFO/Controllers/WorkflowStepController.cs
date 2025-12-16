@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using O24OpenAPI.Client.Workflow;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Extensions;
-using O24OpenAPI.O24OpenAPIClient.Workflow;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.WFO.Domain;
 using O24OpenAPI.WFO.Lib;
 using O24OpenAPI.WFO.Models;
@@ -12,8 +12,7 @@ using WorkflowInput = O24OpenAPI.WFO.Models.WorkflowInput;
 
 namespace O24OpenAPI.WFO.Controllers;
 
-public class WorkflowStepController(IWorkflowStepService workflowStepService)
-    : WFOBaseController
+public class WorkflowStepController(IWorkflowStepService workflowStepService) : WFOBaseController
 {
     private readonly IWorkflowStepService _workflowStepService = workflowStepService;
 
@@ -44,12 +43,7 @@ public class WorkflowStepController(IWorkflowStepService workflowStepService)
         var r = await _workflowStepService.SimpleSearch(model);
 
         var jObjects = r.Select(x => JObject.FromObject(x)).ToList();
-        var pagedJObjects = new PagedList<JObject>(
-            jObjects,
-            r.PageIndex,
-            r.PageSize,
-            r.TotalCount
-        );
+        var pagedJObjects = new PagedList<JObject>(jObjects, r.PageIndex, r.PageSize, r.TotalCount);
 
         var pageListModel = new PageListModel(pagedJObjects, r.TotalCount);
 
@@ -66,12 +60,7 @@ public class WorkflowStepController(IWorkflowStepService workflowStepService)
         var r = await _workflowStepService.GetByWorkflowId(workflowid);
 
         var jObjects = r.Select(x => JObject.FromObject(x)).ToList();
-        var pagedJObjects = new PagedList<JObject>(
-            jObjects,
-            r.PageIndex,
-            r.PageSize,
-            r.TotalCount
-        );
+        var pagedJObjects = new PagedList<JObject>(jObjects, r.PageIndex, r.PageSize, r.TotalCount);
 
         var pageListModel = new PageListModel(pagedJObjects, r.TotalCount);
 
@@ -238,14 +227,12 @@ public class WorkflowStepController(IWorkflowStepService workflowStepService)
                 Description = wfStepObj["Description"]?.ToString() ?? "",
                 SendingTemplate = JTokenHelper.NormalizeToken(wfStepObj["SendingTemplate"]),
                 MappingResponse = JTokenHelper.NormalizeToken(wfStepObj["MappingResponse"]),
-                SubSendingTemplate = JTokenHelper.NormalizeToken(
-                    wfStepObj["SubSendingTemplate"]
-                ),
+                SubSendingTemplate = JTokenHelper.NormalizeToken(wfStepObj["SubSendingTemplate"]),
                 SendingCondition = JTokenHelper.NormalizeToken(wfStepObj["SendingCondition"]),
                 StepTimeout = wfStepObj["StepTimeout"]?.Value<long?>() ?? 60000,
                 IsReverse = wfStepObj["IsReverse"]?.ToObject<bool>() ?? false,
                 ShouldAwaitStep = wfStepObj["ShouldAwaitStep"]?.ToObject<bool>() ?? true,
-                ProcessingNumber = (O24OpenAPIClient.Enums.ProcessNumber)(
+                ProcessingNumber = (Client.Enums.ProcessNumber)(
                     wfStepObj["ProcessingNumber"]?.ToObject<int>() ?? 0
                 ),
             };
@@ -314,12 +301,11 @@ public class WorkflowStepController(IWorkflowStepService workflowStepService)
                         return rs;
                     }
 
-                    var wfStep =
-                        await _workflowStepService.GetByWorkflowIdAndStepCodeAndStepOrder(
-                            workflowId,
-                            stepCode,
-                            stepOrder
-                        );
+                    var wfStep = await _workflowStepService.GetByWorkflowIdAndStepCodeAndStepOrder(
+                        workflowId,
+                        stepCode,
+                        stepOrder
+                    );
                     if (wfStep == null)
                     {
                         var rs = new WorkflowResponse
@@ -331,9 +317,7 @@ public class WorkflowStepController(IWorkflowStepService workflowStepService)
                     }
 
                     await _workflowStepService.DeleteAsync(wfStep);
-                    var dict = JObject
-                        .FromObject(wfStep)
-                        .ToObject<Dictionary<string, object>>();
+                    var dict = JObject.FromObject(wfStep).ToObject<Dictionary<string, object>>();
                     deletedItems.Add(dict);
                 }
                 return new WorkflowResponse

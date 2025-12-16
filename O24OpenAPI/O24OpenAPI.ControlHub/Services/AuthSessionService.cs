@@ -3,8 +3,8 @@ using O24OpenAPI.ControlHub.Models;
 using O24OpenAPI.ControlHub.Services.Interfaces;
 using O24OpenAPI.Core.Domain.Users;
 using O24OpenAPI.Core.Extensions;
-using O24OpenAPI.Web.Framework;
-using O24OpenAPI.Web.Framework.Services;
+using O24OpenAPI.Framework;
+using O24OpenAPI.Framework.Services;
 
 namespace O24OpenAPI.ControlHub.Services;
 

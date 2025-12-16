@@ -1,13 +1,12 @@
 using O24OpenAPI.Core;
 using O24OpenAPI.Data.System.Linq;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.WFO.Domain;
 using O24OpenAPI.WFO.Services.Interfaces;
 
 namespace O24OpenAPI.WFO.Services;
 
-public class WorkflowStepService(IRepository<WorkflowStep> entityRepository)
-    : IWorkflowStepService
+public class WorkflowStepService(IRepository<WorkflowStep> entityRepository) : IWorkflowStepService
 {
     private readonly IRepository<WorkflowStep> _entityRepository = entityRepository;
 
@@ -41,10 +40,8 @@ public class WorkflowStepService(IRepository<WorkflowStep> entityRepository)
         var query =
             from d in _entityRepository.Table
             where
-                (
-                    !string.IsNullOrEmpty(model.SearchText)
-                    && d.WorkflowId.Contains(model.SearchText)
-                ) || true
+                (!string.IsNullOrEmpty(model.SearchText) && d.WorkflowId.Contains(model.SearchText))
+                || true
             select d;
         return await query.ToPagedList(model.PageIndex, model.PageSize);
     }
@@ -60,21 +57,23 @@ public class WorkflowStepService(IRepository<WorkflowStep> entityRepository)
             e.WorkflowId == workflowId && e.StepCode == stepCode
         );
     }
-    public async Task<WorkflowStep> GetByWorkflowIdAndStepCodeAndStepOrder(string workflowId, string stepCode, int stepOrder)
+
+    public async Task<WorkflowStep> GetByWorkflowIdAndStepCodeAndStepOrder(
+        string workflowId,
+        string stepCode,
+        int stepOrder
+    )
     {
         return await _entityRepository.Table.FirstOrDefaultAsync(e =>
             e.WorkflowId == workflowId && e.StepCode == stepCode && e.StepOrder == stepOrder
         );
     }
+
     public async Task<IPagedList<WorkflowStep>> GetByWorkflowId(string workflowId)
     {
         var query =
             from d in _entityRepository.Table
-            where
-                (
-                    !string.IsNullOrEmpty(workflowId)
-                    && d.WorkflowId.Equals(workflowId)
-                )
+            where (!string.IsNullOrEmpty(workflowId) && d.WorkflowId.Equals(workflowId))
             select d;
         return await query.ToPagedList(0, 10);
     }

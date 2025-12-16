@@ -1,9 +1,9 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using O24OpenAPI.Data.System.Linq;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
+using O24OpenAPI.Framework.Localization;
 using O24OpenAPI.Web.CMS.Models.Digital;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Infrastructure.Mapper.Extensions;
-using O24OpenAPI.Web.Framework.Localization;
 
 namespace O24OpenAPI.Web.CMS.Services.Services;
 
@@ -194,10 +194,7 @@ public partial class FeeService : IFeeService
                 DateCreated = c.DateCreated,
                 DateModified = c.DateModified,
             }
-        )
-            .OrderBy(c => c.FeeID)
-            .AsQueryable()
-            .ToPagedList(model.PageIndex, model.PageSize);
+        ).OrderBy(c => c.FeeID).AsQueryable().ToPagedList(model.PageIndex, model.PageSize);
 
         return query;
     }

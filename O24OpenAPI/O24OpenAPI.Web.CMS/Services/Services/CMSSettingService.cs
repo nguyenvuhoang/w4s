@@ -1,7 +1,7 @@
 ﻿using LinqToDB;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Domain.Configuration;
-using O24OpenAPI.Web.Framework.Services.Configuration;
+using O24OpenAPI.Framework.Services.Configuration;
 
 namespace O24OpenAPI.Web.CMS.Services.Services;
 
@@ -61,9 +61,7 @@ public class CMSSettingService(
     /// <returns></returns>
     public virtual async Task<Setting> GetByPrimaryKey(string name)
     {
-        var query = await _settingRepository
-            .Table.Where(s => s.Name == name)
-            .FirstOrDefaultAsync();
+        var query = await _settingRepository.Table.Where(s => s.Name == name).FirstOrDefaultAsync();
         return query;
     }
 
@@ -88,7 +86,10 @@ public class CMSSettingService(
         throw new NotImplementedException();
     }
 
-    public Task<Models.SettingUpdateModel> Update(Models.SettingUpdateModel model, string referenceId = "")
+    public Task<Models.SettingUpdateModel> Update(
+        Models.SettingUpdateModel model,
+        string referenceId = ""
+    )
     {
         throw new NotImplementedException();
     }

@@ -5,8 +5,8 @@
 //using O24OpenAPI.Data.Attributes;
 //using O24OpenAPI.Data.Extensions;
 //using O24OpenAPI.Data.Migrations;
-//using O24OpenAPI.Web.Framework.Domain;
-//using O24OpenAPI.Web.Framework.Utils;
+//using O24OpenAPI.Framework.Domain;
+//using O24OpenAPI.Framework.Utils;
 
 //namespace O24OpenAPI.ControlHub.Migrations;
 
@@ -58,7 +58,7 @@
 //            Name = "CheckCDC",
 //            Seconds = 10,
 //            Type =
-//                "O24OpenAPI.Web.Framework.Services.ScheduleTasks.CheckCDCTask, O24OpenAPI.Web.Framework",
+//                "O24OpenAPI.Framework.Services.ScheduleTasks.CheckCDCTask, O24OpenAPI.Framework",
 //            Enabled = true,
 //            StopOnError = false,
 //            LastEnabledUtc = DateTime.UtcNow,

@@ -1,4 +1,4 @@
-using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
+using O24OpenAPI.Client.Scheme.Workflow;
 using O24OpenAPI.WFO.Domain;
 
 namespace O24OpenAPI.WFO.Services.Interfaces;

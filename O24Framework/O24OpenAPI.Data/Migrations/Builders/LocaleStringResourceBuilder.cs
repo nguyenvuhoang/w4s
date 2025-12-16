@@ -2,7 +2,7 @@
 using O24OpenAPI.Core.Domain.Localization;
 using O24OpenAPI.Data.Mapping.Builders;
 
-namespace O24OpenAPI.Web.Framework.Migrations.Builder;
+namespace O24OpenAPI.Framework.Migrations.Builder;
 
 /// <summary>
 /// The session manager builder class

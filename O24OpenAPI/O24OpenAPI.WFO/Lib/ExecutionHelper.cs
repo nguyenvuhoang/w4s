@@ -1,9 +1,9 @@
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Web.Framework.Services.Logging;
+using O24OpenAPI.Framework.Services.Logging;
 using O24OpenAPI.WFO.Mapper;
 using O24OpenAPI.WFO.Models;
 using O24OpenAPI.WFO.Services.Interfaces;
-using ILogger = O24OpenAPI.Web.Framework.Services.Logging.ILogger;
+using ILogger = O24OpenAPI.Framework.Services.Logging.ILogger;
 
 namespace O24OpenAPI.WFO.Lib;
 

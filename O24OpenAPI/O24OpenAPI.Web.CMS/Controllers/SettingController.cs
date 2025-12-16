@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using O24OpenAPI.Web.Framework.Controllers;
-using O24OpenAPI.Web.Framework.Services.Configuration;
+using O24OpenAPI.Framework.Controllers;
+using O24OpenAPI.Framework.Services.Configuration;
 
 namespace O24OpenAPI.Web.CMS.Controllers;
 

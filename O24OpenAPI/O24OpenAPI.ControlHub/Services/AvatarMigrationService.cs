@@ -2,7 +2,7 @@
 using O24OpenAPI.ControlHub.Models;
 using O24OpenAPI.ControlHub.Services.Interfaces;
 using O24OpenAPI.Core.SeedWork;
-using O24OpenAPI.Web.Framework.Extensions;
+using O24OpenAPI.Framework.Extensions;
 
 namespace O24OpenAPI.ControlHub.Services;
 
@@ -13,7 +13,6 @@ public class AvatarMigrationService(
 {
     private readonly IWebHostEnvironment _env = environment;
     private readonly IRepository<UserAvatar> _userAvatarRepository = userAvatarRepository;
-
 
     public async Task<AvatarMigrationResultModel> MigrateBase64AvatarsAsync()
     {

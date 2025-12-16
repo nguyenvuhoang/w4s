@@ -1,6 +1,6 @@
-﻿using O24OpenAPI.Core.Logging.Helpers;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
+using O24OpenAPI.Logging.Helpers;
 
 namespace O24OpenAPI.O24NCH.Utils;
 
@@ -16,16 +16,17 @@ public static class Etl
         string key,
         string url,
         string charset = "utf-8",
-        string signType = "SAH256")
+        string signType = "SAH256"
+    )
     {
-        var raw = $"charset={charset}" +
-                  $"&spID={spId}" +
-                  $"&transactionID={transactionId}" +
-                  $"&msisdn={msisdn}" +
-                  $"&sign_type={signType}" +
-                  $"&key={key}" +
-                  $"&url={url}";
-
+        var raw =
+            $"charset={charset}"
+            + $"&spID={spId}"
+            + $"&transactionID={transactionId}"
+            + $"&msisdn={msisdn}"
+            + $"&sign_type={signType}"
+            + $"&key={key}"
+            + $"&url={url}";
 
         Console.WriteLine($"ETL Sign: {raw}");
         BusinessLogHelper.Info($"ETL Sign: {raw}");
@@ -52,15 +53,17 @@ public static class Etl
         string key,
         string url,
         string charset = "utf-8",
-        string signType = "SAH256")
+        string signType = "SAH256"
+    )
     {
-        var raw = $"charset={charset}" +
-                  $"&spID={spId}" +
-                  $"&transactionID={transactionId}" +
-                  $"&msisdn={msisdn}" +
-                  $"&sign_type={signType}" +
-                  $"&key={key}" +
-                  $"&url={url}";
+        var raw =
+            $"charset={charset}"
+            + $"&spID={spId}"
+            + $"&transactionID={transactionId}"
+            + $"&msisdn={msisdn}"
+            + $"&sign_type={signType}"
+            + $"&key={key}"
+            + $"&url={url}";
         var bytes = Encoding.UTF8.GetBytes(raw);
         var hash = SHA256.HashData(bytes);
 

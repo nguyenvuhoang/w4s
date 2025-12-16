@@ -1,9 +1,9 @@
-﻿using FluentMigrator;
+﻿using System.Linq.Expressions;
+using System.Reflection;
+using FluentMigrator;
 using FluentMigrator.Infrastructure;
 using O24OpenAPI.Data.Extensions;
-using O24OpenAPI.Web.Framework.Extensions;
-using System.Linq.Expressions;
-using System.Reflection;
+using O24OpenAPI.Framework.Extensions;
 
 namespace O24OpenAPI.Web.CMS.Migrations.Base;
 

@@ -1,11 +1,11 @@
 using Grpc.Core;
 using O24OpenAPI.ControlHub.Services.Interfaces;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Core.Logging.Helpers;
+using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Grpc.Common;
 using O24OpenAPI.Grpc.CTH;
 using O24OpenAPI.GrpcContracts.GrpcServerServices;
-using O24OpenAPI.Web.Framework.Extensions;
+using O24OpenAPI.Logging.Helpers;
 using static O24OpenAPI.Grpc.CTH.CTHGrpcService;
 
 namespace O24OpenAPI.ControlHub.GrpcServices;
@@ -163,9 +163,7 @@ public class CTHGrpcService : CTHGrpcServiceBase
             context,
             async () =>
             {
-                return await _userAccountService.GetByUserCodeAsync(
-                    request.UserCode
-                );
+                return await _userAccountService.GetByUserCodeAsync(request.UserCode);
             }
         );
     }
@@ -186,7 +184,6 @@ public class CTHGrpcService : CTHGrpcServiceBase
         );
     }
 
-
     /// <summary>
     /// Get user notification stream
     /// </summary>
@@ -194,7 +191,6 @@ public class CTHGrpcService : CTHGrpcServiceBase
     /// <param name="responseStream"></param>
     /// <param name="context"></param>
     /// <returns></returns>
-
     public override async Task GetUserNotification(
         GetUserNotificationRequest request,
         IServerStreamWriter<GetUserNotificationReply> responseStream,
@@ -250,14 +246,9 @@ public class CTHGrpcService : CTHGrpcServiceBase
         }
         catch (Exception ex)
         {
-            BusinessLogHelper.Error(
-                ex,
-                "Error in LoadFullUserCommands GRPC Stream Handler"
-            );
+            BusinessLogHelper.Error(ex, "Error in LoadFullUserCommands GRPC Stream Handler");
 
             await ex.LogErrorAsync();
         }
     }
-
-
 }

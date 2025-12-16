@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using O24OpenAPI.AI.API.Application.Features;
 using O24OpenAPI.AI.Domain.AggregatesModel.AskAggreate;
 using O24OpenAPI.AI.Domain.AggregatesModel.QdrantAggreate;
-using O24OpenAPI.Web.Framework.Controllers;
+using O24OpenAPI.Framework.Controllers;
 
 namespace O24OpenAPI.AI.API.Controllers;
 

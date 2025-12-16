@@ -2,7 +2,7 @@ using System.Text.Json;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Logger.Domain;
 using O24OpenAPI.Logger.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Services.Grpc;
+using O24OpenAPI.Framework.Services.Grpc;
 
 namespace O24OpenAPI.Logger.GrpcServices;
 

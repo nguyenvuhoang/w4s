@@ -1,5 +1,5 @@
 ﻿using O24OpenAPI.O24NCH.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Services.ScheduleTasks;
+using O24OpenAPI.Framework.Services.ScheduleTasks;
 
 namespace O24OpenAPI.O24NCH.Services.ScheduleTasks;
 

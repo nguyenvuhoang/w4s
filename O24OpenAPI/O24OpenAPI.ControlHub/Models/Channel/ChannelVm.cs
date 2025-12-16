@@ -1,4 +1,4 @@
-﻿using O24OpenAPI.Web.Framework.Models;
+﻿using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.ControlHub.Models.Channel;
 
@@ -7,14 +7,16 @@ public class ChannelIntervalVm
     public string Start { get; set; } = default!; // "07:00"
     public string End { get; set; } = default!; // "19:00"
 }
+
 public class ChannelDayVm
 {
-    public int DayOfWeek { get; set; }          // 0=Sun..6=Sat
+    public int DayOfWeek { get; set; } // 0=Sun..6=Sat
     public string DayName { get; set; } = default!;
     public bool IsClosed { get; set; }
     public List<ChannelIntervalVm> Intervals { get; set; } = [];
     public bool IsToday { get; set; }
 }
+
 public class ChannelVm : BaseO24OpenAPIModel
 {
     public int Id { get; set; }

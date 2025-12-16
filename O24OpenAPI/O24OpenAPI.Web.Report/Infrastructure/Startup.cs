@@ -1,5 +1,5 @@
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Web.Framework.Services.Mapping;
+using O24OpenAPI.Framework.Services.Mapping;
 using O24OpenAPI.Web.Report.GrpcServices;
 using O24OpenAPI.Web.Report.Services.Interfaces;
 using O24OpenAPI.Web.Report.Services.Services;

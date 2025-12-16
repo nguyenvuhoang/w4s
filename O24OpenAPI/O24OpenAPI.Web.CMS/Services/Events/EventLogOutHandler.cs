@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.SignalR;
 using O24OpenAPI.APIContracts.Events;
-using O24OpenAPI.Core.Logging.Helpers;
 using O24OpenAPI.EventBus.Abstractions;
+using O24OpenAPI.Logging.Helpers;
 using O24OpenAPI.Web.CMS.Services.Services;
 
 namespace O24OpenAPI.Web.CMS.Services.Events;
 
-public class EventLogOutHandler(IHubContext<SignalHubService> signal) : IIntegrationEventHandler<UserLogoutEvent>
+public class EventLogOutHandler(IHubContext<SignalHubService> signal)
+    : IIntegrationEventHandler<UserLogoutEvent>
 {
     private readonly IHubContext<SignalHubService> _signal = signal;
 
@@ -22,12 +23,7 @@ public class EventLogOutHandler(IHubContext<SignalHubService> signal) : IIntegra
 
             var user = new { IsLogout = true };
 
-            return SignalHubService.SendUserLogOut(
-                _signal,
-                @event.UserCode,
-                @event.DeviceId,
-                user
-            );
+            return SignalHubService.SendUserLogOut(_signal, @event.UserCode, @event.DeviceId, user);
         }
         catch (Exception ex)
         {

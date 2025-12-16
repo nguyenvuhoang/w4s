@@ -1,4 +1,4 @@
-﻿using O24OpenAPI.Web.Framework.Abstractions;
+﻿using O24OpenAPI.Framework.Abstractions;
 
 namespace O24OpenAPI.AI.API.Application;
 

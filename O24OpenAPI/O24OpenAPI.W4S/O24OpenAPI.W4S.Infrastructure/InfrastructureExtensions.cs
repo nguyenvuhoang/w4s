@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using O24OpenAPI.Core.Logging.Interceptors;
-using O24OpenAPI.Web.Framework.Infrastructure.Extensions;
+using O24OpenAPI.Framework.Infrastructure.Extensions;
+using O24OpenAPI.Logging.Interceptors;
 
 namespace O24OpenAPI.W4S.Infrastructure;
 

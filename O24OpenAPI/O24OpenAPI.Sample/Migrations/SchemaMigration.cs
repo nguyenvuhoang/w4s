@@ -2,7 +2,7 @@ using FluentMigrator;
 using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.Migrations;
-using O24OpenAPI.Web.Framework.Domain.Logging;
+using O24OpenAPI.Framework.Domain.Logging;
 
 namespace O24OpenAPI.Sample.Migrations;
 

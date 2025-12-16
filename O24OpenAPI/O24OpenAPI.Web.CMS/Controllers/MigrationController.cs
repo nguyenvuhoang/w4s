@@ -1,4 +1,4 @@
-﻿using O24OpenAPI.Web.Framework.Controllers;
+﻿using O24OpenAPI.Framework.Controllers;
 
 namespace O24OpenAPI.Web.CMS.Controllers;
 

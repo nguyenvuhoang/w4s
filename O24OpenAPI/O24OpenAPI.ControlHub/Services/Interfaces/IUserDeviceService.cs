@@ -1,7 +1,7 @@
 using O24OpenAPI.APIContracts.Models.CTH;
 using O24OpenAPI.ControlHub.Domain;
 using O24OpenAPI.Core;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.ControlHub.Services.Interfaces;
 
@@ -37,5 +37,4 @@ public interface IUserDeviceService
         string memory = ""
     );
     Task<List<CTHUserNotificationModel>> GetMobileDevice();
-
 }

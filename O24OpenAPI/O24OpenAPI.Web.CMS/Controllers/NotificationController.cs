@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using O24OpenAPI.Framework.Controllers;
 using O24OpenAPI.Web.CMS.Models.Digital;
 using O24OpenAPI.Web.CMS.Services.Interfaces.Digital;
 using O24OpenAPI.Web.CMS.Services.Services;
-using O24OpenAPI.Web.Framework.Controllers;
 
 namespace O24OpenAPI.Web.CMS.Controllers
 {

@@ -1,6 +1,6 @@
-﻿using O24OpenAPI.Web.Framework.Extensions;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Xml;
+using O24OpenAPI.Framework.Extensions;
 
 namespace O24OpenAPI.O24NCH.Common;
 
@@ -11,10 +11,17 @@ public class O24SMSResponseParser
     /// </summary>
     /// <param name="soapXml">SOAP response string</param>
     /// <returns>(MessageId, IsSuccess)</returns>
-    public static (string MsgId, bool IsSuccess, int resultCode, string resultDesc, string ProviderKey, string RawCode)
-       ExtractMsgIdAndStatusFromSOAP(
-           string soapXml,
-           Dictionary<string, HashSet<string>> successCodesPerProvider)
+    public static (
+        string MsgId,
+        bool IsSuccess,
+        int resultCode,
+        string resultDesc,
+        string ProviderKey,
+        string RawCode
+    ) ExtractMsgIdAndStatusFromSOAP(
+        string soapXml,
+        Dictionary<string, HashSet<string>> successCodesPerProvider
+    )
     {
         try
         {
@@ -22,7 +29,10 @@ public class O24SMSResponseParser
             xmlDoc.LoadXml(soapXml);
 
             // ======== UNITEL (descr chứa JSON, error_code rời) ========
-            var errorCodeNode = xmlDoc.GetElementsByTagName("error_code").Cast<XmlNode>().FirstOrDefault();
+            var errorCodeNode = xmlDoc
+                .GetElementsByTagName("error_code")
+                .Cast<XmlNode>()
+                .FirstOrDefault();
             var descrNode = xmlDoc.GetElementsByTagName("descr").Cast<XmlNode>().FirstOrDefault();
 
             if (errorCodeNode != null && int.TryParse(errorCodeNode.InnerText, out int errorCode))
@@ -43,30 +53,40 @@ public class O24SMSResponseParser
                         {
                             msgdescr = msgdescrProp.GetString();
                         }
-
                     }
                     catch { }
                 }
 
                 string rawCode = errorCode.ToString();
-                bool isSuccess = successCodesPerProvider.TryGetValue("UNITEL", out var successCodes)
+                bool isSuccess =
+                    successCodesPerProvider.TryGetValue("UNITEL", out var successCodes)
                     && successCodes.Contains(rawCode);
 
                 return (msgId, isSuccess, errorCode, msgdescr, "UNITEL", rawCode);
             }
 
             // ======== LTC (resultCode + trans_id) ========
-            var resultCodeNode = xmlDoc.GetElementsByTagName("resultCode").Cast<XmlNode>().FirstOrDefault();
-            var transIdNode = xmlDoc.GetElementsByTagName("trans_id").Cast<XmlNode>().FirstOrDefault();
+            var resultCodeNode = xmlDoc
+                .GetElementsByTagName("resultCode")
+                .Cast<XmlNode>()
+                .FirstOrDefault();
+            var transIdNode = xmlDoc
+                .GetElementsByTagName("trans_id")
+                .Cast<XmlNode>()
+                .FirstOrDefault();
 
             if (resultCodeNode != null)
             {
                 string rawCode = resultCodeNode.InnerText?.Trim();
                 int.TryParse(rawCode, out int resultCode);
 
-                var resultDescNode = xmlDoc.GetElementsByTagName("resultDesc").Cast<XmlNode>().FirstOrDefault();
+                var resultDescNode = xmlDoc
+                    .GetElementsByTagName("resultDesc")
+                    .Cast<XmlNode>()
+                    .FirstOrDefault();
 
-                bool isSuccess = successCodesPerProvider.TryGetValue("LTC", out var successCodes)
+                bool isSuccess =
+                    successCodesPerProvider.TryGetValue("LTC", out var successCodes)
                     && successCodes.Contains(rawCode);
 
                 return (
@@ -79,18 +99,30 @@ public class O24SMSResponseParser
                 );
             }
 
-
             // ======== ETL (ax23:apiResponseCode + ax23:messageID) ========
-            var apiResponseCodeNode = xmlDoc.GetElementsByTagName("ax23:apiResponseCode").Cast<XmlNode>().FirstOrDefault();
-            var messageIdNode = xmlDoc.GetElementsByTagName("ax23:messageID").Cast<XmlNode>().FirstOrDefault();
-            var tranIdNode = xmlDoc.GetElementsByTagName("ax23:tranID").Cast<XmlNode>().FirstOrDefault();
+            var apiResponseCodeNode = xmlDoc
+                .GetElementsByTagName("ax23:apiResponseCode")
+                .Cast<XmlNode>()
+                .FirstOrDefault();
+            var messageIdNode = xmlDoc
+                .GetElementsByTagName("ax23:messageID")
+                .Cast<XmlNode>()
+                .FirstOrDefault();
+            var tranIdNode = xmlDoc
+                .GetElementsByTagName("ax23:tranID")
+                .Cast<XmlNode>()
+                .FirstOrDefault();
 
-            if (apiResponseCodeNode != null && int.TryParse(apiResponseCodeNode.InnerText, out int apiResponseCode))
+            if (
+                apiResponseCodeNode != null
+                && int.TryParse(apiResponseCodeNode.InnerText, out int apiResponseCode)
+            )
             {
                 string msgId = messageIdNode?.InnerText ?? tranIdNode?.InnerText;
                 string rawCode = apiResponseCode.ToString();
 
-                bool isSuccess = successCodesPerProvider.TryGetValue("ETL", out var successCodes)
+                bool isSuccess =
+                    successCodesPerProvider.TryGetValue("ETL", out var successCodes)
                     && successCodes.Contains(rawCode);
 
                 return (msgId, isSuccess, apiResponseCode, "ETL response", "ETL", rawCode);

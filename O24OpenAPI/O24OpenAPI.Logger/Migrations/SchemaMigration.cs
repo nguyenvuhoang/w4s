@@ -2,8 +2,8 @@ using FluentMigrator;
 using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.Migrations;
+using O24OpenAPI.Framework.Domain.Logging;
 using O24OpenAPI.Logger.Domain;
-using O24OpenAPI.Web.Framework.Domain.Logging;
 
 namespace O24OpenAPI.Logger.Migrations;
 
@@ -128,10 +128,7 @@ public class AlterTableServiceLogMigration : AutoReversingMigration
 
         if (
             Schema.Table(nameof(ServiceLog)).Exists()
-            && !Schema
-                .Table(nameof(ServiceLog))
-                .Column(nameof(ServiceLog.ExecutionLogId))
-                .Exists()
+            && !Schema.Table(nameof(ServiceLog)).Column(nameof(ServiceLog.ExecutionLogId)).Exists()
         )
         {
             Alter

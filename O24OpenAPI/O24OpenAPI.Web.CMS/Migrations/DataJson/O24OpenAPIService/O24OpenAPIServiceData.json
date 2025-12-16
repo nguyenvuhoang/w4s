@@ -82,7 +82,7 @@
       },
       {
         "StepCode": "CREATE_O24SERVICE",
-        "FullClassName": "O24OpenAPI.Web.Framework.Services.Queue.O24OpenAPIServiceQueue",
+        "FullClassName": "O24OpenAPI.Framework.Services.Queue.O24OpenAPIServiceQueue",
         "MethodName": "Create",
         "ShouldAwait": true,
         "IsInquiry": true,
@@ -91,7 +91,7 @@
       },
       {
         "StepCode": "UPDATE_O24SERVICE",
-        "FullClassName": "O24OpenAPI.Web.Framework.Services.Queue.O24OpenAPIServiceQueue",
+        "FullClassName": "O24OpenAPI.Framework.Services.Queue.O24OpenAPIServiceQueue",
         "MethodName": "Update",
         "ShouldAwait": true,
         "IsInquiry": true,
@@ -100,7 +100,7 @@
       },
       {
         "StepCode": "DELETE_O24SERVICE",
-        "FullClassName": "O24OpenAPI.Web.Framework.Services.Queue.O24OpenAPIServiceQueue",
+        "FullClassName": "O24OpenAPI.Framework.Services.Queue.O24OpenAPIServiceQueue",
         "MethodName": "Delete",
         "ShouldAwait": true,
         "IsInquiry": true,
@@ -109,7 +109,7 @@
       },
       {
         "StepCode": "SEARCH_O24SERVICE",
-        "FullClassName": "O24OpenAPI.Web.Framework.Services.Queue.O24OpenAPIServiceQueue",
+        "FullClassName": "O24OpenAPI.Framework.Services.Queue.O24OpenAPIServiceQueue",
         "MethodName": "SimpleSearch",
         "ShouldAwait": true,
         "IsInquiry": true,
@@ -118,7 +118,7 @@
       },
       {
         "StepCode": "CREATE_SETTING",
-        "FullClassName": "O24OpenAPI.Web.Framework.Services.Queue.SettingQueue",
+        "FullClassName": "O24OpenAPI.Framework.Services.Queue.SettingQueue",
         "MethodName": "Create",
         "ShouldAwait": true,
         "IsInquiry": true,
@@ -127,7 +127,7 @@
       },
       {
         "StepCode": "UPDATE_SETTING",
-        "FullClassName": "O24OpenAPI.Web.Framework.Services.Queue.SettingQueue",
+        "FullClassName": "O24OpenAPI.Framework.Services.Queue.SettingQueue",
         "MethodName": "Update",
         "ShouldAwait": true,
         "IsInquiry": true,
@@ -136,7 +136,7 @@
       },
       {
         "StepCode": "DELETE_SETTING",
-        "FullClassName": "O24OpenAPI.Web.Framework.Services.Queue.SettingQueue",
+        "FullClassName": "O24OpenAPI.Framework.Services.Queue.SettingQueue",
         "MethodName": "Delete",
         "ShouldAwait": true,
         "IsInquiry": true,
@@ -145,7 +145,7 @@
       },
       {
         "StepCode": "SEARCH_SETTING",
-        "FullClassName": "O24OpenAPI.Web.Framework.Services.Queue.SettingQueue",
+        "FullClassName": "O24OpenAPI.Framework.Services.Queue.SettingQueue",
         "MethodName": "SimpleSearch",
         "ShouldAwait": true,
         "IsInquiry": true,
@@ -163,7 +163,7 @@
       },
       {
         "StepCode": "SEARCH_STORECOMMAND",
-        "FullClassName": "O24OpenAPI.Web.Framework.Services.Queue.StoreCommandQueue",
+        "FullClassName": "O24OpenAPI.Framework.Services.Queue.StoreCommandQueue",
         "MethodName": "SimpleSearch",
         "ShouldAwait": true,
         "IsInquiry": true,
@@ -172,7 +172,7 @@
       },
       {
         "StepCode": "GET_FULL_CLASS_NAME",
-        "FullClassName": "O24OpenAPI.Web.Framework.Services.Queue.O24OpenAPIQueue",
+        "FullClassName": "O24OpenAPI.Framework.Services.Queue.O24OpenAPIQueue",
         "MethodName": "GetListQueueName",
         "ShouldAwait": true,
         "IsInquiry": true,

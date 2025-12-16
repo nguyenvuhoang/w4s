@@ -1,5 +1,5 @@
 ﻿using O24OpenAPI.APIContracts.Models.DTS;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.ControlHub.Models.Roles;
 

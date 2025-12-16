@@ -1,6 +1,6 @@
 ﻿using O24OpenAPI.O24ACT.Models;
 using O24OpenAPI.O24ACT.Models.Response;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.O24ACT.Services.Interfaces;
 

@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using O24OpenAPI.Data.Configuration;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Services;
+using O24OpenAPI.Framework.Services;
 
 namespace O24OpenAPI.Web.CMS.Services;
 

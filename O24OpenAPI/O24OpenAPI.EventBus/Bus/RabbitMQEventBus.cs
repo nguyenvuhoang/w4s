@@ -1,21 +1,21 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Net.Sockets;
+using System.Text;
+using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using O24OpenAPI.Client;
 using O24OpenAPI.Contracts.Events;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Core.Logging.Helpers;
 using O24OpenAPI.EventBus.Abstractions;
-using O24OpenAPI.O24OpenAPIClient;
+using O24OpenAPI.Logging.Helpers;
 using Polly;
 using Polly.Retry;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
-using System.Net.Sockets;
-using System.Text;
-using System.Text.Json;
 
 namespace O24OpenAPI.EventBus.Bus;
 
@@ -185,14 +185,12 @@ public sealed class RabbitMQEventBus(
         }
     }
 
-
     /// <summary>
     /// On Message Received from RabbitMQ
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="eventArgs"></param>
     /// <returns></returns>
-
     private async Task OnMessageReceived(object sender, BasicDeliverEventArgs eventArgs)
     {
         BusinessLogHelper.Info(

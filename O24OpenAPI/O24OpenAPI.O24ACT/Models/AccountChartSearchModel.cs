@@ -1,4 +1,4 @@
-﻿using O24OpenAPI.Web.Framework.Models;
+﻿using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.O24ACT.Models;
 
@@ -12,6 +12,7 @@ public partial class AccountChartSearchModel : BaseTransactionModel
         this.PageIndex = 0;
         this.PageSize = int.MaxValue;
     }
+
     /// <summary>
     /// BankAccountNumber
     /// </summary>

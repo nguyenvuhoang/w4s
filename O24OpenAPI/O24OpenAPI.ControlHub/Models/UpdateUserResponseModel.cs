@@ -1,11 +1,12 @@
 ﻿using O24OpenAPI.ControlHub.Domain;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.ControlHub.Models;
 
 public class UpdateUserResponseModel : BaseO24OpenAPIModel
 {
     public UpdateUserResponseModel() { }
+
     public int Id { get; set; }
     public string UserName { get; set; }
     public string FirstName { get; set; } = string.Empty;
@@ -17,13 +18,14 @@ public class UpdateUserResponseModel : BaseO24OpenAPIModel
     public string Email { get; set; }
     public List<string> ChangedFields { get; set; } = [];
 
-    public static UpdateUserResponseModel FromUpdatedEntity(UserAccount updated, UserAccount original)
+    public static UpdateUserResponseModel FromUpdatedEntity(
+        UserAccount updated,
+        UserAccount original
+    )
     {
         var result = new UpdateUserResponseModel();
         var entityProps = typeof(UserAccount).GetProperties();
-        var modelProps = typeof(UpdateUserResponseModel)
-            .GetProperties()
-            .ToDictionary(p => p.Name);
+        var modelProps = typeof(UpdateUserResponseModel).GetProperties().ToDictionary(p => p.Name);
 
         foreach (var prop in entityProps)
         {
@@ -35,8 +37,9 @@ public class UpdateUserResponseModel : BaseO24OpenAPIModel
             var newValue = prop.GetValue(updated);
             var oldValue = prop.GetValue(original);
 
-            bool isChanged = (oldValue == null && newValue != null)
-                          || (oldValue != null && !oldValue.Equals(newValue));
+            bool isChanged =
+                (oldValue == null && newValue != null)
+                || (oldValue != null && !oldValue.Equals(newValue));
 
             if (isChanged)
             {
@@ -48,7 +51,9 @@ public class UpdateUserResponseModel : BaseO24OpenAPIModel
             {
                 try
                 {
-                    var targetType = Nullable.GetUnderlyingType(targetProp.PropertyType) ?? targetProp.PropertyType;
+                    var targetType =
+                        Nullable.GetUnderlyingType(targetProp.PropertyType)
+                        ?? targetProp.PropertyType;
                     newValue = Convert.ChangeType(newValue, targetType);
                 }
                 catch

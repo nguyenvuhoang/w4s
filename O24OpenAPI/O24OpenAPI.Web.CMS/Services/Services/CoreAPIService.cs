@@ -1,13 +1,13 @@
 ﻿using System.Security.Cryptography;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Data.System.Linq;
+using O24OpenAPI.Framework.Exceptions;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Web.CMS.Models.OpenAPI;
 using O24OpenAPI.Web.CMS.Models.Request;
 using O24OpenAPI.Web.CMS.Models.Response;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Exceptions;
-using O24OpenAPI.Web.Framework.Extensions;
-using O24OpenAPI.Web.Framework.Infrastructure.Mapper.Extensions;
 
 namespace O24OpenAPI.Web.CMS.Services.Services;
 
@@ -106,9 +106,7 @@ public partial class CoreAPIService(
         var expiredAt =
             expiredOnUtc ?? DateTime.UtcNow.AddDays(_webApiSettings.StaticTokenLifetimeDays);
         var refreshToken = Guid.NewGuid().ToString();
-        var refreshExpiredAt = DateTime.UtcNow.AddDays(
-            _webApiSettings.StaticTokenLifetimeDays * 2
-        );
+        var refreshExpiredAt = DateTime.UtcNow.AddDays(_webApiSettings.StaticTokenLifetimeDays * 2);
 
         const int maxAttempts = 5;
         for (var attempt = 1; attempt <= maxAttempts; attempt++)
@@ -202,11 +200,7 @@ public partial class CoreAPIService(
             }
         }
 
-        if (
-            typeName
-            is "MySql.Data.MySqlClient.MySqlException"
-                or "MySqlConnector.MySqlException"
-        )
+        if (typeName is "MySql.Data.MySqlClient.MySqlException" or "MySqlConnector.MySqlException")
         {
             var number = (int?)type.GetProperty("Number")?.GetValue(baseEx);
             if (number == 1062)
@@ -243,10 +237,7 @@ public partial class CoreAPIService(
     /// <param name="clientId"></param>
     /// <param name="refreshToken"></param>
     /// <returns></returns>
-    public async Task<CoreApiToken> GetValidRefreshTokenAsync(
-        string clientId,
-        string refreshToken
-    )
+    public async Task<CoreApiToken> GetValidRefreshTokenAsync(string clientId, string refreshToken)
     {
         return await _coreApiToken
             .Table.Where(t =>
@@ -427,10 +418,7 @@ public partial class CoreAPIService(
     {
         var entity =
             await GetById(model.Id)
-            ?? throw await O24Exception.CreateAsync(
-                ResourceCode.Common.NotExists,
-                model.Language
-            );
+            ?? throw await O24Exception.CreateAsync(ResourceCode.Common.NotExists, model.Language);
 
         var originalEntity = entity.Clone();
 

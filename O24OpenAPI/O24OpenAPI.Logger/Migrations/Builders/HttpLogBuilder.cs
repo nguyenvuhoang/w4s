@@ -1,6 +1,6 @@
 using FluentMigrator.Builders.Create.Table;
 using O24OpenAPI.Data.Mapping.Builders;
-using O24OpenAPI.Web.Framework.Domain.Logging;
+using O24OpenAPI.Framework.Domain.Logging;
 
 namespace O24OpenAPI.Logger.Migrations.Builders;
 

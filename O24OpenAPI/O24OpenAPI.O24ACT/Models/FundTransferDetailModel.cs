@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using O24OpenAPI.Web.Framework.Models;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.O24ACT.Models;
 
@@ -19,7 +19,6 @@ public class FundTransferDetailModel : BaseO24OpenAPIModel
     [JsonProperty("account_number")]
     [JsonPropertyName("account_number")]
     public string AccountNumber { get; set; }
-
 
     /// <summary>
     /// Currency code

@@ -1,8 +1,9 @@
 ﻿using LinKit.Core.Cqrs;
 using O24OpenAPI.AI.API.Application.Utils;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Models;
 using Qdrant.Client;
 using Qdrant.Client.Grpc;
+
 namespace O24OpenAPI.AI.API.Application.Features
 {
     public class SearchPointsCommand : BaseTransactionModel, ICommand<SearchPointsResponse>
@@ -17,19 +18,20 @@ namespace O24OpenAPI.AI.API.Application.Features
         public string VectorName { get; set; } = "text";
         public int VectorSize { get; set; } = 1536;
     }
-    public sealed record SearchPointsResponse(
-       IReadOnlyList<SearchHit> Hits
-    );
+
+    public sealed record SearchPointsResponse(IReadOnlyList<SearchHit> Hits);
+
     public sealed record SearchHit(
-       string PointId,
-       float Score,
-       string? DocId,
-       string? Title,
-       string? Content
+        string PointId,
+        float Score,
+        string? DocId,
+        string? Title,
+        string? Content
     );
+
     [CqrsHandler]
     public sealed class SearchPointsCommandHandler(QdrantClient qdrant)
-                : ICommandHandler<SearchPointsCommand, SearchPointsResponse>
+        : ICommandHandler<SearchPointsCommand, SearchPointsResponse>
     {
         private readonly QdrantClient _qdrant = qdrant;
 
@@ -50,40 +52,42 @@ namespace O24OpenAPI.AI.API.Application.Features
             // 2) build filter: tenant_id must match, doc_type/language optional
             var must = new List<Condition>
             {
-                new() {
+                new()
+                {
                     Field = new FieldCondition
                     {
                         Key = "tenant_id",
-                        Match = new Match
-                        {
-                            Keyword = request.TenantId
-                        }
-                    }
-                }
+                        Match = new Match { Keyword = request.TenantId },
+                    },
+                },
             };
 
             if (!string.IsNullOrWhiteSpace(request.DocType))
             {
-                must.Add(new Condition
-                {
-                    Field = new FieldCondition
+                must.Add(
+                    new Condition
                     {
-                        Key = "doc_type",
-                        Match = new Match { Keyword = request.DocType }
+                        Field = new FieldCondition
+                        {
+                            Key = "doc_type",
+                            Match = new Match { Keyword = request.DocType },
+                        },
                     }
-                });
+                );
             }
 
             if (!string.IsNullOrWhiteSpace(request.Language))
             {
-                must.Add(new Condition
-                {
-                    Field = new FieldCondition
+                must.Add(
+                    new Condition
                     {
-                        Key = "language",
-                        Match = new Match { Keyword = request.Language }
+                        Field = new FieldCondition
+                        {
+                            Key = "language",
+                            Match = new Match { Keyword = request.Language },
+                        },
                     }
-                });
+                );
             }
 
             var filter = new Filter();
@@ -115,21 +119,27 @@ namespace O24OpenAPI.AI.API.Application.Features
             }
 
             // 4) map payload
-            var hits = results.Select(p =>
-            {
-                var id = p.Id?.Uuid ?? p.Id?.Num.ToString() ?? "";
-                var payload = p.Payload;
+            var hits = results
+                .Select(p =>
+                {
+                    var id = p.Id?.Uuid ?? p.Id?.Num.ToString() ?? "";
+                    var payload = p.Payload;
 
-                var docIdVal = payload?.GetValueOrDefault("doc_id");
-                var titleVal = payload?.GetValueOrDefault("title");
-                var contentVal = payload?.GetValueOrDefault("content");
+                    var docIdVal = payload?.GetValueOrDefault("doc_id");
+                    var titleVal = payload?.GetValueOrDefault("title");
+                    var contentVal = payload?.GetValueOrDefault("content");
 
-                return new SearchHit(id, p.Score, docIdVal?.StringValue, titleVal?.StringValue, contentVal?.StringValue);
-            }).ToList();
-
+                    return new SearchHit(
+                        id,
+                        p.Score,
+                        docIdVal?.StringValue,
+                        titleVal?.StringValue,
+                        contentVal?.StringValue
+                    );
+                })
+                .ToList();
 
             return new SearchPointsResponse(hits);
         }
-
     }
 }

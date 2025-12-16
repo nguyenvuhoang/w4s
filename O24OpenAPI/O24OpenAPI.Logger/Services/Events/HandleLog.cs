@@ -5,7 +5,7 @@ using O24OpenAPI.Logger.Domain;
 using O24OpenAPI.Logger.Services.CommandHandler;
 using O24OpenAPI.Logger.Services.Interfaces;
 using O24OpenAPI.Logger.Utils;
-using O24OpenAPI.Web.Framework.Services.Events;
+using O24OpenAPI.Framework.Services.Events;
 
 namespace O24OpenAPI.Logger.Services.Events;
 

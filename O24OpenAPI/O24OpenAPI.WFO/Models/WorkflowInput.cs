@@ -1,5 +1,5 @@
 using Newtonsoft.Json;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.WFO.Attributes;
 using O24OpenAPI.WFO.Enum;
 using System.Text.Json.Serialization;

@@ -2,13 +2,44 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b5c86f42-09c2-43fb-9c36-74966c339050" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../O24OpenAPI.Web.Framework/Services/SettingService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../O24OpenAPI.Web.Framework/Services/TransactionService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App_Data/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/App_Data/appsettings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Infrastructure/O24OpenAPIStartup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Infrastructure/O24OpenAPIStartup.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../O24OpenAPI.Core/CommonHelper.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../O24OpenAPI.Core/CommonHelper.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../O24OpenAPI.Web.Framework/O24OpenAPIStartup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../O24OpenAPI.Web.Framework/O24OpenAPIStartup.cs" afterDir="false" />
+      <change
+        afterPath="$PROJECT_DIR$/../O24OpenAPI.Framework/Services/SettingService.cs"
+        afterDir="false"
+      />
+      <change
+        afterPath="$PROJECT_DIR$/../O24OpenAPI.Framework/Services/TransactionService.cs"
+        afterDir="false"
+      />
+      <change
+        beforePath="$PROJECT_DIR$/App_Data/appsettings.json"
+        beforeDir="false"
+        afterPath="$PROJECT_DIR$/App_Data/appsettings.json"
+        afterDir="false"
+      />
+      <change
+        beforePath="$PROJECT_DIR$/Infrastructure/O24OpenAPIStartup.cs"
+        beforeDir="false"
+        afterPath="$PROJECT_DIR$/Infrastructure/O24OpenAPIStartup.cs"
+        afterDir="false"
+      />
+      <change
+        beforePath="$PROJECT_DIR$/Program.cs"
+        beforeDir="false"
+        afterPath="$PROJECT_DIR$/Program.cs"
+        afterDir="false"
+      />
+      <change
+        beforePath="$PROJECT_DIR$/../O24OpenAPI.Core/CommonHelper.cs"
+        beforeDir="false"
+        afterPath="$PROJECT_DIR$/../O24OpenAPI.Core/CommonHelper.cs"
+        afterDir="false"
+      />
+      <change
+        beforePath="$PROJECT_DIR$/../O24OpenAPI.Framework/O24OpenAPIStartup.cs"
+        beforeDir="false"
+        afterPath="$PROJECT_DIR$/../O24OpenAPI.Framework/O24OpenAPIStartup.cs"
+        afterDir="false"
+      />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,24 +50,34 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
   <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 7
+  "associatedIndex": 7
 }</component>
   <component name="ProjectId" id="2kMGRoUv8tk51goHos6SSrIOgOk" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;developer&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.Functions&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"
+    >{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "developer",
+    "settings.editor.selected.configurable": "preferences.sourceCode.Functions",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+}</component
+  >
+  <component
+    name="SpellCheckerSettings"
+    RuntimeDictionaries="0"
+    Folders="0"
+    CustomDictionaries="0"
+    DefaultDictionary="application-level"
+    UseSingleDictionary="true"
+    transferred="true"
+  />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="b5c86f42-09c2-43fb-9c36-74966c339050" name="Changes" comment="" />

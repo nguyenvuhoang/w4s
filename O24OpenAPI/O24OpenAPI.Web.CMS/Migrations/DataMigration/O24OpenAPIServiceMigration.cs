@@ -1,7 +1,7 @@
 ﻿using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Data.Attributes;
 using O24OpenAPI.Data.Migrations;
-using O24OpenAPI.Web.Framework.Domain;
+using O24OpenAPI.Framework.Domain;
 using FileUtils = O24OpenAPI.Data.Utils.FileUtils;
 
 namespace O24OpenAPI.Web.CMS.Migrations.DataMigration;

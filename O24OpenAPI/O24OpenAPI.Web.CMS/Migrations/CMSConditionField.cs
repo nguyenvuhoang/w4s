@@ -1,5 +1,5 @@
 using O24OpenAPI.Core.Domain.Configuration;
-using O24OpenAPI.Web.Framework.Domain;
+using O24OpenAPI.Framework.Domain;
 
 namespace O24OpenAPI.Web.CMS.Migrations;
 

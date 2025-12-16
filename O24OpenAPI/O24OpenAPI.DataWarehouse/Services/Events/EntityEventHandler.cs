@@ -1,12 +1,12 @@
 using System.Collections.Concurrent;
 using System.Threading.Channels;
+using O24OpenAPI.Client.Events.EventData;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Core.Utils;
-using O24OpenAPI.O24OpenAPIClient.Events.EventData;
-using O24OpenAPI.Web.Framework.Extensions;
-using O24OpenAPI.Web.Framework.Models;
-using O24OpenAPI.Web.Framework.Services;
-using O24OpenAPI.Web.Framework.Services.Events;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Models;
+using O24OpenAPI.Framework.Services;
+using O24OpenAPI.Framework.Services.Events;
 
 namespace O24OpenAPI.DataWarehouse.Services.Events;
 

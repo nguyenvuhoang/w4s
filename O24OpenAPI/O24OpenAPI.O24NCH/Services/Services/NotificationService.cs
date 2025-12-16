@@ -1,4 +1,6 @@
-﻿using FirebaseAdmin;
+﻿using System.Text;
+using System.Text.RegularExpressions;
+using FirebaseAdmin;
 using LinqToDB;
 using Newtonsoft.Json;
 using O24OpenAPI.Core;
@@ -6,6 +8,8 @@ using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Core.Utils;
 using O24OpenAPI.Data.System.Linq;
+using O24OpenAPI.Framework.Exceptions;
+using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.O24NCH.Config;
 using O24OpenAPI.O24NCH.Constant;
 using O24OpenAPI.O24NCH.Domain;
@@ -14,10 +18,6 @@ using O24OpenAPI.O24NCH.Models.Request.Telegram;
 using O24OpenAPI.O24NCH.Models.Response;
 using O24OpenAPI.O24NCH.Services.Interfaces;
 using O24OpenAPI.O24NCH.Utils;
-using O24OpenAPI.Web.Framework.Exceptions;
-using O24OpenAPI.Web.Framework.Extensions;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace O24OpenAPI.O24NCH.Services.Services;
 
@@ -52,7 +52,9 @@ public partial class NotificationService : INotificationService
         var firebaseConfigPath = _nchApiSetting.FirebaseConfigPath;
         var fullPath = Path.Combine(environment.ContentRootPath, firebaseConfigPath);
 
-        Console.WriteLine($"[Firebase Init] ConfigPath='{firebaseConfigPath}', FullPath='{fullPath}', Exists={File.Exists(fullPath)}");
+        Console.WriteLine(
+            $"[Firebase Init] ConfigPath='{firebaseConfigPath}', FullPath='{fullPath}', Exists={File.Exists(fullPath)}"
+        );
 
         string projectIdFromJson = null;
         try
@@ -65,37 +67,46 @@ public partial class NotificationService : INotificationService
         }
         catch (Exception exParse)
         {
-            Console.WriteLine($"[Firebase Init] WARN: Cannot parse project_id from JSON. {exParse.GetType().Name}: {exParse.Message}");
+            Console.WriteLine(
+                $"[Firebase Init] WARN: Cannot parse project_id from JSON. {exParse.GetType().Name}: {exParse.Message}"
+            );
         }
 
         var credential = Google.Apis.Auth.OAuth2.GoogleCredential.FromFile(fullPath);
         string projectId = null;
         try
         {
-            if (credential.UnderlyingCredential is Google.Apis.Auth.OAuth2.ServiceAccountCredential sac)
+            if (
+                credential.UnderlyingCredential
+                is Google.Apis.Auth.OAuth2.ServiceAccountCredential sac
+            )
             {
                 projectId = sac.ProjectId;
             }
         }
         catch (Exception exCredPid)
         {
-            Console.WriteLine($"[Firebase Init] WARN: Cannot read ProjectId from credential. {exCredPid.GetType().Name}: {exCredPid.Message}");
+            Console.WriteLine(
+                $"[Firebase Init] WARN: Cannot read ProjectId from credential. {exCredPid.GetType().Name}: {exCredPid.Message}"
+            );
         }
         projectId ??= projectIdFromJson;
         projectId ??= _nchApiSetting.FirebaseProjectId;
         if (FirebaseApp.DefaultInstance == null)
         {
-            var app = FirebaseApp.Create(new AppOptions
-            {
-                Credential = credential,
-                ProjectId = projectId
-            });
-            Console.WriteLine($"[Firebase Init] App created. Name={app.Name}, ProjectId='{app.Options.ProjectId ?? "(null)"}'");
+            var app = FirebaseApp.Create(
+                new AppOptions { Credential = credential, ProjectId = projectId }
+            );
+            Console.WriteLine(
+                $"[Firebase Init] App created. Name={app.Name}, ProjectId='{app.Options.ProjectId ?? "(null)"}'"
+            );
         }
         else
         {
             var app = FirebaseApp.DefaultInstance;
-            Console.WriteLine($"[Firebase Init] Already exists. Name={app.Name}, ProjectId={app.Options.ProjectId}");
+            Console.WriteLine(
+                $"[Firebase Init] Already exists. Name={app.Name}, ProjectId={app.Options.ProjectId}"
+            );
         }
 
         _messaging = FirebaseAdmin.Messaging.FirebaseMessaging.DefaultInstance;
@@ -126,11 +137,7 @@ public partial class NotificationService : INotificationService
     {
         if (string.IsNullOrWhiteSpace(model.UserCode))
         {
-            return new PagedList<Notification>(
-                [],
-                model.PageIndex,
-                model.PageSize
-            );
+            return new PagedList<Notification>([], model.PageIndex, model.PageSize);
         }
 
         var pageSize = Math.Clamp(model.PageSize, 1, 100);
@@ -150,14 +157,11 @@ public partial class NotificationService : INotificationService
             query = query.Where(x => x.NotificationType == model.NotificationType);
         }
 
-        query = query.OrderByDescending(x => x.DateTime)
-                     .ThenByDescending(x => x.Id);
+        query = query.OrderByDescending(x => x.DateTime).ThenByDescending(x => x.Id);
 
         var data = await query.ToPagedList(model.PageIndex, pageSize);
         return data;
     }
-
-
 
     public async Task Insert(Notification notification)
     {
@@ -223,11 +227,11 @@ public partial class NotificationService : INotificationService
     /// <param name="data"></param>
     /// <returns></returns>
     public async Task SendNotificationAsync(
-    string token,
-    string title,
-    string body,
-    Dictionary<string, string> data = null
-)
+        string token,
+        string title,
+        string body,
+        Dictionary<string, string> data = null
+    )
     {
         data ??= [];
         data["title"] = title;
@@ -240,7 +244,7 @@ public partial class NotificationService : INotificationService
             Body = body,
             Data = JsonConvert.SerializeObject(data),
             Status = "Pending",
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
         };
 
         try
@@ -252,7 +256,7 @@ public partial class NotificationService : INotificationService
                 Notification = new FirebaseAdmin.Messaging.Notification()
                 {
                     Title = title,
-                    Body = body
+                    Body = body,
                 },
                 Android = new FirebaseAdmin.Messaging.AndroidConfig
                 {
@@ -261,17 +265,16 @@ public partial class NotificationService : INotificationService
                     {
                         Sound = "emi.wav",
                         ChannelId = "emi_default_channel",
-                    }
+                    },
                 },
                 Apns = new FirebaseAdmin.Messaging.ApnsConfig
                 {
                     Aps = new FirebaseAdmin.Messaging.Aps
                     {
                         ContentAvailable = true,
-                        Sound = "emi.wav"
-                    }
-
-                }
+                        Sound = "emi.wav",
+                    },
+                },
             };
 
             log.RequestMessage = JsonConvert.SerializeObject(message);
@@ -296,7 +299,6 @@ public partial class NotificationService : INotificationService
         await _pushNotificationLog.InsertAsync(log);
     }
 
-
     public async Task SendNotificationToTopicAsync(
         string topic,
         string title,
@@ -307,7 +309,11 @@ public partial class NotificationService : INotificationService
         var message = new FirebaseAdmin.Messaging.Message()
         {
             Topic = topic,
-            Notification = new FirebaseAdmin.Messaging.Notification() { Title = title, Body = body },
+            Notification = new FirebaseAdmin.Messaging.Notification()
+            {
+                Title = title,
+                Body = body,
+            },
             Data = data,
         };
 
@@ -338,6 +344,7 @@ public partial class NotificationService : INotificationService
             await Update(item);
         }
     }
+
     /// <summary>
     /// Log notification information into the database.
     /// </summary>
@@ -351,18 +358,17 @@ public partial class NotificationService : INotificationService
     /// <param name="title"></param>
     /// <param name="message"></param>
     /// <returns></returns>
-
     public async Task<int> LogInformation(
-         string userCode,
-         string appType,
-         string notificationType,
-         string templateID,
-         string redirect,
-         string dataSending,
-         string notificationCategory = "BALANCE",
-         string message = "",
-         string title = "",
-         string imageUrl = ""
+        string userCode,
+        string appType,
+        string notificationType,
+        string templateID,
+        string redirect,
+        string dataSending,
+        string notificationCategory = "BALANCE",
+        string message = "",
+        string title = "",
+        string imageUrl = ""
     )
     {
         try
@@ -382,7 +388,7 @@ public partial class NotificationService : INotificationService
                 NotificationCategory = notificationCategory,
                 Message = message,
                 Title = title,
-                ImageUrl = imageUrl
+                ImageUrl = imageUrl,
             };
 
             await Insert(entity);
@@ -395,6 +401,7 @@ public partial class NotificationService : INotificationService
             return -1;
         }
     }
+
     public async Task<bool> SendNotification(NotificationRequestModel model)
     {
         var workContext = EngineContext.Current.Resolve<WorkContext>();
@@ -417,16 +424,20 @@ public partial class NotificationService : INotificationService
                     return await _telegramService.SendMessage(tele);
 
                 default:
-                    throw new NotSupportedException($"Notification type '{model?.NotificationType}' is not supported.");
+                    throw new NotSupportedException(
+                        $"Notification type '{model?.NotificationType}' is not supported."
+                    );
             }
         }
         catch (Exception ex)
         {
-            _ = ex.LogErrorAsync(new Dictionary<string, object?>
-            {
-                ["RuntimeType"] = model?.GetType().FullName,
-                ["NotificationType"] = model?.NotificationType
-            });
+            _ = ex.LogErrorAsync(
+                new Dictionary<string, object?>
+                {
+                    ["RuntimeType"] = model?.GetType().FullName,
+                    ["NotificationType"] = model?.NotificationType,
+                }
+            );
             return false;
         }
     }
@@ -448,13 +459,14 @@ public partial class NotificationService : INotificationService
 
     private static TelegramSendModel MapToTelegram(NotificationRequestModel m)
     {
-        return new TelegramSendModel { NotificationType = "TELE" /*...*/ };
+        return new TelegramSendModel
+        {
+            NotificationType = "TELE", /*...*/
+        };
     }
-
 
     private static SendMailRequestModel MapToSendMailModel(NotificationRequestModel model)
     {
-
         return new SendMailRequestModel
         {
             TemplateId = $"{model.ChannelId}_MAIL_RESET_PASSWORD",
@@ -469,7 +481,10 @@ public partial class NotificationService : INotificationService
         };
     }
 
-    public async Task<NotificationSearchResponseModel> SearchAsync(NotificationSearchModel model, CancellationToken ct = default)
+    public async Task<NotificationSearchResponseModel> SearchAsync(
+        NotificationSearchModel model,
+        CancellationToken ct = default
+    )
     {
         var paged = await Search(model);
         if (paged == null || paged.Count == 0)
@@ -481,19 +496,25 @@ public partial class NotificationService : INotificationService
         var templates = await _notificationTemplateService.GetByTemplateIdsAsync(templateIds);
         var templateMap = templates.ToDictionary(t => t.TemplateID);
 
-        var language = string.IsNullOrWhiteSpace(model.Language) ? "en" : model.Language.Trim().ToLowerInvariant();
+        var language = string.IsNullOrWhiteSpace(model.Language)
+            ? "en"
+            : model.Language.Trim().ToLowerInvariant();
         var list = new List<NotificationSearchResponse>(paged.Count);
 
         foreach (var item in paged)
         {
             var obj = new NotificationSearchResponse(item);
 
-            if (templateMap.TryGetValue(item.TemplateID, out var template) && template?.Body != null)
+            if (
+                templateMap.TryGetValue(item.TemplateID, out var template)
+                && template?.Body != null
+            )
             {
                 obj.IsShowButton = template.IsShowButton;
-                obj.Message = template.Body.GetMessage(obj.Data, language)
-                              ?? template.Body.GetMessage(obj.Data, "en")
-                              ?? string.Empty;
+                obj.Message =
+                    template.Body.GetMessage(obj.Data, language)
+                    ?? template.Body.GetMessage(obj.Data, "en")
+                    ?? string.Empty;
             }
             else
             {
@@ -517,8 +538,7 @@ public partial class NotificationService : INotificationService
     /// title, message, and language. Cannot be null.</param>
     /// <returns>A task that represents the asynchronous operation. The task result is <see langword="true"/> if the notification
     /// was sent successfully; otherwise, an exception is thrown.</returns>
-    public async Task<bool> SendMobileDeviceAsync(
-        SendMobileDeviceRequestModel model)
+    public async Task<bool> SendMobileDeviceAsync(SendMobileDeviceRequestModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
 
@@ -529,14 +549,15 @@ public partial class NotificationService : INotificationService
             throw await O24Exception.CreateAsync(
                 O24NCHResourceCode.Validation.FCMTokenIsNotExist,
                 model.Language,
-                [pushId]);
+                [pushId]
+            );
         }
 
-        var title = string.IsNullOrWhiteSpace(model.Title)
-            ? "Notification"
-            : model.Title.Trim();
+        var title = string.IsNullOrWhiteSpace(model.Title) ? "Notification" : model.Title.Trim();
 
-        var body = string.IsNullOrWhiteSpace(model.Message) ? "TEST" : NormalizeNotificationMessage(model.Message);
+        var body = string.IsNullOrWhiteSpace(model.Message)
+            ? "TEST"
+            : NormalizeNotificationMessage(model.Message);
         body = Utils.StringExtensions.AutoFormatBullets(body);
         var imageUrl = model.ImageUrl?.Trim() ?? string.Empty;
         try
@@ -544,17 +565,17 @@ public partial class NotificationService : INotificationService
             await SendNotificationAsync(pushId, title, body);
 
             var senderLogId = await LogInformation(
-              model.UserCode,
-              model.AppCode ?? "MB",
-              Code.NotificationTypeCode.FIREBASE,
-              templateID: model.TemplateId ?? "UNKNOWN",
-              redirect: Code.Common.YES,
-              dataSending: string.Empty,
-              notificationCategory: Code.Common.GENERAL,
-              message: body,
-              title: title,
-              imageUrl: imageUrl
-          );
+                model.UserCode,
+                model.AppCode ?? "MB",
+                Code.NotificationTypeCode.FIREBASE,
+                templateID: model.TemplateId ?? "UNKNOWN",
+                redirect: Code.Common.YES,
+                dataSending: string.Empty,
+                notificationCategory: Code.Common.GENERAL,
+                message: body,
+                title: title,
+                imageUrl: imageUrl
+            );
 
             if (senderLogId <= 0)
             {
@@ -569,11 +590,14 @@ public partial class NotificationService : INotificationService
         }
         catch (Exception ex)
         {
-            await ex.LogErrorAsync($"Failed to send mobile notification. PushId={pushId}, Title={title}");
+            await ex.LogErrorAsync(
+                $"Failed to send mobile notification. PushId={pushId}, Title={title}"
+            );
             throw await O24Exception.CreateAsync(
                 O24NCHResourceCode.Error.SendEmailFailed,
                 model.Language,
-                [pushId, ex.Message]);
+                [pushId, ex.Message]
+            );
         }
     }
 
@@ -582,7 +606,6 @@ public partial class NotificationService : INotificationService
     /// </summary>
     /// <param name="raw"></param>
     /// <returns></returns>
-
     private static string NormalizeNotificationMessage(string raw)
     {
         if (string.IsNullOrWhiteSpace(raw))
@@ -604,6 +627,7 @@ public partial class NotificationService : INotificationService
 
     [GeneratedRegex(@"(\n){3,}")]
     private static partial Regex Break();
+
     [GeneratedRegex(@"\s{2,}")]
     private static partial Regex DoubleSpace();
 }

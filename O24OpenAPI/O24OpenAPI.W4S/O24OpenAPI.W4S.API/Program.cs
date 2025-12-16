@@ -1,6 +1,6 @@
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.W4S.Infrastructure;
-using O24OpenAPI.Web.Framework.Extensions;
+using O24OpenAPI.Framework.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

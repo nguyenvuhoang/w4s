@@ -1,10 +1,10 @@
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Utils;
+using O24OpenAPI.Framework.Services;
 using O24OpenAPI.Web.CMS.Models.Digital;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
 using O24OpenAPI.Web.CMS.Services.Interfaces.Digital;
-using O24OpenAPI.Web.Framework.Services;
 
 namespace O24OpenAPI.Web.CMS.Services.WorkflowService;
 
@@ -83,9 +83,7 @@ public class NotificationWorkflow : BaseQueueService
                 {
                     var obj = new NotificationSearchResponse(item);
 
-                    var template = await _notificationTemplateService.GetTemplate(
-                        item.TemplateID
-                    );
+                    var template = await _notificationTemplateService.GetTemplate(item.TemplateID);
                     obj.IsShowButton = template.IsShowButton;
 
                     string message = template.Body.GetMessage(obj.Data, model.Language);

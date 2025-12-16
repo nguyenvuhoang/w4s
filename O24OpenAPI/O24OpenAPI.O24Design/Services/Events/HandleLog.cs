@@ -3,8 +3,8 @@
 //using O24OpenAPI.Sample.Domain;
 //using O24OpenAPI.Sample.Services.CommandHandler;
 //using O24OpenAPI.Sample.Services.Interfaces;
-//using O24OpenAPI.Web.Framework.Domain.Logging;
-//using O24OpenAPI.Web.Framework.Services.Events;
+//using O24OpenAPI.Framework.Domain.Logging;
+//using O24OpenAPI.Framework.Services.Events;
 
 //namespace O24OpenAPI.Sample.Services.Events
 //{

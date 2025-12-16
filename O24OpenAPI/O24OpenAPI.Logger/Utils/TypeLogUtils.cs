@@ -1,5 +1,5 @@
 using O24OpenAPI.Logger.Domain;
-using O24OpenAPI.Web.Framework.Domain.Logging;
+using O24OpenAPI.Framework.Domain.Logging;
 
 namespace O24OpenAPI.Logger.Utils;
 

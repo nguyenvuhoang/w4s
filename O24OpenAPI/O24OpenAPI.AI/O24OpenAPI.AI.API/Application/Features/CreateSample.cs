@@ -1,7 +1,7 @@
 ﻿using LinKit.Core.Cqrs;
 using O24OpenAPI.Core.Attributes;
-using O24OpenAPI.Web.Framework.Attributes;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Attributes;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.AI.API.Application.Features;
 

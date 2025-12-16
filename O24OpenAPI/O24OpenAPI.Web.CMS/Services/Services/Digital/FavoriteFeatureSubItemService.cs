@@ -1,6 +1,6 @@
 ﻿using LinqToDB;
 using O24OpenAPI.Web.CMS.Services.Interfaces.Digital;
-using O24OpenAPI.Web.Framework.Localization;
+using O24OpenAPI.Framework.Localization;
 
 namespace O24OpenAPI.Web.CMS.Services.Services.Digital;
 

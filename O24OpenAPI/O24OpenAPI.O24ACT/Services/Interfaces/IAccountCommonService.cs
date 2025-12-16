@@ -1,7 +1,7 @@
 using O24OpenAPI.Core;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.O24ACT.Domain;
 using O24OpenAPI.O24ACT.Models;
-using O24OpenAPI.Web.Framework.Models;
 
 namespace O24OpenAPI.O24ACT.Services;
 
@@ -16,18 +16,21 @@ public partial interface IAccountCommonService
     /// <param name="commonId"></param>
     /// <returns></returns>
     Task<AccountCommon> GetById(int commonId);
+
     /// <summary>
     /// Search
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
     Task<IPagedList<AccountCommon>> Search(SimpleSearchModel model);
+
     /// <summary>
     /// Search
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
     Task<IPagedList<AccountCommon>> Search(AccountCommonSearchModel model);
+
     /// <summary>
     /// Create
     /// </summary>
@@ -59,7 +62,7 @@ public partial interface IAccountCommonService
     Task<AccountCommon> GetByAccountName(string acountName);
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="accountName"></param>
     /// <param name="branchCode"></param>

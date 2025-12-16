@@ -3,16 +3,23 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Web.Framework.DBContext;
-using O24OpenAPI.Web.Framework.Domain;
-using O24OpenAPI.Web.Framework.Extensions;
-using O24OpenAPI.Web.Framework.Services.Mapping;
+using O24OpenAPI.Framework.DBContext;
+using O24OpenAPI.Framework.Domain;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Services.Mapping;
 
 namespace O24OpenAPI.Web.Report.Utils;
 
 public static class DataSourceProcessor
 {
-    public static async Task<object> ProcessDataSource(string jsonConfig, Dictionary<string, object> userInput, string targetValue, IDataMappingService dataMappingService, bool useCache = false, Dictionary<string, object> cache = null)
+    public static async Task<object> ProcessDataSource(
+        string jsonConfig,
+        Dictionary<string, object> userInput,
+        string targetValue,
+        IDataMappingService dataMappingService,
+        bool useCache = false,
+        Dictionary<string, object> cache = null
+    )
     {
         if (string.IsNullOrEmpty(jsonConfig))
         {
@@ -38,11 +45,23 @@ public static class DataSourceProcessor
 
                 result = type switch
                 {
-                    "STORE" => await ExecuteStoredProcedureAsync(config.SelectToken("config.store")?.ToString() ?? "STORE", parameters),
-                    "VIEW" => await ExecuteViewAsync(config.SelectToken("config.view")?.ToString() ?? "VIEW", parameters),
-                    "QUERY" => await ExecuteQueryAsync(config.SelectToken("config.query")?.ToString() ?? "QUERY", parameters, name),
+                    "STORE" => await ExecuteStoredProcedureAsync(
+                        config.SelectToken("config.store")?.ToString() ?? "STORE",
+                        parameters
+                    ),
+                    "VIEW" => await ExecuteViewAsync(
+                        config.SelectToken("config.view")?.ToString() ?? "VIEW",
+                        parameters
+                    ),
+                    "QUERY" => await ExecuteQueryAsync(
+                        config.SelectToken("config.query")?.ToString() ?? "QUERY",
+                        parameters,
+                        name
+                    ),
                     "INPUT" => userInput.TryGetValue(type, out var value),
-                    _ => userInput.TryGetValue(type, out var value) ? value : throw new NotSupportedException($"Unsupported DataSource type: {type}")
+                    _ => userInput.TryGetValue(type, out var value)
+                        ? value
+                        : throw new NotSupportedException($"Unsupported DataSource type: {type}"),
                 };
                 if (useCache)
                 {
@@ -63,7 +82,10 @@ public static class DataSourceProcessor
                         // Nếu block là object
                         if (block is JObject jObj)
                         {
-                            if (!string.IsNullOrEmpty(targetValue) && jObj.TryGetValue(targetValue, out var val))
+                            if (
+                                !string.IsNullOrEmpty(targetValue)
+                                && jObj.TryGetValue(targetValue, out var val)
+                            )
                             {
                                 return val?.ToString();
                             }
@@ -118,23 +140,35 @@ public static class DataSourceProcessor
         }
     }
 
-    private static async Task<Dictionary<string, object>> ExtractParameters(JObject parameterConfig, Dictionary<string, object> userInput, IDataMappingService dataMappingService)
+    private static async Task<Dictionary<string, object>> ExtractParameters(
+        JObject parameterConfig,
+        Dictionary<string, object> userInput,
+        IDataMappingService dataMappingService
+    )
     {
         if (parameterConfig == null)
         {
             return null;
         }
-        return await dataMappingService.MapDataToDictionaryAsync(JObject.FromObject(userInput), parameterConfig);
+        return await dataMappingService.MapDataToDictionaryAsync(
+            JObject.FromObject(userInput),
+            parameterConfig
+        );
     }
 
-    private static async Task<List<Dictionary<string, object>>> ExecuteStoredProcedureAsync(string storeName, Dictionary<string, object> parameters)
+    private static async Task<List<Dictionary<string, object>>> ExecuteStoredProcedureAsync(
+        string storeName,
+        Dictionary<string, object> parameters
+    )
     {
         if (string.IsNullOrEmpty(storeName))
         {
             throw new ArgumentException("Stored Procedure name is required");
         }
 
-        Console.WriteLine($"ℹ Executing Stored Procedure: {storeName} with params {JsonConvert.SerializeObject(parameters)}");
+        Console.WriteLine(
+            $"ℹ Executing Stored Procedure: {storeName} with params {JsonConvert.SerializeObject(parameters)}"
+        );
 
         var dbContext = new ServiceDBContext();
 
@@ -188,65 +222,62 @@ public static class DataSourceProcessor
                         new()
                         {
                             { "Error", "Unexpected error occurred" },
-                            { "Details", ex.Message }
-                        }
+                            { "Details", ex.Message },
+                        },
                     ];
                 }
             }
 
-            return (List<Dictionary<string, object>>)(result ?? new List<Dictionary<string, object>>());
+            return (List<Dictionary<string, object>>)(
+                result ?? new List<Dictionary<string, object>>()
+            );
         }
         catch (SqlException sqlEx)
         {
             await sqlEx.LogErrorAsync();
             Console.WriteLine($"❌ SQL Error (SP): {sqlEx.Message}");
-            return
-            [
-                new()
-                {
-                    { "Error", "Database error occurred" },
-                    { "Details", sqlEx.Message }
-                }
-            ];
+            return [new() { { "Error", "Database error occurred" }, { "Details", sqlEx.Message } }];
         }
         catch (Exception ex)
         {
             await ex.LogErrorAsync();
             Console.WriteLine($"⚠ Unexpected error (SP): {ex.Message}");
-            return
-            [
-                new()
-                {
-                    { "Error", "Unexpected error occurred" },
-                    { "Details", ex.Message }
-                }
-            ];
+            return [new() { { "Error", "Unexpected error occurred" }, { "Details", ex.Message } }];
         }
     }
 
-
-    private static async Task<List<Dictionary<string, object>>> ExecuteViewAsync(string viewName, Dictionary<string, object> parameters)
+    private static async Task<List<Dictionary<string, object>>> ExecuteViewAsync(
+        string viewName,
+        Dictionary<string, object> parameters
+    )
     {
         if (string.IsNullOrEmpty(viewName))
         {
             throw new ArgumentException("View name is required");
         }
 
-        Console.WriteLine($"ℹ Executing View: {viewName} with params {JsonConvert.SerializeObject(parameters)}");
+        Console.WriteLine(
+            $"ℹ Executing View: {viewName} with params {JsonConvert.SerializeObject(parameters)}"
+        );
 
         string query = $"SELECT * FROM {viewName}";
         return await ExecuteQueryAsync(query, parameters, "VIEW");
     }
 
-
-    private static async Task<List<Dictionary<string, object>>> ExecuteQueryAsync(string query, Dictionary<string, object> parameters, string name)
+    private static async Task<List<Dictionary<string, object>>> ExecuteQueryAsync(
+        string query,
+        Dictionary<string, object> parameters,
+        string name
+    )
     {
         if (string.IsNullOrEmpty(query))
         {
             throw new ArgumentException("Query is required");
         }
 
-        Console.WriteLine($"ℹ Executing Query: {query} with params {JsonConvert.SerializeObject(parameters)}");
+        Console.WriteLine(
+            $"ℹ Executing Query: {query} with params {JsonConvert.SerializeObject(parameters)}"
+        );
 
         SQLAuditLog sQLAuditLog = new()
         {
@@ -273,8 +304,8 @@ public static class DataSourceProcessor
                 new Dictionary<string, object>
                 {
                     { "Error", "Database error occurred" },
-                    { "Details", sqlEx.Message }
-                }
+                    { "Details", sqlEx.Message },
+                },
             ];
         }
         catch (Exception ex)
@@ -286,8 +317,8 @@ public static class DataSourceProcessor
                 new Dictionary<string, object>
                 {
                     { "Error", "Unexpected error occurred" },
-                    { "Details", ex.Message }
-                }
+                    { "Details", ex.Message },
+                },
             ];
         }
     }

@@ -15,7 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Contracts\O24OpenAPI.Contracts.csproj" />
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Core\O24OpenAPI.Core.csproj" />
-    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.O24OpenAPIClient\O24OpenAPI.O24OpenAPIClient.csproj" />
+    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Client\O24OpenAPI.Client.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Events\" />

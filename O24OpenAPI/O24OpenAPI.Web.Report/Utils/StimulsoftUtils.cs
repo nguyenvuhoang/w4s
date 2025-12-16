@@ -1,9 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.Data;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Printing;
+using Newtonsoft.Json;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Web.Framework.DBContext;
-using O24OpenAPI.Web.Framework.Extensions;
-using O24OpenAPI.Web.Framework.Services.Mapping;
+using O24OpenAPI.Framework.DBContext;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Services.Mapping;
 using O24OpenAPI.Web.Report.Domain;
 using Stimulsoft.Base.Drawing;
 using Stimulsoft.Drawing.Text;
@@ -11,10 +15,6 @@ using Stimulsoft.Report;
 using Stimulsoft.Report.Components;
 using Stimulsoft.Report.Components.Table;
 using Stimulsoft.Report.Dictionary;
-using System.Data;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Printing;
 
 namespace O24OpenAPI.Web.Report.Utils;
 
@@ -53,7 +53,6 @@ public static class StimulsoftUtils
     ///
     public static StiReport Init(ReportConfig reportConfig, ReportTemplate templateReport)
     {
-
         StiReport stiReport = StiReport.CreateNewReport();
         StiOptions.Engine.HideExceptions = false;
         StiOptions.Engine.HideMessages = true;
@@ -74,13 +73,19 @@ public static class StimulsoftUtils
         stiReport.ReportDescription = reportConfig.Description;
 
         stiReport.ReportVersion = templateReport.Version;
-        stiReport.ReportUnit = templateReport.ReportUnit.Contains("Inches") ? StiReportUnitType.Inches : StiReportUnitType.Centimeters;
+        stiReport.ReportUnit = templateReport.ReportUnit.Contains("Inches")
+            ? StiReportUnitType.Inches
+            : StiReportUnitType.Centimeters;
 
         stiReport.Pages[0].Name = reportConfig.Name;
         byte[] bytesWatermark = Convert.FromBase64String(templateReport.Watermark);
         stiReport.Pages[0].Watermark.ImageBytes = bytesWatermark;
         stiReport.Pages[0].Watermark.Angle = 60;
-        stiReport.Pages[0].Watermark.Font = new Stimulsoft.Drawing.Font(templateReport.Font ?? "Quicksand", 50, FontStyle.Regular);
+        stiReport.Pages[0].Watermark.Font = new Stimulsoft.Drawing.Font(
+            templateReport.Font ?? "Quicksand",
+            50,
+            FontStyle.Regular
+        );
         stiReport.Pages[0].Watermark.ImageTransparency = 160;
         stiReport.Pages[0].UnlimitedBreakable = false;
         stiReport.Pages[0].CanGrow = true;
@@ -91,7 +96,6 @@ public static class StimulsoftUtils
         stiReport.Pages[0].Report = stiReport;
         return stiReport;
     }
-
 
     public static void LoadCustomFonts()
     {
@@ -109,7 +113,6 @@ public static class StimulsoftUtils
         }
     }
 
-
     /// <summary>
     /// ParseRectangleD
     /// </summary>
@@ -122,9 +125,10 @@ public static class StimulsoftUtils
             return null;
         }
 
-        var values = clientRectangle.Split(',')
-                                    .Select(v => double.TryParse(v.Trim(), out double result) ? result : 0)
-                                    .ToArray();
+        var values = clientRectangle
+            .Split(',')
+            .Select(v => double.TryParse(v.Trim(), out double result) ? result : 0)
+            .ToArray();
 
         if (values.Length != 4)
         {
@@ -146,7 +150,10 @@ public static class StimulsoftUtils
             return null;
         }
 
-        var values = margin.Split(',').Select(v => double.TryParse(v.Trim(), out double result) ? result : 0).ToArray();
+        var values = margin
+            .Split(',')
+            .Select(v => double.TryParse(v.Trim(), out double result) ? result : 0)
+            .ToArray();
 
         if (values.Length != 4)
         {
@@ -156,14 +163,12 @@ public static class StimulsoftUtils
         return new StiMargins(values[0], values[1], values[2], values[3]);
     }
 
-
     /// <summary>
     /// GenerateStiVariables
     /// </summary>
     /// <param name="report"></param>
     /// <param name="parameters"></param>
     /// <returns></returns>
-
     public static void GenerateStiVariables(StiReport report, List<ReportParam> parameters)
     {
         if (parameters == null || parameters.Count == 0)
@@ -173,11 +178,15 @@ public static class StimulsoftUtils
 
         foreach (var param in parameters)
         {
-
-            var variable = new StiVariable("", param.ParamName, param.ControlName, param.Value ?? "")
+            var variable = new StiVariable(
+                "",
+                param.ParamName,
+                param.ControlName,
+                param.Value ?? ""
+            )
             {
                 RequestFromUser = true,
-                Type = TypeUtils.GetVariableType(param.Tag)
+                Type = TypeUtils.GetVariableType(param.Tag),
             };
 
             if (param.ControlType == "DropDownList" && !string.IsNullOrEmpty(param.Store))
@@ -185,37 +194,55 @@ public static class StimulsoftUtils
                 try
                 {
                     var dbContext = new ServiceDBContext();
-                    var dropdownValues = dbContext.CallServiceStoredProcedure(param.Store, null, Singleton<O24OpenAPIConfiguration>.Instance.DWHSchema).GetAwaiter().GetResult();
+                    var dropdownValues = dbContext
+                        .CallServiceStoredProcedure(
+                            param.Store,
+                            null,
+                            Singleton<O24OpenAPIConfiguration>.Instance.DWHSchema
+                        )
+                        .GetAwaiter()
+                        .GetResult();
 
                     if (string.IsNullOrEmpty(dropdownValues?.ToString()))
                     {
-                        Console.WriteLine($"⚠ Warning:  {param.Store} dropdownValues is null or empty.");
+                        Console.WriteLine(
+                            $"⚠ Warning:  {param.Store} dropdownValues is null or empty."
+                        );
                         return;
                     }
 
-                    var parsedData = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(dropdownValues.ToString());
+                    var parsedData = JsonConvert.DeserializeObject<
+                        List<Dictionary<string, object>>
+                    >(dropdownValues.ToString());
 
                     if (parsedData == null || parsedData.Count == 0)
                     {
-                        Console.WriteLine($"⚠ Warning: {param.Store}  parsedData is null or empty.");
+                        Console.WriteLine(
+                            $"⚠ Warning: {param.Store}  parsedData is null or empty."
+                        );
                         return;
                     }
 
                     var dropdownData = parsedData
-                    .Select(row => new
-                    {
-                        Key = row.ContainsKey(param.Key) ? row[param.Key]?.ToString() ?? "" : "",
-                        Value = row.ContainsKey(param.Text) ? row[param.Text]?.ToString() ?? "" : ""
-                    })
-                    .ToList();
+                        .Select(row => new
+                        {
+                            Key = row.ContainsKey(param.Key)
+                                ? row[param.Key]?.ToString() ?? ""
+                                : "",
+                            Value = row.ContainsKey(param.Text)
+                                ? row[param.Text]?.ToString() ?? ""
+                                : "",
+                        })
+                        .ToList();
 
                     string dataSource = $"{param.ReportCode}.{param.ParamName}";
                     var dataTable = new DataTable(dataSource);
                     dataTable.Columns.AddRange(
-                    [
-                        new DataColumn("Key", typeof(string)),
-                        new DataColumn("Value", typeof(string))
-                    ]);
+                        [
+                            new DataColumn("Key", typeof(string)),
+                            new DataColumn("Value", typeof(string)),
+                        ]
+                    );
 
                     dropdownData?.ForEach(item => dataTable.Rows.Add(item.Key, item.Value));
 
@@ -228,14 +255,18 @@ public static class StimulsoftUtils
                             dataSource,
                             false,
                             dataTable.AsEnumerable().Select(row => row["Key"].ToString()).ToArray(),
-                            dataTable.AsEnumerable().Select(row => row["Value"].ToString()).ToArray()
+                            dataTable
+                                .AsEnumerable()
+                                .Select(row => row["Value"].ToString())
+                                .ToArray()
                         );
                     }
-
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error fetching dropdown values for {param.ParamName}: {ex.Message}");
+                    Console.WriteLine(
+                        $"Error fetching dropdown values for {param.ParamName}: {ex.Message}"
+                    );
                     _ = ex.LogErrorAsync();
                 }
             }
@@ -243,7 +274,6 @@ public static class StimulsoftUtils
             report.Dictionary.Variables.Add(variable);
         }
     }
-
 
     /// <summary>
     /// GenerateReportBands
@@ -254,15 +284,22 @@ public static class StimulsoftUtils
     #region GenerateReportBands
     public static void GenerateReportBands(StiReport report, List<ReportComponent> reportComponents)
     {
-
         foreach (var component in reportComponents)
         {
-            if (report.Pages[0].Components.OfType<StiBand>().Any(b => b.Name == component.ComponentName))
+            if (
+                report
+                    .Pages[0]
+                    .Components.OfType<StiBand>()
+                    .Any(b => b.Name == component.ComponentName)
+            )
             {
                 continue;
             }
 
-            var band = report.Pages[0].Components.OfType<StiBand>().FirstOrDefault(b => b.Name == component.ComponentName);
+            var band = report
+                .Pages[0]
+                .Components.OfType<StiBand>()
+                .FirstOrDefault(b => b.Name == component.ComponentName);
 
             if (band != null)
             {
@@ -271,14 +308,44 @@ public static class StimulsoftUtils
 
             StiBand newBand = component.ComponentType switch
             {
-                "Header" => new StiHeaderBand { Name = component.ComponentName, Height = (double)Convert.ToSingle(component.Height), PrintOn = StiPrintOnType.OnlyFirstPage },
-                "Footer" => new StiFooterBand { Name = component.ComponentName, Height = (double)Convert.ToSingle(component.Height) },
-                "GroupHeader" => new StiGroupHeaderBand { Name = component.ComponentName, Height = (double)Convert.ToSingle(component.Height) },
-                "GroupFooter" => new StiGroupFooterBand { Name = component.ComponentName, Height = (double)Convert.ToSingle(component.Height) },
-                "PageHeader" => new StiPageHeaderBand { Name = component.ComponentName, Height = (double)Convert.ToSingle(component.Height), PrintOn = StiPrintOnType.OnlyFirstPage },
-                "PageFooter" => new StiPageFooterBand { Name = component.ComponentName, Height = (double)Convert.ToSingle(component.Height) },
-                "Data" => new StiDataBand { Name = component.ComponentName, Height = (double)Convert.ToSingle(component.Height) },
-                _ => null
+                "Header" => new StiHeaderBand
+                {
+                    Name = component.ComponentName,
+                    Height = (double)Convert.ToSingle(component.Height),
+                    PrintOn = StiPrintOnType.OnlyFirstPage,
+                },
+                "Footer" => new StiFooterBand
+                {
+                    Name = component.ComponentName,
+                    Height = (double)Convert.ToSingle(component.Height),
+                },
+                "GroupHeader" => new StiGroupHeaderBand
+                {
+                    Name = component.ComponentName,
+                    Height = (double)Convert.ToSingle(component.Height),
+                },
+                "GroupFooter" => new StiGroupFooterBand
+                {
+                    Name = component.ComponentName,
+                    Height = (double)Convert.ToSingle(component.Height),
+                },
+                "PageHeader" => new StiPageHeaderBand
+                {
+                    Name = component.ComponentName,
+                    Height = (double)Convert.ToSingle(component.Height),
+                    PrintOn = StiPrintOnType.OnlyFirstPage,
+                },
+                "PageFooter" => new StiPageFooterBand
+                {
+                    Name = component.ComponentName,
+                    Height = (double)Convert.ToSingle(component.Height),
+                },
+                "Data" => new StiDataBand
+                {
+                    Name = component.ComponentName,
+                    Height = (double)Convert.ToSingle(component.Height),
+                },
+                _ => null,
             };
 
             if (newBand != null)
@@ -293,7 +360,6 @@ public static class StimulsoftUtils
                 newBand.CanShrink = true;
                 newBand.CanBreak = true;
             }
-
         }
     }
     #endregion
@@ -311,54 +377,71 @@ public static class StimulsoftUtils
 
         foreach (var design in textDesign)
         {
-
             Stimulsoft.Drawing.FontFamily fontFamily;
             try
             {
-                fontFamily = new Stimulsoft.Drawing.FontFamily(design.FontFamily ?? "Century Gothic");
+                fontFamily = new Stimulsoft.Drawing.FontFamily(
+                    design.FontFamily ?? "Century Gothic"
+                );
             }
             catch
             {
                 fontFamily = new Stimulsoft.Drawing.FontFamily("Century Gothic");
             }
 
-
             StiText stiText = new()
             {
                 Name = design.ComponentName,
                 Text = design.Text ?? $"{{{design.DataSource}.{design.FieldName}}}",
-                Font = new Stimulsoft.Drawing.Font(fontFamily, design.FontSize ?? 12, design.FontStyle == "Bold" ? FontStyle.Bold : design.FontStyle == "Italic" ? FontStyle.Italic : FontStyle.Regular),
+                Font = new Stimulsoft.Drawing.Font(
+                    fontFamily,
+                    design.FontSize ?? 12,
+                    design.FontStyle == "Bold" ? FontStyle.Bold
+                        : design.FontStyle == "Italic" ? FontStyle.Italic
+                        : FontStyle.Regular
+                ),
                 Width = (double)Convert.ToSingle(design.Width),
                 Height = (double)Convert.ToSingle(design.Height),
                 Left = (double)Convert.ToSingle(design.PositionX),
                 Top = (double)Convert.ToSingle(design.PositionY),
-                Brush = design.BackgroundColor != null ? new StiSolidBrush(ColorTranslator.FromHtml(design.BackgroundColor ?? "#FFFFFF")) : new StiSolidBrush(System.Drawing.Color.Transparent),
-                TextBrush = design.TextBrush != null ? new StiSolidBrush(design.TextBrush) : hatchBrush,
+                Brush =
+                    design.BackgroundColor != null
+                        ? new StiSolidBrush(
+                            ColorTranslator.FromHtml(design.BackgroundColor ?? "#FFFFFF")
+                        )
+                        : new StiSolidBrush(System.Drawing.Color.Transparent),
+                TextBrush =
+                    design.TextBrush != null ? new StiSolidBrush(design.TextBrush) : hatchBrush,
                 HorAlignment = design.HorAlignment switch
                 {
                     "Center" => StiTextHorAlignment.Center,
                     "Right" => StiTextHorAlignment.Right,
-                    _ => StiTextHorAlignment.Left
+                    _ => StiTextHorAlignment.Left,
                 },
 
                 VertAlignment = design.VertAlignment switch
                 {
                     "Center" => StiVertAlignment.Center,
                     "Bottom" => StiVertAlignment.Bottom,
-                    _ => StiVertAlignment.Top // Default
+                    _ => StiVertAlignment.Top, // Default
                 },
                 CanGrow = true,
                 GrowToHeight = design.GrowToHeight,
                 WordWrap = true,
-                Parent = report.Pages[0].Components.OfType<StiBand>().FirstOrDefault(b => b.Name == design.BandName)
+                Parent = report
+                    .Pages[0]
+                    .Components.OfType<StiBand>()
+                    .FirstOrDefault(b => b.Name == design.BandName),
             };
 
             if (!string.IsNullOrEmpty(design.BorderColor))
             {
-                stiText.Border = new StiBorder(StiBorderSides.All,
-                                               ColorTranslator.FromHtml(design.BorderColor),
-                                               (float)Convert.ToSingle(design.BorderThickness),
-                                               StiPenStyle.Solid);
+                stiText.Border = new StiBorder(
+                    StiBorderSides.All,
+                    ColorTranslator.FromHtml(design.BorderColor),
+                    (float)Convert.ToSingle(design.BorderThickness),
+                    StiPenStyle.Solid
+                );
             }
 
             textComponents.Add(stiText);
@@ -367,9 +450,12 @@ public static class StimulsoftUtils
         return textComponents;
     }
 
-
     #region GenerateStiTable
-    public static List<StiTable> GenerateStiTable(StiReport report, List<ReportDesign> tableDesigns, List<ReportDesign> columnDesigns)
+    public static List<StiTable> GenerateStiTable(
+        StiReport report,
+        List<ReportDesign> tableDesigns,
+        List<ReportDesign> columnDesigns
+    )
     {
         List<StiTable> tableList = new();
         List<ReportDesign> tableColumnMapping;
@@ -381,7 +467,9 @@ public static class StimulsoftUtils
 
         foreach (var tableDesign in tableDesigns)
         {
-            tableColumnMapping = columnDesigns.Where(d => d.ComponentParent == tableDesign.ComponentName).ToList();
+            tableColumnMapping = columnDesigns
+                .Where(d => d.ComponentParent == tableDesign.ComponentName)
+                .ToList();
 
             StiTable stiTable = new()
             {
@@ -392,9 +480,12 @@ public static class StimulsoftUtils
                 Top = (double)Convert.ToSingle(tableDesign.PositionY),
                 ColumnCount = tableColumnMapping.Count,
                 RowCount = 1,
-                Parent = report.Pages[0].Components.OfType<StiBand>().FirstOrDefault(b => b.Name == tableDesign.BandName),
+                Parent = report
+                    .Pages[0]
+                    .Components.OfType<StiBand>()
+                    .FirstOrDefault(b => b.Name == tableDesign.BandName),
                 DataSourceName = tableDesign.DataSource,
-                CanGrow = true
+                CanGrow = true,
             };
 
             if (tableColumnMapping.Count > 0)
@@ -402,18 +493,25 @@ public static class StimulsoftUtils
                 Stimulsoft.Drawing.Font fontFamily;
                 try
                 {
-                    fontFamily = new Stimulsoft.Drawing.Font(tableDesign.FontFamily ?? "Century Gothic", 10, FontStyle.Regular);
+                    fontFamily = new Stimulsoft.Drawing.Font(
+                        tableDesign.FontFamily ?? "Century Gothic",
+                        10,
+                        FontStyle.Regular
+                    );
                 }
                 catch
                 {
-                    fontFamily = new Stimulsoft.Drawing.Font("Century Gothic", 10, FontStyle.Regular);
+                    fontFamily = new Stimulsoft.Drawing.Font(
+                        "Century Gothic",
+                        10,
+                        FontStyle.Regular
+                    );
                 }
                 foreach (var column in tableColumnMapping)
                 {
                     int i = 0;
                     var stiCell = new StiTableCell
                     {
-
                         ID = i++,
                         Name = column.ComponentName,
                         Text = column.Text ?? $"{{{column.DataSource}.{column.FieldName}}}",
@@ -425,29 +523,30 @@ public static class StimulsoftUtils
                         {
                             "Center" => StiTextHorAlignment.Center,
                             "Right" => StiTextHorAlignment.Right,
-                            _ => StiTextHorAlignment.Left
+                            _ => StiTextHorAlignment.Left,
                         },
                         VertAlignment = column.VertAlignment switch
                         {
                             "Center" => StiVertAlignment.Center,
                             "Bottom" => StiVertAlignment.Bottom,
-                            _ => StiVertAlignment.Top
+                            _ => StiVertAlignment.Top,
                         },
                         Restrictions = Stimulsoft.Report.Components.StiRestrictions.AllowResize,
                         //Parent = stiTable,
                         WordWrap = true,
                         CanGrow = column.GrowToHeight,
                         GrowToHeight = column.GrowToHeight,
-                        Font = fontFamily
+                        Font = fontFamily,
                     };
-
 
                     if (!string.IsNullOrEmpty(column.BorderColor))
                     {
-                        stiCell.Border = new StiBorder(StiBorderSides.All,
-                        ColorTranslator.FromHtml(column.BorderColor),
-                                                       (float)Convert.ToSingle(column.BorderThickness),
-                                                       StiPenStyle.Solid);
+                        stiCell.Border = new StiBorder(
+                            StiBorderSides.All,
+                            ColorTranslator.FromHtml(column.BorderColor),
+                            (float)Convert.ToSingle(column.BorderThickness),
+                            StiPenStyle.Solid
+                        );
                     }
 
                     stiTable.Components.Add(stiCell);
@@ -459,7 +558,6 @@ public static class StimulsoftUtils
 
         return tableList;
     }
-
 
     #endregion
 
@@ -484,7 +582,10 @@ public static class StimulsoftUtils
                 Left = (double)Convert.ToSingle(design.PositionX),
                 Top = (double)Convert.ToSingle(design.PositionY),
                 Stretch = true,
-                Parent = report.Pages[0].Components.OfType<StiBand>().FirstOrDefault(b => b.Name == design.BandName)
+                Parent = report
+                    .Pages[0]
+                    .Components.OfType<StiBand>()
+                    .FirstOrDefault(b => b.Name == design.BandName),
             };
 
             if (!string.IsNullOrEmpty(design.TargetValue))
@@ -510,14 +611,23 @@ public static class StimulsoftUtils
     /// <param name="report"></param>
     /// <param name="labelText"></param>
     /// <returns></returns>
-
     public static int IndexOfInvariant(this string str, string value)
     {
         return str.IndexOf(value, StringComparison.InvariantCulture);
     }
-    public static void GenerateDynamicReport(StiReport report, List<ReportComponent> reportComponents, List<ReportDesign> reportDesigns)
+
+    public static void GenerateDynamicReport(
+        StiReport report,
+        List<ReportComponent> reportComponents,
+        List<ReportDesign> reportDesigns
+    )
     {
-        if (reportComponents == null || reportComponents.Count == 0 || reportDesigns == null || reportDesigns.Count == 0)
+        if (
+            reportComponents == null
+            || reportComponents.Count == 0
+            || reportDesigns == null
+            || reportDesigns.Count == 0
+        )
         {
             return;
         }
@@ -526,10 +636,19 @@ public static class StimulsoftUtils
 
         List<StiBand> reportBands = report.Pages[0].Components.OfType<StiBand>().ToList();
 
-
-        List<StiText> stiTexts = GenerateStiText(report, reportDesigns.Where(d => d.ComponentType == "Text").ToList());
-        List<StiImage> stiImages = GenerateStiImage(report, reportDesigns.Where(d => d.ComponentType == "Image").ToList());
-        List<StiTable> stiTables = GenerateStiTable(report, reportDesigns.Where(d => d.ComponentType == "DataTable").ToList(), reportDesigns.Where(d => d.ComponentType == "DataColumn").ToList());
+        List<StiText> stiTexts = GenerateStiText(
+            report,
+            reportDesigns.Where(d => d.ComponentType == "Text").ToList()
+        );
+        List<StiImage> stiImages = GenerateStiImage(
+            report,
+            reportDesigns.Where(d => d.ComponentType == "Image").ToList()
+        );
+        List<StiTable> stiTables = GenerateStiTable(
+            report,
+            reportDesigns.Where(d => d.ComponentType == "DataTable").ToList(),
+            reportDesigns.Where(d => d.ComponentType == "DataColumn").ToList()
+        );
 
         Dictionary<string, StiBand> bandLookup = reportBands.ToDictionary(b => b.Name);
 
@@ -540,7 +659,9 @@ public static class StimulsoftUtils
                 continue;
             }
 
-            var existingText = band.Components.OfType<StiText>().FirstOrDefault(t => t.Name == text.Name);
+            var existingText = band
+                .Components.OfType<StiText>()
+                .FirstOrDefault(t => t.Name == text.Name);
             if (existingText != null)
             {
                 existingText.Text = text.Text;
@@ -578,7 +699,6 @@ public static class StimulsoftUtils
         }
     }
 
-
     /// <summary>
     /// ExtractReportVariables
     /// </summary>
@@ -598,14 +718,18 @@ public static class StimulsoftUtils
         return reportParameters;
     }
 
-
     /// <summary>
     /// GenerateDynamicExpressions
     /// </summary>
     /// <param name="report"></param>
     /// <returns></returns>
     #region GenerateDynamicExpressions
-    public static void GenerateDynamicExpressions(StiReport report, List<ReportDesign> reportDesigns, Dictionary<string, object> userInput, IDataMappingService dataMappingService)
+    public static void GenerateDynamicExpressions(
+        StiReport report,
+        List<ReportDesign> reportDesigns,
+        Dictionary<string, object> userInput,
+        IDataMappingService dataMappingService
+    )
     {
         if (reportDesigns == null || reportDesigns.Count == 0 || userInput == null)
         {
@@ -621,9 +745,7 @@ public static class StimulsoftUtils
             System.Drawing.Color.FromArgb(100, 100, 100)
         );
 
-        var expressionFields = reportDesigns
-            .Where(r => r.ComponentType == "Expression")
-            .ToList();
+        var expressionFields = reportDesigns.Where(r => r.ComponentType == "Expression").ToList();
 
         var queryHeader = new List<Dictionary<string, object>>();
 
@@ -637,7 +759,16 @@ public static class StimulsoftUtils
 
             if (!string.IsNullOrEmpty(field.DataSource))
             {
-                value = DataSourceProcessor.ProcessDataSource(dataSourceName, userInput, field.TargetValue, dataMappingService, true, dataSourceCache).Result;
+                value = DataSourceProcessor
+                    .ProcessDataSource(
+                        dataSourceName,
+                        userInput,
+                        field.TargetValue,
+                        dataMappingService,
+                        true,
+                        dataSourceCache
+                    )
+                    .Result;
             }
             else if (userInput.TryGetValue(field.FieldName, out var inputValue))
             {
@@ -649,7 +780,10 @@ public static class StimulsoftUtils
                 string bandName = field.BandName ?? "PageHeader";
                 string bandType = field.BandType ?? "Header";
 
-                var band = report.Pages[0].Components.OfType<StiBand>().FirstOrDefault(b => b.Name == field.BandName);
+                var band = report
+                    .Pages[0]
+                    .Components.OfType<StiBand>()
+                    .FirstOrDefault(b => b.Name == field.BandName);
 
                 if (band == null)
                 {
@@ -662,14 +796,16 @@ public static class StimulsoftUtils
                         "PageHeader" => new StiPageHeaderBand { Name = bandName },
                         "PageFooter" => new StiPageFooterBand { Name = bandName },
                         "Data" => new StiDataBand { Name = bandName },
-                        _ => new StiPageHeaderBand { Name = bandName }
+                        _ => new StiPageHeaderBand { Name = bandName },
                     };
 
                     band.Brush = new StiSolidBrush(System.Drawing.Color.Transparent);
                     report.Pages[0].Components.Add(band);
                 }
 
-                var existingTextComponent = band.Components.OfType<StiText>().FirstOrDefault(text => text.Name == field.ComponentName);
+                var existingTextComponent = band
+                    .Components.OfType<StiText>()
+                    .FirstOrDefault(text => text.Name == field.ComponentName);
 
                 if (existingTextComponent != null)
                 {
@@ -677,11 +813,12 @@ public static class StimulsoftUtils
                 }
                 else
                 {
-
                     Stimulsoft.Drawing.FontFamily fontFamily;
                     try
                     {
-                        fontFamily = new Stimulsoft.Drawing.FontFamily(field.FontFamily ?? "Century Gothic");
+                        fontFamily = new Stimulsoft.Drawing.FontFamily(
+                            field.FontFamily ?? "Century Gothic"
+                        );
                     }
                     catch
                     {
@@ -692,47 +829,58 @@ public static class StimulsoftUtils
                     {
                         Name = field.ComponentName,
                         Text = value.ToString() ?? string.Empty,
-                        Font = new Stimulsoft.Drawing.Font(fontFamily, field.FontSize ?? 12, field.FontStyle == "Bold" ? FontStyle.Bold : field.FontStyle == "Italic" ? FontStyle.Italic : FontStyle.Regular),
+                        Font = new Stimulsoft.Drawing.Font(
+                            fontFamily,
+                            field.FontSize ?? 12,
+                            field.FontStyle == "Bold" ? FontStyle.Bold
+                                : field.FontStyle == "Italic" ? FontStyle.Italic
+                                : FontStyle.Regular
+                        ),
                         Width = (float)Convert.ToSingle(field.Width),
                         Height = (float)Convert.ToSingle(field.Height),
                         Left = (float)Convert.ToSingle(field.PositionX),
                         Top = (float)Convert.ToSingle(field.PositionY),
-                        Brush = field.BackgroundColor != null ? new StiSolidBrush(ColorTranslator.FromHtml(field.BackgroundColor ?? "#FFFFFF")) : new StiSolidBrush(System.Drawing.Color.Transparent),
-                        TextBrush = field.TextBrush != null ? new StiSolidBrush(field.TextBrush) : hatchBrush,
+                        Brush =
+                            field.BackgroundColor != null
+                                ? new StiSolidBrush(
+                                    ColorTranslator.FromHtml(field.BackgroundColor ?? "#FFFFFF")
+                                )
+                                : new StiSolidBrush(System.Drawing.Color.Transparent),
+                        TextBrush =
+                            field.TextBrush != null
+                                ? new StiSolidBrush(field.TextBrush)
+                                : hatchBrush,
                         HorAlignment = field.HorAlignment switch
                         {
                             "Center" => StiTextHorAlignment.Center,
                             "Right" => StiTextHorAlignment.Right,
-                            _ => StiTextHorAlignment.Left
+                            _ => StiTextHorAlignment.Left,
                         },
 
                         VertAlignment = field.VertAlignment switch
                         {
                             "Center" => StiVertAlignment.Center,
                             "Bottom" => StiVertAlignment.Bottom,
-                            _ => StiVertAlignment.Top // Default
-                        }
-
+                            _ => StiVertAlignment.Top, // Default
+                        },
                     };
 
                     if (!string.IsNullOrEmpty(field.BorderColor))
                     {
-                        stiText.Border = new StiBorder(StiBorderSides.All,
-                                                       ColorTranslator.FromHtml(field.BorderColor),
-                                                       (float)Convert.ToSingle(field.BorderThickness),
-                                                       StiPenStyle.Solid);
+                        stiText.Border = new StiBorder(
+                            StiBorderSides.All,
+                            ColorTranslator.FromHtml(field.BorderColor),
+                            (float)Convert.ToSingle(field.BorderThickness),
+                            StiPenStyle.Solid
+                        );
                     }
                     band.Components.Add(stiText);
                 }
-
             }
         }
-
     }
 
     #endregion
-
-
 
 
     /// <summary>
@@ -740,9 +888,18 @@ public static class StimulsoftUtils
     /// Register Stimulsoft Report.
     /// </summary>
     #region GenerateDynamicDataSource
-    public static void GenerateDynamicDataSource(StiReport report, List<ReportData> listReportData, List<ReportDesign> reportDesigns)
+    public static void GenerateDynamicDataSource(
+        StiReport report,
+        List<ReportData> listReportData,
+        List<ReportDesign> reportDesigns
+    )
     {
-        if (listReportData == null || listReportData.Count == 0 || reportDesigns == null || reportDesigns.Count == 0)
+        if (
+            listReportData == null
+            || listReportData.Count == 0
+            || reportDesigns == null
+            || reportDesigns.Count == 0
+        )
         {
             return;
         }
@@ -751,13 +908,20 @@ public static class StimulsoftUtils
         {
             string dataBandName = reportData.DataBand;
 
-            if (string.IsNullOrEmpty(reportData.DataSourceName) || string.IsNullOrEmpty(dataBandName))
+            if (
+                string.IsNullOrEmpty(reportData.DataSourceName)
+                || string.IsNullOrEmpty(dataBandName)
+            )
             {
                 continue;
             }
 
             var dataBindFields = reportDesigns
-                .Where(r => r.ComponentType == "DataColumn" && r.DataSource == reportData.DataSourceName && r.ComponentParent == reportData.ParentDatatable)
+                .Where(r =>
+                    r.ComponentType == "DataColumn"
+                    && r.DataSource == reportData.DataSourceName
+                    && r.ComponentParent == reportData.ParentDatatable
+                )
                 .ToList();
 
             if (!dataBindFields.Any())
@@ -777,14 +941,17 @@ public static class StimulsoftUtils
             report.RegData(reportData.DataSourceName, dataTable);
             report.Dictionary.Synchronize();
 
-            var dataBand = report.Pages[0].Components.OfType<StiDataBand>().FirstOrDefault(b => b.Name == dataBandName);
+            var dataBand = report
+                .Pages[0]
+                .Components.OfType<StiDataBand>()
+                .FirstOrDefault(b => b.Name == dataBandName);
 
             if (dataBand == null)
             {
                 dataBand = new StiDataBand
                 {
                     Name = dataBandName,
-                    DataSourceName = reportData.DataSourceName
+                    DataSourceName = reportData.DataSourceName,
                 };
                 report.Pages[0].Components.Add(dataBand);
             }
@@ -792,7 +959,6 @@ public static class StimulsoftUtils
             {
                 dataBand.DataSourceName = reportData.DataSourceName;
             }
-
         }
     }
     #endregion
@@ -806,16 +972,22 @@ public static class StimulsoftUtils
     /// <param name="userInput"></param>
     /// <returns></returns>
     #region GenerateDynamicDatabind
-    public static void GenerateDynamicDatabind(StiReport report,
-                                                     List<ReportData> listReportData,
-                                                     List<ReportDesign> reportDesigns,
-                                                     Dictionary<string, object> userInput,
-                                                     IDataMappingService dataMappingService)
+    public static void GenerateDynamicDatabind(
+        StiReport report,
+        List<ReportData> listReportData,
+        List<ReportDesign> reportDesigns,
+        Dictionary<string, object> userInput,
+        IDataMappingService dataMappingService
+    )
     {
-
         DataTable dataTable = new();
 
-        if (listReportData == null || listReportData.Count == 0 || reportDesigns == null || reportDesigns.Count == 0)
+        if (
+            listReportData == null
+            || listReportData.Count == 0
+            || reportDesigns == null
+            || reportDesigns.Count == 0
+        )
         {
             return;
         }
@@ -829,7 +1001,9 @@ public static class StimulsoftUtils
                 return;
             }
 
-            var resultData = DataSourceProcessor.ProcessDataSource(datasource, userInput, dataSourceName, dataMappingService).Result;
+            var resultData = DataSourceProcessor
+                .ProcessDataSource(datasource, userInput, dataSourceName, dataMappingService)
+                .Result;
 
             if (resultData == null)
             {
@@ -850,10 +1024,7 @@ public static class StimulsoftUtils
             {
                 Console.WriteLine($"❌ Error registering data source: {ex.Message}");
             }
-
         }
-
-
     }
     #endregion
 
@@ -863,7 +1034,9 @@ public static class StimulsoftUtils
         try
         {
             DataTable dataTable = new DataTable();
-            var dataList = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonString);
+            var dataList = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(
+                jsonString
+            );
 
             if (dataList != null && dataList.Count > 0)
             {
@@ -904,9 +1077,8 @@ public static class StimulsoftUtils
             "Letter" => PaperKind.Letter,
             "Legal" => PaperKind.Legal,
             "Tabloid" => PaperKind.Tabloid,
-            _ => PaperKind.Letter
+            _ => PaperKind.Letter,
         };
     }
     #endregion
-
 }

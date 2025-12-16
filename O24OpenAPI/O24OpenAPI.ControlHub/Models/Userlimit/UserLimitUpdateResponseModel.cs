@@ -1,5 +1,5 @@
-﻿using O24OpenAPI.Web.Framework.Models;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.ControlHub.Models.Userlimit;
 
@@ -8,9 +8,7 @@ public class UserLimitUpdateResponseModel : BaseO24OpenAPIModel
     /// <summary>
     /// user limit update response model constructor
     /// </summary>
-    public UserLimitUpdateResponseModel()
-    {
-    }
+    public UserLimitUpdateResponseModel() { }
 
     /// <summary>
     /// roleid

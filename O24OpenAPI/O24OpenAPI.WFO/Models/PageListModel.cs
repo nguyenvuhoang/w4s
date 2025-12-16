@@ -1,6 +1,6 @@
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.Core;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.WFO.Models;
 

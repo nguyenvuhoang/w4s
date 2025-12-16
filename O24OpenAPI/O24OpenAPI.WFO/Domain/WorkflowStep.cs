@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
+using O24OpenAPI.Client.Enums;
 using O24OpenAPI.Core.Domain;
-using O24OpenAPI.O24OpenAPIClient.Enums;
 
 namespace O24OpenAPI.WFO.Domain;
 

@@ -1,11 +1,12 @@
-﻿using O24OpenAPI.O24NCH.Domain;
-using O24OpenAPI.Web.Framework.Models;
+﻿using O24OpenAPI.Framework.Models;
+using O24OpenAPI.O24NCH.Domain;
 
 namespace O24OpenAPI.O24NCH.Models.Request;
 
 public class SMSProviderUpdateModel : BaseTransactionModel
 {
     public SMSProviderUpdateModel() { }
+
     public int Id { get; set; }
     public string ApiUrl { get; set; }
     public string CountryPrefix { get; set; }
@@ -17,7 +18,11 @@ public class SMSProviderUpdateModel : BaseTransactionModel
     public bool? IsActive { get; set; }
     public List<SMSProviderConfigModel> SMSProviderConfig { get; set; }
     public List<string> ChangedFields { get; set; } = [];
-    public static SMSProviderUpdateModel FromUpdatedEntity(SMSProvider updated, SMSProvider original)
+
+    public static SMSProviderUpdateModel FromUpdatedEntity(
+        SMSProvider updated,
+        SMSProvider original
+    )
     {
         var result = new SMSProviderUpdateModel();
         var entityProps = typeof(SMSProvider).GetProperties();
@@ -33,8 +38,10 @@ public class SMSProviderUpdateModel : BaseTransactionModel
             var newValue = prop.GetValue(updated);
             var oldValue = prop.GetValue(original);
 
-            if ((oldValue == null && newValue != null) ||
-                (oldValue != null && !oldValue.Equals(newValue)))
+            if (
+                (oldValue == null && newValue != null)
+                || (oldValue != null && !oldValue.Equals(newValue))
+            )
             {
                 result.ChangedFields.Add(prop.Name);
             }

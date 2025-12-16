@@ -1,7 +1,7 @@
 ﻿using O24OpenAPI.ControlHub.Domain;
 using O24OpenAPI.ControlHub.Models.Userlimit;
 using O24OpenAPI.Core;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.ControlHub.Services.Interfaces;
 
@@ -23,7 +23,6 @@ public partial interface IUserLimitService
     /// <param name="model"></param>
     /// <returns></returns>
     Task<IPagedList<UserLimit>> Search(SimpleSearchModel model);
-
 
     /// <summary>
     /// advanced search user limit
@@ -67,7 +66,12 @@ public partial interface IUserLimitService
     /// <param name="currencyCode"></param>
     /// <param name="limitType"></param>
     /// <returns></returns>
-    Task<decimal> GetUserLimit(UserAccount user, string commandId, string currencyCode, string limitType = "I");
+    Task<decimal> GetUserLimit(
+        UserAccount user,
+        string commandId,
+        string currencyCode,
+        string limitType = "I"
+    );
 
     /// <summary>
     /// UpdateListUserLimit

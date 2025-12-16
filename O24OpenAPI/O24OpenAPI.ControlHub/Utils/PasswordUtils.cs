@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using O24OpenAPI.Web.Framework.Extensions;
-using O24OpenAPI.Web.Framework.Utils;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Utils;
 
 namespace O24OpenAPI.ControlHub.Utils;
 
@@ -41,10 +41,19 @@ public class PasswordUtils
     /// <param name="storedHash">The stored hash</param>
     /// <param name="storedSalt">The stored salt</param>
     /// <returns>The bool</returns>
-    public static bool VerifyPassword(string usercode, string password, string storedHash, string storedSalt)
+    public static bool VerifyPassword(
+        string usercode,
+        string password,
+        string storedHash,
+        string storedSalt
+    )
     {
-        if (string.IsNullOrEmpty(usercode) || string.IsNullOrEmpty(password) ||
-            string.IsNullOrEmpty(storedHash) || string.IsNullOrEmpty(storedSalt))
+        if (
+            string.IsNullOrEmpty(usercode)
+            || string.IsNullOrEmpty(password)
+            || string.IsNullOrEmpty(storedHash)
+            || string.IsNullOrEmpty(storedSalt)
+        )
         {
             return false;
         }
@@ -68,7 +77,6 @@ public class PasswordUtils
             throw new Exception("Invalid password format. Please check your input.");
         }
     }
-
 
     /// <summary>
     /// Hashes the pass using the specified password
@@ -128,16 +136,17 @@ public class PasswordUtils
     /// <returns></returns>
     public static string GenerateRandomPassword(int length)
     {
-        const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^*";
+        const string chars =
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^*";
         var invalidXmlChars = new[] { '&', '<', '>', '"', '\'' };
 
         var safeChars = new string(chars.Where(c => !invalidXmlChars.Contains(c)).ToArray());
 
         var random = new Random();
-        return new string(Enumerable.Repeat(safeChars, length)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
+        return new string(
+            Enumerable.Repeat(safeChars, length).Select(s => s[random.Next(s.Length)]).ToArray()
+        );
     }
-
 
     /// <summary>
     /// Generate Random Salt

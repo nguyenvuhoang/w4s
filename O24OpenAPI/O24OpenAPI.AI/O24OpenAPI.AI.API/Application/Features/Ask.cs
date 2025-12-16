@@ -1,6 +1,6 @@
 ﻿using LinKit.Core.Cqrs;
 using O24OpenAPI.AI.API.Application.Utils;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Models;
 using Qdrant.Client;
 using Qdrant.Client.Grpc;
 
@@ -18,24 +18,23 @@ namespace O24OpenAPI.AI.API.Application.Features
 
         public string Collection { get; set; } = "o24_static_knowledge_v1";
     }
-    public sealed record AskResponse(
-        string Answer,
-        IReadOnlyList<RagCitation> Citations
-    );
-    public sealed record RagCitation(
-        string PointId,
-        float Score,
-        string? DocId,
-        string? Title
-    );
+
+    public sealed record AskResponse(string Answer, IReadOnlyList<RagCitation> Citations);
+
+    public sealed record RagCitation(string PointId, float Score, string? DocId, string? Title);
+
     [CqrsHandler]
-    public sealed class AskCommandHandler(QdrantClient qdrant) : ICommandHandler<AskCommand, AskResponse>
+    public sealed class AskCommandHandler(QdrantClient qdrant)
+        : ICommandHandler<AskCommand, AskResponse>
     {
         private const int VectorSize = 1536;
 
         private readonly QdrantClient _qdrant = qdrant;
 
-        public async Task<AskResponse> HandleAsync(AskCommand request, CancellationToken ct = default)
+        public async Task<AskResponse> HandleAsync(
+            AskCommand request,
+            CancellationToken ct = default
+        )
         {
             if (string.IsNullOrWhiteSpace(request.TenantId))
                 throw new ArgumentException("TenantId is required.", nameof(request.TenantId));
@@ -48,37 +47,43 @@ namespace O24OpenAPI.AI.API.Application.Features
 
             // 2) Build filter
             var filter = new Filter();
-            filter.Must.Add(new Condition
-            {
-                Field = new FieldCondition
-                {
-                    Key = "tenant_id",
-                    Match = new Match { Keyword = request.TenantId }
-                }
-            });
-
-            if (!string.IsNullOrWhiteSpace(request.DocType))
-            {
-                filter.Must.Add(new Condition
+            filter.Must.Add(
+                new Condition
                 {
                     Field = new FieldCondition
                     {
-                        Key = "doc_type",
-                        Match = new Match { Keyword = request.DocType }
+                        Key = "tenant_id",
+                        Match = new Match { Keyword = request.TenantId },
+                    },
+                }
+            );
+
+            if (!string.IsNullOrWhiteSpace(request.DocType))
+            {
+                filter.Must.Add(
+                    new Condition
+                    {
+                        Field = new FieldCondition
+                        {
+                            Key = "doc_type",
+                            Match = new Match { Keyword = request.DocType },
+                        },
                     }
-                });
+                );
             }
 
             if (!string.IsNullOrWhiteSpace(request.LanguageFilter))
             {
-                filter.Must.Add(new Condition
-                {
-                    Field = new FieldCondition
+                filter.Must.Add(
+                    new Condition
                     {
-                        Key = "language",
-                        Match = new Match { Keyword = request.LanguageFilter }
+                        Field = new FieldCondition
+                        {
+                            Key = "language",
+                            Match = new Match { Keyword = request.LanguageFilter },
+                        },
                     }
-                });
+                );
             }
 
             // 3) Search
@@ -91,9 +96,7 @@ namespace O24OpenAPI.AI.API.Application.Features
             );
 
             // 4) Apply threshold + map citations
-            var filtered = results
-                .Where(x => x.Score >= request.MinScore)
-                .ToList();
+            var filtered = results.Where(x => x.Score >= request.MinScore).ToList();
 
             if (filtered.Count == 0)
             {
@@ -103,27 +106,28 @@ namespace O24OpenAPI.AI.API.Application.Features
                 );
             }
 
-            var citations = filtered.Select(p =>
-            {
-                var id = p.Id?.Uuid ?? p.Id?.Num.ToString() ?? "";
-
-                Value? docIdVal = null;
-                Value? titleVal = null;
-
-                if (p.Payload is not null)
+            var citations = filtered
+                .Select(p =>
                 {
-                    p.Payload.TryGetValue("doc_id", out docIdVal);
-                    p.Payload.TryGetValue("title", out titleVal);
-                }
+                    var id = p.Id?.Uuid ?? p.Id?.Num.ToString() ?? "";
 
-                return new RagCitation(
-                    PointId: id,
-                    Score: p.Score,
-                    DocId: docIdVal?.StringValue,
-                    Title: titleVal?.StringValue
-                );
-            }).ToList();
+                    Value? docIdVal = null;
+                    Value? titleVal = null;
 
+                    if (p.Payload is not null)
+                    {
+                        p.Payload.TryGetValue("doc_id", out docIdVal);
+                        p.Payload.TryGetValue("title", out titleVal);
+                    }
+
+                    return new RagCitation(
+                        PointId: id,
+                        Score: p.Score,
+                        DocId: docIdVal?.StringValue,
+                        Title: titleVal?.StringValue
+                    );
+                })
+                .ToList();
 
             // 5) Compose answer (rule-based)
             var top = filtered[0];
@@ -146,17 +150,17 @@ namespace O24OpenAPI.AI.API.Application.Features
             var snippet = TrimTo(content, 800);
 
             var answer =
-                $"{snippet}\n\nNguồn: {(string.IsNullOrWhiteSpace(title) ? "Tài liệu" : title)}" +
-                (string.IsNullOrWhiteSpace(docId) ? "" : $" ({docId})") +
-                $" | score={top.Score:0.###}";
+                $"{snippet}\n\nNguồn: {(string.IsNullOrWhiteSpace(title) ? "Tài liệu" : title)}"
+                + (string.IsNullOrWhiteSpace(docId) ? "" : $" ({docId})")
+                + $" | score={top.Score:0.###}";
 
             return new AskResponse(answer, citations);
-
         }
 
         private static string TrimTo(string s, int max)
         {
-            if (string.IsNullOrEmpty(s) || s.Length <= max) return s;
+            if (string.IsNullOrEmpty(s) || s.Length <= max)
+                return s;
             return s[..max] + "...";
         }
     }

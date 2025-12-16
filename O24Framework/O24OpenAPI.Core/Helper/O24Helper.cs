@@ -20,8 +20,7 @@ public class O24Helper
         return value switch
         {
             string v when v.StartsWith("O24OpenAPI.Lib") => "O24OpenAPI",
-            string v when v.StartsWith("O24OpenAPI.O24OpenAPIClient") =>
-                "O24OpenAPI.O24OpenAPIClient",
+            string v when v.StartsWith("O24OpenAPI.Client") => "O24OpenAPI.Client",
             string v when v.StartsWith("O24OpenAPI.Core") => "O24OpenAPI.Core",
             string v when v.StartsWith("O24OpenAPI.Data") => "O24OpenAPI.Data",
             _ => GetDefaultAssemblyName(value),

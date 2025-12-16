@@ -1,6 +1,6 @@
 ﻿using LinKit.Core.Cqrs;
 using O24OpenAPI.AI.API.Application.Utils;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Models;
 using Qdrant.Client;
 using Qdrant.Client.Grpc;
 
@@ -17,6 +17,7 @@ namespace O24OpenAPI.AI.API.Application.Features
         public string Content { get; set; } = default!;
         public Dictionary<string, object>? Extra { get; set; }
     }
+
     public record UpsertPointResponse(
         string PointId,
         string Collection,
@@ -26,7 +27,7 @@ namespace O24OpenAPI.AI.API.Application.Features
 
     [CqrsHandler]
     public class UpsertPointCommandHandler(QdrantClient qdrant)
-              : ICommandHandler<UpsertPointCommand, UpsertPointResponse>
+        : ICommandHandler<UpsertPointCommand, UpsertPointResponse>
     {
         private const string Collection = "o24_static_knowledge_v1";
         private const int VectorSize = 1536;
@@ -65,7 +66,7 @@ namespace O24OpenAPI.AI.API.Application.Features
                 ["content"] = request.Content,
                 ["source_system"] = "o24ai",
                 ["tx_id"] = request.TransactionCode ?? "",
-                ["user_code"] = request.CurrentUserCode ?? ""
+                ["user_code"] = request.CurrentUserCode ?? "",
             };
 
             UpdateResult? result = await _qdrant.UpsertAsync(
@@ -76,8 +77,8 @@ namespace O24OpenAPI.AI.API.Application.Features
                     {
                         Id = new PointId { Uuid = pointId },
                         Vectors = vector,
-                        Payload = { payload }
-                    }
+                        Payload = { payload },
+                    },
                 ],
                 wait: true,
                 cancellationToken: cancellationToken
@@ -94,9 +95,6 @@ namespace O24OpenAPI.AI.API.Application.Features
                 VectorSize: vector.Length,
                 QdrantOk: result?.Status == UpdateStatus.Completed
             );
-
         }
     }
-
-
 }

@@ -4,12 +4,12 @@ using O24OpenAPI.ControlHub.Services.Interfaces;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Helper;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.O24ACT.Domain;
 using O24OpenAPI.O24ACT.Models;
 using O24OpenAPI.O24ACT.Services.Interfaces;
 using O24OpenAPI.O24ACT.Utils;
-using O24OpenAPI.Web.Framework.Extensions;
-using O24OpenAPI.Web.Framework.Models;
 
 namespace O24OpenAPI.O24ACT.Services;
 
@@ -63,9 +63,7 @@ public class TransactionRulesService(
 
                 if (
                     rule.Fields is not null
-                    && !rule.Fields.ContainsKey(
-                        nameof(model.CurrentBranchCode).ToUnderscoreCase()
-                    )
+                    && !rule.Fields.ContainsKey(nameof(model.CurrentBranchCode).ToUnderscoreCase())
                 )
                 {
                     rule.Fields?.Add(

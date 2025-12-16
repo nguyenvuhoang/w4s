@@ -3,7 +3,7 @@ using O24OpenAPI.Data;
 using O24OpenAPI.Data.Attributes;
 using O24OpenAPI.Data.Migrations;
 using O24OpenAPI.Data.Utils;
-using O24OpenAPI.Web.Framework.Domain;
+using O24OpenAPI.Framework.Domain;
 
 namespace O24OpenAPI.O24NCH.Migrations.DataMigration;
 

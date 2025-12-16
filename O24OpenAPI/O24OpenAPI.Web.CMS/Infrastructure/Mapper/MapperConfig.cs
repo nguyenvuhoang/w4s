@@ -1,20 +1,16 @@
 using Jits.Neptune.Web.CMS.Models;
+using O24OpenAPI.Framework.Infrastructure.Mapper;
 using O24OpenAPI.Web.CMS.Models;
 using O24OpenAPI.Web.CMS.Models.Digital;
 using O24OpenAPI.Web.CMS.Models.Portal;
 using O24OpenAPI.Web.CMS.Models.Request;
-using O24OpenAPI.Web.Framework.Infrastructure.Mapper;
 
 namespace O24OpenAPI.Web.CMS.Infrastructure.Mapper;
 
 /// <summary>
-
 /// The cms mapper configuration class
-
 /// </summary>
-
 /// <seealso cref="BaseMapperConfiguration"/>
-
 public partial class CMSMapperConfiguration : BaseMapperConfiguration
 {
     /// <summary>

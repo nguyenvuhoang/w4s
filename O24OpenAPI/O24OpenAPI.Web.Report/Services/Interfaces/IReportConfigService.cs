@@ -1,5 +1,5 @@
 using O24OpenAPI.Core;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Web.Report.Domain;
 
 namespace O24OpenAPI.Web.Report.Services.Interfaces;

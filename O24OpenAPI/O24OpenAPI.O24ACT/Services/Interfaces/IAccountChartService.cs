@@ -1,8 +1,8 @@
 ﻿using O24OpenAPI.Core;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.O24ACT.Domain;
 using O24OpenAPI.O24ACT.Models;
 using O24OpenAPI.O24ACT.Models.Request;
-using O24OpenAPI.Web.Framework.Models;
 
 namespace O24OpenAPI.O24ACT.Services.Interfaces;
 
@@ -96,7 +96,13 @@ public partial interface IAccountChartService
     /// <param name="accIndexIdx"></param>
     /// <param name="referenceId"></param>
     /// <returns></returns>
-    Task<AccountChart> OpenAccount(string accountNumber, int? accGrpIdx = null, int? accIndexIdx = null, string referenceId = "");
+    Task<AccountChart> OpenAccount(
+        string accountNumber,
+        int? accGrpIdx = null,
+        int? accIndexIdx = null,
+        string referenceId = ""
+    );
+
     /// <summary>
     /// OpenAccounPosting
     /// </summary>
@@ -106,7 +112,14 @@ public partial interface IAccountChartService
     /// <param name="referenceId"></param>
     /// <param name="transId"></param>
     /// <returns></returns>
-    Task<AccountChartInforItemModel> OpenAccountPosting(string accountNumber, int? accGrpIdx = null, int? accIndexIdx = null, string referenceId = "", string transId = "");
+    Task<AccountChartInforItemModel> OpenAccountPosting(
+        string accountNumber,
+        int? accGrpIdx = null,
+        int? accIndexIdx = null,
+        string referenceId = "",
+        string transId = ""
+    );
+
     /// <summary>
     /// GetAll
     /// </summary>
@@ -119,31 +132,42 @@ public partial interface IAccountChartService
     /// <param name="model"></param>
     /// <returns></returns>
     Task<IPagedList<AccountChart>> LookupByCurrency(LookupByCurrencyRuleFuncModel model);
+
     /// <summary>
     /// LookupByBranchCode
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
     Task<IPagedList<AccountChart>> LookupByBranchCode(LookupByBranchCodeRuleFuncModel model);
+
     /// <summary>
     /// LookupByBranchCodeDepositAccount
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
-    Task<IPagedList<AccountChart>> LookupByBranchCodeDepositAccount(LookupByBranchCodeDepositAccountRuleFuncModel model);
+    Task<IPagedList<AccountChart>> LookupByBranchCodeDepositAccount(
+        LookupByBranchCodeDepositAccountRuleFuncModel model
+    );
+
     /// <summary>
     /// LookupByBranchCodeCurrencyCode
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
-    Task<IPagedList<AccountChart>> LookupByBranchCodeCurrencyCode(LookupByBranchCodeCurrencyRuleFuncModel model);
+    Task<IPagedList<AccountChart>> LookupByBranchCodeCurrencyCode(
+        LookupByBranchCodeCurrencyRuleFuncModel model
+    );
+
     /// <summary>
     /// GetByBranchCodeCurrencyCode
     /// </summary>
     /// <param name="branchCode"></param>
     /// <param name="currencyCode"></param>
     /// <returns></returns>
-    List<AccountChartDepositGrpcModel> GetByBranchCodeCurrencyCode(string branchCode, string currencyCode);
+    List<AccountChartDepositGrpcModel> GetByBranchCodeCurrencyCode(
+        string branchCode,
+        string currencyCode
+    );
 
     /// <summary>
     /// Get By BrandCode IsLeave And DirectPosting
@@ -152,7 +176,11 @@ public partial interface IAccountChartService
     /// <param name="directPosting"></param>
     /// <param name="isLeave"></param>
     /// <returns></returns>
-    Task<List<AccountChartDepositGrpcModel>> GetByBrandCodeIsLeaveAndDirectPosting(string branchCode, string directPosting, bool isLeave);
+    Task<List<AccountChartDepositGrpcModel>> GetByBrandCodeIsLeaveAndDirectPosting(
+        string branchCode,
+        string directPosting,
+        bool isLeave
+    );
 
     /// <summary>
     /// List clearing account for moving profit - loss to retail earnings
@@ -177,6 +205,7 @@ public partial interface IAccountChartService
     /// </summary>
     /// <value></value>
     IQueryable<AccountChart> Table { get; }
+
     /// <summary>
     /// CreateAsync
     /// </summary>
@@ -184,6 +213,7 @@ public partial interface IAccountChartService
     /// <param name="referenceId"></param>
     /// <returns></returns>
     Task<AccountChartCRUDReponseModel> CreateAsync(CreateAccountChartRequestModel model);
+
     /// <summary>
     /// Delete Async
     /// </summary>

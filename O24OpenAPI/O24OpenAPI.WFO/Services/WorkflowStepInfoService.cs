@@ -1,15 +1,14 @@
 using LinqToDB;
+using O24OpenAPI.Client.Scheme.Workflow;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
 using O24OpenAPI.WFO.Domain;
 using O24OpenAPI.WFO.Models;
 using O24OpenAPI.WFO.Services.Interfaces;
 
 namespace O24OpenAPI.WFO.Services;
 
-public class WorkflowStepInfoService(IRepository<WorkflowStepInfo> Repo)
-    : IWorkflowStepInfoService
+public class WorkflowStepInfoService(IRepository<WorkflowStepInfo> Repo) : IWorkflowStepInfoService
 {
     private readonly IRepository<WorkflowStepInfo> _repo = Repo;
 
@@ -49,10 +48,7 @@ public class WorkflowStepInfoService(IRepository<WorkflowStepInfo> Repo)
             var response = wFScheme.response;
             var isSuccess = response.IsSuccess();
 
-            var stepInfo = await GetByExecutionStep(
-                header.execution_id,
-                header.step_execution_id
-            );
+            var stepInfo = await GetByExecutionStep(header.execution_id, header.step_execution_id);
 
             var content = isSuccess
                 ? response.data.ToSerialize()
@@ -92,12 +88,7 @@ public class WorkflowStepInfoService(IRepository<WorkflowStepInfo> Repo)
         catch (Exception ex)
         {
             var logService = EngineContext.Current.Resolve<ILogger>();
-            logService.LogError(
-                ex.Message,
-                ex,
-                null,
-                wFScheme.request.request_header.execution_id
-            );
+            logService.LogError(ex.Message, ex, null, wFScheme.request.request_header.execution_id);
         }
     }
 }

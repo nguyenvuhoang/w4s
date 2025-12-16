@@ -1,6 +1,6 @@
 using O24OpenAPI.Core;
 using O24OpenAPI.Data.System.Linq;
-using O24OpenAPI.Web.Framework.Localization;
+using O24OpenAPI.Framework.Localization;
 using O24OpenAPI.Web.Report.Domain;
 using O24OpenAPI.Web.Report.Services.Interfaces;
 

@@ -1,5 +1,5 @@
 using System.Collections.Concurrent;
-using O24OpenAPI.Web.Framework.Services.Events;
+using O24OpenAPI.Framework.Services.Events;
 
 namespace O24OpenAPI.Web.CMS.Models;
 

@@ -1,7 +1,7 @@
 ﻿using LinqToDB;
+using O24OpenAPI.Framework.Localization;
 using O24OpenAPI.Web.CMS.Models.Digital;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Localization;
 
 namespace O24OpenAPI.Web.CMS.Services.Services;
 
@@ -16,10 +16,7 @@ public class CityService : ICityService
     /// </summary>
     /// <param name="localizationService"></param>
     /// <param name="cityRepository"></param>
-    public CityService(
-        ILocalizationService localizationService,
-        IRepository<D_CITY> cityRepository
-    )
+    public CityService(ILocalizationService localizationService, IRepository<D_CITY> cityRepository)
     {
         _localizationService = localizationService;
         _cityRepository = cityRepository;
@@ -42,9 +39,7 @@ public class CityService : ICityService
     /// <returns>Task&lt;Bo&gt;.</returns>
     public virtual async Task<D_CITY> GetByCityName(string CityName)
     {
-        return await _cityRepository
-            .Table.Where(s => s.CityName == CityName)
-            .FirstOrDefaultAsync();
+        return await _cityRepository.Table.Where(s => s.CityName == CityName).FirstOrDefaultAsync();
     }
 
     /// <summary>
@@ -74,10 +69,8 @@ public class CityService : ICityService
                     || string.IsNullOrEmpty(model.CityName)
                 )
                 && (
-                    (
-                        !string.IsNullOrEmpty(model.Description)
-                        && model.Description == d.Description
-                    ) || string.IsNullOrEmpty(model.Description)
+                    (!string.IsNullOrEmpty(model.Description) && model.Description == d.Description)
+                    || string.IsNullOrEmpty(model.Description)
                 )
 
             select d

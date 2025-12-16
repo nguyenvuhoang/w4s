@@ -1,7 +1,7 @@
 using O24OpenAPI.ControlHub.Domain;
 using O24OpenAPI.ControlHub.Models;
 using O24OpenAPI.ControlHub.Models.Roles;
-using O24OpenAPI.Web.Framework.Infrastructure.Mapper;
+using O24OpenAPI.Framework.Infrastructure.Mapper;
 
 namespace O24OpenAPI.ControlHub.Infrastructure.Mapper;
 

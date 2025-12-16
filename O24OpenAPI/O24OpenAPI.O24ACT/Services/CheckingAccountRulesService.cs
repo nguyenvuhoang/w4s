@@ -1,6 +1,6 @@
 using O24OpenAPI.Core;
+using O24OpenAPI.Framework.Localization;
 using O24OpenAPI.O24ACT.Domain;
-using O24OpenAPI.Web.Framework.Localization;
 
 namespace O24OpenAPI.O24ACT.Services;
 

@@ -1,6 +1,6 @@
-﻿using O24OpenAPI.Generator.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
+using O24OpenAPI.Generator.Models;
 
 internal static class WorkflowInvokerEmitter
 {
@@ -16,9 +16,9 @@ internal static class WorkflowInvokerEmitter
         sb.AppendLine("using System.Threading;");
         sb.AppendLine("using System.Threading.Tasks;");
         sb.AppendLine("using LinKit.Core.Abstractions;");
-        sb.AppendLine("using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;");
-        sb.AppendLine("using O24OpenAPI.Web.Framework.Extensions;");
-        sb.AppendLine("using O24OpenAPI.Web.Framework.Abstractions;");
+        sb.AppendLine("using O24OpenAPI.Client.Scheme.Workflow;");
+        sb.AppendLine("using O24OpenAPI.Framework.Extensions;");
+        sb.AppendLine("using O24OpenAPI.Framework.Abstractions;");
         sb.AppendLine("using LinKit.Core.Cqrs;");
         sb.AppendLine();
         sb.AppendLine("namespace Workflow.Generated");
@@ -28,7 +28,8 @@ internal static class WorkflowInvokerEmitter
         sb.AppendLine("    {");
 
         sb.AppendLine(
-            "        private readonly Dictionary<string, Func<WFScheme, IMediator, CancellationToken, Task<object>>> _handlers =");
+            "        private readonly Dictionary<string, Func<WFScheme, IMediator, CancellationToken, Task<object>>> _handlers ="
+        );
         sb.AppendLine("            new(StringComparer.OrdinalIgnoreCase)");
 
         if (steps.Count == 0)
@@ -41,7 +42,8 @@ internal static class WorkflowInvokerEmitter
 
             foreach (var step in steps)
             {
-                sb.AppendLine($@"
+                sb.AppendLine(
+                    $@"
                 [""{step.StepCode}""] = static async (scheme, mediator, token) =>
                 {{
                     var command =
@@ -49,7 +51,8 @@ internal static class WorkflowInvokerEmitter
 
                     return await mediator.SendAsync(command, token);
                 }},
-");
+"
+                );
             }
 
             sb.AppendLine("            };");

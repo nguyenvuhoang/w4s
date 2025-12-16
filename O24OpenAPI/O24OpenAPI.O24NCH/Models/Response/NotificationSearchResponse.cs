@@ -1,9 +1,9 @@
 using Newtonsoft.Json;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Extensions;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.O24NCH.Domain;
 using O24OpenAPI.O24NCH.Utils;
-using O24OpenAPI.Web.Framework.Models;
 
 namespace O24OpenAPI.O24NCH.Models.Response;
 

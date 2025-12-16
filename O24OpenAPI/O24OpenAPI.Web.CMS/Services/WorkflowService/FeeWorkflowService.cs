@@ -1,8 +1,8 @@
 using Jits.Neptune.Web.CMS.LogicOptimal9.Common;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
+using O24OpenAPI.Framework.Services;
 using O24OpenAPI.Web.CMS.Models.Digital;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Infrastructure.Mapper.Extensions;
-using O24OpenAPI.Web.Framework.Services;
 
 namespace O24OpenAPI.Web.CMS.Services.WorkflowService;
 
@@ -10,7 +10,6 @@ namespace O24OpenAPI.Web.CMS.Services.WorkflowService;
 /// The bankworkflowservice class
 /// </summary>
 /// <seealso cref="BaseQueueService"/>
-
 public class FeeWorkflowService : BaseQueueService
 {
     /// <summary>

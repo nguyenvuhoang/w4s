@@ -1,10 +1,10 @@
 ﻿using LinKit.Core.Cqrs;
 using O24OpenAPI.AI.API.Application.Features;
-using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
-using O24OpenAPI.Web.Framework.Exceptions;
-using O24OpenAPI.Web.Framework.Extensions;
-using O24OpenAPI.Web.Framework.Models;
-using O24OpenAPI.Web.Framework.Services.Queue;
+using O24OpenAPI.Client.Scheme.Workflow;
+using O24OpenAPI.Framework.Exceptions;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Models;
+using O24OpenAPI.Framework.Services.Queue;
 
 namespace O24OpenAPI.AI.API.Queues;
 

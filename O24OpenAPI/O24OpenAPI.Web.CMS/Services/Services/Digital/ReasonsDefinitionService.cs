@@ -1,8 +1,8 @@
 ﻿using O24OpenAPI.Data.System.Linq;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
+using O24OpenAPI.Framework.Localization;
 using O24OpenAPI.Web.CMS.Models.Digital;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Infrastructure.Mapper.Extensions;
-using O24OpenAPI.Web.Framework.Localization;
 
 namespace O24OpenAPI.Web.CMS.Services.Services;
 
@@ -181,10 +181,7 @@ public partial class ReasonsDefinitionService : IReasonsDefinitionService
                 Description = c.Description,
                 Status = c.Status,
             }
-        )
-            .OrderBy(c => c.ReasonCode)
-            .AsQueryable()
-            .ToPagedList(model.PageIndex, model.PageSize);
+        ).OrderBy(c => c.ReasonCode).AsQueryable().ToPagedList(model.PageIndex, model.PageSize);
 
         return query;
     }
@@ -249,10 +246,7 @@ public partial class ReasonsDefinitionService : IReasonsDefinitionService
                 Description = c.Description,
                 Status = c.Status,
             }
-        )
-            .OrderBy(c => c.ReasonCode)
-            .AsQueryable()
-            .ToPagedList(model.PageIndex, model.PageSize);
+        ).OrderBy(c => c.ReasonCode).AsQueryable().ToPagedList(model.PageIndex, model.PageSize);
 
         return query;
     }

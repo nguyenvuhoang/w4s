@@ -3,9 +3,9 @@ using Newtonsoft.Json.Linq;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Data.Utils;
-using O24OpenAPI.Web.Framework.Controllers;
-using O24OpenAPI.Web.Framework.Models.UtilityModels;
-using O24OpenAPI.Web.Framework.Utils;
+using O24OpenAPI.Framework.Controllers;
+using O24OpenAPI.Framework.Models.UtilityModels;
+using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.WFO.Domain;
 
 namespace O24OpenAPI.WFO.Controllers;

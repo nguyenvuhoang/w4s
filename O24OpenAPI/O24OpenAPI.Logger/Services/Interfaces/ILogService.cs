@@ -1,5 +1,5 @@
 using O24OpenAPI.Logger.Models.Log;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.Logger.Services.Interfaces;
 
