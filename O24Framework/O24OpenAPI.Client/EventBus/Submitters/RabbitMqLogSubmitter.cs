@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using O24OpenAPI.APIContracts.Events;
-using O24OpenAPI.EventBus.Abstractions;
+using O24OpenAPI.Client.EventBus.Abstractions;
 using O24OpenAPI.Logging.Abstractions;
 using O24OpenAPI.Logging.Extensions;
 using O24OpenAPI.Logging.Helpers;
 using Serilog.Events;
 
-namespace O24OpenAPI.EventBus.Submitters;
+namespace O24OpenAPI.Client.EventBus.Submitters;
 
 public class RabbitMqLogSubmitter(IServiceProvider serviceProvider) : ILogSubmitter
 {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using O24OpenAPI.EventBus.Abstractions;
-using O24OpenAPI.EventBus.Bus;
+using O24OpenAPI.Client.EventBus.Abstractions;
+using O24OpenAPI.Client.EventBus.Bus;
 
 namespace Microsoft.Extensions.Hosting;
 

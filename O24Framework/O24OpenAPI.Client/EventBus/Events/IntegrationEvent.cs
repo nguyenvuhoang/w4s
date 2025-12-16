@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace O24OpenAPI.EventBus.Events;
+namespace O24OpenAPI.Client.EventBus.Events;
 
 public class IntegrationEvent
 {

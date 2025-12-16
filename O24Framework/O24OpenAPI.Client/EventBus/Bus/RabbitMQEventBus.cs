@@ -6,10 +6,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using O24OpenAPI.Client;
+using O24OpenAPI.Client.EventBus.Abstractions;
 using O24OpenAPI.Contracts.Events;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.EventBus.Abstractions;
 using O24OpenAPI.Logging.Helpers;
 using Polly;
 using Polly.Retry;
@@ -17,7 +17,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
 
-namespace O24OpenAPI.EventBus.Bus;
+namespace O24OpenAPI.Client.EventBus.Bus;
 
 public sealed class RabbitMQEventBus(
     ILogger<RabbitMQEventBus> logger,

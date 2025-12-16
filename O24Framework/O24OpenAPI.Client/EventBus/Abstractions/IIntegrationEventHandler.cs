@@ -1,6 +1,6 @@
 ﻿using O24OpenAPI.Contracts.Events;
 
-namespace O24OpenAPI.EventBus.Abstractions;
+namespace O24OpenAPI.Client.EventBus.Abstractions;
 
 public interface IIntegrationEventHandler<in TIntegrationEvent> : IIntegrationEventHandler
     where TIntegrationEvent : IntegrationEvent

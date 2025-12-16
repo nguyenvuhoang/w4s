@@ -1,6 +1,6 @@
+using O24OpenAPI.Client.EventBus.Abstractions;
 using O24OpenAPI.Contracts.Events;
 using O24OpenAPI.Core.Utils;
-using O24OpenAPI.EventBus.Abstractions;
 using O24OpenAPI.Framework.DBContext;
 using O24OpenAPI.Framework.Domain;
 using O24OpenAPI.Framework.Extensions;

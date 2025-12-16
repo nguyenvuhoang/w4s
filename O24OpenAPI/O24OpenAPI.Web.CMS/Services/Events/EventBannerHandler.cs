@@ -1,24 +1,25 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.SignalR;
 using O24OpenAPI.APIContracts.Events;
-using O24OpenAPI.EventBus.Abstractions;
+using O24OpenAPI.Client.EventBus.Abstractions;
 using O24OpenAPI.Web.CMS.Services.Services;
-using System.Text.Json;
 
 namespace O24OpenAPI.Web.CMS.Services.Events;
 
 public class EventBannerHandler : IIntegrationEventHandler<BannerModifyEvent>
 {
     private readonly IHubContext<SignalHubService> _signal = EngineContext.Current.Resolve<
-    IHubContext<SignalHubService>>();
+        IHubContext<SignalHubService>
+    >();
 
     public Task Handle(BannerModifyEvent @event)
     {
         try
         {
-            var json = JsonSerializer.Serialize(@event, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
+            var json = JsonSerializer.Serialize(
+                @event,
+                new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
+            );
 
             var bannerObj = JsonSerializer.Deserialize<object>(json)!;
 
@@ -30,5 +31,4 @@ public class EventBannerHandler : IIntegrationEventHandler<BannerModifyEvent>
             return Task.CompletedTask;
         }
     }
-
 }

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 using O24OpenAPI.APIContracts.Events;
-using O24OpenAPI.EventBus.Abstractions;
+using O24OpenAPI.Client.EventBus.Abstractions;
 using O24OpenAPI.Logging.Helpers;
 using O24OpenAPI.Web.CMS.Services.Services;
 

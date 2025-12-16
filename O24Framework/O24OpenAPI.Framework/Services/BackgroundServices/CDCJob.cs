@@ -1,9 +1,9 @@
 ﻿using LinKit.Core.BackgroundJobs;
 using LinKit.Core.Cqrs;
+using O24OpenAPI.Client.EventBus.Abstractions;
 using O24OpenAPI.Contracts.Events;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.EventBus.Abstractions;
 using O24OpenAPI.Framework.DBContext;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;

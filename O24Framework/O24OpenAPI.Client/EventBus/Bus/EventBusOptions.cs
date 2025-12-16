@@ -1,4 +1,4 @@
-﻿namespace O24OpenAPI.EventBus.Bus;
+﻿namespace O24OpenAPI.Client.EventBus.Bus;
 
 public class EventBusOptions
 {

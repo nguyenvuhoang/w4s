@@ -1,4 +1,4 @@
-﻿namespace O24OpenAPI.EventBus.Abstractions;
+﻿namespace O24OpenAPI.Client.EventBus.Abstractions;
 
 public class EventBusSubscriptionInfo
 {

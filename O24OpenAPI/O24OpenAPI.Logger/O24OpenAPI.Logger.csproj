@@ -59,7 +59,6 @@
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Data\O24OpenAPI.Data.csproj" />
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Client\O24OpenAPI.Client.csproj" />
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Framework\O24OpenAPI.Framework.csproj" />
-    <ProjectReference Include="..\O24OpenAPI.EventBus\O24OpenAPI.EventBus.csproj" />
     <Content Include="NT.pfx" CopyToPublishDirectory="Always" />
     <Content Include="__jits_com_vn.pfx" CopyToPublishDirectory="Always" />
     <Content Include="App_Data\CreateDatabase.sql" CopyToPublishDirectory="Always" />
