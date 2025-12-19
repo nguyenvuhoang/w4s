@@ -1,4 +1,5 @@
 using O24OpenAPI.CMS.API.Application.Services.Services;
+using O24OpenAPI.CMS.Infrastructure.Extensions;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
 using O24OpenAPI.Framework.Middlewares;
@@ -16,6 +17,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.ConfigureWebHost();
 builder.AddO24Logging();
 builder.AddBackgroundJobs("StaticConfig/BackgroundJobsConfig.json");
+builder.Services.AddInfrastructureServices();
 var app = builder.Build();
 app.MapHub<SignalHubService>("/signal");
 app.UseStaticFiles();

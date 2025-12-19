@@ -8,6 +8,7 @@ using O24OpenAPI.Logging.Formatters;
 using O24OpenAPI.Logging.Handlers;
 using O24OpenAPI.Logging.Interceptors;
 using O24OpenAPI.Logging.Middlewares;
+using O24OpenAPI.Logging.Sinks;
 using Serilog;
 using Serilog.Filters;
 using Serilog.Sinks.PeriodicBatching;
@@ -26,7 +27,7 @@ public static class LoggingDependencyInjection
         builder.Host.UseSerilog(
             (context, serviceProvider, loggerConfiguration) =>
             {
-                var serviceName =
+                string serviceName =
                     context.Configuration.GetValue<string>("O24Logging:ServiceName")
                     ?? Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID;
                 var sinkOptions = context
@@ -72,7 +73,7 @@ public static class LoggingDependencyInjection
                             .WriteTo.Map(
                                 logEvent =>
                                 {
-                                    var direction =
+                                    string? direction =
                                         (
                                             logEvent.Properties.TryGetValue("Direction", out var d)
                                             && d is Serilog.Events.ScalarValue svd
@@ -83,7 +84,7 @@ public static class LoggingDependencyInjection
                                 },
                                 (key, wt) =>
                                 {
-                                    var path = Path.Combine("logs", key, "log-.txt");
+                                    string path = Path.Combine("logs", key, "log-.txt");
                                     wt.Async(a =>
                                         a.File(
                                             new CustomTextFormatter(),
@@ -117,14 +118,14 @@ public static class LoggingDependencyInjection
                             .WriteTo.Map(
                                 logEvent =>
                                 {
-                                    var logType =
+                                    string? logType =
                                         (
                                             logEvent.Properties.TryGetValue("LogType", out var lt)
                                             && lt is Serilog.Events.ScalarValue svlt
                                         )
                                             ? svlt.Value?.ToString()
                                             : "business";
-                                    var direction =
+                                    string? direction =
                                         (
                                             logEvent.Properties.TryGetValue("Direction", out var d)
                                             && d is Serilog.Events.ScalarValue svd
@@ -135,7 +136,7 @@ public static class LoggingDependencyInjection
                                 },
                                 (key, wt) =>
                                 {
-                                    var path = Path.Combine("logs", key, "log-.txt");
+                                    string path = Path.Combine("logs", key, "log-.txt");
                                     wt.Async(a =>
                                         a.File(
                                             new CustomTextFormatter(),

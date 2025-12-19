@@ -2,7 +2,7 @@
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.O24ACT.Common;
-using O24OpenAPI.O24ACT.Configuration;
+using O24OpenAPI.O24ACT.Config;
 using O24OpenAPI.O24ACT.Models;
 using O24OpenAPI.O24ACT.Services.Interfaces;
 

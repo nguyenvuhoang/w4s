@@ -2,7 +2,6 @@ using Linh.CodeEngine.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.Client.EventBus.Extensions;
 using O24OpenAPI.Client.EventBus.Submitters;

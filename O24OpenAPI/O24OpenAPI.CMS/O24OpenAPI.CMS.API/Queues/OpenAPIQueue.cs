@@ -1,6 +1,7 @@
 ﻿using O24OpenAPI.CMS.API.Application.Models;
 using O24OpenAPI.CMS.API.Application.Models.OpenAPI;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces;
+using O24OpenAPI.CMS.Domain.AggregateModels;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Helpers;
 using O24OpenAPI.Framework.Services.Queue;

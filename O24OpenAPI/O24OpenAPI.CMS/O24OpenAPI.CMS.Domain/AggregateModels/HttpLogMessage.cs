@@ -1,4 +1,4 @@
-namespace O24OpenAPI.CMS.Domain;
+namespace O24OpenAPI.CMS.Domain.AggregateModels;
 
 /// <summary>
 /// The request log class

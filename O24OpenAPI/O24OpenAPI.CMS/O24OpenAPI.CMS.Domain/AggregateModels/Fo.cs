@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace O24OpenAPI.CMS.Domain;
+namespace O24OpenAPI.CMS.Domain.AggregateModels;
 
 public partial class Fo : BaseEntity
 {

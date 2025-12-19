@@ -1,5 +1,5 @@
 using FluentMigrator.Builders.Create.Table;
-using O24OpenAPI.CMS.Domain;
+using O24OpenAPI.CMS.Domain.AggregateModels;
 using O24OpenAPI.Data.Mapping.Builders;
 
 namespace O24OpenAPI.CMS.Infrastructure.EntityConfigurations;

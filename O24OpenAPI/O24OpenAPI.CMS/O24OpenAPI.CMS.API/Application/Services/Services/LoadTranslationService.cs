@@ -1,4 +1,5 @@
 ﻿using O24OpenAPI.CMS.API.Application.Services.Interfaces;
+using O24OpenAPI.CMS.Domain.AggregateModels;
 using O24OpenAPI.CMS.Infrastructure.Configurations;
 using System.Text.Json;
 

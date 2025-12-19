@@ -5,7 +5,7 @@ using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Framework.Services.Queue;
 using O24OpenAPI.O24NCH.Models.Request;
-using O24OpenAPI.O24NCH.Models.Request.SMS;
+using O24OpenAPI.O24NCH.Models.Request.SMSGateway;
 using O24OpenAPI.O24NCH.Services.Interfaces;
 
 namespace O24OpenAPI.O24NCH.Queues;

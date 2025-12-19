@@ -1,5 +1,6 @@
 ﻿using O24OpenAPI.CMS.API.Application.Models.Mail;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces;
+using O24OpenAPI.CMS.Domain.AggregateModels;
 using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.Framework.Localization;
 

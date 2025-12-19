@@ -1,5 +1,5 @@
 ﻿using O24OpenAPI.O24NCH.Models.Request;
-using O24OpenAPI.O24NCH.Models.Request.SMS;
+using O24OpenAPI.O24NCH.Models.Request.SMSGateway;
 using O24OpenAPI.O24NCH.Models.Response;
 
 namespace O24OpenAPI.O24NCH.Services.Interfaces;

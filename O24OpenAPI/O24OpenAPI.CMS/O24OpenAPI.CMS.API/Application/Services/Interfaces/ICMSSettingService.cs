@@ -1,4 +1,4 @@
-﻿using O24OpenAPI.Core.Domain.Configuration;
+﻿using O24OpenAPI.Core.Configuration;
 
 namespace O24OpenAPI.CMS.API.Application.Services.Interfaces;
 

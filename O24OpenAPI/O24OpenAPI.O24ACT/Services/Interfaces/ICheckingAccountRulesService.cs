@@ -1,4 +1,4 @@
-namespace O24OpenAPI.O24ACT.Services;
+namespace O24OpenAPI.O24ACT.Services.Interfaces;
 
 /// <summary>
 /// ICheckingAccountRulesService

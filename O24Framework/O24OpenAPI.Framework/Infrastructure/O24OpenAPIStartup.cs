@@ -18,7 +18,6 @@ using O24OpenAPI.Framework.Services;
 using O24OpenAPI.Framework.Services.CDC;
 using O24OpenAPI.Framework.Services.Configuration;
 using O24OpenAPI.Framework.Services.Events;
-using O24OpenAPI.Framework.Services.Interfaces;
 using O24OpenAPI.Framework.Services.Logging;
 using O24OpenAPI.Framework.Services.Mapping;
 using O24OpenAPI.Framework.Services.ScheduleTasks;

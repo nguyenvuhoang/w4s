@@ -1,4 +1,4 @@
-﻿namespace O24OpenAPI;
+﻿namespace O24OpenAPI.ControlHub.Constant;
 
 public partial class O24CTHResourceCode
 {

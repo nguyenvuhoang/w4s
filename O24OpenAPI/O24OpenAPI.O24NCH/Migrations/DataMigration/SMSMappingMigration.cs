@@ -4,7 +4,7 @@ using O24OpenAPI.Data.Utils;
 using O24OpenAPI.O24NCH.Domain;
 using O24OpenAPI.O24NCH.Migrations;
 
-namespace O24OpenAPI.O24NCH.DataMigration;
+namespace O24OpenAPI.O24NCH.Migrations.DataMigration;
 
 [O24OpenAPIMigration(
     "2025/10/20 12:49:43:0000000",

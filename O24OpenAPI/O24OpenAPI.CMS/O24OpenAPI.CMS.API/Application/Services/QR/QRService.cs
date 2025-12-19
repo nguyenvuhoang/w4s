@@ -1,5 +1,6 @@
 using LinqToDB;
 using O24OpenAPI.CMS.API.Application.Models.QR;
+using O24OpenAPI.CMS.Domain.AggregateModels;
 using O24OpenAPI.Core.Extensions;
 
 namespace O24OpenAPI.CMS.API.Application.Services.QR;

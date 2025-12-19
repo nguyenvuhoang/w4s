@@ -1,4 +1,4 @@
-﻿namespace O24OpenAPI.DataWarehouse.Services.Interfaces;
+﻿namespace O24OpenAPI.DataWarehouse.Services.Interface;
 
 public interface IAccountingService
 {

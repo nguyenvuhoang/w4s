@@ -1,7 +1,8 @@
 ﻿using O24OpenAPI.Logging.Abstractions;
 using Serilog.Events;
+using Serilog.Sinks.PeriodicBatching;
 
-namespace Serilog.Sinks.PeriodicBatching;
+namespace O24OpenAPI.Logging.Sinks;
 
 public class BatchingSubmitterAdapter(ILogSubmitter submitter) : IBatchedLogEventSink
 {

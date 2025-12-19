@@ -5,7 +5,7 @@ using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Framework.Services.Queue;
 
-namespace O24OpenAPI.Sample.Queues;
+namespace O24OpenAPI.O24Design.Queues;
 
 public class TestQueue : BaseQueue
 {

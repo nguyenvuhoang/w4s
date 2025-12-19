@@ -8,7 +8,7 @@ using O24OpenAPI.O24NCH.Constant;
 using O24OpenAPI.O24NCH.Domain;
 using O24OpenAPI.O24NCH.Infrastructure;
 using O24OpenAPI.O24NCH.Models.Request;
-using O24OpenAPI.O24NCH.Models.Request.SMS;
+using O24OpenAPI.O24NCH.Models.Request.SMSGateway;
 using O24OpenAPI.O24NCH.Models.Response;
 using O24OpenAPI.O24NCH.Services.Interfaces;
 

@@ -2,7 +2,7 @@
 using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.O24NCH.Domain;
-using O24OpenAPI.O24NCH.Models.Request;
+using O24OpenAPI.O24NCH.Models.Request.Mail;
 
 namespace O24OpenAPI.O24NCH.Services.Interfaces;
 

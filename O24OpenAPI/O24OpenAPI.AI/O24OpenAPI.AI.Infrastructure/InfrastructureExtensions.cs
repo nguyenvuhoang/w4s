@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using O24OpenAPI.AI.Infrastructure.Configurations;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
 using O24OpenAPI.Logging.Interceptors;
-using O24OpenAPI.O24AI.Configuration;
 using Qdrant.Client;
 
 namespace O24OpenAPI.AI.Infrastructure;

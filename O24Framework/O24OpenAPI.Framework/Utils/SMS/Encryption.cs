@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace O24OpenAPI.Framework.Utils;
+namespace O24OpenAPI.Framework.Utils.SMS;
 
 /// <summary>
 /// Peforms username and password encryption in cookie, session and database.

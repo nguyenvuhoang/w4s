@@ -1,9 +1,9 @@
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Sample.Services;
-using O24OpenAPI.Sample.Services.Interfaces;
 using O24OpenAPI.Framework.Domain.Logging;
+using O24OpenAPI.O24Design.Services;
+using O24OpenAPI.O24Design.Services.Interfaces;
 
-namespace O24OpenAPI.Sample.Infrastructure;
+namespace O24OpenAPI.O24Design.Infrastructure;
 
 public class Startup : IO24OpenAPIStartup
 {

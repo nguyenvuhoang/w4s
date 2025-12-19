@@ -1,3 +1,4 @@
+using O24OpenAPI.CMS.Domain.AggregateModels;
 using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Data.Migrations;
 using FileUtils = O24OpenAPI.Data.Utils.FileUtils;

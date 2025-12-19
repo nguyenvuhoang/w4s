@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace O24OpenAPI.Sample.Services.CommandHandler;
+namespace O24OpenAPI.O24Design.Services.CommandHandler;
 
 public class LogCommand<T>
     where T : class

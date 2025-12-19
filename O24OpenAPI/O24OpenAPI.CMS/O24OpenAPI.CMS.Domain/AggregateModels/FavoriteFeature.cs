@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace O24OpenAPI.CMS.Domain;
+namespace O24OpenAPI.CMS.Domain.AggregateModels;
 
 [Table("D_FAVORITEFEATURE")]
 public class FavoriteFeature : BaseEntity

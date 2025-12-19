@@ -1,5 +1,7 @@
 ﻿// using O24OpenAPI.O24DTS.Domain; // nếu CoreApiKeys của bạn nằm namespace khác, đổi import này cho khớp
 
+using O24OpenAPI.CMS.Domain.AggregateModels;
+
 namespace O24OpenAPI.CMS.API.Application.Models.OpenAPI;
 
 public partial class OpenAPIQueueResponseModel : BaseO24OpenAPIModel

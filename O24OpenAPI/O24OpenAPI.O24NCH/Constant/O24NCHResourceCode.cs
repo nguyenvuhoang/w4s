@@ -1,4 +1,4 @@
-﻿namespace O24OpenAPI;
+﻿namespace O24OpenAPI.O24NCH.Constant;
 
 public partial class O24NCHResourceCode
 {

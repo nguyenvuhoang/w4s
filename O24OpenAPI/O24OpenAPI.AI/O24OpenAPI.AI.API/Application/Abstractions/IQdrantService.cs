@@ -1,6 +1,5 @@
-﻿namespace O24OpenAPI.AI.API.Application.Abstractions
+﻿namespace O24OpenAPI.AI.API.Application.Abstractions;
+
+public interface IQdrantService
 {
-    public interface IQdrantService
-    {
-    }
 }

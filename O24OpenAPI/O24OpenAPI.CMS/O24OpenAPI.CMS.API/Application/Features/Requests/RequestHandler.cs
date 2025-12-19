@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.APIContracts.Models.CTH;
 using O24OpenAPI.CMS.API.Application.Models.ContextModels;
@@ -6,16 +8,22 @@ using O24OpenAPI.CMS.API.Application.Models.Request;
 using O24OpenAPI.CMS.API.Application.Models.Response;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces;
 using O24OpenAPI.CMS.API.Application.Utils;
+using O24OpenAPI.CMS.Domain.AggregateModels.AppAggregate;
+using O24OpenAPI.CMS.Domain.AggregateModels.LearnApiAggregate;
 using O24OpenAPI.CMS.Infrastructure.Configurations;
+using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Utils;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Localization;
 using O24OpenAPI.Framework.Models.JwtModels;
 using O24OpenAPI.Framework.Services;
+using O24OpenAPI.Framework.Services.Mapping;
 using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
+using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using O24OpenAPI.Logging.Helpers;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace O24OpenAPI.CMS.API.Application.Features.Requests;
@@ -39,20 +47,19 @@ public class BoRequest : BaseO24OpenAPIModel
 public class RequestHandler(
     ILocalizationService localizationService,
     WebApiSettings webApiSettings,
-    IPostService postService,
     IO24OpenAPIFileProvider fileProvider,
     JWebUIObjectContextModel context,
     CMSSetting cmsSetting,
     IJwtTokenService jwtTokenService,
     WorkContext workContext,
-    ICTHGrpcClientService cthGrpcClientService
+    ICTHGrpcClientService cthGrpcClientService,
+    ILearnApiRepository learnApiRepository,
+    IDataMappingService dataMappingService
 ) : IRequestHandler
 {
     private readonly WebApiSettings _webApiSettings = webApiSettings;
     private readonly IO24OpenAPIFileProvider _fileProvider = fileProvider;
     private readonly ILocalizationService _localizationService = localizationService;
-    private readonly JWebUIObjectContextModel _context = context;
-    private readonly IPostService _postService = postService;
     private readonly CMSSetting _cmsSetting = cmsSetting;
     private readonly WorkContext _workContext = workContext;
     private readonly IJwtTokenService _jwtTokenService = jwtTokenService;
@@ -168,7 +175,7 @@ public class RequestHandler(
                 getSsidFromCookies = value;
             }
             string portalToken = "";
-            _context.InfoUser.SetUserLogin(infoHeader);
+            context.InfoUser.SetUserLogin(infoHeader);
 
             #region Check session
             bool checkedSession = !IsNeedCheckSession;
@@ -230,7 +237,7 @@ public class RequestHandler(
                                 $"The current session does not have the required role for this channel [{appPost}]."
                             );
                         }
-                        _context.InfoUser.UserSession = currentSession;
+                        context.InfoUser.UserSession = currentSession;
                         _workContext.UserContext.SetLoginName(currentSession.LoginName);
                         _workContext.UserContext.SetUserName(currentSession.UserName);
                         _workContext.UserContext.SetUserCode(currentSession.UserCode);
@@ -267,18 +274,18 @@ public class RequestHandler(
             #endregion
 
             //===============================================IP,OS,BROWSER===============================================
-            _context.InfoRequest.SetIp(httpContext.GetClientIPAddress());
-            _context.InfoRequest.SetClientOs(httpContext.GetClientOs());
-            _context.InfoRequest.SetClientBrowser(httpContext.GetClientBrowser());
-            _context.InfoRequest.SetRequestJson(request_json);
-            _context.InfoRequest.DeviceID = StringUtils.Coalesce(
+            context.InfoRequest.SetIp(httpContext.GetClientIPAddress());
+            context.InfoRequest.SetClientOs(httpContext.GetClientOs());
+            context.InfoRequest.SetClientBrowser(httpContext.GetClientBrowser());
+            context.InfoRequest.SetRequestJson(request_json);
+            context.InfoRequest.DeviceID = StringUtils.Coalesce(
                 getSsidFromCookies,
                 infoHeader.MyDevice.TryGetValue("device_id", out object? deviceId)
                     ? deviceId?.ToString()
                     : null,
                 ""
             );
-            _context.InfoRequest.DeviceType = StringUtils.Coalesce(
+            context.InfoRequest.DeviceType = StringUtils.Coalesce(
                 getSsidFromCookies,
                 infoHeader.MyDevice.TryGetValue("device_type", out object? deviceType)
                     ? deviceType?.ToString()
@@ -286,58 +293,58 @@ public class RequestHandler(
                 ""
             );
 
-            _context.InfoRequest.OsVersion = infoHeader.MyDevice.TryGetValue(
+            context.InfoRequest.OsVersion = infoHeader.MyDevice.TryGetValue(
                 "os_version",
                 out object? osVersion
             )
                 ? osVersion?.ToString()
                 : "";
 
-            _context.InfoRequest.AppVersion = infoHeader.MyDevice.TryGetValue(
+            context.InfoRequest.AppVersion = infoHeader.MyDevice.TryGetValue(
                 "app_version",
                 out object? appVersion
             )
                 ? appVersion?.ToString()
                 : "";
 
-            _context.InfoRequest.DeviceName = infoHeader.MyDevice.TryGetValue(
+            context.InfoRequest.DeviceName = infoHeader.MyDevice.TryGetValue(
                 "device_name",
                 out object? deviceName
             )
                 ? deviceName?.ToString()
                 : "";
 
-            _context.InfoRequest.Brand = infoHeader.MyDevice.TryGetValue("brand", out object? brand)
+            context.InfoRequest.Brand = infoHeader.MyDevice.TryGetValue("brand", out object? brand)
                 ? brand?.ToString()
                 : "";
 
-            _context.InfoRequest.IsEmulator =
+            context.InfoRequest.IsEmulator =
                 infoHeader.MyDevice.TryGetValue("is_emulator", out object? isEmulator)
                 && bool.TryParse(isEmulator?.ToString(), out bool isEmuVal)
                     ? isEmuVal
                     : false;
 
-            _context.InfoRequest.IsRootedOrJailbroken =
+            context.InfoRequest.IsRootedOrJailbroken =
                 infoHeader.MyDevice.TryGetValue("is_rooted_or_jailbroken", out object? isRooted)
                 && bool.TryParse(isRooted?.ToString(), out bool isRootedVal)
                     ? isRootedVal
                     : false;
 
-            _context.InfoRequest.UserAgent = infoHeader.MyDevice.TryGetValue(
+            context.InfoRequest.UserAgent = infoHeader.MyDevice.TryGetValue(
                 "user_agent",
                 out object? userAgent
             )
                 ? userAgent?.ToString()
                 : "";
 
-            _context.InfoRequest.IpAddress = infoHeader.MyDevice.TryGetValue(
+            context.InfoRequest.IpAddress = infoHeader.MyDevice.TryGetValue(
                 "ip_address",
                 out object? ipAddress
             )
                 ? ipAddress?.ToString()
                 : "";
 
-            _context.InfoRequest.Modelname = infoHeader.MyDevice.TryGetValue(
+            context.InfoRequest.Modelname = infoHeader.MyDevice.TryGetValue(
                 "model_name",
                 out object? modelName
             )
@@ -349,23 +356,22 @@ public class RequestHandler(
                 infoHeader.MyDevice.TryGetValue("network_type", out object? networkType);
                 infoHeader.MyDevice.TryGetValue("network_status", out object? networkStatus);
 
-                _context.InfoRequest.Network =
-                    $"{networkType ?? ""} ({networkStatus ?? ""})".Trim();
+                context.InfoRequest.Network = $"{networkType ?? ""} ({networkStatus ?? ""})".Trim();
             }
             else
             {
-                _context.InfoRequest.Network = string.Empty;
+                context.InfoRequest.Network = string.Empty;
             }
-            _context.InfoRequest.Memory = infoHeader.MyDevice.TryGetValue(
+            context.InfoRequest.Memory = infoHeader.MyDevice.TryGetValue(
                 "total_memory",
                 out object? totalmemory
             )
                 ? totalmemory?.ToString()
                 : "";
 
-            _context.InfoRequest.PortalToken = portalToken;
-            _context.InfoRequest.Language = infoHeader.Lang;
-            _context.InfoApp.App = appPost;
+            context.InfoRequest.PortalToken = portalToken;
+            context.InfoRequest.Language = infoHeader.Lang;
+            context.InfoApp.App = appPost;
 
             foreach (BoRequest bo_ in BoArrays)
             {
@@ -396,7 +402,7 @@ public class RequestHandler(
         {
             string errorString = await _localizationService.GetResource(
                 keyError,
-                _context.InfoUser?.GetUserLogin()?.Lang ?? "en"
+                context.InfoUser?.GetUserLogin()?.Lang ?? "en"
             );
 
             List<ErrorInfoModel> listError =
@@ -435,12 +441,12 @@ public class RequestHandler(
     {
         WorkContext? workflowContext = EngineContext.Current.Resolve<WorkContext>();
         string executeId = workflowContext.ExecutionId;
-        _context.Bo.SetBoInput(JObject.FromObject(boRequest.Input));
-        _context.Bo.SetActionInput([]);
+        context.Bo.SetBoInput(JObject.FromObject(boRequest.Input));
+        context.Bo.SetActionInput([]);
 
-        string appCode = _context.InfoApp.GetApp();
+        string appCode = context.InfoApp.GetApp();
 
-        JObject? data = (await _postService.ExecuteAsync()).Value<JObject>("data");
+        JObject? data = (await ExecuteAsync()).Value<JObject>("data");
 
         if (data != null)
         {
@@ -480,9 +486,9 @@ public class RequestHandler(
             }
         }
 
-        if (_context.Bo.GetActionErrors() != null)
+        if (context.Bo.GetActionErrors() != null)
         {
-            resultFo.error.AddRange(_context.Bo.GetActionErrors());
+            resultFo.error.AddRange(context.Bo.GetActionErrors());
         }
     }
 
@@ -589,5 +595,180 @@ public class RequestHandler(
         }
 
         return (isNeedCheckSession, isRefreshToken);
+    }
+
+    private async Task<JObject> ExecuteAsync()
+    {
+        try
+        {
+            JObject boInput = context.Bo.GetBoInput();
+            if (boInput == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(boInput),
+                    "BoInput cannot be null or empty!"
+                );
+            }
+            string response;
+            if (
+                !boInput.TryGetValue("workflowid", out JToken? workflowIdToken)
+                || string.IsNullOrEmpty(workflowIdToken.ToString())
+            )
+            {
+                string? learnApiId = boInput["learn_api"]?.ToString();
+                if (string.IsNullOrEmpty(learnApiId))
+                {
+                    throw new ArgumentNullException(
+                        nameof(learnApiId),
+                        "LearnApi cannot be null or empty!"
+                    );
+                }
+                LearnApi learnApi = await learnApiRepository.GetByChannelAndLearnApiIdAsync(
+                    context.InfoApp.GetApp(),
+                    learnApiId
+                );
+                JObject mappedRequest = BuildContentWorkflowRequest();
+                if (learnApi.LearnApiMapping.HasValue())
+                {
+                    mappedRequest = await dataMappingService.MapDataAsync(boInput, mappedRequest);
+                }
+                if (learnApi.URI.StartsWith("$"))
+                {
+                    string uri = learnApi.URI;
+                    int firstKey = uri.IndexOf('$');
+                    int secondKey = uri.IndexOf('$', firstKey + 1);
+
+                    if (firstKey != -1 && secondKey != -1 && secondKey > firstKey)
+                    {
+                        string settingKey = uri.Substring(firstKey + 1, secondKey - firstKey - 1);
+                        string remainingPath = uri.Substring(secondKey + 1);
+                        if (settingKey.Contains("WFO"))
+                        {
+                            string wfoURI = Singleton<O24OpenAPIConfiguration>.Instance.WFOHttpURL;
+                            learnApi.URI = wfoURI + remainingPath;
+                        }
+                        else
+                        {
+                            ICMSSettingService? settingService =
+                                EngineContext.Current.Resolve<ICMSSettingService>();
+                            string setting = await settingService.GetStringValue(settingKey);
+                            learnApi.URI = setting + remainingPath;
+                        }
+                    }
+                }
+                response = await CallAPIAsync(
+                    path: learnApi.URI,
+                    method: learnApi.LearnApiMethod,
+                    content: mappedRequest,
+                    headerToken: context.InfoUser.GetUserLogin().Token
+                );
+            }
+            else
+            {
+                JObject obContent = BuildContentWorkflowRequest();
+                IWFOGrpcClientService? wfoGrpcClientService =
+                    EngineContext.Current.Resolve<IWFOGrpcClientService>();
+                response = await wfoGrpcClientService.ExecuteWorkflowAsync(
+                    JsonConvert.SerializeObject(obContent)
+                );
+            }
+
+            JObject result = JObject.Parse(response);
+            if (result.TryGetValue("error_message", out JToken? messageToken))
+            {
+                if (!string.IsNullOrEmpty(messageToken?.ToString()))
+                {
+                    result["data"] = new JObject
+                    {
+                        { "error_message", messageToken },
+                        { "next_action", result["error_next_action"] },
+                        { "error_code", result["error_code"] },
+                    };
+                }
+            }
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.StackTrace);
+            throw;
+        }
+    }
+
+    private JObject BuildContentWorkflowRequest()
+    {
+        JObject sourceInput = context.Bo.GetBoInput();
+        JObject wfInput = new(sourceInput)
+        {
+            ["lang"] = context.InfoRequest.Language,
+            ["token"] = context.InfoUser.GetUserLogin().Token,
+            ["user_id"] = context.InfoUser.UserSession?.UserId.ToString() ?? "0",
+            ["user_code"] = context.InfoUser.UserSession?.UserCode.ToString() ?? "0",
+            ["execution_id"] = _workContext?.ExecutionId ?? Guid.NewGuid().ToString(),
+            ["channel_id"] = context.InfoApp.GetApp(),
+            ["transaction_date"] = DateTime.UtcNow,
+            //["value_date"] = context.InfoUser.UserSession? ?? DateTime.UtcNow,
+            ["device"] = JToken.FromObject(
+                new DeviceModel
+                {
+                    IpAddress = context.InfoRequest.GetIp() ?? "::1",
+                    DeviceId = string.IsNullOrWhiteSpace(context.InfoRequest.DeviceID)
+                        ? Guid.NewGuid().ToString()
+                        : context.InfoRequest.DeviceID,
+                    OsVersion =
+                        context.InfoRequest.OsVersion
+                        ?? context.InfoRequest.GetClientOs()
+                        ?? "unknown",
+                    UserAgent =
+                        context.InfoRequest.UserAgent
+                        ?? context.InfoRequest.GetClientBrowser()
+                        ?? string.Empty,
+                    DeviceType = context.InfoRequest.DeviceType ?? "unknown",
+                    AppVersion = context.InfoRequest.AppVersion ?? "1.0.0",
+                    DeviceName = context.InfoRequest.DeviceName ?? "Generic Device",
+                    Brand = context.InfoRequest.Brand ?? "Unknown",
+                    IsEmulator = context.InfoRequest.IsEmulator,
+                    IsRootedOrJailbroken = context.InfoRequest.IsRootedOrJailbroken,
+                    Memory = context.InfoRequest.Memory,
+                    Network = context.InfoRequest.Network,
+                }
+            ),
+        }; // Create a new copy of the input
+        return wfInput;
+    }
+
+    private static async Task<string> CallAPIAsync(
+        string path,
+        string method,
+        object content,
+        string headerToken = ""
+    )
+    {
+        HttpClientHandler clientHandler = new()
+        {
+            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) =>
+            {
+                return true;
+            },
+        };
+
+        HttpClient httpClient = new(clientHandler);
+        httpClient.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+        if (!string.IsNullOrEmpty(headerToken))
+        {
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + headerToken);
+        }
+
+        string requestString = JsonConvert.SerializeObject(content);
+        StringContent requestContent = new(requestString, Encoding.Default, "application/json");
+        HttpRequestMessage requestMessage = new(new HttpMethod(method), path)
+        {
+            Content = requestContent,
+        };
+        HttpResponseMessage httpResponse = await httpClient.SendAsync(requestMessage);
+        httpResponse.EnsureSuccessStatusCode();
+        string result = await httpResponse.Content.ReadAsStringAsync();
+
+        return result;
     }
 }

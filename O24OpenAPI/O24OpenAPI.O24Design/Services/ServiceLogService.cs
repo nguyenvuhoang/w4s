@@ -1,4 +1,4 @@
-namespace O24OpenAPI.Sample.Services;
+namespace O24OpenAPI.O24Design.Services;
 
 //public class ServiceLogService(IRepository<ServiceLog> serviceLogRepository)
 //    : ILogService<ServiceLog>

@@ -1,5 +1,4 @@
-﻿using O24OpenAPI.O24NCH.Models.Request;
-using O24OpenAPI.O24NCH.Models.Request.Mail;
+﻿using O24OpenAPI.O24NCH.Models.Request.Mail;
 
 namespace O24OpenAPI.O24NCH.Services.Interfaces;
 

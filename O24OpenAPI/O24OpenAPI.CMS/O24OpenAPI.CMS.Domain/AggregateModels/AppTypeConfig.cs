@@ -1,6 +1,6 @@
 ﻿using O24OpenAPI.Core.Domain;
 
-namespace O24OpenAPI.CMS.Domain;
+namespace O24OpenAPI.CMS.Domain.AggregateModels;
 
 public class AppTypeConfig : BaseEntity
 {

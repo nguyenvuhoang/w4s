@@ -2,7 +2,7 @@
 using O24OpenAPI.Data.Mapping.Builders;
 using O24OpenAPI.Framework.Domain;
 
-namespace O24OpenAPI.O24ACT.Migrations.Builders;
+namespace O24OpenAPI.O24ACT.Domain;
 
 public class C_CODELISTBuilder : O24OpenAPIEntityBuilder<C_CODELIST>
 {

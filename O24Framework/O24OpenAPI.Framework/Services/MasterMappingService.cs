@@ -1,7 +1,6 @@
 ﻿using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.Framework.Domain;
-using O24OpenAPI.Framework.Services.Interfaces;
 
 namespace O24OpenAPI.Framework.Services;
 

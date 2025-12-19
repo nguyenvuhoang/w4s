@@ -1,4 +1,7 @@
-using O24OpenAPI.Core.Domain.Configuration;
+using O24OpenAPI.CMS.Domain.AggregateModels;
+using O24OpenAPI.CMS.Domain.AggregateModels.AppAggregate;
+using O24OpenAPI.CMS.Domain.AggregateModels.PORTAL;
+using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Framework.Domain;
 
 namespace O24OpenAPI.CMS.API.Application.Migrations;
@@ -17,7 +20,7 @@ public class CMSConditionField
     public static readonly List<string> LearnApiCondition =
     [
         nameof(LearnApi.LearnApiId),
-        nameof(LearnApi.App),
+        nameof(LearnApi.Channel),
     ];
     public static readonly List<string> O24OpenAPIServiceCondition =
     [

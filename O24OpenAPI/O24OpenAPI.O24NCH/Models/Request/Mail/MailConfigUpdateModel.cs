@@ -1,7 +1,7 @@
 ﻿using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Framework.Models;
 
-namespace O24OpenAPI.O24NCH.Models.Request;
+namespace O24OpenAPI.O24NCH.Models.Request.Mail;
 
 public partial class MailConfigUpdateModel : BaseTransactionModel
 {

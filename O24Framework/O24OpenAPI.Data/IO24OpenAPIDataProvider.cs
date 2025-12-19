@@ -1,6 +1,5 @@
 using LinqToDB.Data;
 using O24OpenAPI.Core.Domain;
-using O24OpenAPI.Core.Domain.O24OpenAPI;
 using O24OpenAPI.Data.Mapping;
 using System.Linq.Expressions;
 

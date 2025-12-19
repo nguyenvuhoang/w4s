@@ -4,8 +4,8 @@ using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Controllers;
 using O24OpenAPI.Framework.Models;
-using O24OpenAPI.Framework.Services;
-using O24OpenAPI.O24NCH.Models.Request.SMS;
+using O24OpenAPI.Framework.Services.Queue;
+using O24OpenAPI.O24NCH.Models.Request.SMSGateway;
 using O24OpenAPI.O24NCH.Services.Interfaces;
 
 namespace O24OpenAPI.O24NCH.Controllers;

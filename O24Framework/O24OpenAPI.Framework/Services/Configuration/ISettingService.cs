@@ -2,7 +2,6 @@ using System.Linq.Expressions;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Configuration;
-using O24OpenAPI.Core.Domain.Configuration;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.Framework.Services.Configuration;

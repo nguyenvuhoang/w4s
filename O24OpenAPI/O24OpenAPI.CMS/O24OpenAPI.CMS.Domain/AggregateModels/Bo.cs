@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace O24OpenAPI.CMS.Domain;
+namespace O24OpenAPI.CMS.Domain.AggregateModels;
 
 /// <summary>
 /// The bo class

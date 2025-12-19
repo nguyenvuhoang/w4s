@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace O24OpenAPI.Framework.Utils;
+namespace O24OpenAPI.Framework.Utils.O9;
 
 /// <summary>
 /// The encrypt class

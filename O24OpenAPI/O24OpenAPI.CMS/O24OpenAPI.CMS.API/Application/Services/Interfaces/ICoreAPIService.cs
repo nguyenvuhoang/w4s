@@ -1,6 +1,7 @@
 ﻿using O24OpenAPI.CMS.API.Application.Models.OpenAPI;
 using O24OpenAPI.CMS.API.Application.Models.Request;
 using O24OpenAPI.CMS.API.Application.Models.Response;
+using O24OpenAPI.CMS.Domain.AggregateModels;
 
 namespace O24OpenAPI.CMS.API.Application.Services.Interfaces;
 

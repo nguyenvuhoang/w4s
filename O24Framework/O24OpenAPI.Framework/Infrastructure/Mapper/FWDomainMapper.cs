@@ -1,6 +1,6 @@
 using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Domain;
-using O24OpenAPI.Core.Domain.Configuration;
 using O24OpenAPI.Framework.Domain;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;

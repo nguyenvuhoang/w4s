@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using O24OpenAPI.Client.EventBus.Abstractions;
 using O24OpenAPI.Client.EventBus.Bus;
 
-namespace Microsoft.Extensions.Hosting;
+namespace O24OpenAPI.Client.EventBus.Extensions;
 
 public static class RabbitMqDependencyInjectionExtensions
 {

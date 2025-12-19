@@ -6,7 +6,7 @@ using O24OpenAPI.Framework.Helpers;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Framework.Services.Queue;
 using O24OpenAPI.O24NCH.Domain;
-using O24OpenAPI.O24NCH.Models.Request;
+using O24OpenAPI.O24NCH.Models.Request.Mail;
 using O24OpenAPI.O24NCH.Models.Response;
 using O24OpenAPI.O24NCH.Services.Interfaces;
 

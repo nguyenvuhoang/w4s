@@ -7,7 +7,6 @@ using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.O24NCH.Config;
 using O24OpenAPI.O24NCH.Constant;
 using O24OpenAPI.O24NCH.Domain;
-using O24OpenAPI.O24NCH.Models.Request;
 using O24OpenAPI.O24NCH.Models.Request.Mail;
 using O24OpenAPI.O24NCH.Services.Interfaces;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;

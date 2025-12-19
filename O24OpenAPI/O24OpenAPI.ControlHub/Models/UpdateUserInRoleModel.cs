@@ -1,6 +1,6 @@
 using O24OpenAPI.ControlHub.Models.Roles;
 
-namespace O24OpenAPI.ControlHub.Models.Portal;
+namespace O24OpenAPI.ControlHub.Models;
 
 public class UpdateUserInRoleModel : ModelWithRoleId
 {

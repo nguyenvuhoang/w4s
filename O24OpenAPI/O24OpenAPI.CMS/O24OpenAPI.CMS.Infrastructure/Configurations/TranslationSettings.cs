@@ -4,5 +4,5 @@ namespace O24OpenAPI.CMS.Infrastructure.Configurations;
 
 public class TranslationSettings : ISettings
 {
-    public string BasePath { get; set; }
+    public string? BasePath { get; set; }
 }

@@ -1,10 +1,13 @@
 ﻿using FluentMigrator;
+using O24OpenAPI.ControlHub.Constant;
 using O24OpenAPI.Core.Attributes;
-using O24OpenAPI.Core.Domain.Configuration;
+using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Domain.Localization;
 using O24OpenAPI.Core.Extensions;
+using O24OpenAPI.Data;
+using O24OpenAPI.Data.Migrations;
 
-namespace O24OpenAPI.Data.Migrations;
+namespace O24OpenAPI.ControlHub.Migrations;
 
 /// <summary>
 /// The required data migration class

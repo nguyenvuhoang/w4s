@@ -1,4 +1,5 @@
 using System.Dynamic;
+using LinKit.Core.Abstractions;
 using Newtonsoft.Json.Linq;
 
 namespace O24OpenAPI.Framework.Services.Mapping;
@@ -7,6 +8,7 @@ namespace O24OpenAPI.Framework.Services.Mapping;
 /// The data mapping service class
 /// </summary>
 /// <seealso cref="IDataMappingService"/>
+[RegisterService(Lifetime.Scoped)]
 public partial class DataMappingService : IDataMappingService
 {
     /// <summary>

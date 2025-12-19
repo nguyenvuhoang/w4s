@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace O24OpenAPI.CMS.Domain;
+namespace O24OpenAPI.CMS.Domain.AggregateModels.AppAggregate;
 
-public partial class LearnApi : BaseEntity
+public class LearnApi : BaseEntity
 {
     /// <summary>
     ///
@@ -13,7 +13,7 @@ public partial class LearnApi : BaseEntity
     /// User code
     /// </summary>
     [JsonProperty("learn_api_id")]
-    public string LearnApiId { get; set; }
+    public string? LearnApiId { get; set; }
 
     /// <summary>
     ///
@@ -80,8 +80,8 @@ public partial class LearnApi : BaseEntity
     ///
     /// </summary>
     /// <value></value>
-    [JsonProperty("app")]
-    public string App { get; set; }
+    [JsonProperty("channel")]
+    public string Channel { get; set; }
 
     /// <summary>
     ///

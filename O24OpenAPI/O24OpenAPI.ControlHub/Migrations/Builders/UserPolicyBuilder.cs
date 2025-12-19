@@ -2,7 +2,7 @@
 using O24OpenAPI.ControlHub.Domain;
 using O24OpenAPI.Data.Mapping.Builders;
 
-namespace O24OpenAPI.ControlHub.Migrations.Builder;
+namespace O24OpenAPI.ControlHub.Migrations.Builders;
 
 public class UserPolicyBuilder : O24OpenAPIEntityBuilder<UserPolicy>
 {

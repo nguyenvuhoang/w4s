@@ -1,6 +1,6 @@
 ﻿using O24OpenAPI.Framework.Domain;
 
-namespace O24OpenAPI.Framework.Services.Interfaces;
+namespace O24OpenAPI.Framework.Services;
 
 public interface IMasterMappingService
 {

@@ -11,12 +11,10 @@ using LinqToDB.SqlQuery;
 using MySqlConnector;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Domain;
-using O24OpenAPI.Core.Domain.O24OpenAPI;
 using O24OpenAPI.Core.Helper;
-using O24OpenAPI.Data.DataProviders;
 using O24OpenAPI.Data.Mapping;
 
-namespace O24OpenAPI.Data;
+namespace O24OpenAPI.Data.DataProviders;
 
 /// <summary>
 /// The my sql core data provider class

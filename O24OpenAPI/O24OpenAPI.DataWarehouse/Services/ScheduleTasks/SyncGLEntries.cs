@@ -1,4 +1,4 @@
-﻿using O24OpenAPI.DataWarehouse.Services.Interfaces;
+﻿using O24OpenAPI.DataWarehouse.Services.Interface;
 using O24OpenAPI.Framework.Services.ScheduleTasks;
 
 namespace O24OpenAPI.DataWarehouse.Services.ScheduleTasks;

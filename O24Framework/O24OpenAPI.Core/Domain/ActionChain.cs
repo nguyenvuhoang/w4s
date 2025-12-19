@@ -1,4 +1,4 @@
-namespace O24OpenAPI.Core.Domain.O24OpenAPI;
+namespace O24OpenAPI.Core.Domain;
 
 /// <summary>
 /// The action chain class

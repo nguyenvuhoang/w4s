@@ -1,4 +1,3 @@
-using O24OpenAPI.ControlHub.Services.Interfaces;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.O24ACT.Services;
 using O24OpenAPI.O24ACT.Services.Interfaces;

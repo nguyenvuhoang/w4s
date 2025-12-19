@@ -11,7 +11,7 @@ using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.DBContext;
 using O24OpenAPI.Framework.Models;
 
-namespace O24OpenAPI.Framework.Services;
+namespace O24OpenAPI.Framework.Services.Queue;
 
 /// <summary>
 /// The base queue service class

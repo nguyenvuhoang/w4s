@@ -32,8 +32,6 @@ public class O24OpenAPIStartup : IO24OpenAPIStartup
         services.AddSingleton<IMemoryCacheService, MemoryCacheService>();
         services.AddSingleton<SignalHubService, SignalHubService>();
         services.AddScoped<ICMSSettingService, CMSSettingService>();
-        services.AddScoped<ILearnApiService, LearnApiService>();
-        services.AddScoped<IPostService, PostService>();
         services.AddScoped<ILogServiceService, LogServiceService>();
         services.AddScoped<JWebUIObjectContextModel>();
         // services.AddScoped<DataMigration>();
@@ -49,11 +47,11 @@ public class O24OpenAPIStartup : IO24OpenAPIStartup
         services.AddScoped<HttpLog>();
         services.AddScoped<IQRService, QRService>();
 
-
         services.AddScoped<ITranslationService, LoadTranslationService>();
         services.AddScoped<IFormFieldDefinitionService, FormFieldDefinitionService>();
         services.AddScoped<ICoreAPIService, CoreAPIService>();
         services.AddScoped<ISignalHubBusinessService, SignalHubBusinessService>();
+        services.AddLinKitCqrs();
     }
 
     /// <summary>
@@ -75,4 +73,3 @@ public class O24OpenAPIStartup : IO24OpenAPIStartup
     /// </summary>
     public int Order => 2000;
 }
-

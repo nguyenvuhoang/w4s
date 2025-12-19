@@ -1,5 +1,6 @@
 using LinqToDB;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces;
+using O24OpenAPI.CMS.Domain.AggregateModels;
 using O24OpenAPI.Framework.Localization;
 
 namespace O24OpenAPI.CMS.API.Application.Services.Services;

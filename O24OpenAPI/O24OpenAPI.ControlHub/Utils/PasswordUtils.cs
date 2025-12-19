@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using O24OpenAPI.Framework.Extensions;
-using O24OpenAPI.Framework.Utils;
+using O24OpenAPI.Framework.Utils.O9;
 
 namespace O24OpenAPI.ControlHub.Utils;
 

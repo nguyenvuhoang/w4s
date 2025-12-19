@@ -7,7 +7,6 @@ using O24OpenAPI.Core;
 using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Configuration;
-using O24OpenAPI.Core.Domain.Configuration;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Helper;
 using O24OpenAPI.Core.SeedWork;

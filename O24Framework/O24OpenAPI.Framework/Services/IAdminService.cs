@@ -1,6 +1,6 @@
 using O24OpenAPI.Core.Domain.Users;
 
-namespace O24OpenAPI.Framework.Services.Configuration;
+namespace O24OpenAPI.Framework.Services;
 
 /// <summary>
 /// The admin service interface

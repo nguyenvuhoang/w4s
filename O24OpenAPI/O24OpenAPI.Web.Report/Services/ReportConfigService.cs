@@ -5,7 +5,7 @@ using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Web.Report.Domain;
 using O24OpenAPI.Web.Report.Services.Interfaces;
 
-namespace O24OpenAPI.Web.Report.Services.Services;
+namespace O24OpenAPI.Web.Report.Services;
 
 public partial class ReportConfigService(IRepository<ReportConfig> reportConfigRepository)
     : IReportConfigService

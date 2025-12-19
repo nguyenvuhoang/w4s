@@ -2,7 +2,7 @@ using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.Web.Report.Domain;
 using O24OpenAPI.Web.Report.Services.Interfaces;
 
-namespace O24OpenAPI.Web.Report.Services.Services;
+namespace O24OpenAPI.Web.Report.Services;
 
 /// <summary>
 ///

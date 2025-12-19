@@ -1,11 +1,14 @@
-﻿using System.Security.Cryptography;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using O24OpenAPI.CMS.API.Application.Models.Media;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces.Media;
+using O24OpenAPI.CMS.Domain.AggregateModels;
 using O24OpenAPI.CMS.Infrastructure.Configurations;
 using O24OpenAPI.Framework.Controllers;
+using O24OpenAPI.Framework.Models.JwtModels;
 using O24OpenAPI.Framework.Services;
 using O24OpenAPI.Framework.Utils;
+using System.Security.Cryptography;
 
 namespace O24OpenAPI.CMS.API.Controllers;
 
@@ -24,15 +27,15 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
         ConsoleUtil.WriteInfo(
             $"UploadFile called with folder: {folder}, customercode: {customercode}"
         );
-        var header = Application.Utils.Utils.GetHeaders(HttpContext);
+        Dictionary<string, string> header = Application.Utils.Utils.GetHeaders(HttpContext);
 
         string createdBy = null;
         bool isTokenValid = false;
 
         if (header.TryGetValue("uid", out string token))
         {
-            var jwtTokenService = EngineContext.Current.Resolve<IJwtTokenService>();
-            var validateTokenResponse = jwtTokenService.ValidateToken(token);
+            IJwtTokenService? jwtTokenService = EngineContext.Current.Resolve<IJwtTokenService>();
+            ValidateTokenResponseModel validateTokenResponse = jwtTokenService.ValidateToken(token);
 
             if (validateTokenResponse.IsValid)
             {
@@ -66,7 +69,7 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
         var fileHash = Convert.ToHexStringLower(hashBytes);
 
         // Check duplicate
-        var existedFile = await _mediaService.GetMediaByHashId(fileHash);
+        MediaModel existedFile = await _mediaService.GetMediaByHashId(fileHash);
 
         if (existedFile != null)
         {
@@ -92,12 +95,12 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
         //  UPLOAD TO S3
         // ============================
 
-        var storage = EngineContext.Current.Resolve<IFileStorageService>();
+        IFileStorageService? storage = EngineContext.Current.Resolve<IFileStorageService>();
         var category = string.IsNullOrWhiteSpace(folder) ? "general" : folder.Trim();
 
         using var stream = new MemoryStream(fileBytes);
 
-        var uploadResult = await storage.UploadAsync(
+        FileUploadResult uploadResult = await storage.UploadAsync(
             stream,
             file.FileName,
             file.ContentType ?? "application/octet-stream",
@@ -108,7 +111,7 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
         var s3Key = uploadResult.Key;
 
         var trackerCode = Guid.NewGuid().ToString("N");
-        var expiredOn = isTokenValid ? DateTime.UtcNow.AddDays(7) : DateTime.UtcNow.AddMinutes(5);
+        DateTime expiredOn = isTokenValid ? DateTime.UtcNow.AddDays(7) : DateTime.UtcNow.AddMinutes(5);
 
         if (isTokenValid)
         {
@@ -170,7 +173,7 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
         CancellationToken cancellationToken
     )
     {
-        var (stream, contentType) = await _mediaService.ViewMedia(trackerCode);
+        (Stream? stream, string? contentType) = await _mediaService.ViewMedia(trackerCode);
 
         if (stream == Stream.Null || contentType == null)
             return NotFound();
@@ -181,7 +184,7 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
     [HttpGet]
     public async Task<IActionResult> GetCategories(CancellationToken cancellationToken)
     {
-        var categories = await _mediaService.ListCategoriesAsync(cancellationToken);
+        IReadOnlyList<string> categories = await _mediaService.ListCategoriesAsync(cancellationToken);
 
         return Ok(categories);
     }
@@ -193,7 +196,7 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
         CancellationToken cancellationToken
     )
     {
-        var result = await _mediaService.BrowseAsync(category, path, cancellationToken);
+        MediaBrowseResultModel result = await _mediaService.BrowseAsync(category, path, cancellationToken);
         return Ok(result);
     }
 
@@ -203,7 +206,7 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
         CancellationToken cancellationToken
     )
     {
-        var tree = await _mediaService.BuildCategoryTreeAsync(category, cancellationToken);
+        MediaFolderNode tree = await _mediaService.BuildCategoryTreeAsync(category, cancellationToken);
         return Ok(tree);
     }
 }

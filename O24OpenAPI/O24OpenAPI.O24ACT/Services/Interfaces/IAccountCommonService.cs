@@ -4,7 +4,7 @@ using O24OpenAPI.Framework.Models;
 using O24OpenAPI.O24ACT.Domain;
 using O24OpenAPI.O24ACT.Models;
 
-namespace O24OpenAPI.O24ACT.Services;
+namespace O24OpenAPI.O24ACT.Services.Interfaces;
 
 /// <summary>
 /// IAccountCommonService

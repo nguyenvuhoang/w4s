@@ -1,7 +1,5 @@
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.ControlHub.Models;
-using O24OpenAPI.ControlHub.Models.Request;
-using O24OpenAPI.ControlHub.Models.Response;
 using O24OpenAPI.ControlHub.Models.Roles;
 
 namespace O24OpenAPI.ControlHub.Services.Interfaces;

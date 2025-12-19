@@ -10,4 +10,8 @@
     <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Core\O24OpenAPI.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="AggregateModels\LearnApiAggregate\" />
+  </ItemGroup>
+
 </Project>

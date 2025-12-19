@@ -4,7 +4,7 @@ using O24OpenAPI.Framework.Localization;
 using O24OpenAPI.Web.Report.Domain;
 using O24OpenAPI.Web.Report.Services.Interfaces;
 
-namespace O24OpenAPI.Web.Report.Services.Services;
+namespace O24OpenAPI.Web.Report.Services;
 
 /// <summary>
 /// ViewerSetting service constructor

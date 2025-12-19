@@ -2,7 +2,7 @@
 using O24OpenAPI.Data.Mapping.Builders;
 using O24OpenAPI.Framework.Domain;
 
-namespace O24OpenAPI.O24ACT.Migrations;
+namespace O24OpenAPI.O24ACT.Migrations.Builders;
 
 public class MasterMappingBuilder : O24OpenAPIEntityBuilder<MasterMapping>
 {

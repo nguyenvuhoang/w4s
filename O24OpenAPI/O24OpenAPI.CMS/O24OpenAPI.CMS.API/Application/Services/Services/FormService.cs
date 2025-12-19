@@ -4,6 +4,7 @@ using O24OpenAPI.CMS.API.Application.Features.Requests;
 using O24OpenAPI.CMS.API.Application.Models;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces;
 using O24OpenAPI.CMS.API.Application.Utils;
+using O24OpenAPI.CMS.Domain.AggregateModels.PORTAL;
 using O24OpenAPI.Core.Extensions;
 using System.Reflection;
 

@@ -2,6 +2,7 @@ using ExcelDataReader;
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.CMS.API.Application.Constants;
 using O24OpenAPI.CMS.API.Application.Models;
+using O24OpenAPI.CMS.Domain.AggregateModels.Digital;
 using O24OpenAPI.Core.Extensions;
 using System.Data;
 using System.Reflection;

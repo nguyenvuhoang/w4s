@@ -1,7 +1,7 @@
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Sample.Services.Interfaces;
+using O24OpenAPI.O24Design.Services.Interfaces;
 
-namespace O24OpenAPI.Sample.GrpcServices;
+namespace O24OpenAPI.O24Design.GrpcServices;
 
 public class LoggerGrpcService
 {

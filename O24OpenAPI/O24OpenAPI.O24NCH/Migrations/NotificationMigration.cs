@@ -4,7 +4,7 @@ using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.Migrations;
 using O24OpenAPI.O24NCH.Domain;
 
-namespace O24OpenAPI.ControlHub.Migrations;
+namespace O24OpenAPI.O24NCH.Migrations;
 
 /// <summary>
 /// The schema migration class

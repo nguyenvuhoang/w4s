@@ -2,6 +2,7 @@
 using O24OpenAPI.Client.Log;
 using O24OpenAPI.CMS.API.Application.Models;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces;
+using O24OpenAPI.CMS.Domain.AggregateModels;
 using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 
 namespace O24OpenAPI.CMS.API.Application.Services.Services;

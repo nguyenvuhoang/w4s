@@ -7,7 +7,7 @@ using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Framework.Services;
 using O24OpenAPI.O24ACT.Common;
-using O24OpenAPI.O24ACT.Configuration;
+using O24OpenAPI.O24ACT.Config;
 using O24OpenAPI.O24ACT.Domain;
 using O24OpenAPI.O24ACT.Models;
 using O24OpenAPI.O24ACT.Models.Response;

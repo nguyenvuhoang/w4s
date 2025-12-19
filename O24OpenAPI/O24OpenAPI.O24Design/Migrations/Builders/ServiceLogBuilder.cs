@@ -1,4 +1,4 @@
-namespace O24OpenAPI.Sample.Migrations.Builders;
+namespace O24OpenAPI.O24Design.Migrations.Builders;
 
 //public class ServiceLogBuilder : O24OpenAPIEntityBuilder<ServiceLog>
 //{
