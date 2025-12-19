@@ -14,3 +14,4 @@ global using O24OpenAPI.Web.CMS.Domain;
 global using O24OpenAPI.Web.CMS.Services;
 global using O24OpenAPI.Web.CMS.Utils;
 global using O24OpenAPI.Web.CMS.Utils.Common;
+using O24OpenAPI.Core.Abstractions;

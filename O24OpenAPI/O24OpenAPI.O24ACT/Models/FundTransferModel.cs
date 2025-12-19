@@ -1,4 +1,5 @@
-﻿using O24OpenAPI.Framework.Models;
+﻿using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.O24ACT.Models;
 
@@ -8,6 +9,7 @@ public class FundTransferModel : BaseTransactionModel
     {
         this.TransferData = new List<FundTransferDetailModel>();
     }
+
     /// <summary>
     /// Account number (PDACC)
     /// </summary>

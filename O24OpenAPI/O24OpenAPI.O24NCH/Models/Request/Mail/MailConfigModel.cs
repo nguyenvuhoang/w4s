@@ -1,4 +1,5 @@
-﻿using O24OpenAPI.Framework.Models;
+﻿using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.O24NCH.Models.Request;
 
@@ -8,31 +9,38 @@ public partial class MailConfigSearchModel : BaseTransactionModel
     ///
     /// </summary>
     public MailConfigSearchModel() { }
+
     /// <summary>
     ///
     /// </summary>
     /// <value></value>
     public string ConfigId { get; set; }
+
     /// <summary>
     /// Host
     /// </summary>
     public string Host { get; set; }
+
     /// <summary>
     /// Port
     /// </summary>
     public int Port { get; set; }
+
     /// <summary>
     /// Sender
     /// </summary>
     public string Sender { get; set; }
+
     /// <summary>
     /// Password
     /// </summary>
     public string Password { get; set; }
+
     /// <summary>
     /// EnableTLS
     /// </summary>
     public bool EnableTLS { get; set; }
+
     /// <summary>
     /// EmailTest
     /// </summary>

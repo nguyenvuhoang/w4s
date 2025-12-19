@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using O24OpenAPI.Client.Scheme.Workflow;
 using O24OpenAPI.Contracts.Configuration.Client;
 using O24OpenAPI.Core;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Helper;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.DBContext;

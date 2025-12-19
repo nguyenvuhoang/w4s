@@ -1,10 +1,12 @@
-﻿using O24OpenAPI.Framework.Models;
+﻿using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.O24NCH.Models.Response;
 
 public partial class MailConfigResponse : BaseO24OpenAPIModel
 {
     public MailConfigResponse() { }
+
     public int Id { get; set; }
     public string ConfigId { get; set; }
     public string Host { get; set; }

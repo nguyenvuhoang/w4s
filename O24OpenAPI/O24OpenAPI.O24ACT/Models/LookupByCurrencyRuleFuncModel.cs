@@ -1,4 +1,5 @@
-﻿using O24OpenAPI.Framework.Models;
+﻿using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.O24ACT.Models;
 
@@ -13,10 +14,12 @@ public partial class LookupByCurrencyRuleFuncModel : BaseTransactionModel
     /// BankAccountNumber
     /// </summary>
     public string CurrencyCode { get; set; }
+
     /// <summary>
     /// PageIndex
     /// </summary>
     public int PageIndex { get; set; } = 0;
+
     /// <summary>
     /// PageSize
     /// </summary>

@@ -1,4 +1,5 @@
-﻿using O24OpenAPI.Framework.Models;
+﻿using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.O24ACT.Models;
 
@@ -7,10 +8,8 @@ public class GetCurrencyResponse : BaseO24OpenAPIModel
     /// <summary>
     /// GetCurrencyResponse constructor
     /// </summary>
-    public GetCurrencyResponse()
-    {
+    public GetCurrencyResponse() { }
 
-    }
     /// <summary>
     /// Id
     /// </summary>
@@ -45,6 +44,7 @@ public class GetCurrencyResponse : BaseO24OpenAPIModel
     /// DecimalDigits
     /// </summary>
     public int? DisplayOrder { get; set; }
+
     /// <summary>
     /// CurrencyNumber
     /// </summary>

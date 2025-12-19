@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using O24OpenAPI.Client.EventBus.Abstractions;
 using O24OpenAPI.Contracts.Events;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.DBContext;

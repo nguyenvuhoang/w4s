@@ -1,4 +1,5 @@
 ﻿using LinKit.Core.Abstractions;
+using LinqToDB;
 using O24OpenAPI.AI.Domain.AggregatesModel.SampleAggregate;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Events;
@@ -14,4 +15,10 @@ public class SampleRepository(
 )
     : EntityRepository<Sample>(eventPublisher, dataProvider, staticCacheManager),
         ISampleRepository
-{ }
+{
+    public void Add(Sample sample)
+    {
+        //viết linq;
+        //var sampale = await Table.Where(s=>s.Id == sample.Id).FirstOrDefaultAsync();
+    }
+}

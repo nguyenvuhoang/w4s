@@ -1,3 +1,4 @@
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.Logger.Models.ChannelLog;
@@ -12,7 +13,6 @@ public class ChannelLogCreateModel : BaseO24OpenAPIModel
     /// Gets or sets the value of the log level id
     /// </summary>
     /// public int LogLevelId { get; set; }
-
     /// <summary>
     /// Gets or sets the value of the channel id
     /// </summary>

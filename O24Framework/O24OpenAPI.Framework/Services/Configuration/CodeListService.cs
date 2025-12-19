@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using O24OpenAPI.Core;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.SeedWork;

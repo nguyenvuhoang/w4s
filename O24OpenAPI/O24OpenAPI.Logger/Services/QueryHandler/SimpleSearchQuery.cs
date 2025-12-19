@@ -1,6 +1,7 @@
 using MediatR;
-using O24OpenAPI.Logger.Models.Log;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Framework.Models;
+using O24OpenAPI.Logger.Models.Log;
 
 namespace O24OpenAPI.Logger.Services.QueryHandler;
 

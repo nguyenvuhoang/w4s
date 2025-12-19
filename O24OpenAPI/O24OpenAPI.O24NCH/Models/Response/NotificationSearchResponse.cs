@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using O24OpenAPI.Core;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.O24NCH.Domain;

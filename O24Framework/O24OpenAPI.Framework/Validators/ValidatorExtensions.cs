@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using FluentValidation;
 using FluentValidation.Validators;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.Framework.Validators;

@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using O24OpenAPI.Core;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Domain.Configuration;

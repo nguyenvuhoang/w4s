@@ -1,4 +1,5 @@
-﻿using O24OpenAPI.Framework.Models;
+﻿using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.O24ACT.Models;
 
@@ -12,30 +13,37 @@ public class AccountClearingSearchModel : BaseTransactionModel
         this.PageIndex = 0;
         this.PageSize = int.MaxValue;
     }
+
     /// <summary>
     /// brname
     /// </summary>
     public string BranchName { get; set; }
+
     /// <summary>
     /// CurrencyId
     /// </summary>
     public string CurrencyId { get; set; }
+
     /// <summary>
     /// ClearingBranchCodect
     /// </summary>
     public string ClearingBranchName { get; set; }
+
     /// <summary>
     /// ClearingTypect
     /// </summary>
     public string ClearingType { get; set; }
+
     /// <summary>
     /// AccountNumber
     /// </summary>
     public string AccountNumber { get; set; }
+
     /// <summary>
     /// PageIndex
     /// </summary>
     public int PageIndex { get; set; }
+
     /// <summary>
     /// PageSize
     /// </summary>

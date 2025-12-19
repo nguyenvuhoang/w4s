@@ -1,4 +1,4 @@
-using O24OpenAPI.Framework.Models;
+using O24OpenAPI.Core.Abstractions;
 
 namespace O24OpenAPI.Sample.Models.ChannelLog;
 

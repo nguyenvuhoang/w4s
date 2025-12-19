@@ -4,6 +4,7 @@ using FluentValidation.Results;
 using Humanizer;
 using O24OpenAPI.Client.Scheme.Workflow;
 using O24OpenAPI.Core;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Helper;

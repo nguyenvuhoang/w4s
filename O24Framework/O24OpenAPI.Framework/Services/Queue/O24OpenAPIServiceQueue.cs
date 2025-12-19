@@ -1,4 +1,5 @@
 using O24OpenAPI.Client.Scheme.Workflow;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Domain;
 using O24OpenAPI.Framework.Extensions;

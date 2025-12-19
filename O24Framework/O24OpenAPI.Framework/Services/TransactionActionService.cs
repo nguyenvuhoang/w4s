@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
 using O24OpenAPI.Core;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data.Extensions;

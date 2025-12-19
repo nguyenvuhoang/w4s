@@ -1,4 +1,5 @@
-﻿using O24OpenAPI.Framework.Models;
+﻿using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.O24ACT.Models.Request;
 
@@ -11,6 +12,7 @@ public class ExcuteAccountingRuleModel : BaseTransactionModel
         GLCommon = new GLCommonModel();
         ListGLCommon = [];
     }
+
     public List<GLEntriesModel> ListGL { get; set; }
     public List<GLEntriesFromResponseModel> ListGLFromResponse { get; set; }
     public GLCommonModel GLCommon { get; set; }

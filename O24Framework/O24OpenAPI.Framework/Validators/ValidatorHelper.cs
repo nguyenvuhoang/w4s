@@ -1,5 +1,6 @@
 using System.Reflection;
 using FluentValidation;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Models;
 

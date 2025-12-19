@@ -1,4 +1,5 @@
-﻿using O24OpenAPI.Framework.Models;
+﻿using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.O24ACT.Models;
 
@@ -14,18 +15,22 @@ public class MultiValueName : BaseO24OpenAPIModel
         this.KhmerName = string.Empty;
         this.VietnameseName = string.Empty;
     }
+
     /// <summary>
     ///
     /// </summary>
     public string LaosName { get; set; }
+
     /// <summary>
     ///
     /// </summary>
     public string ThaiName { get; set; }
+
     /// <summary>
     ///
     /// </summary>
     public string KhmerName { get; set; }
+
     /// <summary>
     ///
     /// </summary>
