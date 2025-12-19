@@ -30,11 +30,6 @@ public class CMSSchemaMigration : AutoReversingMigration
             Create.TableFor<LearnApi>();
         }
 
-        if (!Schema.Table(nameof(HttpLogMessage)).Exists())
-        {
-            Create.TableFor<HttpLogMessage>();
-        }
-
         if (!Schema.Table(nameof(MediaFile)).Exists())
         {
             Create.TableFor<MediaFile>();
