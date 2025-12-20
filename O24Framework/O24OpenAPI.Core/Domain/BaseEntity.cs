@@ -1,5 +1,5 @@
-using System.Windows.Input;
 using Newtonsoft.Json;
+using System.Windows.Input;
 
 namespace O24OpenAPI.Core.Domain;
 
