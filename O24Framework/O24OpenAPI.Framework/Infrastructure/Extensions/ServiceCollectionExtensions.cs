@@ -2,6 +2,7 @@ using Linh.CodeEngine.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.Client.EventBus.Extensions;
 using O24OpenAPI.Client.EventBus.Submitters;
@@ -38,18 +39,18 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<WorkContext>();
         JObject appSettings;
-        //if (builder.Environment.IsDevelopment())
-        //{
-        //    var json = File.ReadAllText("appsettings.json");
-        //    appSettings = JObject.Parse(json);
-        //}
-        //else
-        //{
-        string currentAssembly = AppDomain.CurrentDomain.FriendlyName;
-        Console.WriteLine("Getting secret value ...");
-        appSettings = InfisicalManager.GetSecretByKey<JObject>(currentAssembly);
-        Console.WriteLine("Getting secret value done");
-        //}
+        if (builder.Environment.IsDevelopment())
+        {
+            string json = File.ReadAllText("appsettings.json");
+            appSettings = JObject.Parse(json);
+        }
+        else
+        {
+            string currentAssembly = AppDomain.CurrentDomain.FriendlyName;
+            Console.WriteLine("Getting secret value ...");
+            appSettings = InfisicalManager.GetSecretByKey<JObject>(currentAssembly);
+            Console.WriteLine("Getting secret value done");
+        }
         if (appSettings == null)
         {
             throw new Exception("AppSettings could not be loaded");

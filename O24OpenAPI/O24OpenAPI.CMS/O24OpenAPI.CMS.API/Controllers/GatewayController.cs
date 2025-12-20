@@ -11,18 +11,7 @@ public partial class GatewayController(
     JWebUIObjectContextModel context
 ) : BaseController
 {
-    #region Fields
-
-    private readonly JWebUIObjectContextModel _context = context;
-    #endregion
-
-    /// <summary>
-    /// Post
-    /// </summary>
-    /// <param name="bo">.</param>
-    /// <returns>IActionResult.</returns>
-    ///
-    [HttpPost]
+    [HttpPost("/api/channel/post")]
     public virtual async Task<IActionResult> Post([FromBody] BoRequestModel bo)
     {
         try
@@ -38,25 +27,23 @@ public partial class GatewayController(
             else
             {
                 string oldCookie = value.ToString();
-                if (oldCookie != _context.InfoRequest.DeviceID)
+                if (oldCookie != context.InfoRequest.DeviceID)
                 {
                     checkedSession = true;
                 }
             }
 
-            if (checkedSession && !string.IsNullOrEmpty(_context.InfoRequest.DeviceID))
+            if (checkedSession && !string.IsNullOrEmpty(context.InfoRequest.DeviceID))
             {
                 HttpContext.Response.Cookies.Append(
                     "device_id",
-                    _context.InfoRequest.DeviceID,
+                    context.InfoRequest.DeviceID,
                     new CookieOptions()
                     {
                         HttpOnly = true,
                         SameSite = SameSiteMode.Strict,
                         Secure = true,
-                        Expires = EngineContext
-                            .Current.Resolve<JWebUIObjectContextModel>()
-                            ?.InfoRequest.SessionExpired,
+                        Expires = context?.InfoRequest.SessionExpired,
                     }
                 );
             }

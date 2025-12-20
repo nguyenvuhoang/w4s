@@ -1,5 +1,4 @@
-﻿using System.Text;
-using System.Text.Json.Serialization;
+﻿using LinKit.Core.Abstractions;
 using LinKit.Json.Runtime;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Net.Http.Headers;
@@ -11,7 +10,6 @@ using O24OpenAPI.CMS.API.Application.Models.Request;
 using O24OpenAPI.CMS.API.Application.Models.Response;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces;
 using O24OpenAPI.CMS.API.Application.Utils;
-using O24OpenAPI.CMS.Domain.AggregateModels.AppAggregate;
 using O24OpenAPI.CMS.Domain.AggregateModels.LearnApiAggregate;
 using O24OpenAPI.CMS.Infrastructure.Configurations;
 using O24OpenAPI.Core.Configuration;
@@ -26,6 +24,8 @@ using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using O24OpenAPI.Logging.Helpers;
+using System.Text;
+using System.Text.Json.Serialization;
 
 namespace O24OpenAPI.CMS.API.Application.Features.Requests;
 
@@ -45,6 +45,7 @@ public class BoRequest : BaseO24OpenAPIModel
 }
 #endregion
 
+[RegisterService(Lifetime.Scoped)]
 public class RequestHandler(
     ILocalizationService localizationService,
     WebApiSettings webApiSettings,

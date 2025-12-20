@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Linh.CodeEngine.Core;
 using LinKit.Core.Cqrs;
 using LinKit.Json.Runtime;
@@ -6,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using O24OpenAPI.Client.Enums;
 using O24OpenAPI.Client.Scheme.Workflow;
 using O24OpenAPI.Core;
-using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
@@ -20,6 +18,7 @@ using O24OpenAPI.Framework.Models.Logging;
 using O24OpenAPI.Framework.Services.Configuration;
 using O24OpenAPI.Framework.Services.Logging;
 using O24OpenAPI.Framework.Services.Queue;
+using System.Text.Json;
 
 namespace O24OpenAPI.Framework.Services;
 
@@ -41,7 +40,7 @@ public class O24OpenAPIServiceManager
 
         try
         {
-            var workContext = EngineContext.Current.Resolve<WorkContext>();
+            WorkContext workContext = EngineContext.Current.Resolve<WorkContext>();
             workflow.SetWorkContext(workContext);
 
             if (workflow.request.request_header.processing_version == ProcessNumber.ExecuteCommand)
@@ -50,7 +49,7 @@ public class O24OpenAPIServiceManager
             }
 
             string stepCode = workflow.request.request_header.step_code;
-            var stepConfig = await GetMappingByCode(stepCode);
+            O24OpenAPIService stepConfig = await GetMappingByCode(stepCode);
 
             if (workflow.request.request_header.processing_version == ProcessNumber.StoredProcedure)
             {
@@ -91,12 +90,12 @@ public class O24OpenAPIServiceManager
         {
             string fullClassName = mapping.FullClassName;
             string methodName = mapping.MethodName;
-            var baseTranModel = await workflow.ToModel<BaseTransactionModel>();
+            BaseTransactionModel baseTranModel = await workflow.ToModel<BaseTransactionModel>();
             var json = JsonSerializer.Serialize(baseTranModel);
-            var dictionary = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+            Dictionary<string, object> dictionary = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
             workflow.request.request_header.tx_context = dictionary;
             Console.WriteLine($"wfScheme == {JsonSerializer.Serialize(workflow)}");
-            if (TryParseStoredProcedureParameter(fullClassName, out var parameterConfig))
+            if (TryParseStoredProcedureParameter(fullClassName, out StoredProcedureStepConfig parameterConfig))
             {
                 return await BaseQueue.Invoke2<BaseTransactionModel>(workflow, parameterConfig);
             }
@@ -126,8 +125,8 @@ public class O24OpenAPIServiceManager
             }
             try
             {
-                var stepInvoker = EngineContext.Current.Resolve<IWorkflowStepInvoker>();
-                var scheme = BaseQueue.Invoke<BaseTransactionModel>(
+                IWorkflowStepInvoker stepInvoker = EngineContext.Current.Resolve<IWorkflowStepInvoker>();
+                Task<WFScheme> scheme = BaseQueue.Invoke<BaseTransactionModel>(
                     workflow,
                     async () =>
                     {
@@ -139,6 +138,7 @@ public class O24OpenAPIServiceManager
                         );
                     }
                 );
+                return await scheme;
             }
             catch (KeyNotFoundException)
             {
@@ -169,11 +169,11 @@ public class O24OpenAPIServiceManager
 
     private static async Task<O24OpenAPIService> GetMappingByCode(string stepCode)
     {
-        var service =
+        IO24OpenAPIMappingService service =
             EngineContext.Current.Resolve<IO24OpenAPIMappingService>()
             ?? throw new O24OpenAPIException("Mapping service could not be resolved.");
 
-        var mapping =
+        O24OpenAPIService mapping =
             await service.GetByStepCode(stepCode)
             ?? throw new O24OpenAPIException(
                 $"Step code '{stepCode}' not found in O24OpenAPIService. Please check service registration."
@@ -222,7 +222,7 @@ public class O24OpenAPIServiceManager
         {
             try
             {
-                var errorResponse = JsonSerializer.Deserialize<StoreProcedureErrorModel>(
+                StoreProcedureErrorModel errorResponse = JsonSerializer.Deserialize<StoreProcedureErrorModel>(
                     ex.Message,
                     new JsonSerializerOptions
                     {

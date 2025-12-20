@@ -2,6 +2,7 @@
 using O24OpenAPI.CMS.API.Application.Services.Interfaces;
 using O24OpenAPI.CMS.API.Application.Services.QR;
 using O24OpenAPI.CMS.API.Application.Services.Services;
+using O24OpenAPI.Framework.Abstractions;
 using O24OpenAPI.Framework.Domain.Logging;
 
 namespace O24OpenAPI.CMS.API.Application.Extensions;
@@ -51,7 +52,9 @@ public class O24OpenAPIStartup : IO24OpenAPIStartup
         services.AddScoped<IFormFieldDefinitionService, FormFieldDefinitionService>();
         services.AddScoped<ICoreAPIService, CoreAPIService>();
         services.AddScoped<ISignalHubBusinessService, SignalHubBusinessService>();
-        //services.AddLinKitCqrs();
+        services.AddLinKitCqrs("CMS");
+        services.AddLinKitDependency();
+        services.AddSingleton<IWorkflowStepInvoker, Workflow.Generated.WorkflowStepInvoker>();
     }
 
     /// <summary>
