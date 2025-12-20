@@ -1,11 +1,12 @@
+using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data.System.Linq;
+using O24OpenAPI.Framework.Helpers;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Logger.Domain;
 using O24OpenAPI.Logger.Models.Log;
 using O24OpenAPI.Logger.Models.Workflow;
 using O24OpenAPI.Logger.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Helpers;
-using O24OpenAPI.Web.Framework.Models;
-using O24OpenAPI.Core.SeedWork;
 
 namespace O24OpenAPI.Logger.Services;
 
@@ -53,8 +54,8 @@ public class WorkflowLogService(IRepository<WorkflowLog> repo) : ILogService<Wor
         if (!string.IsNullOrWhiteSpace(model.SearchText))
         {
             query = query.Where(x =>
-                x.workflow_id.Contains(model.SearchText) ||
-                x.execution_id.Contains(model.SearchText)
+                x.workflow_id.Contains(model.SearchText)
+                || x.execution_id.Contains(model.SearchText)
             );
         }
         query = query.Where(x => !x.workflow_id.Contains("LOG_SIMPLE_SEARCH"));

@@ -2,7 +2,7 @@ using Newtonsoft.Json.Linq;
 using O24OpenAPI.ControlHub.Domain;
 using O24OpenAPI.ControlHub.Models.Roles;
 using O24OpenAPI.ControlHub.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Infrastructure.Mapper.Extensions;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 
 namespace O24OpenAPI.ControlHub.Services;
 
@@ -13,7 +13,6 @@ public class RoleProfileService(
 {
     private readonly IUserCommandService _userCommandService = userCommandService;
     private readonly IUserRightService _userRightService = userRightService;
-
 
     /// <summary>
     /// LoadRoleOperationAsync
@@ -33,19 +32,19 @@ public class RoleProfileService(
         var command_id = model.CommandId;
         var app = model.ChannelId;
 
-        var getOperationData = await _userCommandService.GetUserCommandInfoFromParentId(app, command_id);
-        var getCommandsFromCommand = await _userCommandService.GetUserCommandInfoFromCommandId(app, command_id) ?? [];
+        var getOperationData = await _userCommandService.GetUserCommandInfoFromParentId(
+            app,
+            command_id
+        );
+        var getCommandsFromCommand =
+            await _userCommandService.GetUserCommandInfoFromCommandId(app, command_id) ?? [];
 
         getCommandsFromCommand.AddRange(getOperationData ?? []);
         getCommandsFromCommand = [.. getCommandsFromCommand.OrderBy(x => x.RoleId)];
 
         var operationHeader = getCommandsFromCommand
             .Where(s => s.ParentId == command_id && s.CommandType == "C")
-            .Select(s => new OperationHeaderModel
-            {
-                cmdid = s.CommandId,
-                caption = s.CommandName
-            })
+            .Select(s => new OperationHeaderModel { cmdid = s.CommandId, caption = s.CommandName })
             .DistinctBy(p => p.cmdid)
             .ToList();
 
@@ -58,16 +57,17 @@ public class RoleProfileService(
 
         return result;
     }
+
     /// <summary>
     /// LoadMenuByChannelAsync
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
-
-    public async Task<List<UserCommandResponseModel>> LoadMenuByChannelAsync(UserCommandRequestModel model)
+    public async Task<List<UserCommandResponseModel>> LoadMenuByChannelAsync(
+        UserCommandRequestModel model
+    )
     {
-        var commandMenus = await _userCommandService
-            .GetCommandMenuByChannel(model.ChannelId);
+        var commandMenus = await _userCommandService.GetCommandMenuByChannel(model.ChannelId);
 
         return [.. commandMenus.OrderBy(x => x.DisplayOrder)];
     }
@@ -77,19 +77,25 @@ public class RoleProfileService(
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
-
     public async Task<bool> UpdateUserRightAsync(UserRightUpdateModel model)
     {
         foreach (var item in model.ListUserRight)
         {
-            var getInfoFromCommandId = await _userCommandService.GetInfoFromCommandId(model.ChannelId, item.CommandId) ?? [];    
+            var getInfoFromCommandId =
+                await _userCommandService.GetInfoFromCommandId(model.ChannelId, item.CommandId)
+                ?? [];
 
-            if(getInfoFromCommandId.Count > 0)
+            if (getInfoFromCommandId.Count > 0)
             {
-                var getCommand = getInfoFromCommandId.Where(s => s.CommandId == item.CommandId).FirstOrDefault();
+                var getCommand = getInfoFromCommandId
+                    .Where(s => s.CommandId == item.CommandId)
+                    .FirstOrDefault();
                 if (getCommand != null)
                 {
-                    var parentRight = await _userRightService.GetByRoleIdAndCommandIdAsync(item.RoleId, getCommand.ParentId);
+                    var parentRight = await _userRightService.GetByRoleIdAndCommandIdAsync(
+                        item.RoleId,
+                        getCommand.ParentId
+                    );
 
                     if (parentRight == null)
                     {
@@ -101,13 +107,13 @@ public class RoleProfileService(
                             Invoke = 1,
                             Approve = 1,
                             CreatedOnUtc = DateTime.UtcNow,
-                            UpdatedOnUtc = DateTime.UtcNow
+                            UpdatedOnUtc = DateTime.UtcNow,
                         };
                         await _userRightService.AddUserRightAsync(newUserRight);
                     }
                 }
-            }    
-   
+            }
+
             var entity = await _userRightService.GetByRoleIdAndCommandIdAsync(
                 item.RoleId,
                 item.CommandId
@@ -125,5 +131,4 @@ public class RoleProfileService(
         }
         return true;
     }
-
 }

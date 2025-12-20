@@ -1,6 +1,6 @@
 using O24OpenAPI.Web.CMS.Models.Neptune;
 using O24OpenAPI.Web.CMS.Services.NeptuneService;
-using O24OpenAPI.Web.Framework.Services;
+using O24OpenAPI.Framework.Services;
 
 namespace O24OpenAPI.Web.CMS.Services.WorkflowService.CoreBanking;
 

@@ -1,4 +1,4 @@
-﻿using Linh.JsonKit.Json;
+﻿using LinKit.Json.Runtime;
 using O24OpenAPI.Contracts.Models.Log;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Grpc.Common;

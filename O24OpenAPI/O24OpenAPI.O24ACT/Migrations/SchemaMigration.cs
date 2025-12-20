@@ -2,8 +2,8 @@ using FluentMigrator;
 using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.Migrations;
+using O24OpenAPI.Framework.Domain;
 using O24OpenAPI.O24ACT.Domain;
-using O24OpenAPI.Web.Framework.Domain;
 
 namespace O24OpenAPI.O24ACT.Migrations;
 
@@ -20,44 +20,94 @@ public class SchemaMigration : AutoReversingMigration
         if (!Schema.Table(nameof(AccountBalance)).Exists())
         {
             Create.TableFor<AccountBalance>();
-            Create.Index("IX_AccountBalance_AccountNumber").OnTable(nameof(AccountBalance))
-                .OnColumn(nameof(AccountBalance.AccountNumber)).Ascending().WithOptions().NonClustered();
+            Create
+                .Index("IX_AccountBalance_AccountNumber")
+                .OnTable(nameof(AccountBalance))
+                .OnColumn(nameof(AccountBalance.AccountNumber))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
         }
 
         if (!Schema.Table(nameof(AccountChart)).Exists())
         {
             Create.TableFor<AccountChart>();
-            Create.Index("IX_AccountChart_AccountNumber").OnTable(nameof(AccountChart))
-                .OnColumn(nameof(AccountChart.AccountNumber)).Ascending().WithOptions().NonClustered();
-            Create.Index("IX_AccountChart_Lookup").OnTable(nameof(AccountChart))
-                .OnColumn(nameof(AccountChart.AccountLevel)).Ascending()
-                .OnColumn(nameof(AccountChart.AccountNumber)).Ascending()
-                .OnColumn(nameof(AccountChart.CurrencyCode)).Ascending().WithOptions().NonClustered();
+            Create
+                .Index("IX_AccountChart_AccountNumber")
+                .OnTable(nameof(AccountChart))
+                .OnColumn(nameof(AccountChart.AccountNumber))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
+            Create
+                .Index("IX_AccountChart_Lookup")
+                .OnTable(nameof(AccountChart))
+                .OnColumn(nameof(AccountChart.AccountLevel))
+                .Ascending()
+                .OnColumn(nameof(AccountChart.AccountNumber))
+                .Ascending()
+                .OnColumn(nameof(AccountChart.CurrencyCode))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
         }
         if (!Schema.Table(nameof(AccountClearing)).Exists())
         {
             Create.TableFor<AccountClearing>();
-            Create.UniqueConstraint("UC_AccountClearing").OnTable(nameof(AccountClearing)).Columns(nameof(AccountClearing.BranchCode), nameof(AccountClearing.CurrencyId), nameof(AccountClearing.ClearingBranchCode), nameof(AccountClearing.ClearingType));
+            Create
+                .UniqueConstraint("UC_AccountClearing")
+                .OnTable(nameof(AccountClearing))
+                .Columns(
+                    nameof(AccountClearing.BranchCode),
+                    nameof(AccountClearing.CurrencyId),
+                    nameof(AccountClearing.ClearingBranchCode),
+                    nameof(AccountClearing.ClearingType)
+                );
         }
         if (!Schema.Table(nameof(AccountCommon)).Exists())
         {
             Create.TableFor<AccountCommon>();
-            Create.Index("IX_AccountCommon_AccountName").OnTable(nameof(AccountCommon)).OnColumn(nameof(AccountCommon.AccountName)).Ascending().WithOptions().NonClustered();
+            Create
+                .Index("IX_AccountCommon_AccountName")
+                .OnTable(nameof(AccountCommon))
+                .OnColumn(nameof(AccountCommon.AccountName))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
         }
         if (!Schema.Table(nameof(AccountingTransaction)).Exists())
         {
             Create.TableFor<AccountingTransaction>();
-            Create.UniqueConstraint("UC_AccountingTransaction").OnTable(nameof(AccountingTransaction)).Columns(nameof(AccountingTransaction.ReferenceId), nameof(AccountingTransaction.TransactionDate));
+            Create
+                .UniqueConstraint("UC_AccountingTransaction")
+                .OnTable(nameof(AccountingTransaction))
+                .Columns(
+                    nameof(AccountingTransaction.ReferenceId),
+                    nameof(AccountingTransaction.TransactionDate)
+                );
         }
         if (!Schema.Table(nameof(AccountMapping)).Exists())
         {
             Create.TableFor<AccountMapping>();
-            Create.UniqueConstraint("UC_AccountMapping").OnTable(nameof(AccountMapping)).Columns(nameof(AccountMapping.MappingId), nameof(AccountMapping.MappingTableName), nameof(AccountMapping.MappingType));
+            Create
+                .UniqueConstraint("UC_AccountMapping")
+                .OnTable(nameof(AccountMapping))
+                .Columns(
+                    nameof(AccountMapping.MappingId),
+                    nameof(AccountMapping.MappingTableName),
+                    nameof(AccountMapping.MappingType)
+                );
         }
         if (!Schema.Table(nameof(AccountMappingDetail)).Exists())
         {
             Create.TableFor<AccountMappingDetail>();
-            Create.UniqueConstraint("UC_AccountMappingDetail").OnTable(nameof(AccountMappingDetail)).Columns(nameof(AccountMappingDetail.MappingId), nameof(AccountMappingDetail.SystemAccountNumber));
+            Create
+                .UniqueConstraint("UC_AccountMappingDetail")
+                .OnTable(nameof(AccountMappingDetail))
+                .Columns(
+                    nameof(AccountMappingDetail.MappingId),
+                    nameof(AccountMappingDetail.SystemAccountNumber)
+                );
         }
 
         if (!Schema.Table(nameof(CheckingAccountRules)).Exists())
@@ -69,16 +119,24 @@ public class SchemaMigration : AutoReversingMigration
         {
             Create.TableFor<C_CODELIST>();
             Create
-            .UniqueConstraint("UC_C_CODELIST_CodeId_CodeName_CodeGroup")
-            .OnTable(nameof(C_CODELIST))
-            .Columns(nameof(C_CODELIST.CodeId), nameof(C_CODELIST.CodeName), nameof(C_CODELIST.CodeGroup));
-
+                .UniqueConstraint("UC_C_CODELIST_CodeId_CodeName_CodeGroup")
+                .OnTable(nameof(C_CODELIST))
+                .Columns(
+                    nameof(C_CODELIST.CodeId),
+                    nameof(C_CODELIST.CodeName),
+                    nameof(C_CODELIST.CodeGroup)
+                );
         }
         if (!Schema.Table(nameof(Currency)).Exists())
         {
             Create.TableFor<Currency>();
-            Create.Index("IX_Currency_CurrencyId").OnTable(nameof(Currency))
-                .OnColumn(nameof(Currency.CurrencyId)).Ascending().WithOptions().NonClustered();
+            Create
+                .Index("IX_Currency_CurrencyId")
+                .OnTable(nameof(Currency))
+                .OnColumn(nameof(Currency.CurrencyId))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
         }
         if (!Schema.Table(nameof(RuleDefinition)).Exists())
         {
@@ -87,35 +145,55 @@ public class SchemaMigration : AutoReversingMigration
         if (!Schema.Table(nameof(ForeignExchangeAccountDefinition)).Exists())
         {
             Create.TableFor<ForeignExchangeAccountDefinition>();
-            Create.UniqueConstraint("UC_ForeignExchangeAccountDefinition").OnTable(nameof(ForeignExchangeAccountDefinition)).Columns(nameof(ForeignExchangeAccountDefinition.BranchCode), nameof(ForeignExchangeAccountDefinition.AccountCurrency), nameof(ForeignExchangeAccountDefinition.ClearingCurrency), nameof(ForeignExchangeAccountDefinition.ClearingType));
+            Create
+                .UniqueConstraint("UC_ForeignExchangeAccountDefinition")
+                .OnTable(nameof(ForeignExchangeAccountDefinition))
+                .Columns(
+                    nameof(ForeignExchangeAccountDefinition.BranchCode),
+                    nameof(ForeignExchangeAccountDefinition.AccountCurrency),
+                    nameof(ForeignExchangeAccountDefinition.ClearingCurrency),
+                    nameof(ForeignExchangeAccountDefinition.ClearingType)
+                );
         }
 
         if (!Schema.Table(nameof(GLEntries)).Exists())
         {
             Create.TableFor<GLEntries>();
-            Create.Index("IX_GLEntries_TransactionNumber")
+            Create
+                .Index("IX_GLEntries_TransactionNumber")
                 .OnTable(nameof(GLEntries))
-                .OnColumn(nameof(GLEntries.TransactionNumber)).Ascending()
-                .WithOptions().NonClustered();
+                .OnColumn(nameof(GLEntries.TransactionNumber))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
 
-            Create.Index("IX_GLEntries_GLAccount")
+            Create
+                .Index("IX_GLEntries_GLAccount")
                 .OnTable(nameof(GLEntries))
-                .OnColumn(nameof(GLEntries.GLAccount)).Ascending()
-                .WithOptions().NonClustered();
+                .OnColumn(nameof(GLEntries.GLAccount))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
         }
 
         if (!Schema.Table(nameof(GLEntriesDone)).Exists())
         {
             Create.TableFor<GLEntriesDone>();
-            Create.Index("IX_GLEntriesDone_TransactionNumber")
+            Create
+                .Index("IX_GLEntriesDone_TransactionNumber")
                 .OnTable(nameof(GLEntriesDone))
-                .OnColumn(nameof(GLEntriesDone.TransactionNumber)).Ascending()
-                .WithOptions().NonClustered();
+                .OnColumn(nameof(GLEntriesDone.TransactionNumber))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
 
-            Create.Index("IX_GLEntriesDone_GLAccount")
+            Create
+                .Index("IX_GLEntriesDone_GLAccount")
                 .OnTable(nameof(GLEntriesDone))
-                .OnColumn(nameof(GLEntriesDone.GLAccount)).Ascending()
-                .WithOptions().NonClustered();
+                .OnColumn(nameof(GLEntriesDone.GLAccount))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
         }
 
         if (!Schema.Table(nameof(TransactionAction)).Exists())
@@ -126,20 +204,29 @@ public class SchemaMigration : AutoReversingMigration
         {
             Create.TableFor<MasterMapping>();
 
-            Create.Index("IX_MasterMapping_GLConfigClass")
+            Create
+                .Index("IX_MasterMapping_GLConfigClass")
                 .OnTable(nameof(MasterMapping))
-                .OnColumn(nameof(MasterMapping.GLConfigClass)).Ascending()
-                .WithOptions().NonClustered();
+                .OnColumn(nameof(MasterMapping.GLConfigClass))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
 
-            Create.Index("IX_MasterMapping_MasterTransClass")
+            Create
+                .Index("IX_MasterMapping_MasterTransClass")
                 .OnTable(nameof(MasterMapping))
-                .OnColumn(nameof(MasterMapping.MasterTransClass)).Ascending()
-                .WithOptions().NonClustered();
+                .OnColumn(nameof(MasterMapping.MasterTransClass))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
 
-            Create.Index("IX_MasterMapping_GLEntriesClass")
+            Create
+                .Index("IX_MasterMapping_GLEntriesClass")
                 .OnTable(nameof(MasterMapping))
-                .OnColumn(nameof(MasterMapping.GLEntriesClass)).Ascending()
-                .WithOptions().NonClustered();
+                .OnColumn(nameof(MasterMapping.GLEntriesClass))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
         }
         if (!Schema.Table(nameof(AccountStatement)).Exists())
         {
@@ -154,11 +241,13 @@ public class SchemaMigration : AutoReversingMigration
         {
             Create.TableFor<AccountingRuleDefinition>();
             Create
-            .UniqueConstraint("UC_AccountingRuleDefinition")
-            .OnTable(nameof(AccountingRuleDefinition))
-            .Columns(nameof(AccountingRuleDefinition.TransactionCode),
-                nameof(AccountingRuleDefinition.AccountingEntryGroup),
-                nameof(AccountingRuleDefinition.AccountingEntryIndex));
+                .UniqueConstraint("UC_AccountingRuleDefinition")
+                .OnTable(nameof(AccountingRuleDefinition))
+                .Columns(
+                    nameof(AccountingRuleDefinition.TransactionCode),
+                    nameof(AccountingRuleDefinition.AccountingEntryGroup),
+                    nameof(AccountingRuleDefinition.AccountingEntryIndex)
+                );
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using O24OpenAPI.Core.Extensions;
+using O24OpenAPI.Framework.Domain;
+using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.O24ACT.Models;
 using O24OpenAPI.O24ACT.Models.Request;
 using O24OpenAPI.O24ACT.Models.Response;
 using O24OpenAPI.O24ACT.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Domain;
-using O24OpenAPI.Web.Framework.Extensions;
 
 namespace O24OpenAPI.O24ACT.Services;
 
@@ -14,8 +14,7 @@ public class FOTransactionServices(
     IEntryjounalDataService contextEntry
 ) : IFOTransactionServices
 {
-    private readonly ITransactionRulesService _transactionRulesService =
-        transactionRulesService;
+    private readonly ITransactionRulesService _transactionRulesService = transactionRulesService;
     private readonly IAccountChartService _accountChartService = accountChartService;
     private readonly IEntryjounalDataService _contextEntry = contextEntry;
 
@@ -68,10 +67,9 @@ public class FOTransactionServices(
                         {
                             if (!item.CurrencyCode.HasValue())
                             {
-                                var accountChart =
-                                    await _accountChartService.GetByAccountNumber(
-                                        item.GLAccount
-                                    );
+                                var accountChart = await _accountChartService.GetByAccountNumber(
+                                    item.GLAccount
+                                );
                                 item.CurrencyCode = accountChart.CurrencyCode;
                             }
 
@@ -101,9 +99,7 @@ public class FOTransactionServices(
 
                     if (!item.CurrencyCode.HasValue())
                     {
-                        var accountChart = await _accountChartService.GetByAccountNumber(
-                            account
-                        );
+                        var accountChart = await _accountChartService.GetByAccountNumber(account);
                         item.CurrencyCode = accountChart.CurrencyCode;
                     }
 

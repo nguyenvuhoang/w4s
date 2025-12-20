@@ -1,5 +1,6 @@
 ﻿using O24OpenAPI.ControlHub.Domain;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.ControlHub.Models;
 
@@ -7,7 +8,6 @@ public class ApplicationInfoModel : BaseTransactionModel
 {
     public ApplicationInfoModel() { }
 }
-
 
 public class ApplicationInfoResponseModel(
     string userCode,
@@ -22,7 +22,8 @@ public class ApplicationInfoResponseModel(
     bool? isLogin,
     string userBanner,
     List<UserInRole> role,
-    bool? isFirstLogin)
+    bool? isFirstLogin
+)
 {
     public string UserCode { get; set; } = userCode;
     public string Avatar { get; set; } = avatar;

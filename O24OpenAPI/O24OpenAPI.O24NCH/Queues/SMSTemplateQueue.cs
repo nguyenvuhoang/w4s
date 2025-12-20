@@ -1,22 +1,24 @@
-﻿using O24OpenAPI.Core.Infrastructure;
+﻿using O24OpenAPI.Client.Scheme.Workflow;
+using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Core.Infrastructure;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Models;
+using O24OpenAPI.Framework.Services.Queue;
 using O24OpenAPI.O24NCH.Models.SMSTemplate;
 using O24OpenAPI.O24NCH.Services.Interfaces;
-using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
-using O24OpenAPI.Web.Framework.Models;
-using O24OpenAPI.Web.Framework.Models.O24OpenAPI;
-using O24OpenAPI.Web.Framework.Services.Queue;
 
 namespace O24OpenAPI.O24NCH.Queues;
 
 public class SMSTemplateQueue : BaseQueue
 {
-    private readonly ISMSTemplateService _SMSTemplateService = EngineContext.Current.Resolve<ISMSTemplateService>();
+    private readonly ISMSTemplateService _SMSTemplateService =
+        EngineContext.Current.Resolve<ISMSTemplateService>();
 
     public async Task<WFScheme> Insert(WFScheme wfScheme)
     {
         var model = await wfScheme.ToModel<SMSTemplateModel>();
         return await Invoke<SMSTemplateModel>(
-        wfScheme,
+            wfScheme,
             async () =>
             {
                 var response = await _SMSTemplateService.Insert(model);

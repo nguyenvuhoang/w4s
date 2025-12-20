@@ -1,4 +1,4 @@
-using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
+using O24OpenAPI.Client.Scheme.Workflow;
 
 namespace O24OpenAPI.Logger.Services.Interfaces;
 

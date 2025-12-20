@@ -1,5 +1,5 @@
 ﻿using Grpc.Core;
-using Linh.JsonKit.Json;
+using LinKit.Json.Runtime;
 using Microsoft.Extensions.DependencyInjection;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Domain;

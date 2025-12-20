@@ -1,6 +1,6 @@
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Core.Abstractions;
 
-namespace O24OpenAPI.Sample.Models.ChannelLog;
+namespace O24OpenAPI.O24Design.Models.ChannelLog;
 
 public class ChannelLogCreateModel : BaseO24OpenAPIModel
 {

@@ -1,13 +1,14 @@
 ﻿using O24OpenAPI.ControlHub.Domain;
 using O24OpenAPI.ControlHub.Models.User;
 using O24OpenAPI.ControlHub.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Extensions;
+using O24OpenAPI.Framework.Extensions;
 
 namespace O24OpenAPI.ControlHub.Services;
 
 public class UserBannerService(IRepository<UserBanner> userBanner) : IUserBannerService
 {
     private readonly IRepository<UserBanner> _userBanner = userBanner;
+
     /// <summary>
     /// Get user banner
     /// </summary>
@@ -17,8 +18,10 @@ public class UserBannerService(IRepository<UserBanner> userBanner) : IUserBanner
     {
         try
         {
-            return _userBanner.Table.Where(x => x.UserCode == usercode).Select(x => x.BannerSource).FirstOrDefault() ?? "default";
-
+            return _userBanner
+                    .Table.Where(x => x.UserCode == usercode)
+                    .Select(x => x.BannerSource)
+                    .FirstOrDefault() ?? "default";
         }
         catch (Exception ex)
         {
@@ -27,16 +30,16 @@ public class UserBannerService(IRepository<UserBanner> userBanner) : IUserBanner
         }
     }
 
-
     /// <summary>
     /// Update user banner
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
-
     public async Task<bool> UpdateUserBannerAsync(UserBannerModel model)
     {
-        var userBanner = _userBanner.Table.Where(x => x.UserCode == model.UserCode).FirstOrDefault();
+        var userBanner = _userBanner
+            .Table.Where(x => x.UserCode == model.UserCode)
+            .FirstOrDefault();
         if (userBanner != null)
         {
             userBanner.BannerSource = model.Banner;
@@ -49,7 +52,7 @@ public class UserBannerService(IRepository<UserBanner> userBanner) : IUserBanner
             {
                 UserCode = model.UserCode,
                 BannerSource = model.Banner,
-                CreatedOnUTC = DateTime.UtcNow
+                CreatedOnUTC = DateTime.UtcNow,
             };
             await _userBanner.Insert(userBanner);
         }

@@ -1,5 +1,9 @@
 ﻿using LinKit.Core.Cqrs;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.AI.Domain.AggregatesModel.SampleAggregate;
+using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Core.Attributes;
+using O24OpenAPI.Framework.Attributes;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.AI.API.Application.Features;
 
@@ -11,8 +15,10 @@ public class CreateSampleCommand : BaseTransactionModel, ICommand<CreateSampleRe
 public record CreateSampleResponse();
 
 [CqrsHandler]
-public class CreateSampleCommandHandler : ICommandHandler<CreateSampleCommand, CreateSampleResponse>
+public class CreateSampleCommandHandler(ISampleRepository sampleRepository)
+    : ICommandHandler<CreateSampleCommand, CreateSampleResponse>
 {
+    [WorkflowStep("CreateSample")]
     public Task<CreateSampleResponse> HandleAsync(
         CreateSampleCommand request,
         CancellationToken cancellationToken = default

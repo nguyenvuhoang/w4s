@@ -1,5 +1,5 @@
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Web.Framework.Services.Grpc;
+using O24OpenAPI.Framework.Services.Grpc;
 using O24OpenAPI.WFO.GrpcServices;
 using O24OpenAPI.WFO.Models;
 using O24OpenAPI.WFO.Services;

@@ -1,4 +1,4 @@
-using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
+using O24OpenAPI.Client.Scheme.Workflow;
 using O24OpenAPI.WFO.Domain;
 
 namespace O24OpenAPI.WFO.Models;
@@ -11,7 +11,9 @@ public class WorkflowExecutionContext
     public WorkflowInput Input { get; set; }
     public bool IsReverseFlow { get; set; }
     public List<WorkflowEvent> WorkflowEvents { get; set; } = [];
-    public Dictionary<string, object> ContextData { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    public Dictionary<string, object> ContextData { get; set; } =
+        new(StringComparer.OrdinalIgnoreCase);
+
     public WorkflowExecutionContext() { }
 
     public WorkflowExecutionContext(WorkflowDef workflowDef, List<WorkflowStep> workflowSteps)

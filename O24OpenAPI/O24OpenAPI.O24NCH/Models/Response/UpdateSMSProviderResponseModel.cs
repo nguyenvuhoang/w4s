@@ -1,11 +1,13 @@
-﻿using O24OpenAPI.O24NCH.Domain;
-using O24OpenAPI.Web.Framework.Models;
+﻿using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
+using O24OpenAPI.O24NCH.Domain;
 
 namespace O24OpenAPI.O24NCH.Models.Response;
 
 public class UpdateSMSProviderResponseModel : BaseO24OpenAPIModel
 {
     public UpdateSMSProviderResponseModel() { }
+
     public int Id { get; set; }
     public string ApiUrl { get; set; }
     public string CountryPrefix { get; set; }
@@ -16,11 +18,17 @@ public class UpdateSMSProviderResponseModel : BaseO24OpenAPIModel
     public string BrandName { get; set; }
     public bool IsActive { get; set; }
     public List<string> ChangedFields { get; set; } = [];
-    public static UpdateSMSProviderResponseModel FromUpdatedEntity(SMSProvider updated, SMSProvider original)
+
+    public static UpdateSMSProviderResponseModel FromUpdatedEntity(
+        SMSProvider updated,
+        SMSProvider original
+    )
     {
         var result = new UpdateSMSProviderResponseModel();
         var entityProps = typeof(SMSProvider).GetProperties();
-        var modelProps = typeof(UpdateSMSProviderResponseModel).GetProperties().ToDictionary(p => p.Name);
+        var modelProps = typeof(UpdateSMSProviderResponseModel)
+            .GetProperties()
+            .ToDictionary(p => p.Name);
 
         foreach (var prop in entityProps)
         {
@@ -32,8 +40,10 @@ public class UpdateSMSProviderResponseModel : BaseO24OpenAPIModel
             var newValue = prop.GetValue(updated);
             var oldValue = prop.GetValue(original);
 
-            if ((oldValue == null && newValue != null) ||
-                (oldValue != null && !oldValue.Equals(newValue)))
+            if (
+                (oldValue == null && newValue != null)
+                || (oldValue != null && !oldValue.Equals(newValue))
+            )
             {
                 result.ChangedFields.Add(prop.Name);
             }

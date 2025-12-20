@@ -1,6 +1,6 @@
 ﻿using O24OpenAPI.Core.Domain;
 
-namespace O24OpenAPI.Web.Report.Domain;
+namespace O24OpenAPI.Web.Report.Domain.PORTAL;
 
 public class D_REGION : BaseEntity
 {

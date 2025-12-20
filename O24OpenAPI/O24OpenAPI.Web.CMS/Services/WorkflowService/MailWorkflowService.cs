@@ -1,12 +1,12 @@
-﻿using MailKit.Net.Smtp;
+﻿using System.Text.RegularExpressions;
+using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using O24OpenAPI.Framework.Services;
 using O24OpenAPI.Web.CMS.Models.Request;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Services;
-using System.Text.RegularExpressions;
 
 namespace O24OpenAPI.Web.CMS.Services.WorkflowService;
 

@@ -1,7 +1,7 @@
 using FluentMigrator.Builders.Create.Table;
 using O24OpenAPI.Data.Mapping.Builders;
 
-namespace O24OpenAPI.DataWarehouse.Migrations;
+namespace O24OpenAPI.DataWarehouse.Migrations.Builders;
 
 public class D_REGIONBuilder : O24OpenAPIEntityBuilder<D_REGION>
 {

@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using O24OpenAPI.Core.Logging.Helpers;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.SignalR;
+using O24OpenAPI.Logging.Helpers;
 using O24OpenAPI.Web.CMS.Models.Request;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using System.Text.Json;
 
 namespace O24OpenAPI.Web.CMS.Services.Services;
 
-public class SignalHubBusinessService(IHubContext<SignalHubService> hubContext) : ISignalHubBusinessService
+public class SignalHubBusinessService(IHubContext<SignalHubService> hubContext)
+    : ISignalHubBusinessService
 {
     private readonly IHubContext<SignalHubService> _hubContext = hubContext;
 
@@ -23,7 +24,9 @@ public class SignalHubBusinessService(IHubContext<SignalHubService> hubContext) 
                 await LogoutUserAsync(model);
                 break;
             default:
-                throw new NotImplementedException($"Transaction code '{transactionCode}' is not implemented.");
+                throw new NotImplementedException(
+                    $"Transaction code '{transactionCode}' is not implemented."
+                );
         }
         return true;
     }
@@ -39,10 +42,12 @@ public class SignalHubBusinessService(IHubContext<SignalHubService> hubContext) 
         var userId = model.UserId;
         var deviceId = model.DeviceId;
         var balanceObj = JsonSerializer.Deserialize<object>(JsonSerializer.Serialize(model.Data))!;
-        BusinessLogHelper.Info($"Sync balance to user {userId} with DeviceID: {deviceId} and BalanceInfo: {balanceObj}");
+        BusinessLogHelper.Info(
+            $"Sync balance to user {userId} with DeviceID: {deviceId} and BalanceInfo: {balanceObj}"
+        );
         await SignalHubService.SendUpdateBalanceAsync(_hubContext, userId, deviceId, balanceObj);
-
     }
+
     /// <summary>
     /// Logout user
     /// </summary>
@@ -54,7 +59,9 @@ public class SignalHubBusinessService(IHubContext<SignalHubService> hubContext) 
         var userId = model.UserId;
         var deviceId = model.DeviceId;
         var userInfo = JsonSerializer.Deserialize<object>(JsonSerializer.Serialize(model.Data))!;
-        BusinessLogHelper.Info($"Logging out user {userId} with DeviceID: {deviceId} and UserInfo: {userInfo}");
+        BusinessLogHelper.Info(
+            $"Logging out user {userId} with DeviceID: {deviceId} and UserInfo: {userInfo}"
+        );
         await SignalHubService.SendUserLogOut(_hubContext, userId, deviceId, userInfo);
     }
 }

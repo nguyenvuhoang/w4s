@@ -1,4 +1,5 @@
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.Logger.Models.Workflow;
 
@@ -27,6 +28,7 @@ public class WorkflowLogSearchResponse : BaseTransactionModel
     /// Gets or sets the value of the status
     /// </summary>
     public int status { get; set; }
+
     /// <summary>
     /// Gets or sets the value of the error
     /// </summary>
@@ -61,6 +63,7 @@ public class WorkflowLogSearchResponse : BaseTransactionModel
     /// Gets or sets the value of the workflow type
     /// </summary>
     public string workflow_type { get; set; }
+
     /// <summary>
     /// Gets or sets the value of the response content
     /// </summary>

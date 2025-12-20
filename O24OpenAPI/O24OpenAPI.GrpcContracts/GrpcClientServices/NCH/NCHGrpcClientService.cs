@@ -1,4 +1,4 @@
-﻿using Linh.JsonKit.Json;
+﻿using LinKit.Json.Runtime;
 using O24OpenAPI.APIContracts.Models.DTS;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Grpc.NCH;
@@ -38,7 +38,7 @@ public class NCHGrpcClientService : BaseGrpcClientService, INCHGrpcClientService
             Data = data.ToJson(),
             DataTemplate = dataTemplate.ToJson(),
             MimeEntities = mimeEntities.ToJson(),
-            Message = messsage
+            Message = messsage,
         };
 
         return await InvokeAsync<string>(

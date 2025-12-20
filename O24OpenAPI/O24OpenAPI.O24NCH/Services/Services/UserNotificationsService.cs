@@ -1,37 +1,48 @@
 ﻿using LinqToDB;
+using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.O24NCH.Domain;
 using O24OpenAPI.O24NCH.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Extensions;
 
 namespace O24OpenAPI.O24NCH.Services.Services;
 
-public class UserNotificationsService(IRepository<UserNotifications> userNotificationsRepository,
+public class UserNotificationsService(
+    IRepository<UserNotifications> userNotificationsRepository,
     IRepository<NotificationDetail> notificationDetailRepository,
     IRepository<GroupUserNotification> groupUserNotificationRepository,
     ICTHGrpcClientService cthGrpcClientService
-    ) : IUserNotificationsService
+) : IUserNotificationsService
 {
-    private readonly IRepository<UserNotifications> _userNotificationsRepository = userNotificationsRepository;
-    private readonly IRepository<NotificationDetail> _notificationDetailRepository = notificationDetailRepository;
-    private readonly IRepository<GroupUserNotification> _groupUserNotificationRepository = groupUserNotificationRepository;
+    private readonly IRepository<UserNotifications> _userNotificationsRepository =
+        userNotificationsRepository;
+    private readonly IRepository<NotificationDetail> _notificationDetailRepository =
+        notificationDetailRepository;
+    private readonly IRepository<GroupUserNotification> _groupUserNotificationRepository =
+        groupUserNotificationRepository;
     private readonly ICTHGrpcClientService _cthGrpcClientService = cthGrpcClientService;
+
     public async Task<bool> CreateUserNotifications(string userCode, string category)
     {
-        var unreadNotifications = await _notificationDetailRepository.Table
-        .Where(n => n.Status == true
-            && n.NotificationCategory == category
-            && (
-                n.TargetType == "All" ||
-                (n.TargetType == "Group" && _groupUserNotificationRepository.Table
-                    .Any(g => g.GroupID == n.GroupID && g.UserCode == userCode)) ||
-                (n.TargetType == "User" && n.UserCode == userCode)
+        var unreadNotifications = await _notificationDetailRepository
+            .Table.Where(n =>
+                n.Status == true
+                && n.NotificationCategory == category
+                && (
+                    n.TargetType == "All"
+                    || (
+                        n.TargetType == "Group"
+                        && _groupUserNotificationRepository.Table.Any(g =>
+                            g.GroupID == n.GroupID && g.UserCode == userCode
+                        )
+                    )
+                    || (n.TargetType == "User" && n.UserCode == userCode)
+                )
+                && !_userNotificationsRepository.Table.Any(u =>
+                    u.NotificationID == n.Id && u.UserCode == userCode
+                )
             )
-            && !_userNotificationsRepository.Table
-                .Any(u => u.NotificationID == n.Id && u.UserCode == userCode)
-        )
-        .Select(n => n.Id)
-        .ToListAsync();
+            .Select(n => n.Id)
+            .ToListAsync();
 
         if (unreadNotifications.Count == 0)
         {
@@ -44,22 +55,24 @@ public class UserNotificationsService(IRepository<UserNotifications> userNotific
             {
                 NotificationID = id,
                 UserCode = userCode,
-                DateTime = DateTime.Now
+                DateTime = DateTime.Now,
             };
 
             await _userNotificationsRepository.InsertAsync(entity);
         }
         return true;
     }
+
     /// <summary>
     /// Get Push ID by phone number
     /// </summary>
     /// <param name="phonenumber"></param>
     /// <returns></returns>
-
     public Task<UserNotifications> GetPushAsync(string phonenumber)
     {
-        return _userNotificationsRepository.Table.Where(x => x.PhoneNumber == phonenumber).FirstOrDefaultAsync();
+        return _userNotificationsRepository
+            .Table.Where(x => x.PhoneNumber == phonenumber)
+            .FirstOrDefaultAsync();
     }
 
     /// <summary>
@@ -67,7 +80,6 @@ public class UserNotificationsService(IRepository<UserNotifications> userNotific
     /// </summary>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-
     public async Task<bool> ScanUserNotification(CancellationToken cancellationToken)
     {
         try
@@ -75,7 +87,9 @@ public class UserNotificationsService(IRepository<UserNotifications> userNotific
             var notifications = await _cthGrpcClientService.GetUserNotificationAsync();
             foreach (var notification in notifications)
             {
-                var existing = await _userNotificationsRepository.Table.Where(x => x.UserCode == notification.UserCode).FirstOrDefaultAsync(cancellationToken);
+                var existing = await _userNotificationsRepository
+                    .Table.Where(x => x.UserCode == notification.UserCode)
+                    .FirstOrDefaultAsync(cancellationToken);
 
                 if (existing != null)
                 {
@@ -88,7 +102,11 @@ public class UserNotificationsService(IRepository<UserNotifications> userNotific
                 }
                 else
                 {
-                    var maxId = await _userNotificationsRepository.Table.MaxAsync(x => (int?)x.NotificationID, cancellationToken) ?? 0;
+                    var maxId =
+                        await _userNotificationsRepository.Table.MaxAsync(
+                            x => (int?)x.NotificationID,
+                            cancellationToken
+                        ) ?? 0;
                     var newEntity = new UserNotifications
                     {
                         NotificationID = maxId + 1,
@@ -111,5 +129,4 @@ public class UserNotificationsService(IRepository<UserNotifications> userNotific
             return false;
         }
     }
-
 }

@@ -1,4 +1,4 @@
-using O24OpenAPI.O24OpenAPIClient.Events;
+using O24OpenAPI.Client.Events;
 
 namespace O24OpenAPI.WFO.Models;
 

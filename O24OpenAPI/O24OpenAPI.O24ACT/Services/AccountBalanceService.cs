@@ -1,13 +1,14 @@
 using LinqToDB;
 using O24OpenAPI.Core;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Caching;
+using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data.Extensions;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.O24ACT.Common;
-using O24OpenAPI.O24ACT.Configuration;
+using O24OpenAPI.O24ACT.Config;
 using O24OpenAPI.O24ACT.Domain;
 using O24OpenAPI.O24ACT.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Models;
-using O24OpenAPI.Core.SeedWork;
 
 namespace O24OpenAPI.O24ACT.Services;
 
@@ -21,12 +22,15 @@ namespace O24OpenAPI.O24ACT.Services;
 /// <param name="accountingSeting"></param>
 /// <param name="grpcAdminClient"></param>
 /// <param name="staticCacheManager"></param>
-public partial class AccountBalanceService(IRepository<AccountBalance> accountBalanceRepository,
+public partial class AccountBalanceService(
+    IRepository<AccountBalance> accountBalanceRepository,
     AccountingSettings accountingSeting,
-    IStaticCacheManager staticCacheManager) : IAccountBalanceService
+    IStaticCacheManager staticCacheManager
+) : IAccountBalanceService
 {
     #region  Fields
-    private readonly IRepository<AccountBalance> _accountBalanceRepository = accountBalanceRepository;
+    private readonly IRepository<AccountBalance> _accountBalanceRepository =
+        accountBalanceRepository;
     private readonly AccountingSettings _accountingSeting = accountingSeting;
     private readonly IStaticCacheManager _staticCacheManager = staticCacheManager;
 
@@ -36,7 +40,7 @@ public partial class AccountBalanceService(IRepository<AccountBalance> accountBa
     #endregion
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
@@ -55,13 +59,12 @@ public partial class AccountBalanceService(IRepository<AccountBalance> accountBa
         // var cacheKey = _staticCacheManager.PrepareKeyForDefaultCache(NeptuneEntityCacheDefaults<AccountBalance>.ByCodeCacheKey, accountNumber);
         // var accountBalance = await _staticCacheManager.Get(cacheKey, async () =>
         // {
-        var accountBalance = await _accountBalanceRepository.Table.Where(c => c.AccountNumber == accountNumber).FirstOrDefaultAsync();
+        var accountBalance = await _accountBalanceRepository
+            .Table.Where(c => c.AccountNumber == accountNumber)
+            .FirstOrDefaultAsync();
         if (accountBalance is null)
         {
-            accountBalance = new AccountBalance
-            {
-                AccountNumber = accountNumber
-            };
+            accountBalance = new AccountBalance { AccountNumber = accountNumber };
             await accountBalance.Insert();
         }
         return accountBalance;
@@ -95,9 +98,17 @@ public partial class AccountBalanceService(IRepository<AccountBalance> accountBa
     /// <param name="referenceId"></param>
     /// <returns></returns>
     /// <exception cref="O24OpenAPIException"></exception>
-    public virtual async Task CreditAccount(BaseTransactionModel transaction, string accountNumber, decimal amount, DateTime? valueDate = null, string referenceId = "")
+    public virtual async Task CreditAccount(
+        BaseTransactionModel transaction,
+        string accountNumber,
+        decimal amount,
+        DateTime? valueDate = null,
+        string referenceId = ""
+    )
     {
-        var accountbalance = await GetByAccountNumber(accountNumber) ?? throw new O24OpenAPIException(nameof(AccountBalance), accountNumber);
+        var accountbalance =
+            await GetByAccountNumber(accountNumber)
+            ?? throw new O24OpenAPIException(nameof(AccountBalance), accountNumber);
         if (!transaction.IsReverse)
         {
             accountbalance.Balance += amount;
@@ -130,7 +141,12 @@ public partial class AccountBalanceService(IRepository<AccountBalance> accountBa
     /// <param name="referenceId"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public virtual async Task CreditAccountProcess(AccountBalance accountBalance, decimal amount, DateTime? valueDate = null, string referenceId = "")
+    public virtual async Task CreditAccountProcess(
+        AccountBalance accountBalance,
+        decimal amount,
+        DateTime? valueDate = null,
+        string referenceId = ""
+    )
     {
         accountBalance.Balance += amount;
         accountBalance.DailyCredit += amount;
@@ -152,9 +168,17 @@ public partial class AccountBalanceService(IRepository<AccountBalance> accountBa
     /// <param name="referenceId"></param>
     /// <returns></returns>
     /// <exception cref="O24OpenAPIException"></exception>
-    public virtual async Task DebitAccount(BaseTransactionModel transaction, string accountNumber, decimal amount, DateTime? valueDate = null, string referenceId = "")
+    public virtual async Task DebitAccount(
+        BaseTransactionModel transaction,
+        string accountNumber,
+        decimal amount,
+        DateTime? valueDate = null,
+        string referenceId = ""
+    )
     {
-        var accountbalance = await GetByAccountNumber(accountNumber) ?? throw new O24OpenAPIException(nameof(AccountBalance), accountNumber);
+        var accountbalance =
+            await GetByAccountNumber(accountNumber)
+            ?? throw new O24OpenAPIException(nameof(AccountBalance), accountNumber);
 
         if (!transaction.IsReverse)
         {
@@ -188,9 +212,13 @@ public partial class AccountBalanceService(IRepository<AccountBalance> accountBa
     /// <param name="referenceId"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public virtual async Task DebitAccountProcess(AccountBalance accountBalance, decimal amount, DateTime? valueDate = null, string referenceId = "")
+    public virtual async Task DebitAccountProcess(
+        AccountBalance accountBalance,
+        decimal amount,
+        DateTime? valueDate = null,
+        string referenceId = ""
+    )
     {
-
         accountBalance.Balance -= amount;
         accountBalance.DailyDebit += amount;
         accountBalance.WeeklyDebit += amount;
@@ -210,7 +238,14 @@ public partial class AccountBalanceService(IRepository<AccountBalance> accountBa
     /// <param name="valueDate"></param>
     /// <param name="referenceId"></param>
     /// <returns></returns>
-    public virtual async Task UpdateAccount(BaseTransactionModel transaction, string accountNumber, string action, decimal amount, DateTime? valueDate = null, string referenceId = "")
+    public virtual async Task UpdateAccount(
+        BaseTransactionModel transaction,
+        string accountNumber,
+        string action,
+        decimal amount,
+        DateTime? valueDate = null,
+        string referenceId = ""
+    )
     {
         if (_accountingSeting.EnableBalance)
         {
@@ -234,7 +269,13 @@ public partial class AccountBalanceService(IRepository<AccountBalance> accountBa
     /// <param name="valueDate"></param>
     /// <param name="referenceId"></param>
     /// <returns></returns>
-    public virtual async Task UpdateAccountProcess(string accountNumber, string action, decimal amount, DateTime? valueDate = null, string referenceId = "")
+    public virtual async Task UpdateAccountProcess(
+        string accountNumber,
+        string action,
+        decimal amount,
+        DateTime? valueDate = null,
+        string referenceId = ""
+    )
     {
         var accountBalance = await GetByAccountNumber(accountNumber);
         if (_accountingSeting.EnableBalance)
@@ -256,7 +297,7 @@ public partial class AccountBalanceService(IRepository<AccountBalance> accountBa
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public virtual IQueryable<AccountBalance> Table => _accountBalanceRepository.Table;
 }

@@ -1,0 +1,14 @@
+{
+  "BackgroundJobConfig": {
+    "BackgroundJobs": [
+      {
+        "Name": "SyncMediaJob",
+        "AssemblyName": "O24OpenAPI.CMS",
+        "TimeIntervalSeconds": 300,
+        "MaxParallel": 1,
+        "CorrelationId": "SyncMediaJob",
+        "IsActive": true
+      }
+    ]
+  }
+}

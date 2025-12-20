@@ -1,4 +1,4 @@
-namespace O24OpenAPI.Core.Domain.Configuration;
+namespace O24OpenAPI.Core.Configuration;
 
 /// <summary>
 /// The setting class

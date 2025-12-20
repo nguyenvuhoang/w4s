@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using O24OpenAPI.Client.Workflow;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Extensions;
-using O24OpenAPI.O24OpenAPIClient.Workflow;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.WFO.Domain;
 using O24OpenAPI.WFO.Models;
 using O24OpenAPI.WFO.Services.Interfaces;
@@ -32,12 +33,7 @@ public class WorkflowDefController(IWorkflowDefService workflowDefService) : WFO
         var r = await _workflowDefService.SimpleSearch(model);
 
         var jObjects = r.Select(x => JObject.FromObject(x)).ToList();
-        var pagedJObjects = new PagedList<JObject>(
-            jObjects,
-            r.PageIndex,
-            r.PageSize,
-            r.TotalCount
-        );
+        var pagedJObjects = new PagedList<JObject>(jObjects, r.PageIndex, r.PageSize, r.TotalCount);
 
         var pageListModel = new PageListModel(pagedJObjects, r.TotalCount);
 
@@ -163,10 +159,7 @@ public class WorkflowDefController(IWorkflowDefService workflowDefService) : WFO
                 return rs;
             }
 
-            var checkExists = await _workflowDefService.GetByWorkflowIdAsync(
-                workflowId,
-                channelId
-            );
+            var checkExists = await _workflowDefService.GetByWorkflowIdAsync(workflowId, channelId);
             if (checkExists != null)
             {
                 var rs = new WorkflowResponse
@@ -188,8 +181,7 @@ public class WorkflowDefController(IWorkflowDefService workflowDefService) : WFO
                 Timeout = wfDefObj["Timeout"]?.Value<long?>() ?? 60000,
                 WorkflowEvent = wfDefObj["WorkflowEvent"]?.ToString() ?? "",
                 TemplateResponse =
-                    wfDefObj["TemplateResponse"]?.ToString(Newtonsoft.Json.Formatting.None)
-                    ?? "",
+                    wfDefObj["TemplateResponse"]?.ToString(Newtonsoft.Json.Formatting.None) ?? "",
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
             };

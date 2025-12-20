@@ -1,8 +1,8 @@
 using Jits.Neptune.Web.CMS.LogicOptimal9.Common;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
+using O24OpenAPI.Framework.Services;
 using O24OpenAPI.Web.CMS.Models.Digital;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Infrastructure.Mapper.Extensions;
-using O24OpenAPI.Web.Framework.Services;
 
 namespace O24OpenAPI.Web.CMS.Services.WorkflowService;
 
@@ -10,7 +10,6 @@ namespace O24OpenAPI.Web.CMS.Services.WorkflowService;
 /// The bankworkflowservice class
 /// </summary>
 /// <seealso cref="BaseQueueService"/>
-
 public class ReasonsDefinitionWorkflowService : BaseQueueService
 {
     /// <summary>
@@ -139,6 +138,7 @@ public class ReasonsDefinitionWorkflowService : BaseQueueService
             }
         );
     }
+
     /// <summary>
     /// Gets the all using the specified workflow
     /// </summary>
@@ -149,8 +149,8 @@ public class ReasonsDefinitionWorkflowService : BaseQueueService
         var model = await workflow.ToModel<ModelWithId>();
         return await Invoke<BaseTransactionModel>(
             workflow,
-        async () =>
-        {
+            async () =>
+            {
                 var result = await _cReasonsDefinition.ViewById(model.Id);
                 return result;
             }

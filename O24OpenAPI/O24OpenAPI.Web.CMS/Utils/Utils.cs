@@ -8,10 +8,10 @@ using Newtonsoft.Json.Linq;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Data.Configuration;
 using O24OpenAPI.Data.System.Linq;
+using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Web.CMS.Models;
 using O24OpenAPI.Web.CMS.Models.ContextModels;
-using O24OpenAPI.Web.Framework.Extensions;
-using ILogger = O24OpenAPI.Web.Framework.Services.Logging.ILogger;
+using ILogger = O24OpenAPI.Framework.Services.Logging.ILogger;
 
 namespace O24OpenAPI.Web.CMS.Utils;
 
@@ -1342,7 +1342,8 @@ public static class Utils
         IEnumerable<string[]> items;
         switch (dataProvider.ToLower())
         {
-            case "mysql" or "mariadb":
+            case "mysql"
+            or "mariadb":
                 items = connString
                     .Split(';', StringSplitOptions.RemoveEmptyEntries)
                     .Select(s => s.Split('='));

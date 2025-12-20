@@ -1,7 +1,7 @@
 ﻿using LinqToDB;
+using O24OpenAPI.Framework.Localization;
 using O24OpenAPI.Web.CMS.Models.Digital;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Localization;
 
 namespace O24OpenAPI.Web.CMS.Services.Services;
 
@@ -147,9 +147,7 @@ public class TelcoService : ITelcoService
     /// <returns>Task&lt;Bo&gt;.</returns>
     public virtual async Task<D_TOP_TELCO> DeleteById(int TelcoID)
     {
-        var telco = await _telcoRepository
-            .Table.Where(s => s.Id == TelcoID)
-            .FirstOrDefaultAsync();
+        var telco = await _telcoRepository.Table.Where(s => s.Id == TelcoID).FirstOrDefaultAsync();
 
         if (telco == null)
         {

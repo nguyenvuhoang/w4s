@@ -1,5 +1,5 @@
-﻿using Linh.JsonKit.Json;
-using LinKit.Core.Mapping;
+﻿using LinKit.Core.Mapping;
+using LinKit.Json.Runtime;
 using O24OpenAPI.APIContracts.Models.CTH;
 using O24OpenAPI.Grpc.CTH;
 
@@ -10,8 +10,7 @@ public partial class MappingContext : IMappingConfigurator
 {
     public void Configure(IMapperConfigurationBuilder builder)
     {
-        builder
-            .CreateMap<CTHUserNotificationModel, GetUserNotificationReply>();
+        builder.CreateMap<CTHUserNotificationModel, GetUserNotificationReply>();
         builder.CreateMap<CTHUserCommandModel, UserCommandReply>();
     }
 }

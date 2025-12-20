@@ -1,10 +1,12 @@
-﻿using O24OpenAPI.Web.Framework.Models;
+﻿using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.O24NCH.Models.SMSTemplate;
 
 public class UpdateSMSTemplateResponseModel : BaseO24OpenAPIModel
 {
     public UpdateSMSTemplateResponseModel() { }
+
     public string TemplateCode { get; set; } = string.Empty;
     public string MessageContent { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
@@ -15,7 +17,10 @@ public class UpdateSMSTemplateResponseModel : BaseO24OpenAPIModel
     public DateTime? UpdatedOnUtc { get; set; }
     public List<string> ChangedFields { get; set; } = [];
 
-    public static UpdateSMSTemplateResponseModel FromUpdatedEntity(Domain.SMSTemplate updated, Domain.SMSTemplate original)
+    public static UpdateSMSTemplateResponseModel FromUpdatedEntity(
+        Domain.SMSTemplate updated,
+        Domain.SMSTemplate original
+    )
     {
         var result = new UpdateSMSTemplateResponseModel();
         var entityProps = typeof(Domain.SMSTemplate).GetProperties();
@@ -33,8 +38,9 @@ public class UpdateSMSTemplateResponseModel : BaseO24OpenAPIModel
             var newValue = prop.GetValue(updated);
             var oldValue = prop.GetValue(original);
 
-            bool isChanged = (oldValue == null && newValue != null)
-                          || (oldValue != null && !oldValue.Equals(newValue));
+            bool isChanged =
+                (oldValue == null && newValue != null)
+                || (oldValue != null && !oldValue.Equals(newValue));
 
             if (isChanged)
             {
@@ -46,7 +52,9 @@ public class UpdateSMSTemplateResponseModel : BaseO24OpenAPIModel
             {
                 try
                 {
-                    var targetType = Nullable.GetUnderlyingType(targetProp.PropertyType) ?? targetProp.PropertyType;
+                    var targetType =
+                        Nullable.GetUnderlyingType(targetProp.PropertyType)
+                        ?? targetProp.PropertyType;
                     newValue = Convert.ChangeType(newValue, targetType);
                 }
                 catch

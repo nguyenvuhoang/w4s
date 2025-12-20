@@ -1,15 +1,14 @@
+using O24OpenAPI.Client.EventBus.Abstractions;
 using O24OpenAPI.Contracts.Events;
-using O24OpenAPI.Core.Logging.Helpers;
 using O24OpenAPI.Core.Utils;
-using O24OpenAPI.EventBus.Abstractions;
-using O24OpenAPI.Web.Framework.DBContext;
-using O24OpenAPI.Web.Framework.Domain;
-using O24OpenAPI.Web.Framework.Extensions;
+using O24OpenAPI.Framework.DBContext;
+using O24OpenAPI.Framework.Domain;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Logging.Helpers;
 
 namespace O24OpenAPI.DataWarehouse.Services.Events;
 
-public class CDCEventHandler(ServiceDBContext serviceDBContext)
-    : IIntegrationEventHandler<CDCEvent>
+public class CDCEventHandler(ServiceDBContext serviceDBContext) : IIntegrationEventHandler<CDCEvent>
 {
     private readonly ServiceDBContext _serviceDBContext = serviceDBContext;
 

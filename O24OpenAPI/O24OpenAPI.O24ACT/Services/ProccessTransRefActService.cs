@@ -1,10 +1,10 @@
 ﻿using O24OpenAPI.Core;
 using O24OpenAPI.Core.Extensions;
+using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.O24ACT.Common;
-using O24OpenAPI.O24ACT.Configuration;
+using O24OpenAPI.O24ACT.Config;
 using O24OpenAPI.O24ACT.Models;
 using O24OpenAPI.O24ACT.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Exceptions;
 
 namespace O24OpenAPI.O24ACT.Services;
 
@@ -59,10 +59,7 @@ public class ProccessTransRefActService(
             accountChartInfor = await _accountChartService.OpenAccountPosting(
                 accountfx.AccountNumber
             );
-            if (
-                accountChartInfor.AccountChart == null
-                || accountChartInfor.AccountBalance == null
-            )
+            if (accountChartInfor.AccountChart == null || accountChartInfor.AccountBalance == null)
             {
                 throw new O24OpenAPIException(
                     "Accounting.ProccessTransRefActService.OpenAutoAccountFX"
@@ -168,9 +165,7 @@ public class ProccessTransRefActService(
                     // process_ibt_by_cases
                     var account1 = (
                         from a in g.Postings
-                        where
-                            a.AccountingEntryIndex >= _acdix1
-                            && a.AccountingEntryIndex < _acdix2
+                        where a.AccountingEntryIndex >= _acdix1 && a.AccountingEntryIndex < _acdix2
                         group a by (
                             a.AccountNumber,
                             a.BranchGLBankAccountNumber,
@@ -181,8 +176,7 @@ public class ProccessTransRefActService(
                         {
                             DebitOrCredit = r.Key.DebitOrCredit,
                             BranchGLBankAccountNumber = r.Key.BranchGLBankAccountNumber,
-                            CurrencyCodeGLBankAccountNumber =
-                                r.Key.CurrencyCodeGLBankAccountNumber,
+                            CurrencyCodeGLBankAccountNumber = r.Key.CurrencyCodeGLBankAccountNumber,
                             Amount = r.Sum(q => q.Amount),
                             AccountNumber = string.Join(
                                 ",",
@@ -209,8 +203,7 @@ public class ProccessTransRefActService(
                         {
                             DebitOrCredit = r.Key.DebitOrCredit,
                             BranchGLBankAccountNumber = r.Key.BranchGLBankAccountNumber,
-                            CurrencyCodeGLBankAccountNumber =
-                                r.Key.CurrencyCodeGLBankAccountNumber,
+                            CurrencyCodeGLBankAccountNumber = r.Key.CurrencyCodeGLBankAccountNumber,
                             Amount = r.Sum(q => q.Amount),
                             AccountNumber = string.Join(
                                 ",",
@@ -491,14 +484,10 @@ public class ProccessTransRefActService(
                         processGLGroup.MoveItemToGroupOf(acc2, newGroup2);
 
                         var nonIbtRules = g
-                            .Postings.Where(r =>
-                                !r.AccountName.StartsWith($"{vacname}-EQUIVALENT")
-                            )
+                            .Postings.Where(r => !r.AccountName.StartsWith($"{vacname}-EQUIVALENT"))
                             .ToList();
                         var ibtRules = g
-                            .Postings.Where(r =>
-                                r.AccountName.StartsWith($"{vacname}-EQUIVALENT")
-                            )
+                            .Postings.Where(r => r.AccountName.StartsWith($"{vacname}-EQUIVALENT"))
                             .ToList();
 
                         nonIbtRules.AddRange(model.EntryJournals);
@@ -577,10 +566,7 @@ public class ProccessTransRefActService(
             accountChartInfor = await _accountChartService.OpenAccountPosting(
                 accountClearing.AccountNumber
             );
-            if (
-                accountChartInfor.AccountChart == null
-                || accountChartInfor.AccountBalance == null
-            )
+            if (accountChartInfor.AccountChart == null || accountChartInfor.AccountBalance == null)
             {
                 throw new O24OpenAPIException(
                     "Accounting.ProccessTransRefActService.OpenAutoAccountClearing"

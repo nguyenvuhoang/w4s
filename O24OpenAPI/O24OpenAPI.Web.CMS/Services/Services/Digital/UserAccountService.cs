@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
+using O24OpenAPI.Framework.Services;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Services;
 
 namespace O24OpenAPI.Web.CMS.Services.Services;
 
@@ -39,11 +39,12 @@ public partial class UserAccountService : IUserAccountService
 
         if (result["data"] is JArray dataArray && dataArray.Count > 0)
         {
-                return result;
+            return result;
         }
 
         return null;
     }
+
     public async Task<JToken> GetStaffCareList()
     {
         var storedCommand = await _storedCommandService.GetByName("GetStaffCareInforList");
@@ -62,6 +63,7 @@ public partial class UserAccountService : IUserAccountService
 
         return null;
     }
+
     public async Task<JToken> GetUserAccountList()
     {
         var storedCommand = await _storedCommandService.GetByName("GetUserAccountList");

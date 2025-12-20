@@ -1,5 +1,5 @@
 ﻿using FluentMigrator.Builders.Create.Table;
-using O24OpenAPI.Core.Domain.Configuration;
+using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Data.Attributes;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.Mapping.Builders;

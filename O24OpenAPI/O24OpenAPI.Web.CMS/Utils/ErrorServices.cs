@@ -1,4 +1,4 @@
-﻿using O24OpenAPI.Web.Framework.Localization;
+﻿using O24OpenAPI.Framework.Localization;
 
 namespace Jits.Neptune.Web.CMS.Utils;
 

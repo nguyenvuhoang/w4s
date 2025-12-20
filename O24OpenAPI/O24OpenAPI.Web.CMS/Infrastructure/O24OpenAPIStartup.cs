@@ -1,4 +1,5 @@
-﻿using O24OpenAPI.Web.CMS.GrpcServices;
+﻿using O24OpenAPI.Framework.Domain.Logging;
+using O24OpenAPI.Web.CMS.GrpcServices;
 using O24OpenAPI.Web.CMS.Models.ContextModels;
 using O24OpenAPI.Web.CMS.Services.Factory;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
@@ -13,7 +14,6 @@ using O24OpenAPI.Web.CMS.Services.Services.Digital;
 using O24OpenAPI.Web.CMS.Services.Services.Logging;
 using O24OpenAPI.Web.CMS.Services.Services.Media;
 using O24OpenAPI.Web.CMS.Services.Services.Portal;
-using O24OpenAPI.Web.Framework.Domain.Logging;
 using Stimulsoft.Report;
 
 namespace O24OpenAPI.Web.CMS.Infrastructure;
@@ -133,8 +133,6 @@ public class O24OpenAPIStartup : IO24OpenAPIStartup
         services.AddScoped<ICoreAPIService, CoreAPIService>();
         services.AddScoped<ISignalHubBusinessService, SignalHubBusinessService>();
         services.AddScoped<IFileStorageService, S3FileStorageService>();
-
-
     }
 
     /// <summary>

@@ -1,13 +1,14 @@
 using MediatR;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Infrastructure;
+using O24OpenAPI.Framework.Domain.Logging;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Logger.Domain;
 using O24OpenAPI.Logger.GrpcServices;
 using O24OpenAPI.Logger.Services;
 using O24OpenAPI.Logger.Services.CommandHandler;
 using O24OpenAPI.Logger.Services.Interfaces;
 using O24OpenAPI.Logger.Services.QueryHandler;
-using O24OpenAPI.Web.Framework.Domain.Logging;
-using O24OpenAPI.Web.Framework.Models;
 
 namespace O24OpenAPI.Logger.Infrastructure;
 

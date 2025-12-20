@@ -1,3 +1,4 @@
+using System.Windows.Input;
 using Newtonsoft.Json;
 
 namespace O24OpenAPI.Core.Domain;
@@ -12,4 +13,15 @@ public abstract class BaseEntity
     /// </summary>
     [JsonProperty("id")]
     public int Id { get; set; }
+
+    public DateTime? CreatedOnUtc { get; set; }
+    public DateTime? UpdatedOnUtc { get; set; }
+
+    private readonly List<ICommand> _domainEvents = [];
+    public IReadOnlyCollection<ICommand> DomainEvents => _domainEvents.AsReadOnly();
+
+    public void AddDomainEvent(ICommand domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
+    }
 }

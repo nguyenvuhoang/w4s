@@ -1,8 +1,8 @@
 using FluentMigrator.Builders.Create.Table;
 using O24OpenAPI.Data.Mapping.Builders;
-using O24OpenAPI.Web.Framework.Domain.Logging;
+using O24OpenAPI.Framework.Domain.Logging;
 
-namespace O24OpenAPI.Sample.Migrations.Builders;
+namespace O24OpenAPI.O24Design.Migrations.Builders;
 
 public class HttpLogBuilder : O24OpenAPIEntityBuilder<HttpLog>
 {

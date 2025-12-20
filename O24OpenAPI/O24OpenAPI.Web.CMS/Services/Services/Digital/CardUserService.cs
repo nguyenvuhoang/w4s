@@ -1,7 +1,7 @@
 ﻿using O24OpenAPI.Data.System.Linq;
+using O24OpenAPI.Framework.Localization;
 using O24OpenAPI.Web.CMS.Models.Digital;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Localization;
 
 namespace O24OpenAPI.Web.CMS.Services.Services;
 
@@ -279,10 +279,7 @@ public class CardUserService : ICardUserService
                 CardExpiryDate = p.CardExpiryDate,
                 LinkagedAccount = p.LinkagedAccount,
             }
-        )
-            .OrderBy(c => c.UserCode)
-            .AsQueryable()
-            .ToPagedList(model.PageIndex, model.PageSize);
+        ).OrderBy(c => c.UserCode).AsQueryable().ToPagedList(model.PageIndex, model.PageSize);
 
         return query;
     }
@@ -310,8 +307,7 @@ public class CardUserService : ICardUserService
                         : true
                 )
                 && (
-                    !string.IsNullOrEmpty(c.CardNumber)
-                    && !string.IsNullOrEmpty(model.CardNumber)
+                    !string.IsNullOrEmpty(c.CardNumber) && !string.IsNullOrEmpty(model.CardNumber)
                         ? c.CardNumber.Contains(model.CardNumber)
                         : true
                 )
@@ -354,10 +350,7 @@ public class CardUserService : ICardUserService
                 CardExpiryDate = c.CardExpiryDate,
                 LinkagedAccount = c.LinkagedAccount,
             }
-        )
-            .OrderBy(c => c.UserCode)
-            .AsQueryable()
-            .ToPagedList(model.PageIndex, model.PageSize);
+        ).OrderBy(c => c.UserCode).AsQueryable().ToPagedList(model.PageIndex, model.PageSize);
 
         return query;
     }

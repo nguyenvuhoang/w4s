@@ -1,7 +1,7 @@
 ﻿using LinqToDB;
+using O24OpenAPI.Framework.Localization;
 using O24OpenAPI.Web.CMS.Models.Digital;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Localization;
 
 namespace O24OpenAPI.Web.CMS.Services.Services;
 
@@ -74,10 +74,8 @@ public class CurrencyService : ICurrencyService
                     ) || string.IsNullOrEmpty(model.CurrencyName)
                 )
                 && (
-                    (
-                        !string.IsNullOrEmpty(model.MasterName)
-                        && model.MasterName == d.MasterName
-                    ) || string.IsNullOrEmpty(model.MasterName)
+                    (!string.IsNullOrEmpty(model.MasterName) && model.MasterName == d.MasterName)
+                    || string.IsNullOrEmpty(model.MasterName)
                 )
             select d
         ).ToListAsync();

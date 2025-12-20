@@ -1,4 +1,4 @@
-﻿using Linh.JsonKit.Json;
+﻿using LinKit.Json.Runtime;
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.APIContracts.Models.CBG;
 using O24OpenAPI.Core.Infrastructure;
@@ -114,6 +114,7 @@ public class CBGGrpcClientService : BaseGrpcClientService, ICBGGrpcClientService
             async (header) => await _cbgGrpcClient.Client.CallFunctionAsync(request, header)
         );
     }
+
     public async Task<CBGGrpcAccountResponse> LoanAccountIsExistingAsync(string account)
     {
         var request = new AccountRequest { Account = account };

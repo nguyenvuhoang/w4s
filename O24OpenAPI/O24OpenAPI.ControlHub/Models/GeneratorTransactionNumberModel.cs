@@ -1,7 +1,6 @@
-﻿using O24OpenAPI.Web.Framework.Models;
+﻿using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.ControlHub.Models;
 
-public class GeneratorTransactionNumberModel : BaseTransactionModel
-{
-}
+public class GeneratorTransactionNumberModel : BaseTransactionModel { }

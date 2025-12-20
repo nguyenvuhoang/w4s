@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using O24OpenAPI.Core.Helper;
 using O24OpenAPI.Core.Infrastructure;
+using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
-using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.Web.Report.Domain;
 using O24OpenAPI.Web.Report.Mapper;
 using O24OpenAPI.Web.Report.Models.Common;
@@ -18,15 +18,14 @@ namespace O24OpenAPI.Web.Report.Controllers;
 
 public class ViewController(
     IViewerSettingService viewerSettingService,
-    O24OpenAPI.Web.Framework.Services.Logging.ILogger logger,
+    O24OpenAPI.Framework.Services.Logging.ILogger logger,
     ICTHGrpcClientService cthService
 ) : BasePublicController
 {
     StiReport report = EngineContext.Current.Resolve<StiReport>();
     private readonly IViewerSettingService _viewerSettingService = viewerSettingService;
-    private readonly O24OpenAPI.Web.Framework.Services.Logging.ILogger _logger = logger;
+    private readonly O24OpenAPI.Framework.Services.Logging.ILogger _logger = logger;
     private readonly ICTHGrpcClientService _cthService = cthService;
-
 
     private async Task<UserSessions> GetUserSessionsAsync(string token)
     {
@@ -127,11 +126,10 @@ public class ViewController(
                 ShowParametersButton = true,
                 FontFamily = "Century Gothic",
                 ViewMode = StiWebViewMode.MultiplePages,
-                Zoom = StiZoomMode.PageWidth
+                Zoom = StiZoomMode.PageWidth,
             },
             Width = Unit.Percentage(100),
             Height = Unit.Percentage(100),
-
         };
 
         // Passing options via ViewBag
@@ -157,7 +155,9 @@ public class ViewController(
 
         try
         {
-            var config = await EngineContext.Current.Resolve<IReportConfigService>().GetByCode(report_code);
+            var config = await EngineContext
+                .Current.Resolve<IReportConfigService>()
+                .GetByCode(report_code);
             var para_ = new List<object> { config, report, userSession, lang };
             if (config != null)
             {
@@ -195,8 +195,6 @@ public class ViewController(
             {
                 return InvokeHttp404($"Report {report_code} not found, please check report config");
             }
-
-
         }
         catch (Exception ex)
         {
@@ -268,7 +266,9 @@ public class ViewController(
                         }
                     }
 
-                    var config = await EngineContext.Current.Resolve<IReportConfigService>().GetByCode(report_code);
+                    var config = await EngineContext
+                        .Current.Resolve<IReportConfigService>()
+                        .GetByCode(report_code);
 
                     var userInfo = UpdateParams(userSession, rptParams);
                     var para_ = new List<object> { config, report, userInfo, lang };
@@ -289,7 +289,9 @@ public class ViewController(
                     var res = StiNetCoreViewer.InteractionResult(this, report);
                     return res;
                 }
-                return InvokeHttp404($"Report {report_code} have been not initialized successfully, please check config again. Maybe missing report parameter");
+                return InvokeHttp404(
+                    $"Report {report_code} have been not initialized successfully, please check config again. Maybe missing report parameter"
+                );
             }
             catch (Exception ex)
             {

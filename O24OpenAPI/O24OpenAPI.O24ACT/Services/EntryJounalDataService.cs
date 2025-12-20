@@ -1,16 +1,17 @@
 ﻿using LinqToDB;
 using Newtonsoft.Json;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Extensions;
+using O24OpenAPI.Framework.Exceptions;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Models;
+using O24OpenAPI.Framework.Services;
 using O24OpenAPI.O24ACT.Common;
-using O24OpenAPI.O24ACT.Configuration;
+using O24OpenAPI.O24ACT.Config;
 using O24OpenAPI.O24ACT.Domain;
 using O24OpenAPI.O24ACT.Models;
 using O24OpenAPI.O24ACT.Models.Response;
 using O24OpenAPI.O24ACT.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Exceptions;
-using O24OpenAPI.Web.Framework.Extensions;
-using O24OpenAPI.Web.Framework.Models;
-using O24OpenAPI.Web.Framework.Services;
 using static O24OpenAPI.O24ACT.Common.Constants;
 
 namespace O24OpenAPI.O24ACT.Services;
@@ -36,14 +37,10 @@ public class EntryJounalDataService(
     private readonly IProccessTransRefActService _proccessTransRefActService =
         proccessTransRefActService;
     private readonly IAccountBalanceService _accountBalanceService = accountBalanceService;
-    private readonly ITransactionActionService _transactionActionService =
-        transactionActionService;
+    private readonly ITransactionActionService _transactionActionService = transactionActionService;
     private readonly IRepository<AccountBalance> _accountBalanceRepo = accountBalanceRepo;
 
-    public async Task<string> GetGLAccountCommonFormat(
-        string accountName,
-        string language = "en"
-    )
+    public async Task<string> GetGLAccountCommonFormat(string accountName, string language = "en")
     {
         var check = await _accountCommonService.GetByAccountName(accountName.Trim());
         if (check == null || check.Id == 0)
@@ -167,9 +164,7 @@ public class EntryJounalDataService(
     /// <param name="message"></param>
     /// <returns></returns>
     /// <exception cref="NeptuneException"></exception>
-    public virtual async Task<EntryPostingReponse> ExcuteEntryPosting(
-        BaseTransactionModel message
-    )
+    public virtual async Task<EntryPostingReponse> ExcuteEntryPosting(BaseTransactionModel message)
     {
         var result = new EntryPostingReponse();
 
@@ -186,9 +181,7 @@ public class EntryJounalDataService(
         result.ErrorEntryJournals = entryDefine.EntryJournals;
 
         //do_auto_open_account
-        var accountingProcess = await GetAccountChartEntryJournal(
-            rules: entryDefine.EntryJournals
-        );
+        var accountingProcess = await GetAccountChartEntryJournal(rules: entryDefine.EntryJournals);
         var hostBranchCode = _accountingSeting.HostBranchCode.HasValue()
             ? _accountingSeting.HostBranchCode
             : "0000";

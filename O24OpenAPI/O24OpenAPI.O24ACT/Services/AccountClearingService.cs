@@ -1,12 +1,13 @@
 ﻿using O24OpenAPI.Core;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.System.Linq;
+using O24OpenAPI.Framework.Localization;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.O24ACT.Common;
 using O24OpenAPI.O24ACT.Domain;
 using O24OpenAPI.O24ACT.Models;
 using O24OpenAPI.O24ACT.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Localization;
-using O24OpenAPI.Web.Framework.Models;
 
 namespace O24OpenAPI.O24ACT.Services;
 
@@ -62,9 +63,7 @@ public partial class AccountClearingService(
         var clearingBranch = await _branchService.GetBranchByBranchCode(
             clearing.ClearingBranchCode
         );
-        var accountChart = await _accountChartService.GetByAccountNumber(
-            clearing.AccountNumber
-        );
+        var accountChart = await _accountChartService.GetByAccountNumber(clearing.AccountNumber);
         var _clearingReponse = clearing.ToAccountClearingViewReponseModel();
         _clearingReponse.BranchName = branchOrginal?.BranchName ?? null;
         _clearingReponse.ClearingBranchName = clearingBranch?.BranchName ?? null;
@@ -112,10 +111,8 @@ public partial class AccountClearingService(
                 BranchCode = a.BranchCode,
                 BranchName = _branchtmp == null ? string.Empty : _branchtmp.BranchName,
                 CurrencyId = a.CurrencyId,
-                ClearingBranchCode =
-                    _clearingtmp == null ? string.Empty : _clearingtmp.BranchCode,
-                ClearingBranchName =
-                    _clearingtmp == null ? string.Empty : _clearingtmp.BranchName,
+                ClearingBranchCode = _clearingtmp == null ? string.Empty : _clearingtmp.BranchCode,
+                ClearingBranchName = _clearingtmp == null ? string.Empty : _clearingtmp.BranchName,
                 ClearingType = a.ClearingType,
                 AccountNumber = a.AccountNumber,
             }

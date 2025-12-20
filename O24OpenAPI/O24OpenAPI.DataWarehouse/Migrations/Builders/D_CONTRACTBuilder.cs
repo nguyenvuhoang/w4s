@@ -2,7 +2,7 @@
 using O24OpenAPI.Data.Mapping.Builders;
 using O24OpenAPI.DataWarehouse.Domain;
 
-namespace O24OpenAPI.DataWarehouse.Migrations;
+namespace O24OpenAPI.DataWarehouse.Migrations.Builders;
 
 public class D_CONTRACTBuilder : O24OpenAPIEntityBuilder<D_CONTRACT>
 {

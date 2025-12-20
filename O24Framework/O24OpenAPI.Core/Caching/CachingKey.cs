@@ -12,8 +12,8 @@ public class CachingKey
     public static CacheKey SessionKey(string token) =>
         new(SessionTemplate, new object[] { token.Hash() });
 
-    public static CacheKey EntityKey<T>(string value) =>
-        new(EntityTemplate, new object[] { typeof(T).Name, value });
+    public static CacheKey EntityKey<T>(params string[] values) =>
+        new(EntityTemplate, new object[] { typeof(T).Name, string.Join(":", values) });
 
     public static CacheKey ChannelRolesKey(int roleId) =>
         new(EntityTemplate, new object[] { "CTH", $"roleid:{roleId}" });

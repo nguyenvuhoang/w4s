@@ -1,6 +1,5 @@
 ﻿using System.Linq.Expressions;
 using O24OpenAPI.Core.Caching;
-using O24OpenAPI.Core.Domain.O24OpenAPI;
 
 namespace O24OpenAPI.Core.SeedWork;
 

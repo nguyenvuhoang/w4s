@@ -8,18 +8,20 @@ using O24OpenAPI.ControlHub.Models.User;
 using O24OpenAPI.ControlHub.Services.Interfaces;
 using O24OpenAPI.ControlHub.Utils;
 using O24OpenAPI.Core;
+using O24OpenAPI.Core.Constants;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Data.System.Linq;
-using O24OpenAPI.Web.Framework.Exceptions;
-using O24OpenAPI.Web.Framework.Extensions;
-using O24OpenAPI.Web.Framework.Infrastructure.Mapper.Extensions;
-using O24OpenAPI.Web.Framework.Utils;
+using O24OpenAPI.Framework.Exceptions;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
+using O24OpenAPI.Framework.Utils;
+using O24OpenAPI.Framework.Utils.O9;
 using static O24OpenAPI.ControlHub.Constant.Code;
 
 namespace O24OpenAPI.ControlHub.Services;
 
 /// <summary>
-/// 
+///
 /// </summary>
 /// <param name="repository"></param>
 /// <param name="passwordRepository"></param>
@@ -52,11 +54,11 @@ public class UserAccountService(
     /// </summary>
     private readonly IRepository<UserPassword> _passwordRepository = passwordRepository;
 
-
     /// <summary>
     /// Role of User
     /// </summary>
     private readonly IRepository<UserInRole> _userInRole = userInRoleRepository;
+
     /// <summary>
     /// User Right Repository
     /// </summary>
@@ -66,18 +68,22 @@ public class UserAccountService(
     /// User in Role Service
     /// </summary>
     private readonly IUserInRoleService _userInRoleService = userInRoleService;
+
     /// <summary>
     /// User Role Service
     /// </summary>
     private readonly IUserRoleService _userRoleService = userRoleService;
+
     /// <summary>
     /// User Device Service
     /// </summary>
     private readonly IUserDeviceService _userDeviceService = userDeviceService;
+
     /// <summary>
     /// Authen Session Service
     /// </summary>
     private readonly IAuthSessionService _authSessionService = authSessionService;
+
     /// <summary>
     /// User Command Service
     /// </summary>
@@ -87,13 +93,11 @@ public class UserAccountService(
     /// User in Role Service
     /// </summary>
     private readonly IUserPasswordService _userPasswordService = userPasswordService;
+
     /// <summary>
     /// User Avatar Service
     /// </summary>
     private readonly IUserAvatarService _userAvatarService = userAvatarService;
-
-
-
 
     public async Task<UserAccount> GetByUserIdAsync(string userId)
     {
@@ -129,6 +133,7 @@ public class UserAccountService(
     {
         return await _repository.Table.Where(s => s.LoginName == loginName).FirstOrDefaultAsync();
     }
+
     /// <summary>
     /// Get User by Login name and Channel
     /// </summary>
@@ -136,7 +141,9 @@ public class UserAccountService(
     /// <returns></returns>
     public async Task<UserAccount> GetByLoginNameandChannelAsync(string loginName, string channelid)
     {
-        return await _repository.Table.Where(s => s.LoginName == loginName && s.ChannelId == channelid).FirstOrDefaultAsync();
+        return await _repository
+            .Table.Where(s => s.LoginName == loginName && s.ChannelId == channelid)
+            .FirstOrDefaultAsync();
     }
 
     /// <summary>
@@ -146,9 +153,17 @@ public class UserAccountService(
     /// <param name="email"></param>
     /// <param name="phonenumber"></param>
     /// <returns></returns>
-    public async Task<UserAccount> GetByLoginNameAndEmailAsync(string loginName, string email, string phonenumber)
+    public async Task<UserAccount> GetByLoginNameAndEmailAsync(
+        string loginName,
+        string email,
+        string phonenumber
+    )
     {
-        return await _repository.Table.Where(s => s.LoginName == loginName && s.Email == email && s.Phone == phonenumber).FirstOrDefaultAsync();
+        return await _repository
+            .Table.Where(s =>
+                s.LoginName == loginName && s.Email == email && s.Phone == phonenumber
+            )
+            .FirstOrDefaultAsync();
     }
 
     /// <summary>
@@ -178,21 +193,29 @@ public class UserAccountService(
         string language
     )
     {
-        var user = await _repository.Table
-            .Where(s => s.ChannelId == channelId && s.LoginName == loginName && s.Status != Common.DELETED)
-            .FirstOrDefaultAsync()
+        var user =
+            await _repository
+                .Table.Where(s =>
+                    s.ChannelId == channelId
+                    && s.LoginName == loginName
+                    && s.Status != Common.DELETED
+                )
+                .FirstOrDefaultAsync()
             ?? throw await O24Exception.CreateAsync(
                 O24CTHResourceCode.Validation.UsernameIsNotExist,
                 language,
-                [loginName]);
+                [loginName]
+            );
 
-        var userPassword = await _passwordRepository.Table
-            .Where(s => s.ChannelId == channelId && s.UserId == user.UserId)
-            .FirstOrDefaultAsync()
+        var userPassword =
+            await _passwordRepository
+                .Table.Where(s => s.ChannelId == channelId && s.UserId == user.UserId)
+                .FirstOrDefaultAsync()
             ?? throw await O24Exception.CreateAsync(
                 O24CTHResourceCode.Validation.PasswordDonotSetting,
                 language,
-                []);
+                []
+            );
 
         var setting = EngineContext.Current.Resolve<ControlHubSetting>();
 
@@ -253,7 +276,8 @@ public class UserAccountService(
             throw await O24Exception.CreateAsync(
                 O24CTHResourceCode.Validation.PasswordIncorrect,
                 language,
-                [user.Failnumber]);
+                [user.Failnumber]
+            );
         }
 
         user.Failnumber = 0;
@@ -265,12 +289,12 @@ public class UserAccountService(
             throw await O24Exception.CreateAsync(
                 O24CTHResourceCode.Validation.AccountStatusInvalid,
                 language,
-                [user.LoginName]);
+                [user.LoginName]
+            );
         }
 
         return user;
     }
-
 
     public async Task<UserAccount> AddAsync(UserAccount user)
     {
@@ -287,6 +311,7 @@ public class UserAccountService(
         var listOfRole = await _userInRole.Table.Where(s => s.UserCode == usercode).ToListAsync();
         return listOfRole;
     }
+
     /// <summary>
     /// Get UserCode By Contract Number
     /// </summary>
@@ -295,7 +320,9 @@ public class UserAccountService(
     public async Task<string> GetUserCodeByContractNumber(string contractnumber)
     {
         string userCode = string.Empty;
-        var userAccount = await _repository.Table.Where(s => s.ContractNumber == contractnumber).FirstOrDefaultAsync();
+        var userAccount = await _repository
+            .Table.Where(s => s.ContractNumber == contractnumber)
+            .FirstOrDefaultAsync();
         if (userAccount != null)
         {
             userCode = userAccount.UserCode;
@@ -305,7 +332,9 @@ public class UserAccountService(
 
     public async Task<bool> IsExist(string userName)
     {
-        var useraccount = await _repository.Table.Where(s => s.UserName == userName).FirstOrDefaultAsync();
+        var useraccount = await _repository
+            .Table.Where(s => s.UserName == userName)
+            .FirstOrDefaultAsync();
         return useraccount != null;
     }
 
@@ -323,7 +352,9 @@ public class UserAccountService(
 
         var userCodes = userList.Select(u => u.UserCode).ToList();
 
-        var users = await _repository.Table.Where(s => userCodes.Contains(s.UserCode)).ToListAsync();
+        var users = await _repository
+            .Table.Where(s => userCodes.Contains(s.UserCode))
+            .ToListAsync();
 
         var pageList = await users.AsQueryable().ToPagedList(model.PageIndex, model.PageSize);
         return pageList;
@@ -337,19 +368,22 @@ public class UserAccountService(
 
             foreach (var userCode in model.ListOfUser)
             {
-                var exists = await _userInRole.Table
-                    .Where(u => u.UserCode == userCode && u.RoleId == model.RoleId).FirstOrDefaultAsync();
+                var exists = await _userInRole
+                    .Table.Where(u => u.UserCode == userCode && u.RoleId == model.RoleId)
+                    .FirstOrDefaultAsync();
 
                 if (exists == null)
                 {
-                    toInsert.Add(new UserInRole
-                    {
-                        UserCode = userCode,
-                        RoleId = model.RoleId,
-                        IsMain = ShowStatus.YES,
-                        CreatedOnUtc = DateTime.UtcNow,
-                        UpdatedOnUtc = DateTime.UtcNow
-                    });
+                    toInsert.Add(
+                        new UserInRole
+                        {
+                            UserCode = userCode,
+                            RoleId = model.RoleId,
+                            IsMain = ShowStatus.YES,
+                            CreatedOnUtc = DateTime.UtcNow,
+                            UpdatedOnUtc = DateTime.UtcNow,
+                        }
+                    );
                 }
             }
 
@@ -361,8 +395,8 @@ public class UserAccountService(
         else
         {
             // Bulk delete users from role
-            var toDelete = await _userInRole.Table
-                .Where(u => model.ListOfUser.Contains(u.UserCode) && u.RoleId == model.RoleId)
+            var toDelete = await _userInRole
+                .Table.Where(u => model.ListOfUser.Contains(u.UserCode) && u.RoleId == model.RoleId)
                 .ToListAsync();
 
             if (toDelete.Count != 0)
@@ -395,7 +429,7 @@ public class UserAccountService(
             RoleType = model.RoleType,
             Status = Code.ShowStatus.ACTIVE,
             IsShow = Code.ShowStatus.YES,
-            SortOrder = roleId
+            SortOrder = roleId,
         };
 
         var inserted = await _userRoleService.AddAsync(newUserRole);
@@ -410,8 +444,8 @@ public class UserAccountService(
             return true;
         }
 
-        var existedCmdIds = await _userRightRepository.Table
-            .Where(r => r.RoleId == roleId && parentCommandIds.Contains(r.CommandId))
+        var existedCmdIds = await _userRightRepository
+            .Table.Where(r => r.RoleId == roleId && parentCommandIds.Contains(r.CommandId))
             .Select(r => r.CommandId)
             .Distinct()
             .ToListAsync();
@@ -428,7 +462,7 @@ public class UserAccountService(
                 Invoke = 1,
                 Approve = 1,
                 CreatedOnUtc = now,
-                UpdatedOnUtc = now
+                UpdatedOnUtc = now,
             })
             .ToList();
 
@@ -442,8 +476,9 @@ public class UserAccountService(
 
     public async Task<UpdateUserResponseModel> UpdateUserAsync(UpdateUserRequestModel model)
     {
-        var entity = await _repository.GetById(model.Id)
-           ?? throw await O24Exception.CreateAsync(ResourceCode.Common.NotExists, model.Language);
+        var entity =
+            await _repository.GetById(model.Id)
+            ?? throw await O24Exception.CreateAsync(ResourceCode.Common.NotExists, model.Language);
 
         var originalEntity = entity.Clone();
 
@@ -458,76 +493,84 @@ public class UserAccountService(
 
     public async Task<bool> IsPhoneNumberExistingAsync(UserAccountPhoneModel model)
     {
-        var existingPhonenumber = await _repository.Table
-             .Where(c => c.Status != "D")
-             .FirstOrDefaultAsync(c => c.Phone == model.PhoneNumber.Trim());
+        var existingPhonenumber = await _repository
+            .Table.Where(c => c.Status != "D")
+            .FirstOrDefaultAsync(c => c.Phone == model.PhoneNumber.Trim());
 
         if (existingPhonenumber != null)
         {
             throw await O24Exception.CreateAsync(
-               O24CTHResourceCode.Validation.PhoneNumberIsExisting,
-               model.Language,
-               [model.PhoneNumber]);
+                O24CTHResourceCode.Validation.PhoneNumberIsExisting,
+                model.Language,
+                [model.PhoneNumber]
+            );
         }
         return true;
     }
 
     public async Task<bool> IsUserNameExistingAsync(DefaultModel model)
     {
-
-        var existingUserName = await _repository.Table
-             .FirstOrDefaultAsync(c => c.UserName == model.UserName.Trim() && c.UserCode == model.UserCode.Trim());
+        var existingUserName = await _repository.Table.FirstOrDefaultAsync(c =>
+            c.UserName == model.UserName.Trim() && c.UserCode == model.UserCode.Trim()
+        );
 
         if (existingUserName != null)
         {
             throw await O24Exception.CreateAsync(
-               O24CTHResourceCode.Validation.UsernameIsNotExist,
-               model.Language,
-               [model.UserName]);
+                O24CTHResourceCode.Validation.UsernameIsNotExist,
+                model.Language,
+                [model.UserName]
+            );
         }
         return true;
     }
 
     public async Task<AuthResponseModel> ChangeDeviceAsync(UserAccountChangeDeviceModel model)
     {
-        var userAccount = await GetByUserCodeAsync(model.UserCode)
+        var userAccount =
+            await GetByUserCodeAsync(model.UserCode)
             ?? throw await O24Exception.CreateAsync(
                 O24CTHResourceCode.Validation.UsernameIsExisting,
-                model.Language);
+                model.Language
+            );
 
         if (userAccount.Phone != model.Phone)
         {
             throw await O24Exception.CreateAsync(
                 O24CTHResourceCode.Validation.PhoneNumberIsNotExisting,
                 model.Language,
-                [model.Phone]);
+                [model.Phone]
+            );
         }
 
         if (string.IsNullOrEmpty(userAccount.ContractNumber))
         {
-            throw await O24Exception.CreateAsync(O24CTHResourceCode.Validation.ContractNumberIsNotExisting, model.Language, [userAccount.Phone]);
+            throw await O24Exception.CreateAsync(
+                O24CTHResourceCode.Validation.ContractNumberIsNotExisting,
+                model.Language,
+                [userAccount.Phone]
+            );
         }
-
 
         try
         {
             await _userDeviceService.EnsureUserDeviceAsync(
-               userCode: userAccount.UserCode,
-               loginName: userAccount.LoginName,
-               deviceId: model.DeviceId + model.Modelname ?? "",
-               deviceType: model.DeviceType,
-               userAgent: model.UserAgent,
-               ipAddress: model.IpAddress,
-               channelId: model.ChannelId,
-               pushId: model.PushId,
-               osVersion: model.OsVersion,
-               appVersion: model.AppVersion,
-               deviceName: model.DeviceName,
-               brand: model.Brand,
-               isEmulator: model.IsEmulator,
-               isRooted: model.IsRootedOrJailbroken,
-               language: model.Language,
-               isResetDevice: true
+                userCode: userAccount.UserCode,
+                loginName: userAccount.LoginName,
+                deviceId: model.DeviceId + model.Modelname ?? "",
+                deviceType: model.DeviceType,
+                userAgent: model.UserAgent,
+                ipAddress: model.IpAddress,
+                channelId: model.ChannelId,
+                pushId: model.PushId,
+                osVersion: model.OsVersion,
+                appVersion: model.AppVersion,
+                deviceName: model.DeviceName,
+                brand: model.Brand,
+                isEmulator: model.IsEmulator,
+                isRooted: model.IsRootedOrJailbroken,
+                language: model.Language,
+                isResetDevice: true
             );
         }
         catch (Exception ex)
@@ -535,7 +578,8 @@ public class UserAccountService(
             await ex.LogErrorAsync();
             throw await O24Exception.CreateAsync(
                 O24CTHResourceCode.Operation.ChangeDeviceError,
-                model.Language);
+                model.Language
+            );
         }
 
         var context = new LoginContextModel
@@ -545,7 +589,7 @@ public class UserAccountService(
             RoleChannel = userAccount.RoleChannel,
             IpAddress = model.IpAddress,
             ChannelId = model.ChannelId,
-            Reference = model.DeviceId + model.Modelname ?? ""
+            Reference = model.DeviceId + model.Modelname ?? "",
         };
 
         userAccount.LastLoginTime = DateTime.Now;
@@ -560,8 +604,8 @@ public class UserAccountService(
 
     public async Task<bool> VerifyPasswordAsync(VerifyPasswordModel model)
     {
-        var userInfo = await _passwordRepository.Table
-        .Where(s => s.ChannelId == model.ChannelId && s.UserId == model.UserCode)
+        var userInfo = await _passwordRepository
+            .Table.Where(s => s.ChannelId == model.ChannelId && s.UserId == model.UserCode)
             .FirstOrDefaultAsync();
         if (userInfo == null)
         {
@@ -584,10 +628,9 @@ public class UserAccountService(
             isPasswordValid = false;
         }
 
-
         return isPasswordValid;
-
     }
+
     /// <summary>
     /// Delete User Password by UserId
     /// </summary>
@@ -595,8 +638,7 @@ public class UserAccountService(
     /// <returns></returns>
     public async Task DeleteUserByUserIdAsync(string userId)
     {
-        var entity = await _repository.Table
-            .FirstOrDefaultAsync(x => x.UserId == userId);
+        var entity = await _repository.Table.FirstOrDefaultAsync(x => x.UserId == userId);
 
         if (entity != null)
         {
@@ -616,8 +658,9 @@ public class UserAccountService(
             return false;
         }
 
-        var entity = await _repository.Table
-            .FirstOrDefaultAsync(x => x.ContractNumber == model.ContractNumber);
+        var entity = await _repository.Table.FirstOrDefaultAsync(x =>
+            x.ContractNumber == model.ContractNumber
+        );
 
         if (entity == null)
         {
@@ -658,8 +701,9 @@ public class UserAccountService(
             return false;
         }
 
-        var entity = await _repository.Table
-            .FirstOrDefaultAsync(x => x.ContractNumber == model.ContractNumber);
+        var entity = await _repository.Table.FirstOrDefaultAsync(x =>
+            x.ContractNumber == model.ContractNumber
+        );
 
         if (entity == null)
         {
@@ -695,8 +739,7 @@ public class UserAccountService(
     /// <returns></returns>
     public async Task<bool> DeleteUserById(DeleteUserModel model)
     {
-        var entity = await _repository.Table
-            .FirstOrDefaultAsync(x => x.Id == model.Id);
+        var entity = await _repository.Table.FirstOrDefaultAsync(x => x.Id == model.Id);
 
         if (entity != null)
         {
@@ -765,7 +808,6 @@ public class UserAccountService(
         return v;
     }
 
-
     public Task<UserAccount> GetUserByContractNumber(string contractnumber)
     {
         if (string.IsNullOrWhiteSpace(contractnumber))
@@ -778,8 +820,7 @@ public class UserAccountService(
 
     public async Task<bool> UnBlockUserAsync(UnblockUserModel model)
     {
-        var entity = await _repository.Table
-             .FirstOrDefaultAsync(x => x.UserName == model.UserName);
+        var entity = await _repository.Table.FirstOrDefaultAsync(x => x.UserName == model.UserName);
 
         if (entity != null)
         {
@@ -792,6 +833,7 @@ public class UserAccountService(
         }
         return false;
     }
+
     /// <summary>
     /// Get User Push ID by Contract Number
     /// </summary>
@@ -807,7 +849,12 @@ public class UserAccountService(
 
         if (await _userDeviceService.GetByUserCodeAsync(userInfo) is { } userDevice)
         {
-            return new CTHUserPushModel { UserCode = userInfo, PushID = userDevice.PushId ?? string.Empty, UserDeviceID = userDevice.DeviceId ?? string.Empty };
+            return new CTHUserPushModel
+            {
+                UserCode = userInfo,
+                PushID = userDevice.PushId ?? string.Empty,
+                UserDeviceID = userDevice.DeviceId ?? string.Empty,
+            };
         }
 
         return null;
@@ -830,7 +877,7 @@ public class UserAccountService(
                 {
                     UserCode = model.UserCode,
                     ImageUrl = model.AvatarUrl,
-                    DateInsert = DateTime.UtcNow
+                    DateInsert = DateTime.UtcNow,
                 };
 
                 await _userAvatarService.AddAsync(entity);
@@ -849,8 +896,14 @@ public class UserAccountService(
         }
         catch (Exception ex)
         {
-            await ex.LogErrorAsync($"[UpdateUserAvatarAsync] Error for {model.UserCode}: {ex.Message}");
-            throw await O24Exception.CreateAsync(ResourceCode.Common.SystemError, model.Language, ex);
+            await ex.LogErrorAsync(
+                $"[UpdateUserAvatarAsync] Error for {model.UserCode}: {ex.Message}"
+            );
+            throw await O24Exception.CreateAsync(
+                ResourceCode.Common.SystemError,
+                model.Language,
+                ex
+            );
         }
     }
 
@@ -877,8 +930,8 @@ public class UserAccountService(
         const int deleteBatchSize = 10_000;
         while (true)
         {
-            var batchToDelete = await _passwordRepository.Table
-                .OrderBy(x => x.Id)
+            var batchToDelete = await _passwordRepository
+                .Table.OrderBy(x => x.Id)
                 .Take(deleteBatchSize)
                 .ToListAsync();
 
@@ -895,9 +948,10 @@ public class UserAccountService(
 
         while (true)
         {
-            var users = await _repository.Table
-                .Where(u => !string.IsNullOrEmpty(u.UserId)
-                         && !string.IsNullOrEmpty(u.UserCode))
+            var users = await _repository
+                .Table.Where(u =>
+                    !string.IsNullOrEmpty(u.UserId) && !string.IsNullOrEmpty(u.UserCode)
+                )
                 .OrderBy(u => u.Id)
                 .Skip(pageIndex * pageSize)
                 .Take(pageSize)
@@ -908,15 +962,17 @@ public class UserAccountService(
                 break;
             }
 
-            var batch = users.Select(u => new UserPassword
-            {
-                UserId = u.UserId,
-                ChannelId = u.ChannelId,
-                Password = O9Encrypt.sha_sha256(password, u.UserCode),
-                Salt = u.UserCode,
-                CreatedOnUtc = now,
-                UpdatedOnUtc = now
-            }).ToList();
+            var batch = users
+                .Select(u => new UserPassword
+                {
+                    UserId = u.UserId,
+                    ChannelId = u.ChannelId,
+                    Password = O9Encrypt.sha_sha256(password, u.UserCode),
+                    Salt = u.UserCode,
+                    CreatedOnUtc = now,
+                    UpdatedOnUtc = now,
+                })
+                .ToList();
 
             try
             {
@@ -944,7 +1000,6 @@ public class UserAccountService(
     /// </summary>
     /// <param name="role"></param>
     /// <returns></returns>
-
     public async Task<ScanResult> ScanRole(int role)
     {
         if (role == 0)
@@ -958,8 +1013,8 @@ public class UserAccountService(
         const int deleteBatchSize = 10_000;
         while (true)
         {
-            var batchToDelete = await _userInRole.Table
-                .OrderBy(x => x.Id)
+            var batchToDelete = await _userInRole
+                .Table.OrderBy(x => x.Id)
                 .Take(deleteBatchSize)
                 .ToListAsync();
 
@@ -976,9 +1031,10 @@ public class UserAccountService(
 
         while (true)
         {
-            var users = await _repository.Table
-                .Where(u => !string.IsNullOrEmpty(u.UserId)
-                         && !string.IsNullOrEmpty(u.UserCode))
+            var users = await _repository
+                .Table.Where(u =>
+                    !string.IsNullOrEmpty(u.UserId) && !string.IsNullOrEmpty(u.UserCode)
+                )
                 .OrderBy(u => u.Id)
                 .Skip(pageIndex * pageSize)
                 .Take(pageSize)
@@ -989,14 +1045,16 @@ public class UserAccountService(
                 break;
             }
 
-            var batch = users.Select(u => new UserInRole
-            {
-                RoleId = role,
-                UserCode = u.UserCode,
-                IsMain = ShowStatus.YES,
-                CreatedOnUtc = now,
-                UpdatedOnUtc = now
-            }).ToList();
+            var batch = users
+                .Select(u => new UserInRole
+                {
+                    RoleId = role,
+                    UserCode = u.UserCode,
+                    IsMain = ShowStatus.YES,
+                    CreatedOnUtc = now,
+                    UpdatedOnUtc = now,
+                })
+                .ToList();
 
             try
             {
@@ -1028,10 +1086,22 @@ public class UserAccountService(
     {
         try
         {
-            ConsoleUtil.WriteInfo($"[GetUserByPhoneNumberASync] Start processing for phone number: {model.PhoneNumber}");
-            var user = await _repository.Table
-            .Where(s => s.Phone == model.PhoneNumber && s.Status != Common.DELETED && s.ChannelId == Code.Channel.MB)
-            .FirstOrDefaultAsync() ?? throw await O24Exception.CreateAsync(O24CTHResourceCode.Validation.PhoneNumberIsExisting, model.Language, [model.PhoneNumber]);
+            ConsoleUtil.WriteInfo(
+                $"[GetUserByPhoneNumberASync] Start processing for phone number: {model.PhoneNumber}"
+            );
+            var user =
+                await _repository
+                    .Table.Where(s =>
+                        s.Phone == model.PhoneNumber
+                        && s.Status != Common.DELETED
+                        && s.ChannelId == Code.Channel.MB
+                    )
+                    .FirstOrDefaultAsync()
+                ?? throw await O24Exception.CreateAsync(
+                    O24CTHResourceCode.Validation.PhoneNumberIsExisting,
+                    model.Language,
+                    [model.PhoneNumber]
+                );
 
             var userDevice = await _userDeviceService.GetByUserCodeAsync(user.UserCode);
             var userInfo = new UserInfoModel
@@ -1044,10 +1114,9 @@ public class UserAccountService(
                 PhoneNumber = user.Phone,
                 ChannelId = user.ChannelId,
                 UserDeviceId = userDevice?.DeviceId,
-                UserPushId = userDevice?.PushId
+                UserPushId = userDevice?.PushId,
             };
             return userInfo;
-
         }
         catch (O24Exception)
         {
@@ -1056,9 +1125,14 @@ public class UserAccountService(
         catch (Exception ex)
         {
             await ex.LogErrorAsync();
-            throw await O24Exception.CreateAsync(ResourceCode.Common.SystemError, model.Language, ex);
+            throw await O24Exception.CreateAsync(
+                ResourceCode.Common.SystemError,
+                model.Language,
+                ex
+            );
         }
     }
+
     /// <summary>
     /// Get User by code
     /// </summary>
@@ -1066,8 +1140,11 @@ public class UserAccountService(
     /// <returns></returns>
     public async Task<string> CheckUserHasEmail(DefaultModel model)
     {
-        var user = await _repository.Table.Where(s => s.UserCode == model.UserCode).FirstOrDefaultAsync();
-        return string.IsNullOrWhiteSpace(user?.Email) ? throw new O24OpenAPIException("This user does not have an email!") : user.Email;
+        var user = await _repository
+            .Table.Where(s => s.UserCode == model.UserCode)
+            .FirstOrDefaultAsync();
+        return string.IsNullOrWhiteSpace(user?.Email)
+            ? throw new O24OpenAPIException("This user does not have an email!")
+            : user.Email;
     }
-
 }

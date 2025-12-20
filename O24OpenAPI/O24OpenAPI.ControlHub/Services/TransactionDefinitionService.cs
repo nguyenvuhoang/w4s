@@ -1,8 +1,9 @@
 ﻿using O24OpenAPI.ControlHub.Domain;
 using O24OpenAPI.ControlHub.Services.Interfaces;
 using O24OpenAPI.Core;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Data.System.Linq;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.ControlHub.Services;
 
@@ -10,6 +11,7 @@ public class TransactionDefinitionService : ITransactionDefinitionService
 {
     private readonly IRepository<TransactionDefinition> _transactionDefinitionRepository;
     private readonly StringComparison ICIC = StringComparison.InvariantCultureIgnoreCase;
+
     /// <summary>
     /// Get all transaction definitions from the database.
     /// </summary>
@@ -18,7 +20,6 @@ public class TransactionDefinitionService : ITransactionDefinitionService
     {
         var transactionDefinitions = await _transactionDefinitionRepository.GetAll(query =>
         {
-
             return query;
         });
 
@@ -32,7 +33,10 @@ public class TransactionDefinitionService : ITransactionDefinitionService
     /// <returns></returns>
     public async Task<TransactionDefinition> GetById(int transactionDefinitionId)
     {
-        return await _transactionDefinitionRepository.GetById(transactionDefinitionId, cache => default);
+        return await _transactionDefinitionRepository.GetById(
+            transactionDefinitionId,
+            cache => default
+        );
     }
 
     /// <summary>
@@ -40,7 +44,9 @@ public class TransactionDefinitionService : ITransactionDefinitionService
     /// </summary>
     /// <param name="transactionDefinition"></param>
     /// <returns></returns>
-    public async Task<TransactionDefinition> InsertTranDef(TransactionDefinition transactionDefinition)
+    public async Task<TransactionDefinition> InsertTranDef(
+        TransactionDefinition transactionDefinition
+    )
     {
         await _transactionDefinitionRepository.Insert(transactionDefinition);
         return transactionDefinition;
@@ -60,19 +66,20 @@ public class TransactionDefinitionService : ITransactionDefinitionService
         }
 
         var TransDefs = _transactionDefinitionRepository.Table.Where(c =>
-                   c.TransactionCode.Contains(model.SearchText, ICIC)
-                || c.WorkflowId.Contains(model.SearchText, ICIC)
-                || c.TransactionName.Contains(model.SearchText, ICIC)
-                || c.Description.Contains(model.SearchText, ICIC)
-                || c.TransactionType.Contains(model.SearchText, ICIC)
-                || c.ServiceId.Contains(model.SearchText, ICIC)
-                || c.MessageAccount.Contains(model.SearchText, ICIC)
-                || c.MessageAmount.Contains(model.SearchText, ICIC)
-                || c.MessageCurrency.Contains(model.SearchText, ICIC)
-                || c.Voucher.Contains(model.SearchText, ICIC)
-                || c.ApplicationCode.Contains(model.SearchText, ICIC)
-                || c.TransactionModel.Contains(model.SearchText, ICIC)
-                || c.Channel.Contains(model.SearchText, ICIC));
+            c.TransactionCode.Contains(model.SearchText, ICIC)
+            || c.WorkflowId.Contains(model.SearchText, ICIC)
+            || c.TransactionName.Contains(model.SearchText, ICIC)
+            || c.Description.Contains(model.SearchText, ICIC)
+            || c.TransactionType.Contains(model.SearchText, ICIC)
+            || c.ServiceId.Contains(model.SearchText, ICIC)
+            || c.MessageAccount.Contains(model.SearchText, ICIC)
+            || c.MessageAmount.Contains(model.SearchText, ICIC)
+            || c.MessageCurrency.Contains(model.SearchText, ICIC)
+            || c.Voucher.Contains(model.SearchText, ICIC)
+            || c.ApplicationCode.Contains(model.SearchText, ICIC)
+            || c.TransactionModel.Contains(model.SearchText, ICIC)
+            || c.Channel.Contains(model.SearchText, ICIC)
+        );
         var PaegeTransDefs = await TransDefs.ToPagedList(model.PageIndex, model.PageSize);
         return PaegeTransDefs;
     }

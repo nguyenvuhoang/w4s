@@ -1,6 +1,7 @@
 using O24OpenAPI.Core;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Data.System.Linq;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.WFO.Domain;
 using O24OpenAPI.WFO.Services.Interfaces;
 
@@ -16,10 +17,7 @@ public class WorkflowDefService(IRepository<WorkflowDef> workflowDefRepository)
         return await _workflowDefRepository.GetById(id, cache => null);
     }
 
-    public virtual async Task<WorkflowDef> GetByWorkflowIdAsync(
-        string workflowId,
-        string channelId
-    )
+    public virtual async Task<WorkflowDef> GetByWorkflowIdAsync(string workflowId, string channelId)
     {
         return await _workflowDefRepository
             .Table.Where(s => s.WorkflowId == workflowId && s.ChannelId == channelId)
@@ -51,9 +49,7 @@ public class WorkflowDefService(IRepository<WorkflowDef> workflowDefRepository)
     {
         var query =
             from d in _workflowDefRepository.Table
-            where
-                string.IsNullOrEmpty(model.SearchText)
-                || d.WorkflowId.Contains(model.SearchText)
+            where string.IsNullOrEmpty(model.SearchText) || d.WorkflowId.Contains(model.SearchText)
             select d;
         return await query.ToPagedList(model.PageIndex, model.PageSize);
     }

@@ -1,8 +1,9 @@
 ﻿using O24OpenAPI.Core;
+using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.O24NCH.Domain;
 using O24OpenAPI.O24NCH.Models.Request;
 using O24OpenAPI.O24NCH.Models.Response;
-using O24OpenAPI.Web.Framework.Models;
 
 namespace O24OpenAPI.O24NCH.Services.Interfaces;
 
@@ -14,13 +15,22 @@ public interface ISMSProviderService
     /// <param name="phoneNumber"></param>
     /// <returns></returns>
     Task<SMSProvider> GetProviderByPhoneNumber(string phoneNumber);
+
     /// <summary>
     /// Gửi SMS đến khách hàng qua provider đã cấu hình
     /// </summary>
     /// <param name="phoneNumber">Số điện thoại người nhận</param>
     /// <param name="message">Nội dung tin nhắn</param>
     /// <returns>True nếu gửi thành công</returns>
-    Task<SendSOAPResponseModel> SendSMSAsync(string phoneNumber, string message, string transactionId, string providerName = "UNITEL", string endtoend = "", string messagetype = "SMS");
+    Task<SendSOAPResponseModel> SendSMSAsync(
+        string phoneNumber,
+        string message,
+        string transactionId,
+        string providerName = "UNITEL",
+        string endtoend = "",
+        string messagetype = "SMS"
+    );
+
     /// <summary>
     /// Xây dựng SOAP request từ template lưu trong DB, thay thế các biến bằng giá trị thực tế.
     /// </summary>
@@ -36,12 +46,14 @@ public interface ISMSProviderService
     /// <param name="soapXml">SOAP body đã build</param>
     /// <returns>Chuỗi phản hồi từ provider</returns>
     Task<string> SendSOAPRequestAsync(string providerId, string soapXml);
+
     /// <summary>
     /// Thực hiện gọi kiểm tra trạng thái từng SMS Provider đã cấu hình (health check),
     /// sau đó cập nhật bảng SMSProviderStatus.
     /// </summary>
     /// <returns>Task hoàn tất đồng bộ</returns>
     Task SyncSMSProviderStatusAsync();
+
     /// <summary>
     /// Send bulk SMS messages asynchronously with controlled parallelism.
     /// </summary>
@@ -50,9 +62,16 @@ public interface ISMSProviderService
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<List<SendSOAPResponseModel>> SendBulkSMSAsync(
-        List<(string ProviderName, string PhoneNumber, string Message, string TransactionId, string EndToEnd)> messages,
+        List<(
+            string ProviderName,
+            string PhoneNumber,
+            string Message,
+            string TransactionId,
+            string EndToEnd
+        )> messages,
         int maxDegreeOfParallelism = 20,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Search SMS Providers based on the given search model.
@@ -60,17 +79,18 @@ public interface ISMSProviderService
     /// <param name="model"></param>
     /// <returns></returns>
     Task<IPagedList<SMSProvider>> Search(SimpleSearchModel model);
+
     /// <summary>
     /// Update an existing SMS provider with the given model.
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
     Task<UpdateSMSProviderResponseModel> Update(SMSProviderUpdateModel model);
+
     /// <summary>
     /// Create Model
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
-
     Task<bool> CreateAsync(SMSProviderCreateModel model);
 }

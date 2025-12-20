@@ -4,5 +4,5 @@ namespace O24OpenAPI.WFO.Services;
 
 public interface IWorkflowExecutionService
 {
-    Task<O24OpenAPIClient.Workflow.WorkflowResponse> StartWorkflowAsync(WorkflowInput input);
+    Task<Client.Workflow.WorkflowResponse> StartWorkflowAsync(WorkflowInput input);
 }

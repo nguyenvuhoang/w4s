@@ -2,7 +2,7 @@
 using O24OpenAPI.ControlHub.Domain;
 using O24OpenAPI.Data.Mapping.Builders;
 
-namespace O24OpenAPI.ControlHub.Migrations;
+namespace O24OpenAPI.ControlHub.Migrations.Builders;
 
 public class UserAgreementBuilder : O24OpenAPIEntityBuilder<UserAgreement>
 {

@@ -1,9 +1,9 @@
 using System.Text.Json.Nodes;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.LOG;
-using O24OpenAPI.Web.Framework.Extensions;
-using O24OpenAPI.Web.Framework.Models.O24OpenAPI;
-using O24OpenAPI.Web.Framework.Services.Queue;
-using ILogger = O24OpenAPI.Web.Framework.Services.Logging.ILogger;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Services.Queue;
+using ILogger = O24OpenAPI.Framework.Services.Logging.ILogger;
 
 namespace O24OpenAPI.Web.CMS.Queues;
 

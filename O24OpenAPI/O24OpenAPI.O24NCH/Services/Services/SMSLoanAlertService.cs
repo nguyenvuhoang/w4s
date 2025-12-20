@@ -1,19 +1,20 @@
-﻿using LinqToDB;
+﻿using System.Globalization;
+using LinqToDB;
 using O24OpenAPI.APIContracts.Models.NCH;
-using O24OpenAPI.Core.Logging.Helpers;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.DTS;
+using O24OpenAPI.Logging.Helpers;
 using O24OpenAPI.O24NCH.Constant;
 using O24OpenAPI.O24NCH.Domain;
 using O24OpenAPI.O24NCH.Models.Request;
 using O24OpenAPI.O24NCH.Services.Interfaces;
 using O24OpenAPI.O24NCH.Utils;
-using O24OpenAPI.Web.Framework.Extensions;
-using O24OpenAPI.Web.Framework.Utils;
-using System.Globalization;
 
 namespace O24OpenAPI.O24NCH.Services.Services;
 
-public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
+public class SMSLoanAlertService(
+    IDTSGrpcClientService grpcClientService,
     ISMSService smsService,
     IRepository<RepaymentRemind> repaymentRemind,
     INotificationTemplateService notificationTemplateService,
@@ -24,7 +25,8 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
     private readonly IDTSGrpcClientService _grpcClientService = grpcClientService;
     private readonly ISMSService _smsService = smsService;
     private readonly IRepository<RepaymentRemind> _repaymentRemind = repaymentRemind;
-    private readonly INotificationTemplateService _notificationTemplateService = notificationTemplateService;
+    private readonly INotificationTemplateService _notificationTemplateService =
+        notificationTemplateService;
     private readonly INotificationService _notificationService = notificationService;
     private readonly IUserNotificationsService _userNotificationsService = userNotificationsService;
 
@@ -35,7 +37,6 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
     /// <param name="pageSize"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-
     private async Task<List<SMSLoanAlertModel>> FetchAllAlertsAsync(string type)
     {
         List<SMSLoanAlertModel> page;
@@ -50,20 +51,22 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
         var accountno = page.Select(x => x.AccountNumber).ToList();
         var dueDates = page.Select(x => x.DueDate.Date).ToList();
 
-        var history = await _repaymentRemind.Table
-       .Where(x => accountno.Contains(x.AccountNumber)
+        var history = await _repaymentRemind
+            .Table.Where(x =>
+                accountno.Contains(x.AccountNumber)
                 && dueDates.Contains(x.DueDate)
-                && x.MessageType == type)
-       .ToListAsync();
+                && x.MessageType == type
+            )
+            .ToListAsync();
 
         var result = new List<SMSLoanAlertModel>();
 
         foreach (var item in page)
         {
             var record = history.FirstOrDefault(x =>
-                x.AccountNumber == item.AccountNumber &&
-                x.DueDate == item.DueDate &&
-                x.MessageType == item.NotificationType
+                x.AccountNumber == item.AccountNumber
+                && x.DueDate == item.DueDate
+                && x.MessageType == item.NotificationType
             );
 
             // Never sent → send
@@ -83,7 +86,6 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
         return result;
     }
 
-
     /// <summary>
     /// Send SMS loan alerts async.
     /// </summary>
@@ -92,11 +94,13 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
     /// <param name="ct"></param>
     /// <returns></returns>
     private async Task<(int SentOk, int SentFail)> SendSmsLoanAlertsAsync(
-    IList<SMSLoanAlertModel> smsAlerts,
-    int maxParallel,
-    CancellationToken ct)
+        IList<SMSLoanAlertModel> smsAlerts,
+        int maxParallel,
+        CancellationToken ct
+    )
     {
-        int totalOk = 0, totalFail = 0;
+        int totalOk = 0,
+            totalFail = 0;
 
         foreach (var batch in smsAlerts.Chunk(maxParallel))
         {
@@ -119,7 +123,10 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
                 }
                 else
                 {
-                    var (indOk, indFail) = await SendSmsIndividuallyWithFallbackAsync(batchAlerts, ct);
+                    var (indOk, indFail) = await SendSmsIndividuallyWithFallbackAsync(
+                        batchAlerts,
+                        ct
+                    );
                     totalOk += indOk;
                     totalFail += indFail;
                 }
@@ -137,8 +144,6 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
         return (totalOk, totalFail);
     }
 
-
-
     /// <summary>
     /// Send SMS individually with fallback async.
     /// </summary>
@@ -146,10 +151,12 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
     /// <param name="ct"></param>
     /// <returns></returns>
     private async Task<(int Ok, int Fail)> SendSmsIndividuallyWithFallbackAsync(
-    IList<SMSLoanAlertModel> alerts,
-    CancellationToken ct)
+        IList<SMSLoanAlertModel> alerts,
+        CancellationToken ct
+    )
     {
-        int ok = 0, fail = 0;
+        int ok = 0,
+            fail = 0;
 
         var tasks = alerts.Select(async alert =>
         {
@@ -185,8 +192,6 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
         return (ok, fail);
     }
 
-
-
     /// <summary>
     /// Prepares the firebase loan alerts.
     /// </summary>
@@ -195,9 +200,11 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
     /// <returns></returns>
     private async Task<(int Ok, int Fail)> SendFirebaseLoanAlertsAsync(
         IList<SMSLoanAlertModel> fbAlerts,
-        CancellationToken ct)
+        CancellationToken ct
+    )
     {
-        int ok = 0, fail = 0;
+        int ok = 0,
+            fail = 0;
         var tasks = fbAlerts.Select(async a =>
         {
             try
@@ -210,11 +217,14 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
                 var amount = Utility.FormatAmount(a.TotalPayment, a.CurrencyCode);
 
                 var userNotifications = await _userNotificationsService.GetPushAsync(a.PhoneNumber);
-                var template = await _notificationTemplateService.GetByTemplateIdAsync(Code.NotificationTemplateCode.REMIND_LOAN.ToString());
+                var template = await _notificationTemplateService.GetByTemplateIdAsync(
+                    Code.NotificationTemplateCode.REMIND_LOAN.ToString()
+                );
                 if (template == null)
                 {
                     template.Title = "EMI Remind Loan";
-                    template.Body = "EMI ຮຽນ: ທ່ານ {CustomerName}, ການຊຳລະຄືນເງິນກູ້ຂອງທ່ານ ຈຳນວນ {Currency} {Amount} ຈະຄົບກຳນົດໃນວັນທີ {DueDate}. ກະລຸນາຊຳລະກ່ອນວັນທີດັ່ງກ່າວ ເພື່ອຫຼີກລ້ຽງຄ່າປັບໄໝ. ຫາກທ່ານໄດ້ຊຳລະແລ້ວ,  ຂໍຂອບໃຈມາຍັງທ່ານຢ່າງສູງ.";
+                    template.Body =
+                        "EMI ຮຽນ: ທ່ານ {CustomerName}, ການຊຳລະຄືນເງິນກູ້ຂອງທ່ານ ຈຳນວນ {Currency} {Amount} ຈະຄົບກຳນົດໃນວັນທີ {DueDate}. ກະລຸນາຊຳລະກ່ອນວັນທີດັ່ງກ່າວ ເພື່ອຫຼີກລ້ຽງຄ່າປັບໄໝ. ຫາກທ່ານໄດ້ຊຳລະແລ້ວ,  ຂໍຂອບໃຈມາຍັງທ່ານຢ່າງສູງ.";
                 }
 
                 var tokenData = new
@@ -222,7 +232,7 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
                     CustomerName = a.AccountName,
                     Amount = amount,
                     Currency = a.CurrencyCode,
-                    DueDate = dueDate
+                    DueDate = dueDate,
                 };
 
                 var senderBody = Utility.ReplaceTokens(template.Body, tokenData);
@@ -232,7 +242,7 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
                     UserCode = userNotifications.UserCode,
                     PushId = userNotifications.PushId,
                     Title = template.Title,
-                    Message = senderBody
+                    Message = senderBody,
                 };
 
                 var issuccess = await _notificationService.SendMobileDeviceAsync(model);
@@ -246,7 +256,6 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
                     await UpdateRepaymentRemindAsync(a, "SMS", false, ct);
                     Interlocked.Increment(ref fail);
                 }
-
             }
             catch (Exception ex)
             {
@@ -259,7 +268,6 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
 
         return (ok, fail);
     }
-
 
     /// <summary>
     /// Submits the SMS loan alert.
@@ -289,10 +297,11 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
         var (firebaseSentOk, firebaseSentFail) = await SendFirebaseLoanAlertsAsync(fbAlerts, ct);
 
         // Log tổng kết
-        ConsoleUtil.WriteInfo($"Firebase push sent Ok: {firebaseSentOk}, Failed: {firebaseSentFail}");
+        ConsoleUtil.WriteInfo(
+            $"Firebase push sent Ok: {firebaseSentOk}, Failed: {firebaseSentFail}"
+        );
         ConsoleUtil.WriteInfo($"SMS sent OK: {sentOk}, failed: {sentFail}");
     }
-
 
     /// <summary>
     /// TO SMS request.
@@ -302,26 +311,24 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
     private static SMSRequestModel ToSmsRequest(SMSLoanAlertModel model)
     {
         var amountStr = Utils.Utility.FormatAmount(model.TotalPayment, model.CurrencyCode);
-        var dueDateStr = NormalizeUtcDateOnly(model.DueDate).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
+        var dueDateStr = NormalizeUtcDateOnly(model.DueDate)
+            .ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
 
         var data = new Dictionary<string, object>
         {
             ["CustomerName"] = model.AccountName ?? string.Empty,
             ["Currency"] = model.CurrencyCode ?? string.Empty,
             ["Amount"] = amountStr.Replace(model.CurrencyCode ?? "", "").Trim(),
-            ["DueDate"] = dueDateStr
+            ["DueDate"] = dueDateStr,
         };
 
         return new SMSRequestModel
         {
             Purpose = "REMINDLOANREPAYMENT",
             PhoneNumber = model.PhoneNumber,
-            SenderData = data
+            SenderData = data,
         };
     }
-
-
-
 
     /// <summary>
     /// Generates the and send SMS async.
@@ -344,16 +351,16 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
         var data = new Dictionary<string, object>
         {
             ["CustomerName"] = model.AccountName ?? string.Empty,
-            ["Currency"] = model.CurrencyCode ?? string.Empty,  // template: {Currency}{Amount}
+            ["Currency"] = model.CurrencyCode ?? string.Empty, // template: {Currency}{Amount}
             ["Amount"] = amountStr.Replace(model.CurrencyCode ?? "", "").Trim(),
-            ["DueDate"] = dueDateStr
+            ["DueDate"] = dueDateStr,
         };
 
         var smsRequest = new SMSRequestModel
         {
             Purpose = "REMINDLOANREPAYMENT",
             PhoneNumber = model.PhoneNumber,
-            SenderData = data
+            SenderData = data,
         };
 
         try
@@ -368,12 +375,12 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
         }
     }
 
-
     private static DateTime NormalizeUtcDateOnly(DateTime dt)
     {
-        var u = dt.Kind == DateTimeKind.Unspecified
-            ? DateTime.SpecifyKind(dt, DateTimeKind.Utc)
-            : dt.ToUniversalTime();
+        var u =
+            dt.Kind == DateTimeKind.Unspecified
+                ? DateTime.SpecifyKind(dt, DateTimeKind.Utc)
+                : dt.ToUniversalTime();
         return new DateTime(u.Year, u.Month, u.Day, 0, 0, 0, DateTimeKind.Utc);
     }
 
@@ -385,21 +392,22 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
     /// <param name="isSuccess"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-
     private async Task UpdateRepaymentRemindAsync(
         SMSLoanAlertModel alert,
         string notificationType,
         bool isSuccess,
-        CancellationToken ct)
+        CancellationToken ct
+    )
     {
         var dueDate = alert.DueDate.Date;
 
-        var entity = await _repaymentRemind.Table
-            .Where(x =>
-                x.AccountNumber == alert.AccountNumber &&
-                x.DueDate == dueDate &&
-                x.MessageType == notificationType)
-                .FirstOrDefaultAsync(ct);
+        var entity = await _repaymentRemind
+            .Table.Where(x =>
+                x.AccountNumber == alert.AccountNumber
+                && x.DueDate == dueDate
+                && x.MessageType == notificationType
+            )
+            .FirstOrDefaultAsync(ct);
 
         var now = DateTime.UtcNow;
         var status = isSuccess ? "SENT" : "FAILED";
@@ -417,7 +425,7 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
                 LastSentOn = now,
                 CreatedOn = now,
                 UpdatedOn = now,
-                ErrorMessage = isSuccess ? null : "Failed to send SMS"
+                ErrorMessage = isSuccess ? null : "Failed to send SMS",
             };
 
             await _repaymentRemind.Insert(entity);
@@ -430,5 +438,4 @@ public class SMSLoanAlertService(IDTSGrpcClientService grpcClientService,
 
         await _repaymentRemind.Update(entity);
     }
-
 }

@@ -1,16 +1,16 @@
-﻿using LinqToDB;
+﻿using System.Globalization;
+using System.Security.Cryptography;
+using LinqToDB;
 using O24OpenAPI.Core;
+using O24OpenAPI.Framework.Exceptions;
+using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.O24NCH.Constant;
 using O24OpenAPI.O24NCH.Domain;
 using O24OpenAPI.O24NCH.Infrastructure;
 using O24OpenAPI.O24NCH.Models.Request;
-using O24OpenAPI.O24NCH.Models.Request.SMS;
+using O24OpenAPI.O24NCH.Models.Request.SMSGateway;
 using O24OpenAPI.O24NCH.Models.Response;
 using O24OpenAPI.O24NCH.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Exceptions;
-using O24OpenAPI.Web.Framework.Extensions;
-using System.Globalization;
-using System.Security.Cryptography;
 
 namespace O24OpenAPI.O24NCH.Services.Services;
 
@@ -28,13 +28,14 @@ public class SMSService(
     private readonly SMSSetting _smsSettings = smsSettings;
     private readonly IRepository<StoreOtp> _storeOtpRepository = storeOtpRepository;
 
-
     /// <summary>
     /// Generate và gửi OTP
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
-    public async Task<GenerateOTPResponseModel> GenerateAndSendOTPAsync(GenerateOTPRequestModel model)
+    public async Task<GenerateOTPResponseModel> GenerateAndSendOTPAsync(
+        GenerateOTPRequestModel model
+    )
     {
         try
         {
@@ -46,14 +47,18 @@ public class SMSService(
 
             var userCode = model.UserCode ?? model.CurrentUserCode;
 
-            var existingOtp = await _otpRequestRepository.Table
-                .Where(o =>
-                    o.PhoneNumber == model.PhoneNumber &&
-                    o.Purpose == model.Purpose &&         // rất quan trọng: lock theo mục đích
-                    !o.IsUsed &&
-                    o.ExpiresAt > now &&
-                    (o.Status == OTP_REQUESTS_STATUS.PENDING ||
-                     o.Status == OTP_REQUESTS_STATUS.SENT)) // FAILED không block
+            var existingOtp = await _otpRequestRepository
+                .Table.Where(o =>
+                    o.PhoneNumber == model.PhoneNumber
+                    && o.Purpose == model.Purpose
+                    && // rất quan trọng: lock theo mục đích
+                    !o.IsUsed
+                    && o.ExpiresAt > now
+                    && (
+                        o.Status == OTP_REQUESTS_STATUS.PENDING
+                        || o.Status == OTP_REQUESTS_STATUS.SENT
+                    )
+                ) // FAILED không block
                 .OrderByDescending(o => o.CreatedAt)
                 .FirstOrDefaultAsync();
 
@@ -62,7 +67,8 @@ public class SMSService(
                 throw await O24Exception.CreateAsync(
                     O24NCHResourceCode.Validation.ExistOTP,
                     model.Language,
-                    [userCode]);
+                    [userCode]
+                );
             }
 
             var otpNumber = RandomNumberGenerator.GetInt32(100000, 1_000_000);
@@ -80,7 +86,7 @@ public class SMSService(
                 CreatedAt = now,
                 ExpiresAt = now.AddMinutes(_smsSettings.TimeOTP),
                 TransactionId = transactionId,
-                Status = OTP_REQUESTS_STATUS.PENDING
+                Status = OTP_REQUESTS_STATUS.PENDING,
             };
 
             await _otpRequestRepository.InsertAsync(otpRequest);
@@ -96,15 +102,17 @@ public class SMSService(
                     ["AMOUNT"] = model.Amount.HasValue
                         ? model.Amount.Value.ToString("N2", CultureInfo.InvariantCulture)
                         : string.Empty,
-                    ["CURRENCY"] = model.Currency ?? string.Empty
-                });
+                    ["CURRENCY"] = model.Currency ?? string.Empty,
+                }
+            );
 
             var sendResult = await _smsProviderService.SendSMSAsync(
                 model.PhoneNumber,
                 message,
                 transactionId,
                 null,
-                transactionId);
+                transactionId
+            );
 
             otpRequest.Status = sendResult.IsSuccess
                 ? OTP_REQUESTS_STATUS.SENT
@@ -117,13 +125,11 @@ public class SMSService(
                 throw await O24Exception.CreateAsync(
                     O24NCHResourceCode.Error.SendSMSFailed,
                     model.Language,
-                    [sendResult.ErrorMessage]);
+                    [sendResult.ErrorMessage]
+                );
             }
 
-            return new GenerateOTPResponseModel
-            {
-                TransactionId = transactionId
-            };
+            return new GenerateOTPResponseModel { TransactionId = transactionId };
         }
         catch (O24Exception)
         {
@@ -140,12 +146,14 @@ public class SMSService(
         }
     }
 
-
-
-    public async Task<string> BuildSMSContentAsync(string templateCode, Dictionary<string, string> values)
+    public async Task<string> BuildSMSContentAsync(
+        string templateCode,
+        Dictionary<string, string> values
+    )
     {
-        var template = await _smsTemplateRepository.Table
-            .FirstOrDefaultAsync(t => t.TemplateCode == templateCode && t.IsActive);
+        var template = await _smsTemplateRepository.Table.FirstOrDefaultAsync(t =>
+            t.TemplateCode == templateCode && t.IsActive
+        );
 
         if (template == null)
         {
@@ -171,44 +179,58 @@ public class SMSService(
             throw await O24Exception.CreateAsync(
                 O24NCHResourceCode.Validation.InvalidOTP,
                 model.Language,
-                [model.OTP]);
+                [model.OTP]
+            );
         }
 
-        var storeOtp = await _storeOtpRepository.Table
-        .Where(x => x.IsActive
-                    && x.PhoneNumber == model.PhoneNumber
-                    && (x.Platform == ReviewPlatform.Any)
-                    && (x.StartAt == null || x.StartAt <= DateTime.UtcNow)
-                    && (x.EndAt == null || x.EndAt >= DateTime.UtcNow))
-        .FirstOrDefaultAsync();
+        var storeOtp = await _storeOtpRepository
+            .Table.Where(x =>
+                x.IsActive
+                && x.PhoneNumber == model.PhoneNumber
+                && (x.Platform == ReviewPlatform.Any)
+                && (x.StartAt == null || x.StartAt <= DateTime.UtcNow)
+                && (x.EndAt == null || x.EndAt >= DateTime.UtcNow)
+            )
+            .FirstOrDefaultAsync();
 
         if (storeOtp != null)
         {
             if (!encryptedOtp.Equals(storeOtp.OtpHash))
             {
                 throw await O24Exception.CreateAsync(
-                   O24NCHResourceCode.Validation.InvalidOTP,
-                   model.Language,
-                   [model.OTP]);
+                    O24NCHResourceCode.Validation.InvalidOTP,
+                    model.Language,
+                    [model.OTP]
+                );
             }
             return true;
         }
 
         string userCode = model.UserCode ?? model.CurrentUserCode;
 
-        var otpRecord = await _otpRequestRepository.Table
-         .Where(o =>
-             o.TransactionId == model.VerifyOTPCode &&
-             o.UserCode == userCode &&
-             o.PhoneNumber == model.PhoneNumber &&
-             o.Purpose == model.Purpose &&
-             o.OtpCode == encryptedOtp)
-         .FirstOrDefaultAsync()
-         ?? throw await O24Exception.CreateAsync(O24NCHResourceCode.Validation.InvalidOTP, model.Language, [model.OTP]);
+        var otpRecord =
+            await _otpRequestRepository
+                .Table.Where(o =>
+                    o.TransactionId == model.VerifyOTPCode
+                    && o.UserCode == userCode
+                    && o.PhoneNumber == model.PhoneNumber
+                    && o.Purpose == model.Purpose
+                    && o.OtpCode == encryptedOtp
+                )
+                .FirstOrDefaultAsync()
+            ?? throw await O24Exception.CreateAsync(
+                O24NCHResourceCode.Validation.InvalidOTP,
+                model.Language,
+                [model.OTP]
+            );
 
         if (otpRecord.IsUsed)
         {
-            throw await O24Exception.CreateAsync(O24NCHResourceCode.Validation.UsedOTP, model.Language, [model.OTP]);
+            throw await O24Exception.CreateAsync(
+                O24NCHResourceCode.Validation.UsedOTP,
+                model.Language,
+                [model.OTP]
+            );
         }
 
         if (otpRecord.ExpiresAt <= DateTime.UtcNow)
@@ -220,7 +242,8 @@ public class SMSService(
             throw await O24Exception.CreateAsync(
                 O24NCHResourceCode.Validation.ExpiredOTP,
                 model.Language,
-                [model.OTP]);
+                [model.OTP]
+            );
         }
 
         otpRecord.IsUsed = true;
@@ -230,11 +253,15 @@ public class SMSService(
         return true;
     }
 
-
-    public async Task<string> BuildSMSContentDynamicAsync(string templateCode, Dictionary<string, object> values, string message = "")
+    public async Task<string> BuildSMSContentDynamicAsync(
+        string templateCode,
+        Dictionary<string, object> values,
+        string message = ""
+    )
     {
-        var template = await _smsTemplateRepository.Table
-            .FirstOrDefaultAsync(t => t.TemplateCode == templateCode && t.IsActive);
+        var template = await _smsTemplateRepository.Table.FirstOrDefaultAsync(t =>
+            t.TemplateCode == templateCode && t.IsActive
+        );
 
         if (template == null)
         {
@@ -251,17 +278,20 @@ public class SMSService(
         return content;
     }
 
-
     public async Task<bool> SendSMS(SMSRequestModel model)
     {
         try
         {
             var message = string.IsNullOrWhiteSpace(model.Message)
-            ? await BuildSMSContentDynamicAsync(model.Purpose, model.SenderData)
-            : model.Message;
+                ? await BuildSMSContentDynamicAsync(model.Purpose, model.SenderData)
+                : model.Message;
 
             var transactionId = model.RefId;
-            var sendResult = await _smsProviderService.SendSMSAsync(model.PhoneNumber, message, transactionId);
+            var sendResult = await _smsProviderService.SendSMSAsync(
+                model.PhoneNumber,
+                message,
+                transactionId
+            );
             return sendResult.IsSuccess;
         }
         catch (Exception ex)
@@ -280,14 +310,24 @@ public class SMSService(
     {
         try
         {
-            var message = await BuildSMSContentDynamicAsync(model.Purpose, model.SenderData, model.Message);
+            var message = await BuildSMSContentDynamicAsync(
+                model.Purpose,
+                model.SenderData,
+                model.Message
+            );
 
             // Generate transaction ID
             var transactionId = model.RefId;
 
             // Call provider service to send SMS
             var submitResult = await _smsProviderService.SendSMSAsync(
-                model.PhoneNumber, message, transactionId, model.ProviderName, model.TransactionId, model.MessageType);
+                model.PhoneNumber,
+                message,
+                transactionId,
+                model.ProviderName,
+                model.TransactionId,
+                model.MessageType
+            );
 
             // Map the result to response model
             var sendResult = new SMSGatewayResponseModel
@@ -297,7 +337,7 @@ public class SMSService(
                 TransactionId = model.TransactionId,
                 Provider = model.ProviderName,
                 IsSuccess = submitResult.IsSuccess,
-                SMSGWTransactionId = transactionId
+                SMSGWTransactionId = transactionId,
             };
 
             if (!submitResult.IsSuccess)
@@ -321,27 +361,40 @@ public class SMSService(
                 IsSuccess = false,
                 ErrorMessage = ex.Message,
                 ErrorCode = ex.HResult,
-                SMSGWTransactionId = model.RefId
+                SMSGWTransactionId = model.RefId,
             };
         }
     }
 
-    public async Task<GenerateSMSContentResponseModel> GenerateAndSendContentAsync(GenerateSMSContentRequestModel model)
+    public async Task<GenerateSMSContentResponseModel> GenerateAndSendContentAsync(
+        GenerateSMSContentRequestModel model
+    )
     {
         try
         {
             var transactionId = model.RefId;
 
-            var message = await BuildSMSContentAsync(model.Purpose, new Dictionary<string, string>
-            {
-                { "CONTRACTNUMBER", model.ContractNumber ?? string.Empty },
-                { "PHONENUMBER", model.PhoneNumber },
-                { "PASSWORD", model.Password }
-            });
+            var message = await BuildSMSContentAsync(
+                model.Purpose,
+                new Dictionary<string, string>
+                {
+                    { "CONTRACTNUMBER", model.ContractNumber ?? string.Empty },
+                    { "PHONENUMBER", model.PhoneNumber },
+                    { "PASSWORD", model.Password },
+                }
+            );
 
-            var sendResult = await _smsProviderService.SendSMSAsync(model.PhoneNumber, message, transactionId, null, transactionId);
+            var sendResult = await _smsProviderService.SendSMSAsync(
+                model.PhoneNumber,
+                message,
+                transactionId,
+                null,
+                transactionId
+            );
 
-            return sendResult.IsSuccess ? new GenerateSMSContentResponseModel { TransactionId = transactionId } : null;
+            return sendResult.IsSuccess
+                ? new GenerateSMSContentResponseModel { TransactionId = transactionId }
+                : null;
         }
         catch (O24Exception)
         {
@@ -361,7 +414,11 @@ public class SMSService(
     /// <summary>
     /// Bulk send SMS cho danh sách yêu cầu
     /// </summary>
-    public async Task<bool> BulkSendSMS(List<SMSRequestModel> requests, int maxDegreeOfParallelism = 20, CancellationToken ct = default)
+    public async Task<bool> BulkSendSMS(
+        List<SMSRequestModel> requests,
+        int maxDegreeOfParallelism = 20,
+        CancellationToken ct = default
+    )
     {
         if (requests == null || requests.Count == 0)
         {
@@ -377,7 +434,9 @@ public class SMSService(
                     : r.Message;
 
                 string providerName = "UNITEL";
-                var providerMain = await _smsProviderService.GetProviderByPhoneNumber(r.PhoneNumber);
+                var providerMain = await _smsProviderService.GetProviderByPhoneNumber(
+                    r.PhoneNumber
+                );
                 if (providerMain != null)
                 {
                     providerName = providerMain.ProviderName;
@@ -409,6 +468,4 @@ public class SMSService(
             return false;
         }
     }
-
-
 }

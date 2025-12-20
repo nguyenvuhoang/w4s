@@ -1,10 +1,11 @@
 ﻿using FluentMigrator;
 using O24OpenAPI.Core.Attributes;
-using O24OpenAPI.Core.Domain.Configuration;
+using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Domain.Localization;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Data;
 using O24OpenAPI.Data.Migrations;
+using O24OpenAPI.O24NCH.Constant;
 
 namespace O24OpenAPI.O24NCH.Migrations;
 

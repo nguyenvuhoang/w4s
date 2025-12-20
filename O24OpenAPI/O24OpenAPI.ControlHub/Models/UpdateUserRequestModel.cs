@@ -1,11 +1,13 @@
 ﻿using O24OpenAPI.ControlHub.Domain;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.ControlHub.Models;
 
 public class UpdateUserRequestModel : BaseTransactionModel
 {
     public UpdateUserRequestModel() { }
+
     public int Id { get; set; }
     public string UserName { get; set; }
     public string FirstName { get; set; } = string.Empty;
@@ -19,7 +21,10 @@ public class UpdateUserRequestModel : BaseTransactionModel
 
     public List<string> ChangedFields { get; set; } = [];
 
-    public static UpdateUserRequestModel FromUpdatedEntity(UserAccount updated, UserAccount original)
+    public static UpdateUserRequestModel FromUpdatedEntity(
+        UserAccount updated,
+        UserAccount original
+    )
     {
         var result = new UpdateUserRequestModel();
         var entityProps = typeof(UserAccount).GetProperties();
@@ -35,8 +40,10 @@ public class UpdateUserRequestModel : BaseTransactionModel
             var newValue = prop.GetValue(updated);
             var oldValue = prop.GetValue(original);
 
-            if ((oldValue == null && newValue != null) ||
-                (oldValue != null && !oldValue.Equals(newValue)))
+            if (
+                (oldValue == null && newValue != null)
+                || (oldValue != null && !oldValue.Equals(newValue))
+            )
             {
                 result.ChangedFields.Add(prop.Name);
             }

@@ -1,8 +1,8 @@
 using Newtonsoft.Json;
 using O24OpenAPI.Web.CMS.Models.QR;
 using O24OpenAPI.Web.CMS.Services.QR;
-using O24OpenAPI.Web.Framework.Models.O24OpenAPI;
-using O24OpenAPI.Web.Framework.Services.Queue;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Services.Queue;
 
 namespace O24OpenAPI.Web.CMS.Queues;
 
@@ -24,9 +24,7 @@ public class QRQueue : BaseQueue
                 }
                 return new GetQRResponse
                 {
-                    Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(
-                        result.Data
-                    ),
+                    Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(result.Data),
                 };
             }
         );

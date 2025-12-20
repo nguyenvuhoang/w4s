@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Web.CMS.Models;
 using O24OpenAPI.Web.CMS.Models.O9;
-using ILogger = O24OpenAPI.Web.Framework.Services.Logging.ILogger;
+using ILogger = O24OpenAPI.Framework.Services.Logging.ILogger;
 
 namespace O24OpenAPI.Web.CMS.Utils;
 

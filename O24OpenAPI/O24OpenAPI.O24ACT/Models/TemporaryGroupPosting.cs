@@ -1,4 +1,5 @@
-﻿using O24OpenAPI.Web.Framework.Models;
+﻿using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.O24ACT.Models;
 
@@ -48,7 +49,11 @@ public partial class TemporaryGroupPosting : BaseO24OpenAPIModel
     {
         get
         {
-            return Postings.OrderBy(p => p.BranchGLBankAccountNumber == HostBranch ? 0 : 1).Select(p => p.BranchGLBankAccountNumber).Distinct().FirstOrDefault();
+            return Postings
+                .OrderBy(p => p.BranchGLBankAccountNumber == HostBranch ? 0 : 1)
+                .Select(p => p.BranchGLBankAccountNumber)
+                .Distinct()
+                .FirstOrDefault();
         }
     }
 
@@ -59,7 +64,8 @@ public partial class TemporaryGroupPosting : BaseO24OpenAPIModel
     {
         get
         {
-            return Postings.Select(p => p.CurrencyCodeGLBankAccountNumber).Distinct().ToList().Count > 1;
+            return Postings.Select(p => p.CurrencyCodeGLBankAccountNumber).Distinct().ToList().Count
+                > 1;
         }
     }
 
@@ -81,9 +87,12 @@ public partial class TemporaryGroupPosting : BaseO24OpenAPIModel
     /// </summary>
     public void SortItems()
     {
-        var ps = Postings.Where(p => p.Amount != 0).OrderBy(p => p.CurrencyCodeGLBankAccountNumber == BaseCurrency ? 1 : 0)
+        var ps = Postings
+            .Where(p => p.Amount != 0)
+            .OrderBy(p => p.CurrencyCodeGLBankAccountNumber == BaseCurrency ? 1 : 0)
             .ThenBy(p => p.AccountingEntryIndex)
-            .ThenBy(p => p.DebitOrCredit == "D" ? 0 : 1).ToList();
+            .ThenBy(p => p.DebitOrCredit == "D" ? 0 : 1)
+            .ToList();
         int index = 1;
         foreach (var p in ps)
         {

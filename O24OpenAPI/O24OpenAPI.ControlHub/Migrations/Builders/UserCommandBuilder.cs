@@ -2,7 +2,7 @@ using FluentMigrator.Builders.Create.Table;
 using O24OpenAPI.ControlHub.Domain;
 using O24OpenAPI.Data.Mapping.Builders;
 
-namespace O24OpenAPI.ControlHub.Migrations.Builder;
+namespace O24OpenAPI.ControlHub.Migrations.Builders;
 
 public class UserCommandBuilder : O24OpenAPIEntityBuilder<UserCommand>
 {

@@ -1,5 +1,6 @@
-using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Client.Scheme.Workflow;
+using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.WFO.Lib;
 
 namespace O24OpenAPI.WFO.Models;

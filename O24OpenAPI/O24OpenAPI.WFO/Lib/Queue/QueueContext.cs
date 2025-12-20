@@ -1,11 +1,11 @@
+using System.Collections.Concurrent;
+using O24OpenAPI.Client;
+using O24OpenAPI.Client.Events;
+using O24OpenAPI.Client.Events.EventData;
+using O24OpenAPI.Client.Scheme.Workflow;
 using O24OpenAPI.Core.Helper;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.O24OpenAPIClient;
-using O24OpenAPI.O24OpenAPIClient.Events;
-using O24OpenAPI.O24OpenAPIClient.Events.EventData;
-using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
 using O24OpenAPI.WFO.Services.Interfaces;
-using System.Collections.Concurrent;
 
 namespace O24OpenAPI.WFO.Lib.Queue;
 
@@ -14,10 +14,7 @@ public class QueueContext : IDisposable
     private static readonly object _lock = new();
     private static QueueContext _instance;
     private readonly QueueClient _queueClient;
-    private readonly ConcurrentDictionary<
-        string,
-        TaskCompletionSource<WFScheme>
-    > _pendingResponses;
+    private readonly ConcurrentDictionary<string, TaskCompletionSource<WFScheme>> _pendingResponses;
 
     private QueueContext()
     {
@@ -67,9 +64,7 @@ public class QueueContext : IDisposable
         }
     }
 
-    private static async Task LogWorkflowStepEvent(
-        O24OpenAPIEvent<StepExecutionEvent> eventData
-    )
+    private static async Task LogWorkflowStepEvent(O24OpenAPIEvent<StepExecutionEvent> eventData)
     {
         var service = EngineContext.Current.Resolve<IWorkflowStepInfoService>();
         await service.UpdateShouldNotAwaitStepInfo(eventData.EventData.data.WFScheme);

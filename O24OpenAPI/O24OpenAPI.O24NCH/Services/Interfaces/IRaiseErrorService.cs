@@ -1,6 +1,6 @@
 using O24OpenAPI.Core;
 
-namespace O24OpenAPI.O24NCH.Services;
+namespace O24OpenAPI.O24NCH.Services.Interfaces;
 
 /// <summary>
 /// The raise error service interface

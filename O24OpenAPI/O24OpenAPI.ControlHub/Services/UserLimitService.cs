@@ -2,12 +2,13 @@
 using O24OpenAPI.ControlHub.Models.Userlimit;
 using O24OpenAPI.ControlHub.Services.Interfaces;
 using O24OpenAPI.Core;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data.System.Linq;
-using O24OpenAPI.Web.Framework.Localization;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Framework.Localization;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.ControlHub.Services;
 
@@ -138,10 +139,7 @@ public partial class UserLimitService(
                 Module = c.CommandName,
                 TranName = b.CommandName,
             }
-        )
-            .OrderBy(o => o.Module)
-            .ThenBy(o => o.TranName)
-            .ToPagedList(model.PageIndex, model.PageSize);
+        ).OrderBy(o => o.Module).ThenBy(o => o.TranName).ToPagedList(model.PageIndex, model.PageSize);
         return result;
     }
 

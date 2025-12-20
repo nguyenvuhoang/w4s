@@ -3,7 +3,7 @@
     "BackgroundJobs": [
       {
         "Name": "CDCJOb",
-        "AssemblyName": "O24OpenAPI.Web.Framework",
+        "AssemblyName": "O24OpenAPI.Framework",
         "TimeIntervalSeconds": 5,
         "MaxParallel": 1,
         "CorrelationId": "CDCJOb",

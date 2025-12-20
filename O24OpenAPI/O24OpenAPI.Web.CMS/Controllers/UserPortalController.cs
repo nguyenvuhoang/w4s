@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using O24OpenAPI.Web.CMS.Services.Interfaces.Digital;
-using O24OpenAPI.Web.Framework.Controllers;
+using O24OpenAPI.Framework.Controllers;
 
 namespace O24OpenAPI.Web.CMS.Controllers;
 

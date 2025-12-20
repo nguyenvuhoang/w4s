@@ -1,15 +1,16 @@
+using O24OpenAPI.Client.Scheme.Workflow;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
+using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data.System.Linq;
+using O24OpenAPI.Framework.Helpers;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Logger.Domain;
 using O24OpenAPI.Logger.Models.Log;
 using O24OpenAPI.Logger.Models.Workflow;
 using O24OpenAPI.Logger.Services.Interfaces;
-using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
-using O24OpenAPI.Web.Framework.Helpers;
-using O24OpenAPI.Web.Framework.Models;
-using static O24OpenAPI.O24OpenAPIClient.Workflow.WorkflowExecution;
-using O24OpenAPI.Core.SeedWork;
+using static O24OpenAPI.Client.Workflow.WorkflowExecution;
 
 namespace O24OpenAPI.Logger.Services;
 
@@ -44,10 +45,7 @@ public class WorkflowStepLogService(IRepository<WorkflowStepLog> repo)
     {
         var query = _repo.Table;
         var pageList = await query.ToPagedList(model.PageIndex, model.PageSize);
-        var result = pageList.ToPagedListModel<
-            WorkflowStepLog,
-            WorkflowStepLogSearchResponse
-        >();
+        var result = pageList.ToPagedListModel<WorkflowStepLog, WorkflowStepLogSearchResponse>();
         return result;
     }
 

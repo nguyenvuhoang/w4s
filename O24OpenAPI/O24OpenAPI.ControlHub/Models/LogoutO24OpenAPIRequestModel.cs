@@ -1,4 +1,5 @@
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.ControlHub.Models;
 
@@ -12,10 +13,12 @@ public class LogoutO24OpenAPIRequestModel : BaseTransactionModel
     /// Gets or sets the value of the login name
     /// </summary>
     public string LoginName { get; set; }
+
     /// <summary>
     /// /// Gets or sets the value of the device
     /// </summary>
     public string DeviceId { get; set; }
+
     /// <summary>
     /// /// Gets or sets the value of the device
     /// </summary>
@@ -25,34 +28,42 @@ public class LogoutO24OpenAPIRequestModel : BaseTransactionModel
     /// Gets or sets the value of the ip address
     /// </summary>
     public string IpAddress { get; set; }
+
     /// <summary>
     /// User Agent
     /// </summary>
     public string UserAgent { get; set; }
+
     /// <summary>
     /// OsVersion
     /// </summary>
     public string OsVersion { get; set; }
+
     /// <summary>
     /// App Version
     /// </summary>
     public string AppVersion { get; set; }
+
     /// <summary>
     /// Device Name
     /// </summary>
     public string DeviceName { get; set; }
+
     /// <summary>
     /// Brand
     /// </summary>
     public string Brand { get; set; }
+
     /// <summary>
     /// IsEmulator
     /// </summary>
     public bool IsEmulator { get; set; }
+
     /// <summary>
     /// IsRootedOrJailbroken
     /// </summary>
     public bool IsRootedOrJailbroken { get; set; }
+
     /// <summary>
     /// Modelname
     /// </summary>

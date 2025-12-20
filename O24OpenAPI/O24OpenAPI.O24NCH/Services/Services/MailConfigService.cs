@@ -1,10 +1,11 @@
 ﻿using O24OpenAPI.Core;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Data.System.Linq;
+using O24OpenAPI.Framework.Localization;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.O24NCH.Domain;
-using O24OpenAPI.O24NCH.Models.Request;
+using O24OpenAPI.O24NCH.Models.Request.Mail;
 using O24OpenAPI.O24NCH.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Localization;
-using O24OpenAPI.Web.Framework.Models;
 
 namespace O24OpenAPI.O24NCH.Services.Services;
 

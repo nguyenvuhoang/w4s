@@ -1,7 +1,7 @@
 ﻿using O24OpenAPI.Data.System.Linq;
+using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Web.CMS.Models.Digital;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Extensions;
 
 namespace O24OpenAPI.Web.CMS.Services.Services;
 
@@ -12,8 +12,7 @@ namespace O24OpenAPI.Web.CMS.Services.Services;
 public class SavingProductService(IRepository<D_SAVING_PRODUCT> loanProductRepository)
     : ISavingProductService
 {
-    private readonly IRepository<D_SAVING_PRODUCT> _savingProductRepository =
-        loanProductRepository;
+    private readonly IRepository<D_SAVING_PRODUCT> _savingProductRepository = loanProductRepository;
 
     /// <summary>
     /// Get By Id
@@ -22,9 +21,7 @@ public class SavingProductService(IRepository<D_SAVING_PRODUCT> loanProductRepos
     /// <returns></returns>
     public virtual async Task<D_SAVING_PRODUCT> GetById(int id)
     {
-        return await _savingProductRepository
-            .Table.Where(s => s.Id == id)
-            .FirstOrDefaultAsync();
+        return await _savingProductRepository.Table.Where(s => s.Id == id).FirstOrDefaultAsync();
     }
 
     /// <summary>
@@ -149,28 +146,25 @@ public class SavingProductService(IRepository<D_SAVING_PRODUCT> loanProductRepos
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
-    public virtual async Task<
-        IPagedList<SavingProductAdvancedSearchResponseModel>
-    > AdvancedSearch(SavingProductAdvancedSearchRequestModel model)
+    public virtual async Task<IPagedList<SavingProductAdvancedSearchResponseModel>> AdvancedSearch(
+        SavingProductAdvancedSearchRequestModel model
+    )
     {
         var query = await (
             from c in _savingProductRepository.Table.DefaultIfEmpty()
             where
                 (
-                    !string.IsNullOrEmpty(c.ProductCode)
-                    && !string.IsNullOrEmpty(model.ProductCode)
+                    !string.IsNullOrEmpty(c.ProductCode) && !string.IsNullOrEmpty(model.ProductCode)
                         ? c.ProductCode.Contains(model.ProductCode)
                         : true
                 )
                 && (
-                    !string.IsNullOrEmpty(c.ProductName)
-                    && !string.IsNullOrEmpty(model.ProductName)
+                    !string.IsNullOrEmpty(c.ProductName) && !string.IsNullOrEmpty(model.ProductName)
                         ? c.ProductName.Contains(model.ProductName)
                         : true
                 )
                 && (
-                    !string.IsNullOrEmpty(c.Description)
-                    && !string.IsNullOrEmpty(model.Description)
+                    !string.IsNullOrEmpty(c.Description) && !string.IsNullOrEmpty(model.Description)
                         ? c.Description.Contains(model.Description)
                         : true
                 )

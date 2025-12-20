@@ -1,6 +1,6 @@
-using O24OpenAPI.Web.Framework.Domain.Logging;
+using O24OpenAPI.Framework.Domain.Logging;
 
-namespace O24OpenAPI.Sample.Services.Interfaces;
+namespace O24OpenAPI.O24Design.Services.Interfaces;
 
 public interface IHttpLogService
 {

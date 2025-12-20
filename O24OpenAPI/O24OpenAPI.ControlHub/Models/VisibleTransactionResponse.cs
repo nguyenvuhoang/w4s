@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.ControlHub.Models;
 

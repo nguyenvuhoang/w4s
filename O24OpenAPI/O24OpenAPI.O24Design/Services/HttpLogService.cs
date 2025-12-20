@@ -1,7 +1,7 @@
-using O24OpenAPI.Sample.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Domain.Logging;
+using O24OpenAPI.Framework.Domain.Logging;
+using O24OpenAPI.O24Design.Services.Interfaces;
 
-namespace O24OpenAPI.Sample.Services;
+namespace O24OpenAPI.O24Design.Services;
 
 public class HttpLogService(IRepository<HttpLog> repository) : ILogService<HttpLog>
 {

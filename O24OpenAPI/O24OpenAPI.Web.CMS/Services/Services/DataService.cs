@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using O24OpenAPI.Client.Enums;
 using O24OpenAPI.Core.Extensions;
-using O24OpenAPI.O24OpenAPIClient.Enums;
 using O24OpenAPI.Web.CMS.Constant;
 using O24OpenAPI.Web.CMS.Models;
 using O24OpenAPI.Web.CMS.Models.Tools;

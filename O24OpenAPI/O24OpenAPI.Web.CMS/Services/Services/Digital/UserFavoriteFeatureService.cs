@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using O24OpenAPI.Framework.Localization;
 using O24OpenAPI.Web.CMS.Services.Interfaces.Digital;
-using O24OpenAPI.Web.Framework.Localization;
 
 namespace O24OpenAPI.Web.CMS.Services.Services.Digital;
 
@@ -53,8 +53,7 @@ public class UserFavoriteFeatureService : IUserFavoriteFeatureService
     {
         var checkdata = _userFavoriteFeatureRepository
             .Table.Where(item =>
-                item.UserCode == model.UserCode
-                && item.FavoriteFeatureID == model.FavoriteFeatureID
+                item.UserCode == model.UserCode && item.FavoriteFeatureID == model.FavoriteFeatureID
             )
             .FirstOrDefaultAsync();
         if (checkdata != null)

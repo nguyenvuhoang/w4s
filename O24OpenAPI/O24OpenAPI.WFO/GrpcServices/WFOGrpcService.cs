@@ -1,11 +1,11 @@
 using Grpc.Core;
+using O24OpenAPI.Client.Lib;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
+using O24OpenAPI.Framework.Services.Grpc;
 using O24OpenAPI.Grpc.Common;
 using O24OpenAPI.Grpc.WFO;
 using O24OpenAPI.GrpcContracts.GrpcServerServices;
-using O24OpenAPI.O24OpenAPIClient.Lib;
-using O24OpenAPI.Web.Framework.Services.Grpc;
 using O24OpenAPI.WFO.Domain;
 using O24OpenAPI.WFO.Infrastructure;
 using O24OpenAPI.WFO.Services.Interfaces;

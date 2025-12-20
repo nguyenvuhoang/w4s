@@ -1,4 +1,4 @@
-﻿using O24OpenAPI.O24OpenAPIClient.Log;
+﻿using O24OpenAPI.Client.Log;
 using O24OpenAPI.Web.CMS.Models;
 
 namespace O24OpenAPI.Web.CMS.Services;
@@ -40,12 +40,7 @@ public partial interface ILogServiceService
     /// <param name="details"></param>
     /// <param name="logType"></param>
     /// <returns></returns>
-    Task WriteLog(
-        string subject,
-        string logText,
-        string details = "{}",
-        string logType = "Other"
-    );
+    Task WriteLog(string subject, string logText, string details = "{}", string logType = "Other");
 
     /// <summary>
     ///

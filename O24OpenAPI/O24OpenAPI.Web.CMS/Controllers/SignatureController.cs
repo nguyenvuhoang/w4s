@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using O24OpenAPI.Kit.Keyvault.Extensions;
 using O24OpenAPI.Kit.Signature.Extensions;
 using O24OpenAPI.Web.CMS.Models;
-using O24OpenAPI.Web.Framework.Controllers;
+using O24OpenAPI.Framework.Controllers;
 
 namespace O24OpenAPI.Web.CMS.Controllers;
 

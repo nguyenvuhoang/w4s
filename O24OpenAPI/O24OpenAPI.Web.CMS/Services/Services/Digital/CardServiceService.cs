@@ -1,7 +1,7 @@
 ﻿using O24OpenAPI.Data.System.Linq;
+using O24OpenAPI.Framework.Localization;
 using O24OpenAPI.Web.CMS.Models.Digital;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Localization;
 
 namespace O24OpenAPI.Web.CMS.Services.Services;
 
@@ -175,10 +175,7 @@ public class CardServiceService : ICardServiceService
                 CardServiceName = p.CardServiceName,
                 Status = p.Status,
             }
-        )
-            .OrderBy(c => c.CardServiceCode)
-            .AsQueryable()
-            .ToPagedList(model.PageIndex, model.PageSize);
+        ).OrderBy(c => c.CardServiceCode).AsQueryable().ToPagedList(model.PageIndex, model.PageSize);
 
         return query;
     }
@@ -220,10 +217,7 @@ public class CardServiceService : ICardServiceService
                 CardServiceName = c.CardServiceName,
                 Status = c.Status,
             }
-        )
-            .OrderBy(c => c.CardServiceCode)
-            .AsQueryable()
-            .ToPagedList(model.PageIndex, model.PageSize);
+        ).OrderBy(c => c.CardServiceCode).AsQueryable().ToPagedList(model.PageIndex, model.PageSize);
 
         return query;
     }

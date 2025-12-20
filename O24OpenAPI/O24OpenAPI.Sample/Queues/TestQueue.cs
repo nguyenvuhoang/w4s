@@ -1,8 +1,9 @@
 using Newtonsoft.Json.Linq;
-using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
-using O24OpenAPI.Web.Framework.Models;
-using O24OpenAPI.Web.Framework.Models.O24OpenAPI;
-using O24OpenAPI.Web.Framework.Services.Queue;
+using O24OpenAPI.Client.Scheme.Workflow;
+using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Models;
+using O24OpenAPI.Framework.Services.Queue;
 
 namespace O24OpenAPI.Sample.Queues;
 

@@ -1,15 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using O24OpenAPI.Framework.Controllers;
 using O24OpenAPI.Web.CMS.Constant;
 using O24OpenAPI.Web.CMS.Models;
 using O24OpenAPI.Web.CMS.Models.ContextModels;
 using O24OpenAPI.Web.CMS.Models.Request;
 using O24OpenAPI.Web.CMS.Models.Response;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Controllers;
 
 namespace O24OpenAPI.Web.CMS.Controllers;
 
-public partial class CoreAPIController(IWebChannelService webChannelService, ICoreAPIService coreAPIService, IWebHostEnvironment env) : BaseController
+public partial class CoreAPIController(
+    IWebChannelService webChannelService,
+    ICoreAPIService coreAPIService,
+    IWebHostEnvironment env
+) : BaseController
 {
     readonly IWebChannelService _webChannelService = webChannelService;
     readonly ICoreAPIService _coreAPIService = coreAPIService;
@@ -25,7 +29,10 @@ public partial class CoreAPIController(IWebChannelService webChannelService, ICo
                 return BadRequest(ModelState);
             }
 
-            var client = await _coreAPIService.ValidateClientAsync(model.ClientId, model.ClientSecret);
+            var client = await _coreAPIService.ValidateClientAsync(
+                model.ClientId,
+                model.ClientSecret
+            );
             if (client == null)
             {
                 return UnauthorizedProblem("Invalid client credentials");
@@ -35,13 +42,16 @@ public partial class CoreAPIController(IWebChannelService webChannelService, ICo
             {
                 if (!await _coreAPIService.IsScopeGrantedAsync(client, scope))
                 {
-                    return StatusCode(403, new ProblemDetails
-                    {
-                        Status = 403,
-                        Title = "Forbidden",
-                        Detail = $"Client is not granted scope: {scope}",
-                        Type = "https://httpstatuses.com/403"
-                    });
+                    return StatusCode(
+                        403,
+                        new ProblemDetails
+                        {
+                            Status = 403,
+                            Title = "Forbidden",
+                            Detail = $"Client is not granted scope: {scope}",
+                            Type = "https://httpstatuses.com/403",
+                        }
+                    );
                 }
             }
 
@@ -87,8 +97,6 @@ public partial class CoreAPIController(IWebChannelService webChannelService, ICo
         }
     }
 
-
-
     [HttpPost("/coreapi/auth/refresh-static-token")]
     public async Task<IActionResult> RefreshStaticToken([FromBody] RefreshStaticTokenModel model)
     {
@@ -97,7 +105,10 @@ public partial class CoreAPIController(IWebChannelService webChannelService, ICo
             return BadRequest(ModelState);
         }
 
-        var tokenEntry = await _coreAPIService.GetValidRefreshTokenAsync(model.ClientId, model.RefreshToken);
+        var tokenEntry = await _coreAPIService.GetValidRefreshTokenAsync(
+            model.ClientId,
+            model.RefreshToken
+        );
         if (tokenEntry == null)
         {
             return Unauthorized("Invalid or expired refresh token.");
@@ -109,8 +120,8 @@ public partial class CoreAPIController(IWebChannelService webChannelService, ICo
 
         var newTokenEntry = await _coreAPIService.GenerateAndSaveTokenAsync(
             client,
-            scopes: tokenEntry.Scopes
-                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            scopes: tokenEntry
+                .Scopes.Split(',', StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => Enum.Parse<StaticTokenScope>(s))
                 .ToList()
         );
@@ -132,7 +143,10 @@ public partial class CoreAPIController(IWebChannelService webChannelService, ICo
         {
             // 1) Lấy bearer token
             var authHeader = HttpContext.Request.Headers.Authorization.FirstOrDefault();
-            if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+            if (
+                string.IsNullOrEmpty(authHeader)
+                || !authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
+            )
             {
                 var error = Utils.Utils.AddActionError(
                     ErrorType.errorSystem,
@@ -142,12 +156,14 @@ public partial class CoreAPIController(IWebChannelService webChannelService, ICo
                     "#AUTH: Missing or invalid Bearer Token"
                 );
 
-                return Unauthorized(new CoreAPIResponseModel
-                {
-                    WorkflowId = model?.WorkflowId,
-                    Data = null,
-                    Error = error
-                });
+                return Unauthorized(
+                    new CoreAPIResponseModel
+                    {
+                        WorkflowId = model?.WorkflowId,
+                        Data = null,
+                        Error = error,
+                    }
+                );
             }
 
             var token = authHeader["Bearer ".Length..].Trim();
@@ -161,12 +177,14 @@ public partial class CoreAPIController(IWebChannelService webChannelService, ICo
                     "#AUTH: Bearer Token is empty"
                 );
 
-                return Unauthorized(new CoreAPIResponseModel
-                {
-                    WorkflowId = model?.WorkflowId,
-                    Data = null,
-                    Error = error
-                });
+                return Unauthorized(
+                    new CoreAPIResponseModel
+                    {
+                        WorkflowId = model?.WorkflowId,
+                        Data = null,
+                        Error = error,
+                    }
+                );
             }
 
             // 2) Tra token trong DB
@@ -180,12 +198,14 @@ public partial class CoreAPIController(IWebChannelService webChannelService, ICo
                     "AUTH_ERROR",
                     "#AUTH: Invalid or expired Bearer Token"
                 );
-                return Unauthorized(new CoreAPIResponseModel
-                {
-                    WorkflowId = model?.WorkflowId,
-                    Data = null,
-                    Error = error
-                });
+                return Unauthorized(
+                    new CoreAPIResponseModel
+                    {
+                        WorkflowId = model?.WorkflowId,
+                        Data = null,
+                        Error = error,
+                    }
+                );
             }
 
             var biccd = coreApiToken.BICCD;
@@ -206,12 +226,14 @@ public partial class CoreAPIController(IWebChannelService webChannelService, ICo
                     "#AUTH: Invalid client for token"
                 );
 
-                return Unauthorized(new CoreAPIResponseModel
-                {
-                    WorkflowId = model?.WorkflowId,
-                    Data = null,
-                    Error = error
-                });
+                return Unauthorized(
+                    new CoreAPIResponseModel
+                    {
+                        WorkflowId = model?.WorkflowId,
+                        Data = null,
+                        Error = error,
+                    }
+                );
             }
 
             // 5) Check whitelist IP (ưu tiên tách 2 policy để báo lỗi rõ ràng)
@@ -244,21 +266,25 @@ public partial class CoreAPIController(IWebChannelService webChannelService, ICo
             {
                 var errorList = ModelState
                     .Where(x => x.Value?.Errors.Count > 0)
-                    .Select(x => Utils.Utils.AddActionError(
-                        ErrorType.errorSystem,
-                        ErrorMainForm.danger,
-                        x.Value!.Errors.First().ErrorMessage,
-                        "VALIDATION_ERROR",
-                        "#VALIDATION: " + x.Value!.Errors.First().ErrorMessage
-                    ))
+                    .Select(x =>
+                        Utils.Utils.AddActionError(
+                            ErrorType.errorSystem,
+                            ErrorMainForm.danger,
+                            x.Value!.Errors.First().ErrorMessage,
+                            "VALIDATION_ERROR",
+                            "#VALIDATION: " + x.Value!.Errors.First().ErrorMessage
+                        )
+                    )
                     .ToList();
 
-                return BadRequest(new CoreAPIResponseModel
-                {
-                    WorkflowId = model?.WorkflowId,
-                    Data = null,
-                    Error = errorList.FirstOrDefault()
-                });
+                return BadRequest(
+                    new CoreAPIResponseModel
+                    {
+                        WorkflowId = model?.WorkflowId,
+                        Data = null,
+                        Error = errorList.FirstOrDefault(),
+                    }
+                );
             }
 
             // 7) Bổ sung BICCD vào payload
@@ -274,16 +300,16 @@ public partial class CoreAPIController(IWebChannelService webChannelService, ICo
                 Bo =
                 [
                     new BoRequest
-            {
-                UseMicroservice = true,
-                Input = new Dictionary<string, object>
-                {
-                    { "workflowid", model.WorkflowId },
-                    { "learn_api", "cbs_workflow_execute" },
-                    { "fields", model.Data },
-                },
-            },
-        ],
+                    {
+                        UseMicroservice = true,
+                        Input = new Dictionary<string, object>
+                        {
+                            { "workflowid", model.WorkflowId },
+                            { "learn_api", "cbs_workflow_execute" },
+                            { "fields", model.Data },
+                        },
+                    },
+                ],
             };
 
             // 9) Đảm bảo header app
@@ -313,29 +339,34 @@ public partial class CoreAPIController(IWebChannelService webChannelService, ICo
                 "#ERROR_SYSTEM: "
             );
 
-            return StatusCode(500, new
-            {
-                Status = 500,
-                Message = "Internal Server Error",
-                Response = new CoreAPIResponseModel
+            return StatusCode(
+                500,
+                new
                 {
-                    WorkflowId = model?.WorkflowId,
-                    Data = null,
-                    Error = error
+                    Status = 500,
+                    Message = "Internal Server Error",
+                    Response = new CoreAPIResponseModel
+                    {
+                        WorkflowId = model?.WorkflowId,
+                        Data = null,
+                        Error = error,
+                    },
                 }
-            });
+            );
         }
     }
 
-
-    private static CoreAPIResponseModel BuildCoreAPIResponse(string workflowId, ActionsResponseModel<object> response)
+    private static CoreAPIResponseModel BuildCoreAPIResponse(
+        string workflowId,
+        ActionsResponseModel<object> response
+    )
     {
         var error = response.error?.FirstOrDefault();
         return new CoreAPIResponseModel
         {
             WorkflowId = workflowId,
             Data = error != null ? null : response.fo?.FirstOrDefault()?.input,
-            Error = error
+            Error = error,
         };
     }
 
@@ -352,10 +383,13 @@ public partial class CoreAPIController(IWebChannelService webChannelService, ICo
         return (ctx.Connection.RemoteIpAddress?.ToString() ?? string.Empty, "RemoteIpAddress");
     }
 
-    private static string[] SplitIps(string? trustedIpsString)
-        => string.IsNullOrWhiteSpace(trustedIpsString)
+    private static string[] SplitIps(string? trustedIpsString) =>
+        string.IsNullOrWhiteSpace(trustedIpsString)
             ? Array.Empty<string>()
-            : trustedIpsString.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            : trustedIpsString.Split(
+                ';',
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+            );
 
     private IActionResult ForbiddenIp(
         string policyName,
@@ -373,13 +407,16 @@ public partial class CoreAPIController(IWebChannelService webChannelService, ICo
         Response.Headers["X-Client-IP"] = remoteIp;
         Response.Headers["X-IP-Source"] = source;
 
-        return StatusCode(403, new ProblemDetails
-        {
-            Status = 403,
-            Title = "Forbidden",
-            Type = "https://httpstatuses.com/403",
-            Detail = detail
-        });
+        return StatusCode(
+            403,
+            new ProblemDetails
+            {
+                Status = 403,
+                Title = "Forbidden",
+                Type = "https://httpstatuses.com/403",
+                Detail = detail,
+            }
+        );
     }
 
     private IActionResult UnauthorizedProblem(string detail, string? instance = null)
@@ -390,7 +427,7 @@ public partial class CoreAPIController(IWebChannelService webChannelService, ICo
             Title = "Unauthorized",
             Detail = detail,
             Type = "https://httpstatuses.com/401",
-            Instance = instance ?? HttpContext?.Request?.Path.Value
+            Instance = instance ?? HttpContext?.Request?.Path.Value,
         };
 
         // Thêm metadata tuỳ ý
@@ -399,5 +436,4 @@ public partial class CoreAPIController(IWebChannelService webChannelService, ICo
 
         return StatusCode(StatusCodes.Status401Unauthorized, pd);
     }
-
 }

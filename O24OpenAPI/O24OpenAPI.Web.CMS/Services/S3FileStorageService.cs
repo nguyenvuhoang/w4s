@@ -2,10 +2,10 @@
 using Amazon.S3;
 using Amazon.S3.Model;
 using O24OpenAPI.Core.Configuration;
+using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Web.CMS.Configuration;
 using O24OpenAPI.Web.CMS.Models.Media;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Extensions;
 
 namespace O24OpenAPI.Web.CMS.Services;
 
@@ -43,7 +43,8 @@ public class S3FileStorageService : IFileStorageService
         string contentType,
         string category = "general",
         string customerCode = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         try
         {
@@ -58,7 +59,7 @@ public class S3FileStorageService : IFileStorageService
                 BucketName = _bucketName,
                 Key = key,
                 InputStream = fileStream,
-                ContentType = contentType
+                ContentType = contentType,
             };
 
             var response = await _s3Client.PutObjectAsync(request, cancellationToken);
@@ -70,11 +71,7 @@ public class S3FileStorageService : IFileStorageService
 
             var url = $"{_baseUrl}/{key}";
 
-            return new FileUploadResult
-            {
-                Key = key,
-                Url = url
-            };
+            return new FileUploadResult { Key = key, Url = url };
         }
         catch (AmazonS3Exception ex)
         {
@@ -88,14 +85,9 @@ public class S3FileStorageService : IFileStorageService
         }
     }
 
-
     public async Task DeleteAsync(string key, CancellationToken cancellationToken = default)
     {
-        var request = new DeleteObjectRequest
-        {
-            BucketName = _bucketName,
-            Key = key
-        };
+        var request = new DeleteObjectRequest { BucketName = _bucketName, Key = key };
 
         await _s3Client.DeleteObjectAsync(request, cancellationToken);
     }
@@ -109,12 +101,11 @@ public class S3FileStorageService : IFileStorageService
         {
             BucketName = _bucketName,
             Key = key,
-            Expires = DateTime.UtcNow.Add(expiresIn ?? TimeSpan.FromMinutes(15))
+            Expires = DateTime.UtcNow.Add(expiresIn ?? TimeSpan.FromMinutes(15)),
         };
 
         return _s3Client.GetPreSignedURL(request);
     }
-
 
     /// <summary>
     /// Get file from S3 asynchronously
@@ -124,16 +115,13 @@ public class S3FileStorageService : IFileStorageService
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
     public async Task<(Stream Stream, string ContentType)> GetAsync(
-       string key,
-       CancellationToken cancellationToken = default)
+        string key,
+        CancellationToken cancellationToken = default
+    )
     {
         try
         {
-            var request = new GetObjectRequest
-            {
-                BucketName = _bucketName,
-                Key = key
-            };
+            var request = new GetObjectRequest { BucketName = _bucketName, Key = key };
 
             var response = await _s3Client.GetObjectAsync(request, cancellationToken);
 
@@ -166,9 +154,7 @@ public class S3FileStorageService : IFileStorageService
     {
         var now = DateTime.UtcNow;
 
-        category = string.IsNullOrWhiteSpace(category)
-            ? "general"
-            : category.Trim().ToLower();
+        category = string.IsNullOrWhiteSpace(category) ? "general" : category.Trim().ToLower();
 
         string folder;
 
@@ -191,15 +177,16 @@ public class S3FileStorageService : IFileStorageService
         return $"{folder}/{fileId}{extension}";
     }
 
-
     /// <summary>
     /// List categories (folders) under the CMS root
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<IReadOnlyList<string>> ListCategoriesAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<string>> ListCategoriesAsync(
+        CancellationToken cancellationToken = default
+    )
     {
-        const string prefix = "o24/cms/";   // root folder của CMS
+        const string prefix = "o24/cms/"; // root folder của CMS
         var categories = new List<string>();
         string continuationToken = null;
 
@@ -210,7 +197,7 @@ public class S3FileStorageService : IFileStorageService
                 BucketName = _bucketName,
                 Prefix = prefix,
                 Delimiter = "/",
-                ContinuationToken = continuationToken
+                ContinuationToken = continuationToken,
             };
 
             var response = await _s3Client.ListObjectsV2Async(request, cancellationToken);
@@ -226,7 +213,6 @@ public class S3FileStorageService : IFileStorageService
             }
 
             continuationToken = (bool)response.IsTruncated ? response.NextContinuationToken : null;
-
         } while (continuationToken != null);
 
         categories = [.. categories.Where(x => !int.TryParse(x, out _))];
@@ -246,7 +232,8 @@ public class S3FileStorageService : IFileStorageService
         Dictionary<string, string> listTrackerCodeMedia,
         string category,
         string path = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         if (string.IsNullOrWhiteSpace(category))
             throw new ArgumentException("Category is required", nameof(category));
@@ -266,7 +253,7 @@ public class S3FileStorageService : IFileStorageService
         var result = new MediaBrowseResultModel
         {
             Category = category,
-            Path = path ?? string.Empty
+            Path = path ?? string.Empty,
         };
 
         string continuationToken = null;
@@ -278,7 +265,7 @@ public class S3FileStorageService : IFileStorageService
                 BucketName = _bucketName,
                 Prefix = effectivePrefix,
                 Delimiter = "/",
-                ContinuationToken = continuationToken
+                ContinuationToken = continuationToken,
             };
 
             var response = await _s3Client.ListObjectsV2Async(request, cancellationToken);
@@ -291,12 +278,13 @@ public class S3FileStorageService : IFileStorageService
 
                 if (!string.IsNullOrWhiteSpace(folderName))
                 {
-                    if (!result.Folders.Any(f => f.Name.Equals(folderName, StringComparison.OrdinalIgnoreCase)))
+                    if (
+                        !result.Folders.Any(f =>
+                            f.Name.Equals(folderName, StringComparison.OrdinalIgnoreCase)
+                        )
+                    )
                     {
-                        result.Folders.Add(new MediaFolderItem
-                        {
-                            Name = folderName
-                        });
+                        result.Folders.Add(new MediaFolderItem { Name = folderName });
                     }
                 }
             }
@@ -313,21 +301,25 @@ public class S3FileStorageService : IFileStorageService
 
                 var fileName = obj.Key[(effectivePrefix.Length)..];
 
-                result.Files.Add(new MediaFileItem
-                {
-                    Name = fileName,
-                    S3Key = obj.Key,
-                    Size = obj.Size,
-                    LastModified = obj.LastModified
-                });
+                result.Files.Add(
+                    new MediaFileItem
+                    {
+                        Name = fileName,
+                        S3Key = obj.Key,
+                        Size = obj.Size,
+                        LastModified = obj.LastModified,
+                    }
+                );
             }
 
-
             continuationToken = (bool)response.IsTruncated ? response.NextContinuationToken : null;
-
         } while (continuationToken != null);
 
-        if (result.Files.Count > 0 && listTrackerCodeMedia != null && listTrackerCodeMedia.Count > 0)
+        if (
+            result.Files.Count > 0
+            && listTrackerCodeMedia != null
+            && listTrackerCodeMedia.Count > 0
+        )
         {
             foreach (var file in result.Files)
             {
@@ -357,11 +349,7 @@ public class S3FileStorageService : IFileStorageService
 
         category = category.Trim().Trim('/');
 
-        var root = new MediaFolderNode
-        {
-            Name = category,
-            Path = string.Empty
-        };
+        var root = new MediaFolderNode { Name = category, Path = string.Empty };
 
         string basePrefix = $"o24/cms/{category}/";
 
@@ -381,9 +369,10 @@ public class S3FileStorageService : IFileStorageService
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     private async Task BuildFolderRecursiveAsync(
-       MediaFolderNode current,
-       string effectivePrefix,
-       CancellationToken cancellationToken)
+        MediaFolderNode current,
+        string effectivePrefix,
+        CancellationToken cancellationToken
+    )
     {
         string continuationToken = null;
 
@@ -394,7 +383,7 @@ public class S3FileStorageService : IFileStorageService
                 BucketName = _bucketName,
                 Prefix = effectivePrefix,
                 Delimiter = "/",
-                ContinuationToken = continuationToken
+                ContinuationToken = continuationToken,
             };
 
             var response = await _s3Client.ListObjectsV2Async(request, cancellationToken);
@@ -419,15 +408,14 @@ public class S3FileStorageService : IFileStorageService
                     : $"{current.Path}/{folderName}";
 
                 // tránh trùng
-                if (current.Folders.Any(f =>
-                        f.Name.Equals(folderName, StringComparison.OrdinalIgnoreCase)))
+                if (
+                    current.Folders.Any(f =>
+                        f.Name.Equals(folderName, StringComparison.OrdinalIgnoreCase)
+                    )
+                )
                     continue;
 
-                var childNode = new MediaFolderNode
-                {
-                    Name = folderName,
-                    Path = childPath
-                };
+                var childNode = new MediaFolderNode { Name = folderName, Path = childPath };
 
                 current.Folders.Add(childNode);
 
@@ -446,17 +434,18 @@ public class S3FileStorageService : IFileStorageService
 
                 var fileName = obj.Key.Substring(effectivePrefix.Length); // phần sau prefix
 
-                current.Files.Add(new MediaFileItem
-                {
-                    Name = fileName,
-                    S3Key = obj.Key,
-                    Size = obj.Size,
-                    LastModified = obj.LastModified
-                });
+                current.Files.Add(
+                    new MediaFileItem
+                    {
+                        Name = fileName,
+                        S3Key = obj.Key,
+                        Size = obj.Size,
+                        LastModified = obj.LastModified,
+                    }
+                );
             }
 
             continuationToken = (bool)response.IsTruncated ? response.NextContinuationToken : null;
-
         } while (continuationToken != null);
     }
 
@@ -467,9 +456,9 @@ public class S3FileStorageService : IFileStorageService
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     private static void AttachTrackerCodes(
-         MediaFolderNode root,
-         Dictionary<string, string> listTrackerCodeMedia
-     )
+        MediaFolderNode root,
+        Dictionary<string, string> listTrackerCodeMedia
+    )
     {
         if (root == null || listTrackerCodeMedia == null || listTrackerCodeMedia.Count == 0)
             return;
@@ -490,7 +479,6 @@ public class S3FileStorageService : IFileStorageService
         }
     }
 
-
     /// <summary>
     /// Collect all files in the folder tree
     /// </summary>
@@ -508,7 +496,6 @@ public class S3FileStorageService : IFileStorageService
             CollectFiles(folder, acc);
     }
 
-
     /// <summary>
     /// Delete file by key
     /// </summary>
@@ -516,11 +503,7 @@ public class S3FileStorageService : IFileStorageService
     /// <returns></returns>
     public async Task DeleteFileAsync(string key)
     {
-        var request = new DeleteObjectRequest
-        {
-            BucketName = _bucketName,
-            Key = key
-        };
+        var request = new DeleteObjectRequest { BucketName = _bucketName, Key = key };
 
         await _s3Client.DeleteObjectAsync(request);
     }
@@ -535,10 +518,9 @@ public class S3FileStorageService : IFileStorageService
         var request = new DeleteObjectsRequest
         {
             BucketName = _bucketName,
-            Objects = [.. keys.Select(k => new KeyVersion { Key = k })]
+            Objects = [.. keys.Select(k => new KeyVersion { Key = k })],
         };
 
         await _s3Client.DeleteObjectsAsync(request);
     }
-
 }

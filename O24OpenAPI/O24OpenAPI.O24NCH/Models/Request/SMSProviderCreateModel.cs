@@ -1,10 +1,12 @@
-﻿using O24OpenAPI.Web.Framework.Models;
+﻿using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.O24NCH.Models.Request;
 
 public class SMSProviderCreateModel : BaseTransactionModel
 {
     public SMSProviderCreateModel() { }
+
     public string CountryPrefix { get; set; }
     public string AllowedPrefix { get; set; }
     public string ApiUsername { get; set; }

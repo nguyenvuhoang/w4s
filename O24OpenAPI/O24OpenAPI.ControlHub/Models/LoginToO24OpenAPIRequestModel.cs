@@ -1,4 +1,5 @@
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.ControlHub.Models;
 
@@ -41,6 +42,7 @@ public class LoginToO24OpenAPIRequestModel : BaseTransactionModel
     /// /// Gets or sets the value of the device
     /// </summary>
     public string DeviceId { get; set; } = string.Empty;
+
     /// <summary>
     /// /// Gets or sets the value of the device
     /// </summary>
@@ -50,6 +52,7 @@ public class LoginToO24OpenAPIRequestModel : BaseTransactionModel
     /// Gets or sets the value of the ip address
     /// </summary>
     public string IpAddress { get; set; }
+
     /// <summary>
     /// User Agent
     /// </summary>
@@ -60,57 +63,69 @@ public class LoginToO24OpenAPIRequestModel : BaseTransactionModel
     /// </summary>
     public string RoleChannel { get; set; }
     public bool IsO24ManageUser { get; set; } = true;
+
     /// <summary>
     /// Gets or sets the value of the PushId
     /// </summary>
     public string PushId { get; set; }
+
     /// <summary>
     /// OSVERSION
     /// </summary>
     public string OsVersion { get; set; }
+
     /// <summary>
     /// App Version
     /// </summary>
     public string AppVersion { get; set; }
+
     /// <summary>
     /// Device Name
     /// </summary>
     public string DeviceName { get; set; }
+
     /// <summary>
     /// Brand
     /// </summary>
     public string Brand { get; set; }
+
     /// <summary>
     /// IsEmulator
     /// </summary>
     public bool IsEmulator { get; set; }
+
     /// <summary>
     /// IsRootedOrJailbroken
     /// </summary>
     public bool IsRootedOrJailbroken { get; set; }
+
     /// <summary>
     /// Modelname
     /// </summary>
     public string Modelname { get; set; } = string.Empty;
+
     /// <summary>
     /// IsResetDevice
     /// </summary>
     public bool IsResetDevice { get; set; } = false;
+
     /// <summary>
     /// Core Token
     /// </summary>
     public string CoreToken { get; set; } = string.Empty;
+
     /// <summary>
     /// Refresh Token
     /// </summary>
     public string RefreshToken { get; set; } = string.Empty;
+
     /// <summary>
     /// Network
     /// </summary>
     public string Network { get; set; } = string.Empty;
+
     /// <summary>
     /// Memory
     /// </summary>
     public string Memory { get; set; } = string.Empty;
-
 }

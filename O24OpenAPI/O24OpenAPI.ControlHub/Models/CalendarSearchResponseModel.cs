@@ -1,4 +1,4 @@
-﻿using O24OpenAPI.Web.Framework.Models;
+﻿using O24OpenAPI.Core.Abstractions;
 
 namespace O24OpenAPI.ControlHub.Models;
 
@@ -8,6 +8,7 @@ public class CalendarSearchResponseModel : BaseO24OpenAPIModel
     /// calendar id
     /// </summary>
     public int Id { get; set; }
+
     /// <summary>
     /// SqnDate
     /// </summary>

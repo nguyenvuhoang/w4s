@@ -1,6 +1,6 @@
 ﻿using O24OpenAPI.O24ACT.Domain;
 
-namespace O24OpenAPI.ControlHub.Services.Interfaces;
+namespace O24OpenAPI.O24ACT.Services.Interfaces;
 
 public interface IRuleDefinitionService
 {

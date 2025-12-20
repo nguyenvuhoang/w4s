@@ -5,8 +5,8 @@ using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Data.Attributes;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.Migrations;
-using O24OpenAPI.Web.Framework.Domain;
-using O24OpenAPI.Web.Framework.Utils;
+using O24OpenAPI.Framework.Domain;
+using O24OpenAPI.Framework.Utils;
 
 namespace O24OpenAPI.O24ACT.Migrations;
 
@@ -59,13 +59,12 @@ public class CDCMigration : BaseMigration
         {
             Name = "CheckCDC",
             Seconds = 10,
-            Type =
-                "O24OpenAPI.Web.Framework.Services.ScheduleTasks.CheckCDCTask, O24OpenAPI.Web.Framework",
+            Type = "O24OpenAPI.Framework.Services.ScheduleTasks.CheckCDCTask, O24OpenAPI.Framework",
             Enabled = true,
             StopOnError = false,
             LastEnabledUtc = DateTime.UtcNow,
             LastStartUtc = DateTime.UtcNow,
-            LastEndUtc = DateTime.UtcNow
+            LastEndUtc = DateTime.UtcNow,
         };
         if (DataProvider.GetTable<ScheduleTask>().Any(s => s.Name == task.Name))
         {

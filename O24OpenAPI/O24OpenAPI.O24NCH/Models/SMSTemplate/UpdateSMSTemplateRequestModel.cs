@@ -1,10 +1,12 @@
-﻿using O24OpenAPI.Web.Framework.Models;
+﻿using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.O24NCH.Models.SMSTemplate;
 
 public class UpdateSMSTemplateRequestModel : BaseTransactionModel
 {
     public UpdateSMSTemplateRequestModel() { }
+
     public int Id { get; set; }
     public string TemplateCode { get; set; } = string.Empty;
     public string MessageContent { get; set; } = string.Empty;
@@ -17,11 +19,16 @@ public class UpdateSMSTemplateRequestModel : BaseTransactionModel
 
     public List<string> ChangedFields { get; set; } = [];
 
-    public static UpdateSMSTemplateRequestModel FromUpdatedEntity(Domain.SMSTemplate updated, Domain.SMSTemplate original)
+    public static UpdateSMSTemplateRequestModel FromUpdatedEntity(
+        Domain.SMSTemplate updated,
+        Domain.SMSTemplate original
+    )
     {
         var result = new UpdateSMSTemplateRequestModel();
         var entityProps = typeof(Domain.SMSTemplate).GetProperties();
-        var modelProps = typeof(UpdateSMSTemplateRequestModel).GetProperties().ToDictionary(p => p.Name);
+        var modelProps = typeof(UpdateSMSTemplateRequestModel)
+            .GetProperties()
+            .ToDictionary(p => p.Name);
 
         foreach (var prop in entityProps)
         {
@@ -33,8 +40,10 @@ public class UpdateSMSTemplateRequestModel : BaseTransactionModel
             var newValue = prop.GetValue(updated);
             var oldValue = prop.GetValue(original);
 
-            if ((oldValue == null && newValue != null) ||
-                (oldValue != null && !oldValue.Equals(newValue)))
+            if (
+                (oldValue == null && newValue != null)
+                || (oldValue != null && !oldValue.Equals(newValue))
+            )
             {
                 result.ChangedFields.Add(prop.Name);
             }

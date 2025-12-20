@@ -1,7 +1,7 @@
 ﻿using LinqToDB;
-using O24OpenAPI.O24OpenAPIClient.Log;
+using O24OpenAPI.Client.Log;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Web.CMS.Models;
-using O24OpenAPI.Web.Framework.Infrastructure.Mapper.Extensions;
 
 namespace O24OpenAPI.Web.CMS.Services;
 
@@ -15,7 +15,6 @@ public partial class LogServiceService : ILogServiceService
     /// </summary>
     /// <param name="localizationService"></param>
     /// <param name="LogServiceRepository"></param>
-
     public LogServiceService(IRepository<LogService> LogServiceRepository)
     {
         _LogServiceRepository = LogServiceRepository;
@@ -40,9 +39,7 @@ public partial class LogServiceService : ILogServiceService
     {
         var model_ = logService.ToModel<LogServiceModel>();
         model_.LogUtc = logService.LogUtc;
-        model_.Date = Utils
-            .Utils.ConvertFromUnixTimestamp(logService.LogUtc)
-            .ToShortDateString();
+        model_.Date = Utils.Utils.ConvertFromUnixTimestamp(logService.LogUtc).ToShortDateString();
         model_.Time = Utils
             .Utils.ConvertFromUnixTimestamp(logService.LogUtc)
             .ToString("hh:mm:ss.fffffff");

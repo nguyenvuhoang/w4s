@@ -1,7 +1,8 @@
 using O24OpenAPI.ControlHub.Domain;
 using O24OpenAPI.ControlHub.Models;
 using O24OpenAPI.Core;
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.ControlHub.Services.Interfaces;
 
@@ -10,7 +11,6 @@ namespace O24OpenAPI.ControlHub.Services.Interfaces;
 /// </summary>
 public partial interface ICalendarService
 {
-
     /// <summary>
     /// get a calendar by id
     /// </summary>
@@ -25,14 +25,12 @@ public partial interface ICalendarService
     /// <returns></returns>
     Task<IPagedList<Calendar>> Search(SimpleSearchModel model);
 
-
     /// <summary>
     /// advanced search calendar
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
     Task<IPagedList<Calendar>> Search(CalendarSearchModel model);
-
 
     /// <summary>
     /// create a calendar
@@ -48,7 +46,6 @@ public partial interface ICalendarService
     /// <returns></returns>
     Task Insert(List<Calendar> calendars);
 
-
     /// <summary>
     /// Update a calendar
     /// </summary>
@@ -56,7 +53,6 @@ public partial interface ICalendarService
     /// <param name="referenceId"></param>
     /// <returns></returns>
     Task Update(Calendar calendar, string referenceId = "");
-
 
     /// <summary>
     /// Delete a caledar
@@ -66,7 +62,7 @@ public partial interface ICalendarService
     Task Delete(int calendarId);
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="date"></param>
     /// <param name="holidayMoveOn"></param>
@@ -143,8 +139,9 @@ public partial interface ICalendarService
     /// <param name="tenornun"></param>
     /// <returns></returns>
     DateTime NextDueDate(DateTime date, int tenor, int count, string tenornun);
+
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="tenor"></param>
     /// <param name="tenornun"></param>
@@ -153,8 +150,14 @@ public partial interface ICalendarService
     /// <param name="holidayMoveOn"></param>
     /// <param name="beginOfTennor"></param>
     /// <returns></returns>
-    Task<List<DueCountAndCreditMaturityDateModelResponse>> DueCountAndCreditMaturityDate(int tenor, string tenornun, DateTime fromDate, DateTime toDate, int holidayMoveOn, DateTime beginOfTennor);
-
+    Task<List<DueCountAndCreditMaturityDateModelResponse>> DueCountAndCreditMaturityDate(
+        int tenor,
+        string tenornun,
+        DateTime fromDate,
+        DateTime toDate,
+        int holidayMoveOn,
+        DateTime beginOfTennor
+    );
 
     /// <summary>
     /// Is holiday

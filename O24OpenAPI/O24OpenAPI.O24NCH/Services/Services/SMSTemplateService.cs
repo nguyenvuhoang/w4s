@@ -1,11 +1,11 @@
 ﻿using O24OpenAPI.Core;
+using O24OpenAPI.Core.Constants;
 using O24OpenAPI.Data.System.Linq;
+using O24OpenAPI.Framework.Exceptions;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.O24NCH.Domain;
 using O24OpenAPI.O24NCH.Models.SMSTemplate;
 using O24OpenAPI.O24NCH.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Exceptions;
-using O24OpenAPI.Web.Framework.Infrastructure.Mapper.Extensions;
-
 
 namespace O24OpenAPI.O24NCH.Services.Services;
 
@@ -24,9 +24,7 @@ public class SMSTemplateService : ISMSTemplateService
     /// </summary>
     /// <param name="localizationService"></param>
     /// <param name="templateTransferRepository"></param>
-    public SMSTemplateService(
-        IRepository<SMSTemplate> SMSTemplateRepository
-    )
+    public SMSTemplateService(IRepository<SMSTemplate> SMSTemplateRepository)
     {
         _SMSTemplateRepository = SMSTemplateRepository;
     }
@@ -52,9 +50,7 @@ public class SMSTemplateService : ISMSTemplateService
             .FirstOrDefaultAsync();
         if (template != null)
         {
-            throw new O24OpenAPIException(
-                    "This SMS Template is already exists!"
-                );
+            throw new O24OpenAPIException("This SMS Template is already exists!");
         }
         else
         {
@@ -65,7 +61,7 @@ public class SMSTemplateService : ISMSTemplateService
                 Description = model.Description,
                 IsActive = model.IsActive,
                 CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow
+                UpdatedOnUtc = DateTime.UtcNow,
             };
             await _SMSTemplateRepository.Insert(newTemplate);
             return true;
@@ -74,8 +70,9 @@ public class SMSTemplateService : ISMSTemplateService
 
     public async Task<UpdateSMSTemplateResponseModel> Update(UpdateSMSTemplateRequestModel model)
     {
-        var entity = await _SMSTemplateRepository.GetById(model.Id)
-           ?? throw await O24Exception.CreateAsync(ResourceCode.Common.NotExists, model.Language);
+        var entity =
+            await _SMSTemplateRepository.GetById(model.Id)
+            ?? throw await O24Exception.CreateAsync(ResourceCode.Common.NotExists, model.Language);
 
         var originalEntity = entity.Clone();
 

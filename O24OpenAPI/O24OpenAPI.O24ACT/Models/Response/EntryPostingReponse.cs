@@ -1,5 +1,6 @@
-﻿using O24OpenAPI.O24ACT.Common;
-using O24OpenAPI.Web.Framework.Models;
+﻿using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
+using O24OpenAPI.O24ACT.Common;
 
 namespace O24OpenAPI.O24ACT.Models.Response;
 
@@ -10,6 +11,7 @@ public class EntryPostingReponse : BaseO24OpenAPIModel
         this.EntryJournals = new List<TemporaryPosting>() { };
         this.ErrorEntryJournals = new List<TemporaryPosting>() { };
     }
+
     public List<TemporaryPosting> ErrorEntryJournals { get; set; }
     public List<TemporaryPosting> EntryJournals { get; set; }
 
@@ -17,6 +19,7 @@ public class EntryPostingReponse : BaseO24OpenAPIModel
     /// ErrorCode
     /// </summary>
     public string ErrorCode { get; set; } = Constants.PostingErrorCode.New;
+
     /// <summary>
     /// IsReverse
     /// </summary>

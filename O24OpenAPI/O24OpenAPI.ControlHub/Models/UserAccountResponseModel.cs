@@ -1,10 +1,12 @@
-﻿using O24OpenAPI.Web.Framework.Models;
+﻿using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.ControlHub.Models;
 
 public class UserAccountResponseModel : BaseO24OpenAPIModel
 {
     public int Id { get; set; }
+
     /// <summary>
     /// Gets or sets the value of the channel id
     /// </summary>

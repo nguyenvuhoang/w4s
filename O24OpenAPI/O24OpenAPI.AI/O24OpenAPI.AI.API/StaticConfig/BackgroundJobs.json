@@ -1,0 +1,35 @@
+{
+  "BackgroundJobConfig": {
+    "BackgroundJobs": [
+      {
+        "Name": "CheckHeath",
+        "IsActive": true,
+        "ScheduleType": "Interval",
+        "TimeIntervalSeconds": 300
+      },
+      {
+        "Name": "SendDailyNewsletter",
+        "IsActive": true,
+        "RunOnStart": true,
+        "ScheduleType": "Daily",
+        "TimeOfDay": "08:00:00"
+      },
+      {
+        "Name": "WeeklyDatabaseCleanup",
+        "IsActive": true,
+        "ScheduleType": "Weekly",
+        "TimeOfDay": "03:30:00",
+        "DayOfWeek": "Sunday"
+      },
+      {
+        "Name": "ProcessEndOfDayReport",
+        "IsActive": false,
+        "ScheduleType": "Monthly",
+        "TimeOfDay": "23:59:00",
+        "DayOfMonth": 99,
+        "MaxParallel": 2,
+        "EmbeddedData": "{\"ReportType\": \"Financial\"}"
+      }
+    ]
+  }
+}

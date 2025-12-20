@@ -1,11 +1,11 @@
 ﻿using LinqToDB.Tools;
 using O24OpenAPI.APIContracts.Models.CTH;
 using O24OpenAPI.Core.Caching;
-using O24OpenAPI.Core.Logging.Helpers;
+using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
+using O24OpenAPI.Logging.Helpers;
 using O24OpenAPI.Web.CMS.Models;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Extensions;
 
 namespace O24OpenAPI.Web.CMS.Services.Services;
 
@@ -92,8 +92,7 @@ public class UserCommandService(
             from userCommand in _userCommandRepository.Table
             join userRight in _userRightRepository.Table
                 on userCommand.CommandId equals userRight.CommandId
-            join userRole in _userRoleRepository.Table
-                on userRight.RoleId equals userRole.RoleId
+            join userRole in _userRoleRepository.Table on userRight.RoleId equals userRole.RoleId
             where
                 userCommand.ApplicationCode == applicationCode
                 && userCommand.CommandId == commandId
@@ -129,9 +128,7 @@ public class UserCommandService(
             )
             from userRole in _userRoleRepository.Table.DefaultIfEmpty()
             from userRight in _userRightRepository
-                .Table.Where(s =>
-                    s.CommandId == userCommand.CommandId && s.RoleId == userRole.Id
-                )
+                .Table.Where(s => s.CommandId == userCommand.CommandId && s.RoleId == userRole.Id)
                 .DefaultIfEmpty()
 
             select new Models.UserCommandModel()
@@ -189,36 +186,36 @@ public class UserCommandService(
         {
             var userCommand = await _cthGrpcClientService.LoadFullUserCommandAsync();
 
-            var cacheKey = CachingKey.EntityKey<List<UserCommandResponse>>(
-                $"LoadUserCommand"
-            );
+            var cacheKey = CachingKey.EntityKey<List<UserCommandResponse>>($"LoadUserCommand");
 
-            var cachedUserCommand = await _staticCacheManager.Get<List<UserCommandResponse>>(cacheKey);
+            var cachedUserCommand = await _staticCacheManager.Get<List<UserCommandResponse>>(
+                cacheKey
+            );
             if (cachedUserCommand != null)
                 return cachedUserCommand;
 
-            var userCommandList = userCommand.Select(x => new UserCommandResponse
-            {
-                ApplicationCode = x.ApplicationCode,
-                CommandId = x.CommandId,
-                ParentId = x.ParentId,
-                CommandName = x.CommandName,
-                CommandNameLanguage = x.CommandNameLanguage,
-                CommandType = x.CommandType,
-                CommandURI = x.CommandURI,
+            var userCommandList = userCommand
+                .Select(x => new UserCommandResponse
+                {
+                    ApplicationCode = x.ApplicationCode,
+                    CommandId = x.CommandId,
+                    ParentId = x.ParentId,
+                    CommandName = x.CommandName,
+                    CommandNameLanguage = x.CommandNameLanguage,
+                    CommandType = x.CommandType,
+                    CommandURI = x.CommandURI,
 
-                // handle null boolean
-                Enabled = x.Enabled ?? false,
-                IsVisible = x.IsVisible ?? false,
+                    // handle null boolean
+                    Enabled = x.Enabled ?? false,
+                    IsVisible = x.IsVisible ?? false,
 
-                DisplayOrder = x.DisplayOrder,
-                GroupMenuIcon = x.GroupMenuIcon,
-                GroupMenuVisible = x.GroupMenuVisible,
-                GroupMenuId = x.GroupMenuId,
-                GroupMenuListAuthorizeForm = x.GroupMenuListAuthorizeForm,
-
-            }).ToList();
-
+                    DisplayOrder = x.DisplayOrder,
+                    GroupMenuIcon = x.GroupMenuIcon,
+                    GroupMenuVisible = x.GroupMenuVisible,
+                    GroupMenuId = x.GroupMenuId,
+                    GroupMenuListAuthorizeForm = x.GroupMenuListAuthorizeForm,
+                })
+                .ToList();
 
             return userCommandList;
         }
@@ -229,7 +226,6 @@ public class UserCommandService(
             return [];
         }
     }
-
 
     public virtual async Task<List<CTHCommandIdInfoModel>> GetUserCommandInfoFromParentId(
         string applicationCode,
@@ -242,9 +238,7 @@ public class UserCommandService(
             )
             from userRole in _userRoleRepository.Table.DefaultIfEmpty()
             from userRight in _userRightRepository
-                .Table.Where(s =>
-                    s.CommandId == userCommand.CommandId && s.RoleId == userRole.Id
-                )
+                .Table.Where(s => s.CommandId == userCommand.CommandId && s.RoleId == userRole.Id)
                 .DefaultIfEmpty()
 
             select new CTHCommandIdInfoModel()
@@ -344,9 +338,7 @@ public class UserCommandService(
     public async Task<List<UserCommandResponse>> GetCommandMenuByChannel(string channelId)
     {
         return await _userCommandRepository
-            .Table.Where(s =>
-                s.ApplicationCode == channelId && s.CommandType == "M" && s.Enabled
-            )
+            .Table.Where(s => s.ApplicationCode == channelId && s.CommandType == "M" && s.Enabled)
             .Select(s => new UserCommandResponse(s))
             .ToListAsync();
     }
@@ -358,9 +350,7 @@ public class UserCommandService(
             .ToListAsync();
     }
 
-    public async Task<HashSet<string>> GetVisibleTransactionCommandsByChannelAsync(
-        string channelId
-    )
+    public async Task<HashSet<string>> GetVisibleTransactionCommandsByChannelAsync(string channelId)
     {
         return
         [

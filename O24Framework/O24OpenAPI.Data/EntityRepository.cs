@@ -6,7 +6,6 @@ using LinqToDB;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Domain;
-using O24OpenAPI.Core.Domain.O24OpenAPI;
 using O24OpenAPI.Core.Events;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.SeedWork;
@@ -296,9 +295,7 @@ public class EntityRepository<TEntity>(
     /// </summary>
     /// <param name="searchInput">The search input</param>
     /// <returns>The list</returns>
-    public virtual async Task<List<TEntity>> SearchByFields(
-        Dictionary<string, string> searchInput
-    )
+    public virtual async Task<List<TEntity>> SearchByFields(Dictionary<string, string> searchInput)
     {
         IQueryable<TEntity> query = this.TableFilter(searchInput);
         List<TEntity> listAsync = await query.ToListAsync<TEntity>();
@@ -649,9 +646,7 @@ public class EntityRepository<TEntity>(
         foreach (
             ActionChain actionChain in (IEnumerable<ActionChain>)
                 actionChains
-                    .OrderBy<ActionChain, string>(
-                        (Func<ActionChain, string>)(a => a.UpdateField)
-                    )
+                    .OrderBy<ActionChain, string>((Func<ActionChain, string>)(a => a.UpdateField))
                     .ThenBy<ActionChain, List<string>>(
                         (Func<ActionChain, List<string>>)(a => a.UpdateFields)
                     )
@@ -777,10 +772,7 @@ public class EntityRepository<TEntity>(
                         PropertyInfo prop = type.GetProperty(field);
                         if ((object)prop != null && prop.CanRead && prop.CanWrite)
                         {
-                            object currentValue = prop.GetValue(
-                                (object)current,
-                                (object[])null
-                            );
+                            object currentValue = prop.GetValue((object)current, (object[])null);
                             TransactionDetails detail = GenUpdateAudit(
                                 referenceId,
                                 type.Name,
@@ -1258,10 +1250,7 @@ public class EntityRepository<TEntity>(
                         );
                     }
                 }
-                else if (
-                    property.PropertyType == typeof(int)
-                    && !string.IsNullOrEmpty(item.Value)
-                )
+                else if (property.PropertyType == typeof(int) && !string.IsNullOrEmpty(item.Value))
                 {
                     source = source.Where<TEntity>(
                         (Expression<Func<TEntity, bool>>)(

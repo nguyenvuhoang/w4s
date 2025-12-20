@@ -1,10 +1,10 @@
 using Newtonsoft.Json.Linq;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Web.CMS.Models;
 using O24OpenAPI.Web.CMS.Models.ContextModels;
 using O24OpenAPI.Web.CMS.Models.Portal;
 using O24OpenAPI.Web.CMS.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Extensions;
-using O24OpenAPI.Web.Framework.Infrastructure.Mapper.Extensions;
 
 namespace O24OpenAPI.Web.CMS.Services.Services.Portal;
 
@@ -31,8 +31,10 @@ public class RoleProfileService(
                 app,
                 command_id
             );
-            var getCommandsFromCommand =
-                await _userCommandService.GetUserCommandInfoFromCommandId(app, command_id);
+            var getCommandsFromCommand = await _userCommandService.GetUserCommandInfoFromCommandId(
+                app,
+                command_id
+            );
             getCommandsFromCommand.AddRange(getOperationData);
             getCommandsFromCommand = getCommandsFromCommand.OrderBy(x => x.RoleId).ToList();
             if (getCommandsFromCommand != null)

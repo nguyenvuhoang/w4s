@@ -1,17 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using O24OpenAPI.Client.Enums;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.O24NCH.Models.Request.SMS;
+using O24OpenAPI.Framework.Controllers;
+using O24OpenAPI.Framework.Models;
+using O24OpenAPI.Framework.Services.Queue;
+using O24OpenAPI.O24NCH.Models.Request.SMSGateway;
 using O24OpenAPI.O24NCH.Services.Interfaces;
-using O24OpenAPI.O24OpenAPIClient.Enums;
-using O24OpenAPI.Web.Framework.Controllers;
-using O24OpenAPI.Web.Framework.Models;
-using O24OpenAPI.Web.Framework.Services;
 
 namespace O24OpenAPI.O24NCH.Controllers;
 
 public partial class SMSChannelController : BaseController
 {
     private readonly ISMSService _smsService = EngineContext.Current.Resolve<ISMSService>();
+
     /// <summary>
     /// Post the workflow step from CMS workflow scheme
     /// </summary>
@@ -37,9 +39,7 @@ public partial class SMSChannelController : BaseController
     }
 
     [HttpPost]
-    public virtual async Task<IActionResult> SendSMS(
-        [FromBody] SMSGatewayRequestModel smsSendModel
-    )
+    public virtual async Task<IActionResult> SendSMS([FromBody] SMSGatewayRequestModel smsSendModel)
     {
         var response = await _smsService.SMSGatewaySend(smsSendModel);
         return Ok(response);

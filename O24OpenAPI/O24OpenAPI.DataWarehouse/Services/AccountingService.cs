@@ -1,9 +1,9 @@
 ﻿using O24OpenAPI.Core.Domain;
-using O24OpenAPI.DataWarehouse.Domain;
-using O24OpenAPI.DataWarehouse.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Domain;
-using O24OpenAPI.Web.Framework.Extensions;
 using O24OpenAPI.Core.SeedWork;
+using O24OpenAPI.DataWarehouse.Domain;
+using O24OpenAPI.DataWarehouse.Services.Interface;
+using O24OpenAPI.Framework.Domain;
+using O24OpenAPI.Framework.Extensions;
 
 namespace O24OpenAPI.DataWarehouse.Services;
 
@@ -11,14 +11,15 @@ public class AccountingService(
     IRepository<GLEntries> glEntriesRepository,
     IRepository<GLEntriesDone> glEntriesDoneRepository,
     IRepository<AccountStatement> accountStatementRepository,
-    IRepository<AccountStatementDone> accountStatementDoneRepository)
-    : IAccountingService
+    IRepository<AccountStatementDone> accountStatementDoneRepository
+) : IAccountingService
 {
     private readonly IRepository<GLEntries> _glEntriesRepository = glEntriesRepository;
     private readonly IRepository<GLEntriesDone> _glEntriesDoneRepository = glEntriesDoneRepository;
-    private readonly IRepository<AccountStatement> _accountStatementRepository = accountStatementRepository;
-    private readonly IRepository<AccountStatementDone> _accountStatementDoneRepository = accountStatementDoneRepository;
-
+    private readonly IRepository<AccountStatement> _accountStatementRepository =
+        accountStatementRepository;
+    private readonly IRepository<AccountStatementDone> _accountStatementDoneRepository =
+        accountStatementDoneRepository;
 
     private const int BatchSize = 500;
 
@@ -34,8 +35,8 @@ public class AccountingService(
     {
         try
         {
-            var eligible = _glEntriesRepository.Table
-                .Where(x => x.Posted == true && x.ValueDate < workingDate)
+            var eligible = _glEntriesRepository
+                .Table.Where(x => x.Posted == true && x.ValueDate < workingDate)
                 .OrderBy(x => x.Id);
 
             int lastId = 0;
@@ -65,7 +66,7 @@ public class AccountingService(
                         x.BaseCurrencyAmount,
                         x.ValueDate,
                         x.Posted,
-                        x.AccountingGroup
+                        x.AccountingGroup,
                     })
                     .ToList();
 
@@ -79,25 +80,27 @@ public class AccountingService(
                     var doneRows = new List<GLEntriesDone>(batch.Count);
                     foreach (var it in batch)
                     {
-                        doneRows.Add(new GLEntriesDone
-                        {
-                            TransactionNumber = it.TransactionNumber,
-                            TransTableName = it.TransTableName,
-                            TransId = it.TransId,
-                            SysAccountName = it.SysAccountName,
-                            GLAccount = it.GLAccount,
-                            DorC = it.DorC,
-                            TransactionStatus = it.TransactionStatus,
-                            Amount = it.Amount,
-                            BranchCode = it.BranchCode,
-                            CurrencyCode = it.CurrencyCode,
-                            CrossBranchCode = it.CrossBranchCode,
-                            CrossCurrencyCode = it.CrossCurrencyCode,
-                            BaseCurrencyAmount = it.BaseCurrencyAmount,
-                            ValueDate = it.ValueDate,
-                            Posted = it.Posted,
-                            AccountingGroup = it.AccountingGroup
-                        });
+                        doneRows.Add(
+                            new GLEntriesDone
+                            {
+                                TransactionNumber = it.TransactionNumber,
+                                TransTableName = it.TransTableName,
+                                TransId = it.TransId,
+                                SysAccountName = it.SysAccountName,
+                                GLAccount = it.GLAccount,
+                                DorC = it.DorC,
+                                TransactionStatus = it.TransactionStatus,
+                                Amount = it.Amount,
+                                BranchCode = it.BranchCode,
+                                CurrencyCode = it.CurrencyCode,
+                                CrossBranchCode = it.CrossBranchCode,
+                                CrossCurrencyCode = it.CrossCurrencyCode,
+                                BaseCurrencyAmount = it.BaseCurrencyAmount,
+                                ValueDate = it.ValueDate,
+                                Posted = it.Posted,
+                                AccountingGroup = it.AccountingGroup,
+                            }
+                        );
                     }
 
                     await InsertRangeSafeAsync(_glEntriesDoneRepository, doneRows, ct);
@@ -115,8 +118,8 @@ public class AccountingService(
 
             try
             {
-                var stEligible = _accountStatementRepository.Table
-                    .Where(x => x.ValueDate < workingDate)
+                var stEligible = _accountStatementRepository
+                    .Table.Where(x => x.ValueDate < workingDate)
                     .OrderBy(x => x.Id);
 
                 int lastStId = 0;
@@ -145,7 +148,7 @@ public class AccountingService(
                             x.Description,
                             x.CreatedOnUtc,
                             x.UpdatedOnUtc,
-                            x.TransactionNumber
+                            x.TransactionNumber,
                         })
                         .ToList();
 
@@ -159,24 +162,26 @@ public class AccountingService(
                         var stDoneRows = new List<AccountStatementDone>(stBatch.Count);
                         foreach (var it in stBatch)
                         {
-                            stDoneRows.Add(new AccountStatementDone
-                            {
-                                AccountNumber = it.AccountNumber,
-                                CurrencyCode = it.CurrencyCode,
-                                ConvertAmount = it.ConvertAmount,
-                                Amount = it.Amount,
-                                ReferenceId = it.ReferenceId,
-                                StatementStatus = it.StatementStatus,
-                                StatementDate = it.StatementDate,
-                                ValueDate = it.ValueDate,
-                                StatementCode = it.StatementCode,
-                                RefNumber = it.RefNumber,
-                                TransCode = it.TransCode,
-                                Description = it.Description,
-                                CreatedOnUtc = it.CreatedOnUtc,
-                                UpdatedOnUtc = it.UpdatedOnUtc,
-                                TransactionNumber = it.TransactionNumber
-                            });
+                            stDoneRows.Add(
+                                new AccountStatementDone
+                                {
+                                    AccountNumber = it.AccountNumber,
+                                    CurrencyCode = it.CurrencyCode,
+                                    ConvertAmount = it.ConvertAmount,
+                                    Amount = it.Amount,
+                                    ReferenceId = it.ReferenceId,
+                                    StatementStatus = it.StatementStatus,
+                                    StatementDate = it.StatementDate,
+                                    ValueDate = it.ValueDate,
+                                    StatementCode = it.StatementCode,
+                                    RefNumber = it.RefNumber,
+                                    TransCode = it.TransCode,
+                                    Description = it.Description,
+                                    CreatedOnUtc = it.CreatedOnUtc,
+                                    UpdatedOnUtc = it.UpdatedOnUtc,
+                                    TransactionNumber = it.TransactionNumber,
+                                }
+                            );
                         }
 
                         await InsertRangeSafeAsync(_accountStatementDoneRepository, stDoneRows, ct);
@@ -187,14 +192,18 @@ public class AccountingService(
                     }
                     catch (Exception ex)
                     {
-                        await ex.LogErrorAsync($"[SyncGLEntries] Error processing AccountStatement batch starting from Id {lastStId}: {ex.Message}");
+                        await ex.LogErrorAsync(
+                            $"[SyncGLEntries] Error processing AccountStatement batch starting from Id {lastStId}: {ex.Message}"
+                        );
                         break;
                     }
                 }
             }
             catch (Exception ex)
             {
-                await ex.LogErrorAsync($"[SyncGLEntries] Error in AccountStatement processing loop: {ex.Message}");
+                await ex.LogErrorAsync(
+                    $"[SyncGLEntries] Error in AccountStatement processing loop: {ex.Message}"
+                );
             }
         }
         catch (Exception ex)
@@ -204,11 +213,12 @@ public class AccountingService(
         }
     }
 
-
     private static async Task InsertRangeSafeAsync<T>(
         IRepository<T> repo,
         IEnumerable<T> items,
-        CancellationToken ct) where T : BaseEntity
+        CancellationToken ct
+    )
+        where T : BaseEntity
     {
         var list = items?.ToList() ?? [];
         if (list.Count == 0)
@@ -216,9 +226,8 @@ public class AccountingService(
             return;
         }
 
-        var bulkInsertMethod = repo.GetType().GetMethod(
-            "BulkInsert",
-            [typeof(IList<T>), typeof(string), typeof(bool)]);
+        var bulkInsertMethod = repo.GetType()
+            .GetMethod("BulkInsert", [typeof(IList<T>), typeof(string), typeof(bool)]);
 
         if (bulkInsertMethod != null)
         {
@@ -227,9 +236,8 @@ public class AccountingService(
             return;
         }
 
-        var insertRange = repo.GetType().GetMethod(
-            "InsertAsync",
-            [typeof(IEnumerable<T>), typeof(CancellationToken)]);
+        var insertRange = repo.GetType()
+            .GetMethod("InsertAsync", [typeof(IEnumerable<T>), typeof(CancellationToken)]);
 
         if (insertRange != null)
         {
@@ -248,7 +256,9 @@ public class AccountingService(
     private static async Task DeleteRangeSafeAsync<T>(
         IRepository<T> repo,
         List<int> ids,
-        CancellationToken ct) where T : BaseEntity
+        CancellationToken ct
+    )
+        where T : BaseEntity
     {
         if (ids == null || ids.Count == 0)
         {
@@ -262,9 +272,8 @@ public class AccountingService(
             return;
         }
 
-        var bulkDelete3 = repo.GetType().GetMethod(
-            "BulkDelete",
-            [typeof(IList<T>), typeof(string), typeof(bool)]);
+        var bulkDelete3 = repo.GetType()
+            .GetMethod("BulkDelete", [typeof(IList<T>), typeof(string), typeof(bool)]);
 
         if (bulkDelete3 != null)
         {
@@ -273,9 +282,7 @@ public class AccountingService(
             return;
         }
 
-        var bulkDelete1 = repo.GetType().GetMethod(
-            "BulkDelete",
-            [typeof(IList<T>)]);
+        var bulkDelete1 = repo.GetType().GetMethod("BulkDelete", [typeof(IList<T>)]);
 
         if (bulkDelete1 != null)
         {
@@ -284,9 +291,8 @@ public class AccountingService(
             return;
         }
 
-        var delRange = repo.GetType().GetMethod(
-            "DeleteAsync",
-            [typeof(IEnumerable<T>), typeof(CancellationToken)]);
+        var delRange = repo.GetType()
+            .GetMethod("DeleteAsync", [typeof(IEnumerable<T>), typeof(CancellationToken)]);
 
         if (delRange != null)
         {
@@ -295,7 +301,8 @@ public class AccountingService(
             return;
         }
 
-        var delOneWithCt = repo.GetType().GetMethod("DeleteAsync", [typeof(T), typeof(CancellationToken)]);
+        var delOneWithCt = repo.GetType()
+            .GetMethod("DeleteAsync", [typeof(T), typeof(CancellationToken)]);
         if (delOneWithCt != null)
         {
             foreach (var e in toDelete)

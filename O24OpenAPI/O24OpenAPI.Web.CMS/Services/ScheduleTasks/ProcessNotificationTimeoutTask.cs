@@ -1,5 +1,5 @@
 using O24OpenAPI.Web.CMS.Services.Interfaces.Digital;
-using O24OpenAPI.Web.Framework.Services.ScheduleTasks;
+using O24OpenAPI.Framework.Services.ScheduleTasks;
 
 namespace O24OpenAPI.Web.CMS.Services.ScheduleTasks;
 

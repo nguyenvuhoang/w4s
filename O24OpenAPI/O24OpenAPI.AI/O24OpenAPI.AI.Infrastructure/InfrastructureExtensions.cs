@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using O24OpenAPI.AI.Infrastructure.Configurations;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Core.Logging.Interceptors;
-using O24OpenAPI.O24AI.Configuration;
-using O24OpenAPI.Web.Framework.Infrastructure.Extensions;
+using O24OpenAPI.Framework.Infrastructure.Extensions;
+using O24OpenAPI.Logging.Interceptors;
+using Qdrant.Client;
 
 namespace O24OpenAPI.AI.Infrastructure;
 
@@ -23,10 +24,9 @@ public static class InfrastructureExtensions
         });
         services.AddLinKitDependency();
         var qdrantSettingConfig = Singleton<AppSettings>.Instance.Get<QdrantSettingConfig>();
-        services.AddHttpClient(qdrantSettingConfig.ClientName, c =>
+        services.AddSingleton(_ =>
         {
-            c.BaseAddress = new Uri(qdrantSettingConfig.Endpoints);
-            c.Timeout = TimeSpan.FromSeconds(qdrantSettingConfig.TimeoutInSeconds);
+            return new QdrantClient(host: qdrantSettingConfig.Host, port: qdrantSettingConfig.Port);
         });
         return services;
     }

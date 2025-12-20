@@ -1,11 +1,12 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Infrastructure;
+using O24OpenAPI.Framework.Controllers;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Logger.Models.Log;
 using O24OpenAPI.Logger.Services.QueryHandler;
 using O24OpenAPI.Logger.Utils;
-using O24OpenAPI.Web.Framework.Controllers;
-using O24OpenAPI.Web.Framework.Models;
 
 namespace O24OpenAPI.Logger.Controllers;
 
@@ -34,5 +35,4 @@ public class LogController : BaseController
         var r = await service.Send((IRequest<PagedModel>)queryModel);
         return Ok(r);
     }
-
 }

@@ -1,5 +1,6 @@
-﻿using O24OpenAPI.O24ACT.Domain;
-using O24OpenAPI.Web.Framework.Models;
+﻿using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
+using O24OpenAPI.O24ACT.Domain;
 
 namespace O24OpenAPI.O24ACT.Models;
 
@@ -13,6 +14,7 @@ public partial class AccountChartInforItemModel : BaseO24OpenAPIModel
         AccountBalance = new AccountBalance();
         AccountChart = new AccountChart();
     }
+
     /// <summary>
     ///
     /// </summary>
@@ -23,10 +25,12 @@ public partial class AccountChartInforItemModel : BaseO24OpenAPIModel
         this.AccountChart = chart;
         this.AccountBalance = balance;
     }
+
     /// <summary>
     /// EntryJournal
     /// </summary>
     public AccountBalance AccountBalance { get; set; }
+
     /// <summary>
     /// AccountChart
     /// </summary>

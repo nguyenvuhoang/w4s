@@ -1,8 +1,8 @@
 using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Data.Migrations;
 using O24OpenAPI.Logger.Queues;
-using O24OpenAPI.Web.Framework.Constants;
-using O24OpenAPI.Web.Framework.Domain;
+using O24OpenAPI.Framework.Constants;
+using O24OpenAPI.Framework.Domain;
 
 namespace O24OpenAPI.Logger.Migrations.DataMigrations;
 

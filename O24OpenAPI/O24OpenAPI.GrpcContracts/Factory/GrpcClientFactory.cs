@@ -4,13 +4,15 @@ using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Grpc.Net.Client;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Core.Logging.Interceptors;
 using O24OpenAPI.GrpcContracts.Configuration;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
+using O24OpenAPI.Logging.Interceptors;
 
 namespace O24OpenAPI.GrpcContracts.Factory;
 
-public sealed class GrpcClientFactory(GrpcClientLoggingInterceptor loggingInterceptor) : IGrpcClientFactory, IDisposable
+public sealed class GrpcClientFactory(GrpcClientLoggingInterceptor loggingInterceptor)
+    : IGrpcClientFactory,
+        IDisposable
 {
     private readonly GrpcClientsConfig _configs = Singleton<GrpcClientsConfig>.Instance;
     private readonly ConcurrentDictionary<string, ChannelWrapper> _channels = new();
@@ -86,7 +88,8 @@ public sealed class GrpcClientFactory(GrpcClientLoggingInterceptor loggingInterc
             var wfoGrpcClient = EngineContext.Current.Resolve<IWFOGrpcClientService>();
             var serviceInfo = wfoGrpcClient
                 .GetServiceInstanceByServiceHandleNameAsync(clientTypeName)
-                .GetAwaiter().GetResult();
+                .GetAwaiter()
+                .GetResult();
 
             if (serviceInfo != null)
             {
@@ -175,7 +178,8 @@ public sealed class GrpcClientFactory(GrpcClientLoggingInterceptor loggingInterc
             {
                 var connectTask = channel.ConnectAsync();
                 var timeoutTask = Task.Delay(5000);
-                var completedTask = await Task.WhenAny(connectTask, timeoutTask).ConfigureAwait(false);
+                var completedTask = await Task.WhenAny(connectTask, timeoutTask)
+                    .ConfigureAwait(false);
 
                 return completedTask == connectTask;
             }
@@ -206,6 +210,7 @@ public sealed class GrpcClientFactory(GrpcClientLoggingInterceptor loggingInterc
 
         return new ChannelWrapper(channel, address);
     }
+
     private async Task CleanupStaleWrappersAsync()
     {
         try
@@ -215,7 +220,9 @@ public sealed class GrpcClientFactory(GrpcClientLoggingInterceptor loggingInterc
             {
                 if (kvp.Value.CreatedAt < threshold)
                 {
-                    _channels.TryRemove(new KeyValuePair<string, ChannelWrapper>(kvp.Key, kvp.Value));
+                    _channels.TryRemove(
+                        new KeyValuePair<string, ChannelWrapper>(kvp.Key, kvp.Value)
+                    );
                 }
             }
         }
@@ -242,7 +249,10 @@ public sealed class GrpcClientFactory(GrpcClientLoggingInterceptor loggingInterc
                     );
 
                 var newExpression = Expression.New(constructor, invokerParam);
-                var lambda = Expression.Lambda<Func<CallInvoker, TClient>>(newExpression, invokerParam);
+                var lambda = Expression.Lambda<Func<CallInvoker, TClient>>(
+                    newExpression,
+                    invokerParam
+                );
 
                 return lambda.Compile();
             })

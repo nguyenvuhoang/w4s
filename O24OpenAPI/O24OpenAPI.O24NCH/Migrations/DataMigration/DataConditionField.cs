@@ -1,5 +1,5 @@
 ﻿using O24OpenAPI.O24NCH.Domain;
-using O24OpenAPI.Web.Framework.Domain;
+using O24OpenAPI.Framework.Domain;
 
 namespace O24OpenAPI.O24NCH.Migrations.DataMigration;
 

@@ -1,4 +1,4 @@
-using O24OpenAPI.Web.Framework.Infrastructure.Mapper;
+using O24OpenAPI.Framework.Infrastructure.Mapper;
 using O24OpenAPI.WFO.Domain;
 using O24OpenAPI.WFO.Models;
 

@@ -1,6 +1,6 @@
 ﻿using O24OpenAPI.Core.Configuration;
 
-namespace O24OpenAPI.Web.Report.Configurations;
+namespace O24OpenAPI.Web.Report.Infrastructure;
 
 /// <summary>
 /// Bank setting

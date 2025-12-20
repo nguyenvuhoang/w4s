@@ -1,7 +1,7 @@
 ﻿using LinKit.Core.BackgroundJobs;
 using LinKit.Core.Cqrs;
 using O24OpenAPI.Web.CMS.Services.Interfaces.Media;
-using O24OpenAPI.Web.Framework.Extensions;
+using O24OpenAPI.Framework.Extensions;
 
 namespace O24OpenAPI.Web.CMS.Services.BackgroundServices;
 

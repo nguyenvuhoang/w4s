@@ -3,8 +3,8 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.Core.Extensions;
+using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Web.CMS.Configuration;
-using O24OpenAPI.Web.Framework.Extensions;
 
 namespace O24OpenAPI.Web.CMS.Utils;
 

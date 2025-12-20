@@ -1,10 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
     <!-- Bật build NuGet package -->
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>O24OpenAPI.Kit</PackageId>
@@ -18,16 +16,13 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <!-- hoặc thay bằng license của bạn -->
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="BouncyCastle" Version="1.8.9" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\O24OpenAPI.O24OpenAPIClient\O24OpenAPI.O24OpenAPIClient.csproj" />
-    <ProjectReference Include="..\O24OpenAPI.Web.Framework\O24OpenAPI.Web.Framework.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.Client\O24OpenAPI.Client.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.Framework\O24OpenAPI.Framework.csproj" />
   </ItemGroup>
-
 </Project>

@@ -9,7 +9,6 @@ using LinqToDB.SqlProvider;
 using LinqToDB.Tools;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Domain;
-using O24OpenAPI.Core.Domain.O24OpenAPI;
 using O24OpenAPI.Core.Helper;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Data.Extensions;

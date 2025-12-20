@@ -1,7 +1,7 @@
+using O24OpenAPI.Client.Events.EventData;
 using O24OpenAPI.Core.Infrastructure;
+using O24OpenAPI.Framework.Services.Events;
 using O24OpenAPI.Logger.Services.Interfaces;
-using O24OpenAPI.O24OpenAPIClient.Events.EventData;
-using O24OpenAPI.Web.Framework.Services.Events;
 
 namespace O24OpenAPI.Logger.Services.Events;
 

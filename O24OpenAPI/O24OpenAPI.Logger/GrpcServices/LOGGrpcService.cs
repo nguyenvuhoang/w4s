@@ -1,5 +1,5 @@
 ﻿using Grpc.Core;
-using Linh.JsonKit.Json;
+using LinKit.Json.Runtime;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Grpc.Common;
 using O24OpenAPI.Grpc.LOG;
@@ -21,10 +21,7 @@ public class LOGGrpcService : LOGGrpcServiceBase
     /// <param name="request"></param>
     /// <param name="context"></param>
     /// <returns></returns>
-    public override async Task<GrpcResponse> Test(
-        TestRequest request,
-        ServerCallContext context
-    )
+    public override async Task<GrpcResponse> Test(TestRequest request, ServerCallContext context)
     {
         return await GrpcExecutor.ExecuteAsync(
             context,
@@ -58,8 +55,7 @@ public class LOGGrpcService : LOGGrpcServiceBase
             async () =>
             {
                 var data = request.Data;
-                var applicationLogService =
-                    EngineContext.Current.Resolve<IApplicationLogService>();
+                var applicationLogService = EngineContext.Current.Resolve<IApplicationLogService>();
                 var applicationLog = data.FromJson<ApplicationLog>();
                 await applicationLogService.AddAsync(applicationLog);
                 return new GrpcResponse { Code = GrpcResponseCode.Success, Data = "ok" };

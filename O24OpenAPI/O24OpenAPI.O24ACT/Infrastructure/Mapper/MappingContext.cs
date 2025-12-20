@@ -1,5 +1,5 @@
-﻿using Linh.JsonKit.Json;
-using LinKit.Core.Mapping;
+﻿using LinKit.Core.Mapping;
+using LinKit.Json.Runtime;
 using O24OpenAPI.O24ACT.Domain;
 using O24OpenAPI.O24ACT.Models;
 

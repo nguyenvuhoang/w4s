@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using O24OpenAPI.Core.Configuration;
 
-namespace O24OpenAPI.O24ACT.Configuration;
+namespace O24OpenAPI.O24ACT.Config;
 
 /// <summary>
 /// Settings for Accounting

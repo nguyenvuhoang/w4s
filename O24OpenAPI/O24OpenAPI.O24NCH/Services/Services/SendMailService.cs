@@ -1,7 +1,7 @@
 ﻿using O24OpenAPI.O24NCH.Services.Interfaces;
 using System.Text.RegularExpressions;
 
-namespace O24OpenAPI.Web.CMS.Services.Services;
+namespace O24OpenAPI.O24NCH.Services.Services;
 
 /// <summary>
 /// 

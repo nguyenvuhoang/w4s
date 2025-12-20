@@ -1,4 +1,5 @@
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.ControlHub.Models;
 
@@ -12,13 +13,14 @@ public class VerifyUserRequestModel : BaseTransactionModel
     /// Gets or sets the value of the LoginName
     /// </summary>
     public string Username { get; set; }
+
     /// <summary>
     /// Gets or sets the value of the oldpassword
     /// </summary>
     public string Email { get; set; }
+
     /// <summary>
     /// Get or sets the value of the newpassword
     /// </summary>
     public string PhoneNumber { get; set; } = string.Empty;
-
 }

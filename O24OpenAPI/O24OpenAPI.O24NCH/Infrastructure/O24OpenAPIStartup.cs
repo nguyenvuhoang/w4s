@@ -1,10 +1,8 @@
 ﻿using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.O24NCH.GrpcServices;
-using O24OpenAPI.O24NCH.Services;
 using O24OpenAPI.O24NCH.Services.Interfaces;
 using O24OpenAPI.O24NCH.Services.Services;
 using O24OpenAPI.O24NCH.Services.Services.Telegram;
-using O24OpenAPI.Web.CMS.Services.Services;
 using Telegram.Bot;
 
 namespace O24OpenAPI.O24NCH.Infrastructure;

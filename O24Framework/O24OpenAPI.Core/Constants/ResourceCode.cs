@@ -1,4 +1,4 @@
-namespace O24OpenAPI;
+namespace O24OpenAPI.Core.Constants;
 
 public partial class ResourceCode
 {

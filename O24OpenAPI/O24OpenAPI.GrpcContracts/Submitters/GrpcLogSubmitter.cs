@@ -1,6 +1,6 @@
-﻿using O24OpenAPI.Core.Logging.Abstractions;
-using O24OpenAPI.Core.Logging.Extensions;
-using O24OpenAPI.GrpcContracts.GrpcClientServices.LOG;
+﻿using O24OpenAPI.GrpcContracts.GrpcClientServices.LOG;
+using O24OpenAPI.Logging.Abstractions;
+using O24OpenAPI.Logging.Extensions;
 using Serilog.Events;
 
 namespace O24OpenAPI.GrpcContracts.Submitters;

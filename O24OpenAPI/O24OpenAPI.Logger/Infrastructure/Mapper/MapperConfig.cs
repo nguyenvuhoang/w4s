@@ -1,9 +1,9 @@
+using O24OpenAPI.Framework.Domain.Logging;
+using O24OpenAPI.Framework.Infrastructure.Mapper;
 using O24OpenAPI.Logger.Domain;
 using O24OpenAPI.Logger.Models.HttpLog;
 using O24OpenAPI.Logger.Models.ServiceLog;
 using O24OpenAPI.Logger.Models.Workflow;
-using O24OpenAPI.Web.Framework.Domain.Logging;
-using O24OpenAPI.Web.Framework.Infrastructure.Mapper;
 
 namespace O24OpenAPI.Logger.Infrastructure.Mapper;
 

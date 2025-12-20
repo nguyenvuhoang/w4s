@@ -1,15 +1,16 @@
-﻿using O24OpenAPI.ControlHub.Models.Roles;
+﻿using O24OpenAPI.Client.Scheme.Workflow;
+using O24OpenAPI.ControlHub.Models.Roles;
 using O24OpenAPI.ControlHub.Services.Interfaces;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.O24OpenAPIClient.Scheme.Workflow;
-using O24OpenAPI.Web.Framework.Models.O24OpenAPI;
-using O24OpenAPI.Web.Framework.Services.Queue;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Services.Queue;
 
 namespace O24OpenAPI.ControlHub.Queues;
 
 public class RoleProfileQueue : BaseQueue
 {
-    private readonly IRoleProfileService _roleProfileService = EngineContext.Current.Resolve<IRoleProfileService>();
+    private readonly IRoleProfileService _roleProfileService =
+        EngineContext.Current.Resolve<IRoleProfileService>();
 
     /// <summary>
     /// LoadOperation
@@ -52,7 +53,6 @@ public class RoleProfileQueue : BaseQueue
     /// </summary>
     /// <param name="wFScheme"></param>
     /// <returns></returns>
-
     public async Task<WFScheme> UpdateUserRight(WFScheme wFScheme)
     {
         var model = await wFScheme.ToModel<UserRightUpdateModel>();

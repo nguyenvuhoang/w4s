@@ -5,8 +5,8 @@ using O24OpenAPI.ControlHub.Models;
 using O24OpenAPI.ControlHub.Models.Roles;
 using O24OpenAPI.ControlHub.Services.Interfaces;
 using O24OpenAPI.ControlHub.Utils;
-using O24OpenAPI.Core.Logging.Helpers;
-using O24OpenAPI.Web.Framework.Extensions;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Logging.Helpers;
 
 namespace O24OpenAPI.ControlHub.Services;
 
@@ -35,39 +35,45 @@ public class UserCommandService(
         string lang
     )
     {
-        var userRights = await _userRightRepository.Table
-            .Where(ur => ur.RoleId == roleId && ur.Invoke == 1)
+        var userRights = await _userRightRepository
+            .Table.Where(ur => ur.RoleId == roleId && ur.Invoke == 1)
             .ToListAsync();
 
         var commandIds = userRights.Select(ur => ur.CommandId).Distinct().ToList();
 
-        var userCommands = await _userCommandRepository.Table
-            .Where(uc => commandIds.Contains(uc.CommandId) && uc.ApplicationCode == applicationCode && uc.Enabled)
+        var userCommands = await _userCommandRepository
+            .Table.Where(uc =>
+                commandIds.Contains(uc.CommandId)
+                && uc.ApplicationCode == applicationCode
+                && uc.Enabled
+            )
             .OrderBy(uc => uc.DisplayOrder)
             .ToListAsync();
 
-        var userRole = await _userRoleRepository.Table
-            .Where(r => r.RoleId == roleId)
+        var userRole = await _userRoleRepository
+            .Table.Where(r => r.RoleId == roleId)
             .FirstOrDefaultAsync();
 
-        var result = (from uc in userCommands
-                      join ur in userRights on uc.CommandId equals ur.CommandId
-                      select new CommandHierarchyModel
-                      {
-                          ParentId = uc.ParentId,
-                          CommandId = uc.CommandId,
-                          Label = Utils.StringExtensions.TryGetLabelFromJson(uc.CommandNameLanguage, lang),
-                          CommandType = uc.CommandType,
-                          CommandUri = uc.CommandURI,
-                          RoleId = roleId,
-                          RoleName = userRole?.RoleName,
-                          Invoke = ur.Invoke == 1,
-                          Approve = ur.Approve == 1,
-                          Icon = uc.GroupMenuIcon,
-                          GroupMenuVisible = uc.GroupMenuVisible,
-                          GroupMenuId = uc.GroupMenuId,
-                          GroupMenuListAuthorizeForm = uc.GroupMenuListAuthorizeForm
-                      }).ToList();
+        var result = (
+            from uc in userCommands
+            join ur in userRights on uc.CommandId equals ur.CommandId
+            select new CommandHierarchyModel
+            {
+                ParentId = uc.ParentId,
+                CommandId = uc.CommandId,
+                Label = Utils.StringExtensions.TryGetLabelFromJson(uc.CommandNameLanguage, lang),
+                CommandType = uc.CommandType,
+                CommandUri = uc.CommandURI,
+                RoleId = roleId,
+                RoleName = userRole?.RoleName,
+                Invoke = ur.Invoke == 1,
+                Approve = ur.Approve == 1,
+                Icon = uc.GroupMenuIcon,
+                GroupMenuVisible = uc.GroupMenuVisible,
+                GroupMenuId = uc.GroupMenuId,
+                GroupMenuListAuthorizeForm = uc.GroupMenuListAuthorizeForm,
+            }
+        ).ToList();
 
         foreach (var item in result)
         {
@@ -230,10 +236,7 @@ public class UserCommandService(
     /// <param name="applicationCode"></param>
     /// <param name="roleCommand"></param>
     /// <returns></returns>
-    public async Task<List<UserCommand>> LoadUserCommand(
-        string applicationCode,
-        string roleCommand
-    )
+    public async Task<List<UserCommand>> LoadUserCommand(string applicationCode, string roleCommand)
     {
         var commandListHashSet = roleCommand.JsonConvertToModel<HashSet<string>>();
 
@@ -264,9 +267,7 @@ public class UserCommandService(
     public async Task<List<UserCommandResponseModel>> GetCommandMenuByChannel(string channelId)
     {
         return await _userCommandRepository
-            .Table.Where(s =>
-                s.ApplicationCode == channelId && s.CommandType == "M" && s.Enabled
-            )
+            .Table.Where(s => s.ApplicationCode == channelId && s.CommandType == "M" && s.Enabled)
             .Select(s => new UserCommandResponseModel(s))
             .ToListAsync();
     }
@@ -295,8 +296,7 @@ public class UserCommandService(
             from userCommand in _userCommandRepository.Table
             join userRight in _userRightRepository.Table
                 on userCommand.CommandId equals userRight.CommandId
-            join userRole in _userRoleRepository.Table
-                on userRight.RoleId equals userRole.RoleId
+            join userRole in _userRoleRepository.Table on userRight.RoleId equals userRole.RoleId
             where
                 userCommand.ApplicationCode == applicationCode
                 && userCommand.CommandId == commandId
@@ -315,7 +315,10 @@ public class UserCommandService(
         return listLeftJoin;
     }
 
-    public virtual async Task<List<UserCommandResponseModel>> GetInfoFromParentId(string applicationCode, string parentId)
+    public virtual async Task<List<UserCommandResponseModel>> GetInfoFromParentId(
+        string applicationCode,
+        string parentId
+    )
     {
         var listLeftJoin = await (
             from userCommand in _userCommandRepository.Table.Where(s =>
@@ -323,9 +326,7 @@ public class UserCommandService(
             )
             from userRole in _userRoleRepository.Table.DefaultIfEmpty()
             from userRight in _userRightRepository
-                .Table.Where(s =>
-                    s.CommandId == userCommand.CommandId && s.RoleId == userRole.Id
-                )
+                .Table.Where(s => s.CommandId == userCommand.CommandId && s.RoleId == userRole.Id)
                 .DefaultIfEmpty()
 
             select new UserCommandResponseModel()
@@ -341,6 +342,7 @@ public class UserCommandService(
 
         return listLeftJoin;
     }
+
     /// <summary>
     /// Get List Command Parent Async
     /// </summary>
@@ -348,15 +350,18 @@ public class UserCommandService(
     /// <returns></returns>
     public async Task<List<string>> GetListCommandParentAsync(string applicationCode)
     {
-        return await _userCommandRepository.Table
-            .Where(s => s.ApplicationCode == applicationCode
-                        && s.CommandType == "M"
-                        && s.Enabled
-                        && s.ParentId == "0")
+        return await _userCommandRepository
+            .Table.Where(s =>
+                s.ApplicationCode == applicationCode
+                && s.CommandType == "M"
+                && s.Enabled
+                && s.ParentId == "0"
+            )
             .Select(s => s.CommandId)
             .Distinct()
             .ToListAsync();
     }
+
     /// <summary>
     /// Is User Agreement
     /// </summary>
@@ -364,9 +369,8 @@ public class UserCommandService(
     /// <returns></returns>
     public async Task<bool> IsUserAgreement(string commandid)
     {
-
-        var isAgreement = await _userAgreementRepository.Table
-            .Where(ua => ua.TransactionCode.Contains(commandid) && ua.IsActive)
+        var isAgreement = await _userAgreementRepository
+            .Table.Where(ua => ua.TransactionCode.Contains(commandid) && ua.IsActive)
             .FirstOrDefaultAsync();
         if (isAgreement != null)
         {
@@ -383,29 +387,31 @@ public class UserCommandService(
     {
         try
         {
-            var listUserCommandDomain = await _userCommandRepository.Table
-                .OrderBy(x => x.ApplicationCode)
+            var listUserCommandDomain = await _userCommandRepository
+                .Table.OrderBy(x => x.ApplicationCode)
                 .ThenBy(x => x.CommandId)
                 .ThenBy(x => x.DisplayOrder)
                 .ToListAsync();
 
-            var listUserCommand = listUserCommandDomain.Select(x => new CTHUserCommandModel
-            {
-                ApplicationCode = x.ApplicationCode,
-                CommandId = x.CommandId,
-                ParentId = x.ParentId,
-                CommandName = x.CommandName,
-                CommandNameLanguage = x.CommandNameLanguage,
-                CommandType = x.CommandType,
-                CommandURI = x.CommandURI ?? "",
-                Enabled = x.Enabled,
-                IsVisible = x.IsVisible,
-                DisplayOrder = x.DisplayOrder,
-                GroupMenuIcon = x.GroupMenuIcon,
-                GroupMenuVisible = x.GroupMenuVisible,
-                GroupMenuId = x.GroupMenuId ?? "",
-                GroupMenuListAuthorizeForm = x.GroupMenuListAuthorizeForm ?? "",
-            }).ToList();
+            var listUserCommand = listUserCommandDomain
+                .Select(x => new CTHUserCommandModel
+                {
+                    ApplicationCode = x.ApplicationCode,
+                    CommandId = x.CommandId,
+                    ParentId = x.ParentId,
+                    CommandName = x.CommandName,
+                    CommandNameLanguage = x.CommandNameLanguage,
+                    CommandType = x.CommandType,
+                    CommandURI = x.CommandURI ?? "",
+                    Enabled = x.Enabled,
+                    IsVisible = x.IsVisible,
+                    DisplayOrder = x.DisplayOrder,
+                    GroupMenuIcon = x.GroupMenuIcon,
+                    GroupMenuVisible = x.GroupMenuVisible,
+                    GroupMenuId = x.GroupMenuId ?? "",
+                    GroupMenuListAuthorizeForm = x.GroupMenuListAuthorizeForm ?? "",
+                })
+                .ToList();
 
             return listUserCommand;
         }
@@ -416,7 +422,4 @@ public class UserCommandService(
             return [];
         }
     }
-
-
-
 }

@@ -1,6 +1,7 @@
 ﻿namespace O24OpenAPI.O24NCH.Models.Request;
 
-using O24OpenAPI.Web.Framework.Models;
+using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 
 /// <summary>
 /// Defines the <see cref="SendMobileDeviceRequestModel" />
@@ -8,6 +9,7 @@ using O24OpenAPI.Web.Framework.Models;
 public class SendMobileDeviceRequestModel : BaseTransactionModel
 {
     public string UserCode { get; set; }
+
     /// <summary>
     /// Gets or sets the PushId
     /// </summary>
@@ -22,10 +24,12 @@ public class SendMobileDeviceRequestModel : BaseTransactionModel
     /// Gets or sets the Title
     /// </summary>
     public string Title { get; set; }
+
     /// <summary>
     /// Image Url
     /// </summary>
     public string ImageUrl { get; set; } = string.Empty;
+
     /// <summary>
     /// Template ID
     /// </summary>

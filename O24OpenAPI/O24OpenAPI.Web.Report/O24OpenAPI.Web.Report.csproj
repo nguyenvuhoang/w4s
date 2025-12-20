@@ -3,26 +3,26 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-	  <version>10.0.1</version>
-	  <FileVersion>10.0.1.1</FileVersion>
-	  <Authors>O24</Authors>
-	  <Company>JITS</Company>
-	  <PackRelease>true</PackRelease>
-	  <BuildDate>$([System.DateTime]::Now.ToString("yyyy-MM-dd HH:mm:ss"))</BuildDate>
-	  <BuildUser>$(USERNAME)</BuildUser>
-	  <BuildUser Condition="'$(BuildUser)' == ''">$(USER)</BuildUser>
-	  <PublishTrimmed>false</PublishTrimmed>
+    <version>10.0.1</version>
+    <FileVersion>10.0.1.1</FileVersion>
+    <Authors>O24</Authors>
+    <Company>JITS</Company>
+    <PackRelease>true</PackRelease>
+    <BuildDate>$([System.DateTime]::Now.ToString("yyyy-MM-dd HH:mm:ss"))</BuildDate>
+    <BuildUser>$(USERNAME)</BuildUser>
+    <BuildUser Condition="'$(BuildUser)' == ''">$(USER)</BuildUser>
+    <PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
-	<ItemGroup>
-		<AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
-			<_Parameter1>BuildDate</_Parameter1>
-			<_Parameter2>$(BuildDate)</_Parameter2>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
-			<_Parameter1>BuildUser</_Parameter1>
-			<_Parameter2>$(BuildUser)</_Parameter2>
-		</AssemblyAttribute>
-	</ItemGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>BuildDate</_Parameter1>
+      <_Parameter2>$(BuildDate)</_Parameter2>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>BuildUser</_Parameter1>
+      <_Parameter2>$(BuildUser)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.12" />
     <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="4.14.0" />
@@ -44,8 +44,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Core\O24OpenAPI.Core.csproj" />
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Data\O24OpenAPI.Data.csproj" />
-    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.O24OpenAPIClient\O24OpenAPI.O24OpenAPIClient.csproj" />
-    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Web.Framework\O24OpenAPI.Web.Framework.csproj" />
+    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Client\O24OpenAPI.Client.csproj" />
+    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Framework\O24OpenAPI.Framework.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="GrpcServices\" />

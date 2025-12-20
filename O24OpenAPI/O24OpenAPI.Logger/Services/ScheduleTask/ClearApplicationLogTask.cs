@@ -1,5 +1,5 @@
 using O24OpenAPI.Logger.Services.Interfaces;
-using O24OpenAPI.Web.Framework.Services.ScheduleTasks;
+using O24OpenAPI.Framework.Services.ScheduleTasks;
 
 namespace O24OpenAPI.Logger.Services.ScheduleTask;
 
