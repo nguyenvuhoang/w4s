@@ -14,7 +14,10 @@ builder.Services.ConfigureApplicationServices(builder);
 builder.Services.AddSignalR();
 
 builder.Services.AddEndpointsApiExplorer();
-//builder.ConfigureWebHost();
+if (!builder.Environment.IsDevelopment())
+{
+    builder.ConfigureWebHost();
+}
 builder.AddO24Logging();
 //builder.AddBackgroundJobs("StaticConfig/BackgroundJobsConfig.json");
 builder.Services.AddInfrastructureServices();
