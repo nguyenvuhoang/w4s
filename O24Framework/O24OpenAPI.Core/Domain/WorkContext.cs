@@ -40,9 +40,9 @@ public class WorkContext
         ExecutionId = workContext.ExecutionId ?? ExecutionId;
     }
 
-    public void SetCurrentChannel(string channel)
+    public void SetCurrentChannel(string? channel)
     {
-        if (channel.HasValue())
+        if (!string.IsNullOrWhiteSpace(channel))
         {
             CurrentChannel = channel;
         }
@@ -58,9 +58,9 @@ public class WorkContext
         UserContext = userContext;
     }
 
-    public void SetWorkingLanguage(string language)
+    public void SetWorkingLanguage(string? language)
     {
-        if (language.HasValue())
+        if (!string.IsNullOrWhiteSpace(language))
         {
             WorkingLanguage = language;
         }

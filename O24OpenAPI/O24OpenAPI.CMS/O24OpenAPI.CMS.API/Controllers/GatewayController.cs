@@ -27,9 +27,11 @@ public partial class GatewayController(
     {
         try
         {
-            Dictionary<string, string> getAllCookies = Application.Utils.Utils.GetCookies(HttpContext);
+            Dictionary<string, string> getAllCookies = Application.Utils.Utils.GetCookies(
+                HttpContext
+            );
             bool checkedSession = false;
-            if (!getAllCookies.TryGetValue("device_id", out string value))
+            if (!getAllCookies.TryGetValue("device_id", out string? value))
             {
                 checkedSession = true;
             }
@@ -54,12 +56,15 @@ public partial class GatewayController(
                         Secure = true,
                         Expires = EngineContext
                             .Current.Resolve<JWebUIObjectContextModel>()
-                            .InfoRequest.SessionExpired,
+                            ?.InfoRequest.SessionExpired,
                     }
                 );
             }
 
-            ActionsResponseModel<object> response = await requestHandler.HandleAsync(bo, HttpContext);
+            ActionsResponseModel<object> response = await requestHandler.HandleAsync(
+                bo,
+                HttpContext
+            );
             return Ok(response);
         }
         catch (Exception ex)
@@ -79,5 +84,4 @@ public partial class GatewayController(
             return Ok(actionResponse);
         }
     }
-
 }

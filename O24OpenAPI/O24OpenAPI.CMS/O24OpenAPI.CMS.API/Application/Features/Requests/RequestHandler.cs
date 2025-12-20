@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using System.Text;
+using System.Text.Json.Serialization;
+using LinKit.Json.Runtime;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -23,8 +26,6 @@ using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using O24OpenAPI.Logging.Helpers;
-using System.Text;
-using System.Text.Json.Serialization;
 
 namespace O24OpenAPI.CMS.API.Application.Features.Requests;
 
@@ -94,7 +95,7 @@ public class RequestHandler(
                 MyDevice = infoHeaderDictionary.GetValueOrDefault("my_device") is not null
                     ? infoHeaderDictionary
                         .GetValueOrDefault("my_device")
-                        ?.MapToModel<Dictionary<string, object>>()
+                        ?.MapToModel<Dictionary<string, object>>() ?? []
                     : [],
                 Url = infoHeaderDictionary.GetValueOrDefault("u"),
                 Signature = infoHeaderDictionary.GetValueOrDefault("signature"),
@@ -112,7 +113,7 @@ public class RequestHandler(
             NeedCheckSignature =
                 NeedCheckSignature
                 && _cmsSetting.ListChannelCheckSignature.Any(x =>
-                    x.EqualsOrdinalIgnoreCase(infoHeaderModel.App)
+                    x.EqualsOrdinalIgnoreCase(infoHeaderModel?.App)
                 );
         }
         else
@@ -165,7 +166,7 @@ public class RequestHandler(
         ActionsResponseModel<object> result = new();
         try
         {
-            string appPost = infoHeader.App;
+            string? appPost = infoHeader.App;
             _workContext.SetCurrentChannel(appPost);
             Dictionary<string, string> requestCookies = httpContext.GetCookies();
             string getSsidFromCookies = "";
@@ -228,9 +229,7 @@ public class RequestHandler(
                         {
                             throw new Exception("Signature is invalid.");
                         }
-                        string[] roles = System.Text.Json.JsonSerializer.Deserialize<string[]>(
-                            currentSession.ChannelRoles
-                        );
+                        string[]? roles = currentSession.ChannelRoles.FromJson<string[]>();
                         if (!roles.Contains(appPost))
                         {
                             throw new Exception(
