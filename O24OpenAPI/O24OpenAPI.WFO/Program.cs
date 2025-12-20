@@ -24,7 +24,11 @@ builder
 
 builder.Configuration.AddEnvironmentVariables();
 builder.Services.ConfigureApplicationServices(builder);
-builder.ConfigureWebHost();
+if (!builder.Environment.IsDevelopment())
+{
+
+    builder.ConfigureWebHost();
+}
 builder.Services.AddGrpc(options =>
 {
     options.Interceptors.Add<GrpcLoggingInterceptor>();
