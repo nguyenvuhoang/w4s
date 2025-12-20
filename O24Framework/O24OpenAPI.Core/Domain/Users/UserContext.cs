@@ -2,11 +2,11 @@ namespace O24OpenAPI.Core.Domain.Users;
 
 public class UserContext
 {
-    public string UserId { get; private set; }
-    public string UserCode { get; private set; }
-    public string UserName { get; private set; }
-    public string UserChannel { get; private set; }
-    public string LoginName { get; private set; }
+    public string? UserId { get; private set; }
+    public string? UserCode { get; private set; }
+    public string? UserName { get; private set; }
+    public string? UserChannel { get; private set; }
+    public string? LoginName { get; private set; }
 
     public void SetUserContext(UserContext userContext)
     {
@@ -38,35 +38,35 @@ public class UserContext
 
     public void SetUserId(string userId)
     {
-        UserId = userId;
+        UserId = userId ?? UserId;
     }
 
-    public void SetUserCode(string userCode)
+    public void SetUserCode(string? userCode)
     {
-        UserCode = userCode;
+        UserCode = userCode ?? UserCode;
     }
 
-    public void SetUserName(string userName)
+    public void SetUserName(string? userName)
     {
-        UserName = userName;
+        UserName = userName ?? UserName;
     }
 
-    public void SetUserChannel(string userChannel)
+    public void SetUserChannel(string? userChannel)
     {
-        UserChannel = userChannel;
+        UserChannel = userChannel ?? UserChannel;
     }
 
-    public void SetLoginName(string loginName)
+    public void SetLoginName(string? loginName)
     {
-        LoginName = loginName;
+        LoginName = loginName ?? LoginName;
     }
 }
 
 public class UserContextTemplate
 {
-    public string UserId { get; set; }
-    public string UserCode { get; set; }
-    public string UserName { get; set; }
-    public string UserChannel { get; set; }
-    public string LoginName { get; set; }
+    public string? UserId { get; set; }
+    public string? UserCode { get; set; }
+    public string? UserName { get; set; }
+    public string? UserChannel { get; set; }
+    public string? LoginName { get; set; }
 }

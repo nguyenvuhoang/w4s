@@ -1,7 +1,7 @@
-using O24OpenAPI.Core.Enums;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using O24OpenAPI.Core.Enums;
 
 namespace O24OpenAPI.Core.Extensions;
 
@@ -128,7 +128,8 @@ public static class StringExtensions
         return dateTime.ToString(format);
     }
 
-    public static string DecimalToString(this decimal value, string format = "o") => value.ToString(format);
+    public static string DecimalToString(this decimal value, string format = "o") =>
+        value.ToString(format);
 
     public static decimal StringToDecimal(string value) =>
         decimal.TryParse(value, out var v) ? v : 0;
@@ -150,7 +151,7 @@ public static class StringExtensions
         return string.Equals(strA, strB, StringComparison.Ordinal);
     }
 
-    public static bool EqualsOrdinalIgnoreCase(this string strA, string strB)
+    public static bool EqualsOrdinalIgnoreCase(this string? strA, string? strB)
     {
         if (ReferenceEquals(strA, strB))
         {
