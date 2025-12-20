@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using LinKit.Json.Runtime;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Helper;
 using O24OpenAPI.Framework.Constants;
@@ -15,27 +16,27 @@ public class DataMapper : IDataMapper
     private static readonly Dictionary<string, Delegate> _handlers = new()
     {
         ["dataS"] = (GetValue<string>),
-        ["dataSNull"] = (GetValueNullable<string>),
+        ["dataSNull"] = (GetValue<string>),
         ["dataI"] = (GetValue<int>),
-        ["dataINull"] = (GetValueNullable<int>),
+        ["dataINull"] = (GetValue<int?>),
         ["dataB"] = (GetValue<bool>),
-        ["dataBNull"] = (GetValueNullable<bool>),
+        ["dataBNull"] = (GetValue<bool?>),
         ["dataN"] = (GetValue<decimal>),
-        ["dataNNull"] = (GetValueNullable<decimal>),
+        ["dataNNull"] = (GetValue<decimal?>),
         ["dataDt"] = (GetValue<DateTime>),
-        ["dataDtNull"] = (GetValueNullable<DateTime>),
+        ["dataDtNull"] = (GetValue<DateTime?>),
         ["dataD"] = (GetValue<double>),
-        ["dataDNull"] = (GetValueNullable<double>),
+        ["dataDNull"] = (GetValue<double?>),
         ["dataL"] = (GetValue<long>),
-        ["dataLNull"] = (GetValueNullable<long>),
+        ["dataLNull"] = (GetValue<long?>),
         ["dataO"] = (GetValue<JsonObject>),
-        ["dataONull"] = (GetValueNullable<JsonObject>),
+        ["dataONull"] = (GetValue<JsonObject>),
         ["dataUnixToDate"] = GetDateTimeFromUnix,
         ["dataDateToUnix"] = GetUnixFromDateTime,
         ["dataUnixToDateLocal"] = GetDateTimeLocalFromUnix,
         ["dataDateToUnixLocal"] = GetUnixLocalFromDateTime,
         ["dataA"] = (GetValue<JsonArray>),
-        ["dataANull"] = (GetValueNullable<JsonArray>),
+        ["dataANull"] = (GetValue<JsonArray>),
         ["dataSet"] = GetDataSet,
         ["dataUnixMilToDateLocal"] = GetDateTimeLocalFromUnixMil,
         ["dataFormatDate"] = GetFormatCustomDate,
@@ -181,18 +182,12 @@ public class DataMapper : IDataMapper
                     continue;
                 }
 
-                switch (property.Value)
+                result[property.Key] = property.Value switch
                 {
-                    case JsonArray array:
-                        result[property.Key] = await MapArrayDataAsync(source, array);
-                        break;
-                    case JsonObject obj:
-                        result[property.Key] = await MapDataAsync(source, obj, func);
-                        break;
-                    default:
-                        result[property.Key] = property.Value.Deserialize<object>();
-                        break;
-                }
+                    JsonArray array => await MapArrayDataAsync(source, array),
+                    JsonObject obj => await MapDataAsync(source, obj, func),
+                    _ => property.Value.Deserialize<object>(),
+                };
             }
         }
         catch (Exception ex)
@@ -319,84 +314,14 @@ public class DataMapper : IDataMapper
 
     private static object GetValue<T>(MappingContext context)
     {
-        var token = context.DataSource.GetValueByPath(context.JsonPath);
-        if (token == null || token.GetValueKind() == JsonValueKind.Null)
+        if (context.DataSource.TryGetValueByPath(context.JsonPath, out T value))
+        {
+            return value;
+        }
+        else
         {
             return default(T);
         }
-
-        if (typeof(T) == typeof(JsonObject))
-        {
-            return token as JsonObject;
-        }
-
-        if (typeof(T) == typeof(JsonArray))
-        {
-            return token as JsonArray;
-        }
-
-        if (token is JsonValue jsonValue)
-        {
-            try
-            {
-                var result = ConvertJsonValue<T>(jsonValue);
-
-                if (typeof(T) == typeof(string) && result is string strValue)
-                {
-                    return strValue.Trim();
-                }
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error converting value for type {typeof(T)}: {ex.Message}");
-                return default(T);
-            }
-        }
-
-        return default(T);
-    }
-
-    private static object GetValueNullable<T>(MappingContext context)
-    {
-        var token = JsonHelper.GetValueByPath(context.DataSource, context.JsonPath);
-        if (token == null || string.IsNullOrWhiteSpace(token.ToString()))
-        {
-            return null;
-        }
-
-        if (typeof(T) == typeof(JsonObject))
-        {
-            return token as JsonObject;
-        }
-
-        if (typeof(T) == typeof(JsonArray))
-        {
-            return token as JsonArray;
-        }
-
-        if (token is JsonValue jsonValue)
-        {
-            try
-            {
-                var result = ConvertJsonValue<T>(jsonValue);
-
-                if (typeof(T) == typeof(string) && result is string strValue)
-                {
-                    return strValue.Trim();
-                }
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error converting value for type {typeof(T)}: {ex.Message}");
-                return null;
-            }
-        }
-
-        return null;
     }
 
     public static T ConvertJsonValue<T>(JsonValue jsonValue)
