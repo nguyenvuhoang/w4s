@@ -1,6 +1,6 @@
 using LinKit.Core.Mapping;
 using O24OpenAPI.CMS.API.Application.Models;
-using O24OpenAPI.CMS.Domain.AggregateModels.AppAggregate;
+using O24OpenAPI.CMS.Domain.AggregateModels.LearnApiAggregate;
 
 namespace O24OpenAPI.CMS.API.Application.Mapping;
 

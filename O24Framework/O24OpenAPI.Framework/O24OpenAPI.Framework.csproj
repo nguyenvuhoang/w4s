@@ -14,8 +14,7 @@
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageReference Include="Grpc.AspNetCore.Server" Version="2.71.0" />
     <PackageReference Include="Humanizer.Core" Version="2.14.1" />
-    <PackageReference Include="Linh.JsonKit" Version="1.0.6" />
-    <PackageReference Include="LinKit.Core" Version="2.0.5" />
+    <PackageReference Include="LinKit.Core" Version="2.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.20" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
@@ -30,8 +29,8 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.0.1" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.0.1" />
-    <PackageReference Include="Riok.Mapperly" Version="4.3.0" />
     <PackageReference Include="Linh.CodeEngine" Version="1.0.3" />
+    <PackageReference Include="LinKit.Json.Runtime" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Data\O24OpenAPI.Data.csproj" />

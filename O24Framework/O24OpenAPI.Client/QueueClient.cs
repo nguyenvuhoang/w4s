@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
-using Linh.JsonKit.Json;
+using LinKit.Json.Runtime;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using O24OpenAPI.Client.Events;

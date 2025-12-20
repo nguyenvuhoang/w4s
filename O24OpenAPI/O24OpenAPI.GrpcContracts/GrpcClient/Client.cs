@@ -1,5 +1,5 @@
 ﻿using Grpc.Core;
-using Linh.JsonKit.Json;
+using LinKit.Json.Runtime;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.GrpcContracts.Factory;

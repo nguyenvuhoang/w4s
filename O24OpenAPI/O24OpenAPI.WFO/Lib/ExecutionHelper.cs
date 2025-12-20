@@ -1,6 +1,5 @@
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Services.Logging;
-using O24OpenAPI.WFO.Mapper;
 using O24OpenAPI.WFO.Models;
 using O24OpenAPI.WFO.Services.Interfaces;
 using ILogger = O24OpenAPI.Framework.Services.Logging.ILogger;
@@ -13,27 +12,27 @@ public class ExecutionHelper
     {
         try
         {
-            var wfi = wfExecution.execution.MapToWorkflowInfo();
+            Domain.WorkflowInfo wfi = wfExecution.execution.ToWorkflowInfo();
             await EngineContext.Current.Resolve<IWorkflowInfoService>().AddAsync(wfi);
             await DefaultLogger.CallLogGeneric(wfi, "WFO", "WORKFLOW_LOG");
-            var stepInfoService = EngineContext.Current.Resolve<IWorkflowStepInfoService>();
-            foreach (var item in wfExecution.execution_steps)
+            IWorkflowStepInfoService stepInfoService = EngineContext.Current.Resolve<IWorkflowStepInfoService>();
+            foreach (WorkflowStepInfoModel item in wfExecution.execution_steps)
             {
                 if (item.should_await)
                 {
-                    var entity = item.MapToWorkflowStepInfo();
+                    Domain.WorkflowStepInfo entity = item.ToWorkflowStepInfo();
                     await stepInfoService.AddAsync(entity);
                     await DefaultLogger.CallLogGeneric(entity, "WFO", "WORKFLOW_STEP_LOG");
                 }
                 else
                 {
-                    var stepInfo = await stepInfoService.GetByExecutionStep(
+                    Domain.WorkflowStepInfo stepInfo = await stepInfoService.GetByExecutionStep(
                         wfExecution.execution.execution_id,
                         item.step_execution_id
                     );
                     if (stepInfo == null)
                     {
-                        var entity = item.MapToWorkflowStepInfo();
+                        Domain.WorkflowStepInfo entity = item.ToWorkflowStepInfo();
                         await stepInfoService.AddAsync(entity);
                     }
                 }
@@ -41,7 +40,7 @@ public class ExecutionHelper
         }
         catch (Exception ex)
         {
-            var logService = EngineContext.Current.Resolve<ILogger>();
+            ILogger logService = EngineContext.Current.Resolve<ILogger>();
             WorkflowExecution _wfExecution = EngineContext.Current.Resolve<WorkflowExecution>();
             await logService.Error(ex.Message, ex, null, _wfExecution.execution.execution_id);
         }

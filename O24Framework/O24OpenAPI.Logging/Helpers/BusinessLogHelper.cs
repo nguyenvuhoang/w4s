@@ -1,6 +1,7 @@
-﻿using Linh.JsonKit.Json;
+﻿using LinKit.Json.Runtime;
 using O24OpenAPI.Logging.Enums;
 using Serilog;
+using System.Diagnostics;
 
 namespace O24OpenAPI.Logging.Helpers;
 
@@ -51,7 +52,7 @@ public static class BusinessLogHelper
     /// <param name="inputData">Optional: An object representing the input data for the action, will be serialized to JSON.</param>
     public static void LogProcess(string actionName, Action processAction, object? inputData = null)
     {
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
         Exception? exception = null;
 
         try
@@ -69,7 +70,7 @@ public static class BusinessLogHelper
             Log.ForContext("LogType", LogType.Business)
                 .ForContext("Direction", "Process")
                 .ForContext("Action", actionName)
-                .ForContext("Request", inputData?.ToJson())
+                .ForContext("Request", inputData?.ToJson(o => o.WriteIndented = true))
                 .ForContext("Error", exception)
                 .ForContext("Duration", stopwatch.ElapsedMilliseconds)
                 .Information("Business Process Log");

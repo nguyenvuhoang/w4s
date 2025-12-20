@@ -1,5 +1,5 @@
 using O24OpenAPI.CMS.Domain.AggregateModels;
-using O24OpenAPI.CMS.Domain.AggregateModels.AppAggregate;
+using O24OpenAPI.CMS.Domain.AggregateModels.LearnApiAggregate;
 using O24OpenAPI.CMS.Domain.AggregateModels.PORTAL;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Framework.Domain;

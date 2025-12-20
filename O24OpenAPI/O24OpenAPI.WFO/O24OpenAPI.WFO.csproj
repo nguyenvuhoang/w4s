@@ -40,7 +40,8 @@
     </AssemblyAttribute>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Riok.Mapperly" Version="4.3.0" />
+    <PackageReference Include="LinKit.Core" Version="2.0.7" />
+    <PackageReference Include="LinKit.Json.Runtime" Version="1.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.1" />
   </ItemGroup>
   <ItemGroup>

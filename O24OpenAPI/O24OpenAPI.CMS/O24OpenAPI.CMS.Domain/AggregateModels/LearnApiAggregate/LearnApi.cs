@@ -1,14 +1,9 @@
 ﻿using Newtonsoft.Json;
 
-namespace O24OpenAPI.CMS.Domain.AggregateModels.AppAggregate;
+namespace O24OpenAPI.CMS.Domain.AggregateModels.LearnApiAggregate;
 
 public class LearnApi : BaseEntity
 {
-    /// <summary>
-    ///
-    /// </summary>
-    public LearnApi() { }
-
     /// <summary>
     /// User code
     /// </summary>

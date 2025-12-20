@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Grpc.Core;
-using Linh.JsonKit.Json;
+using LinKit.Json.Runtime;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Domain;

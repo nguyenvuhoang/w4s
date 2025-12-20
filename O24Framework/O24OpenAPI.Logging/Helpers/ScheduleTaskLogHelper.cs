@@ -1,6 +1,7 @@
-﻿using Linh.JsonKit.Json;
+﻿using LinKit.Json.Runtime;
 using O24OpenAPI.Logging.Enums;
 using Serilog;
+using System.Diagnostics;
 
 namespace O24OpenAPI.Logging.Helpers;
 
@@ -23,9 +24,9 @@ public static class ScheduleTaskLogHelper
         object? inputData = null
     )
     {
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
         Exception? exception = null;
-        var timeStart = DateTime.UtcNow;
+        DateTime timeStart = DateTime.UtcNow;
 
         try
         {
@@ -39,12 +40,12 @@ public static class ScheduleTaskLogHelper
         finally
         {
             stopwatch.Stop();
-            var timeStop = DateTime.UtcNow;
+            DateTime timeStop = DateTime.UtcNow;
             Log.ForContext("LogType", LogType.ScheduleTask)
                 .ForContext("CorrelationId", correlationId)
                 .ForContext("Direction", "Internal")
                 .ForContext("Action", actionName)
-                .ForContext("Request", inputData?.ToJson())
+                .ForContext("Request", inputData?.ToJson(o => o.WriteIndented = true))
                 .ForContext("Error", exception)
                 .ForContext("Duration", stopwatch.ElapsedMilliseconds)
                 .ForContext("TimeStart", timeStart)
