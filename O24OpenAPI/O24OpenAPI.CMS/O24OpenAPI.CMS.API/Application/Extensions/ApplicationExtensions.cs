@@ -51,7 +51,7 @@ public class O24OpenAPIStartup : IO24OpenAPIStartup
         services.AddScoped<IFormFieldDefinitionService, FormFieldDefinitionService>();
         services.AddScoped<ICoreAPIService, CoreAPIService>();
         services.AddScoped<ISignalHubBusinessService, SignalHubBusinessService>();
-        services.AddLinKitCqrs();
+        //services.AddLinKitCqrs();
     }
 
     /// <summary>
