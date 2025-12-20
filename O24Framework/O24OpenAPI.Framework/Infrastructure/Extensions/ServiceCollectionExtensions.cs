@@ -1,7 +1,10 @@
+using System.Reflection;
 using Linh.CodeEngine.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.Client.EventBus.Extensions;
 using O24OpenAPI.Client.EventBus.Submitters;
@@ -36,10 +39,24 @@ public static class ServiceCollectionExtensions
     )
     {
         services.AddScoped<WorkContext>();
-        var currentAssembly = AppDomain.CurrentDomain.FriendlyName;
-        Console.WriteLine("Getting secret value ...");
-        var appSettings = InfisicalManager.GetSecretByKey<JObject>(currentAssembly);
-        Console.WriteLine("Getting secret value done");
+        JObject appSettings;
+        if (builder.Environment.IsDevelopment())
+        {
+            var json = File.ReadAllText("appsettings.json");
+            appSettings = JObject.Parse(json);
+        }
+        else
+        {
+            string currentAssembly = AppDomain.CurrentDomain.FriendlyName;
+            Console.WriteLine("Getting secret value ...");
+            appSettings = InfisicalManager.GetSecretByKey<JObject>(currentAssembly);
+            Console.WriteLine("Getting secret value done");
+        }
+        if (appSettings == null)
+        {
+            throw new Exception("AppSettings could not be loaded");
+        }
+
         CommonHelper.DefaultFileProvider = new O24OpenAPIFileProvider(builder.Environment);
         services.AddHttpContextAccessor();
 
@@ -48,8 +65,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ITypeFinder>(typeFinder);
 
         List<IConfig> lists = [];
-        var listConfigTypes = typeFinder.FindClassesOfType<IConfig>();
-        var list = listConfigTypes
+        IEnumerable<Type> listConfigTypes = typeFinder.FindClassesOfType<IConfig>();
+        List<IConfig> list = listConfigTypes
             .Select(configType => (IConfig)Activator.CreateInstance(configType))
             .ToList();
 
@@ -63,7 +80,7 @@ public static class ServiceCollectionExtensions
 
                 Type configType = instance.GetType();
 
-                var config = (IConfig)jObject.ToObject(configType);
+                IConfig config = (IConfig)jObject.ToObject(configType);
 
                 if (config != null)
                 {
@@ -91,7 +108,7 @@ public static class ServiceCollectionExtensions
         services.AddGrpcContracts();
         services.AddKeyedSingleton<ILogSubmitter, RabbitMqLogSubmitter>("rabbitmq");
         services.AddLinKitCqrs("fw");
-        var assembly = AppDomain
+        Assembly assembly = AppDomain
             .CurrentDomain.GetAssemblies()
             .FirstOrDefault(a =>
                 !a.IsDynamic
@@ -110,7 +127,8 @@ public static class ServiceCollectionExtensions
 
     private static void AddDistributedCache(this IServiceCollection services)
     {
-        var distributedCacheConfig = Singleton<AppSettings>.Instance.Get<DistributedCacheConfig>();
+        DistributedCacheConfig distributedCacheConfig =
+            Singleton<AppSettings>.Instance.Get<DistributedCacheConfig>();
 
         if (!distributedCacheConfig.Enabled)
         {
@@ -142,7 +160,7 @@ public static class ServiceCollectionExtensions
         string connectionString
     )
     {
-        var multiplexer = ConnectionMultiplexer.Connect(
+        ConnectionMultiplexer multiplexer = ConnectionMultiplexer.Connect(
             new ConfigurationOptions { EndPoints = { connectionString } }
         );
 
