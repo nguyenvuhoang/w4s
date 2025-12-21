@@ -13,6 +13,7 @@ public class ContextInfoRequestModel
     private string ClientBrowser = "";
     public string Language { get; set; } = "";
     private BoRequestModel RequestJson = new();
+    private RequestModel RequestModel = new RequestModel();
 
     public string GetIp() => Ip;
 
@@ -40,6 +41,13 @@ public class ContextInfoRequestModel
     public void SetRequestJson(BoRequestModel requestJson)
     {
         RequestJson = requestJson;
+    }
+
+    public RequestModel GetRequestModel() => RequestModel;
+
+    public void SetRequestModel(RequestModel requestModel)
+    {
+        RequestModel = requestModel;
     }
 
     /// <summary>

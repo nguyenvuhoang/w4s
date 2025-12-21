@@ -1,7 +1,7 @@
+using System.Linq.Expressions;
 using LinqToDB;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Domain;
-using System.Linq.Expressions;
 
 namespace O24OpenAPI.Data.System.Linq;
 
@@ -152,7 +152,13 @@ public static class AsyncIQueryableExtensions
         if (source == null)
         {
             return (IPagedList<T>)
-                new PagedList<T>((IList<T>)new List<T>(), pageIndex, pageSize, totalSuccess, totalFailed);
+                new PagedList<T>(
+                    (IList<T>)new List<T>(),
+                    pageIndex,
+                    pageSize,
+                    totalSuccess,
+                    totalFailed
+                );
         }
 
         if (pageSize == 0)
@@ -175,7 +181,14 @@ public static class AsyncIQueryableExtensions
             collection = (List<T>)null;
         }
         return (IPagedList<T>)
-            new PagedList<T>((IList<T>)data, pageIndex, pageSize, new int?(count), totalSuccess, totalFailed);
+            new PagedList<T>(
+                (IList<T>)data,
+                pageIndex,
+                pageSize,
+                new int?(count),
+                totalSuccess,
+                totalFailed
+            );
     }
 
     /// <summary>

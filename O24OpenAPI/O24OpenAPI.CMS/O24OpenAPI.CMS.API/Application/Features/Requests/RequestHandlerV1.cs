@@ -1,6 +1,4 @@
-﻿using System.Text;
-using System.Text.Json.Serialization;
-using LinKit.Core.Abstractions;
+﻿using LinKit.Core.Abstractions;
 using LinKit.Json.Runtime;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Net.Http.Headers;
@@ -26,27 +24,91 @@ using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using O24OpenAPI.Logging.Helpers;
+using System.Text;
+using System.Text.Json.Serialization;
 
 namespace O24OpenAPI.CMS.API.Application.Features.Requests;
 
 #region Request Models
-public class BoRequestModel : BaseO24OpenAPIModel
-{
-    public BoRequestModel() { }
 
-    [JsonPropertyName("bo")]
-    public List<BoRequest> Bo { get; set; } = [];
+public class RequestModel
+{
+    [JsonPropertyName("learn_api")]
+    [JsonProperty("learn_api")]
+    public string LearnApi { get; set; } = string.Empty;
+
+    [JsonPropertyName("workflowid")]
+    [JsonProperty("workflowid")]
+    public string WorkflowId { get; set; } = string.Empty;
+
+    [JsonPropertyName("fields")]
+    [JsonProperty("fields")]
+    public Dictionary<string, object> Fields { get; set; } = [];
+
+    public void Validate()
+    {
+        if (string.IsNullOrWhiteSpace(WorkflowId) && string.IsNullOrWhiteSpace(LearnApi))
+        {
+            throw new ArgumentException("WorkflowId and LearnApi cannot both be null or empty");
+        }
+    }
 }
 
-public class BoRequest : BaseO24OpenAPIModel
+public class ResponseModel
 {
-    [JsonPropertyName("input")]
-    public Dictionary<string, object> Input { get; set; } = [];
+    /// <summary>
+    /// HTTP status code hoặc business code
+    /// </summary>
+    [JsonPropertyName("code")]
+    public string Code { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Trạng thái thành công/thất bại
+    /// </summary>
+    [JsonPropertyName("success")]
+    public bool Success { get; set; } = true;
+
+    /// <summary>
+    /// Thông báo mô tả kết quả
+    /// </summary>
+    [JsonPropertyName("message")]
+    public string Message { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Dữ liệu trả về
+    /// </summary>
+    [JsonPropertyName("data")]
+    public object? Data { get; set; }
+
+    /// <summary>
+    /// ID để trace/track execution
+    /// </summary>
+    [JsonPropertyName("execution_id")]
+    [JsonProperty("execution_id")]
+    public string ExecutionId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Timestamp khi response được tạo
+    /// </summary>
+    [JsonPropertyName("timestamp")]
+    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// Thông tin lỗi chi tiết (nếu có)
+    /// </summary>
+    [JsonPropertyName("errors")]
+    public List<ErrorInfoModel> Errors { get; set; } = [];
+
+    /// <summary>
+    /// Metadata bổ sung (optional)
+    /// </summary>
+    [JsonPropertyName("metadata")]
+    public Dictionary<string, object>? Metadata { get; set; }
 }
 #endregion
 
 [RegisterService(Lifetime.Scoped)]
-public class RequestHandler(
+public class RequestHandlerV1(
     ILocalizationService localizationService,
     WebApiSettings webApiSettings,
     IO24OpenAPIFileProvider fileProvider,
@@ -71,17 +133,10 @@ public class RequestHandler(
     private bool IsNeedCheckSession { get; set; } = true;
     private bool IsRefreshToken { get; set; } = false;
 
-    public async Task<ActionsResponseModel<object>> HandleAsync(
-        BoRequestModel request,
-        HttpContext httpContext
-    )
+    #region Standard
+    public async Task<ResponseModel> ProcessAsync(RequestModel request, HttpContext httpContext)
     {
-        if (request.Bo == null)
-        {
-            return new ActionsResponseModel<object>();
-        }
-
-        (IsNeedCheckSession, IsRefreshToken) = CheckInput(request.Bo);
+        (IsNeedCheckSession, IsRefreshToken) = CheckInput(request);
 
         Dictionary<string, string>? infoHeaderDictionary = httpContext.GetHeaders();
         RequestHeaderModel infoHeaderModel = new();
@@ -139,9 +194,10 @@ public class RequestHandler(
         }
         return await RunBo(request, infoHeaderModel, httpContext);
     }
+    #endregion
 
-    public virtual async Task<ActionsResponseModel<object>> RunBo(
-        BoRequestModel request_json,
+    public async Task<ResponseModel> RunBo(
+        RequestModel requestModel,
         RequestHeaderModel infoHeader,
         HttpContext httpContext
     )
@@ -155,16 +211,14 @@ public class RequestHandler(
             );
             if (!validateTokenResponse.IsValid)
             {
-                List<ErrorInfoModel> error = await AddErrorSystem("CMS.string.invalidtoken", "401");
-                return new ActionsResponseModel<object> { error = error };
+                List<ErrorInfoModel> error = await AddErrorSystem("invalid.token", "401");
+                return ResponseFactory.Error(error);
             }
             infoHeader.UserId = validateTokenResponse.UserId;
             _workContext.UserContext.SetUserId(infoHeader.UserId);
         }
         #endregion
-
-        List<BoRequest> BoArrays = request_json.Bo;
-        ActionsResponseModel<object> result = new();
+        ResponseModel result = new();
         try
         {
             string? appPost = infoHeader.App;
@@ -197,8 +251,7 @@ public class RequestHandler(
                                 "Invalid Token",
                                 "400"
                             );
-                            result.error.AddRange(error);
-                            return result;
+                            return ResponseFactory.Error(error);
                         }
                         isValid = true;
                     }
@@ -209,8 +262,7 @@ public class RequestHandler(
                             "Can not connect to Control Hub",
                             "401"
                         );
-                        result.error.AddRange(error);
-                        return result;
+                        return ResponseFactory.Error(error);
                     }
 
                     if (isValid)
@@ -218,7 +270,7 @@ public class RequestHandler(
                         if (
                             NeedCheckSignature
                             && !SignatureUtils.VerifySignature(
-                                requestObject: request_json.Bo[0],
+                                requestObject: requestModel,
                                 timestamp: infoHeader.Timestamp,
                                 signatureHex: infoHeader.Signature,
                                 nonceHex: infoHeader.Nonce,
@@ -241,7 +293,6 @@ public class RequestHandler(
                         _workContext.UserContext.SetLoginName(currentSession.LoginName);
                         _workContext.UserContext.SetUserName(currentSession.UserName);
                         _workContext.UserContext.SetUserCode(currentSession.UserCode);
-                        BoArrays.ForEach(e => e.Input["user_session"] = currentSession.ToJToken());
                         checkedSession = true;
                     }
                     else
@@ -258,18 +309,13 @@ public class RequestHandler(
             {
                 Console.WriteLine(ex.StackTrace);
                 List<ErrorInfoModel> error = await AddErrorSystem(ex.Message, "500");
-                result.error.AddRange(error);
-                return result;
+                return ResponseFactory.Error(error);
             }
 
             if (!checkedSession)
             {
-                List<ErrorInfoModel> error = await AddErrorSystem(
-                    "CMS.string.invalidsession",
-                    "401"
-                );
-                result.error.AddRange(error);
-                return result;
+                List<ErrorInfoModel> error = await AddErrorSystem("invalid.session", "401");
+                return ResponseFactory.Error(error);
             }
             #endregion
 
@@ -277,7 +323,7 @@ public class RequestHandler(
             context.InfoRequest.SetIp(httpContext.GetClientIPAddress());
             context.InfoRequest.SetClientOs(httpContext.GetClientOs());
             context.InfoRequest.SetClientBrowser(httpContext.GetClientBrowser());
-            context.InfoRequest.SetRequestJson(request_json);
+            context.InfoRequest.SetRequestModel(requestModel);
             context.InfoRequest.DeviceID = StringUtils.Coalesce(
                 getSsidFromCookies,
                 infoHeader.MyDevice.TryGetValue("device_id", out object? deviceId)
@@ -373,27 +419,16 @@ public class RequestHandler(
             context.InfoRequest.Language = infoHeader.Lang;
             context.InfoApp.App = appPost;
 
-            foreach (BoRequest bo_ in BoArrays)
-            {
-                await ProcessBoRequest(result, bo_);
-            }
+            result = await ProcessBoRequest(requestModel);
 
-            Console.WriteLine("result.error ==" + result.error.ToSerialize());
-            if (result.error != null)
-            {
-                if (result.error.Count > 0)
-                {
-                    result.fo.Add(CreateFoError(result.error));
-                }
-            }
+            Console.WriteLine("result.error ==" + result.ToSerialize());
+            return result;
         }
         catch (Exception ex)
         {
             List<ErrorInfoModel> error = await AddErrorSystem(ex.Message, "500");
-            result?.error?.AddRange(error);
-            return result;
+            return ResponseFactory.Error(error);
         }
-        return result;
     }
 
     private async Task<List<ErrorInfoModel>> AddErrorSystem(string keyError, string key = "")
@@ -437,42 +472,22 @@ public class RequestHandler(
         }
     }
 
-    private async Task ProcessBoRequest(ActionsResponseModel<object> resultFo, BoRequest boRequest)
+    private async Task<ResponseModel> ProcessBoRequest(RequestModel requestModel)
     {
         WorkContext? workflowContext = EngineContext.Current.Resolve<WorkContext>();
         string executeId = workflowContext.ExecutionId;
-        context.Bo.SetBoInput(JObject.FromObject(boRequest.Input));
-        context.Bo.SetActionInput([]);
 
-        string appCode = context.InfoApp.GetApp();
-
-        JObject? data = (await ExecuteAsync()).Value<JObject>("data");
+        JObject? data = (await ExecuteAsync(requestModel)).Value<JObject>("data");
 
         if (data != null)
         {
-            List<FoResponseModel<object>> fo =
-            [
-                new()
-                {
-                    txcode = boRequest.Input.GetStringValue("learn_api"),
-                    input = [],
-                    executeId = executeId,
-                },
-            ];
-            ActionsResponseModel<object> rsFo = new() { fo = fo };
-
-            List<FoResponseModel<object>> foArray = CreateFo(rsFo.fo, data);
-            if (foArray != null)
-            {
-                resultFo.fo.AddRange(foArray);
-            }
-
             if (
                 data.TryGetValue("error_message", out JToken? errorMessage)
                 && !string.IsNullOrWhiteSpace(errorMessage?.ToString())
             )
             {
-                resultFo.error.Add(
+                List<ErrorInfoModel> errors =
+                [
                     new ErrorInfoModel(
                         ErrorType.errorSystem,
                         ErrorMainForm.danger,
@@ -481,156 +496,82 @@ public class RequestHandler(
                         "ERROR: ",
                         nextAction: data["next_action"]?.ToString() ?? "",
                         executeId: executeId
-                    )
-                );
+                    ),
+                ];
+                return ResponseFactory.Error(errors, executeId);
             }
+            return ResponseFactory.Success(data);
         }
-
-        if (context.Bo.GetActionErrors() != null)
-        {
-            resultFo.error.AddRange(context.Bo.GetActionErrors());
-        }
+        List<ErrorInfoModel> genericError =
+        [
+            new ErrorInfoModel(
+                ErrorType.errorSystem,
+                ErrorMainForm.danger,
+                "An unknown error occurred.",
+                "UNKNOWN_ERROR",
+                "ERROR: ",
+                executeId: executeId
+            ),
+        ];
+        return ResponseFactory.Error(genericError, executeId);
     }
 
-    private static List<FoResponseModel<object>> CreateFo(
-        List<FoResponseModel<object>> arrayFo,
-        JObject actionInput
-    )
-    {
-        List<FoResponseModel<object>> rs = [];
-        foreach (FoResponseModel<object> obj in arrayFo)
-        {
-            FoResponseModel<object> obRs = new();
-            if (!string.IsNullOrWhiteSpace(obj.txcode))
-            {
-                obRs.txcode = obj.txcode.Trim();
-
-                if (obj.input != null)
-                {
-                    Dictionary<string, object> obJoin = [];
-                    foreach (KeyValuePair<string, object> itemObj in obj.input)
-                    {
-                        obJoin.Add(itemObj.Key, itemObj.Value);
-                    }
-
-                    foreach (KeyValuePair<string, JToken?> itemActionInput in actionInput)
-                    {
-                        if (obJoin.ContainsKey(itemActionInput.Key))
-                        {
-                            obJoin[itemActionInput.Key] = itemActionInput.Value;
-                        }
-                        else
-                        {
-                            obJoin.Add(itemActionInput.Key, itemActionInput.Value);
-                        }
-                    }
-
-                    obRs.executeId = obj.executeId;
-                    obRs.input = obJoin;
-                    rs.Add(obRs);
-                }
-                else if (!string.IsNullOrEmpty(obRs.txcode))
-                {
-                    obRs.input = actionInput.ToDictionary();
-
-                    rs.Add(obRs);
-                }
-            }
-            else
-            {
-                BusinessLogHelper.Warning(
-                    "Transaction code [TXCODE] is not null. Please check learnapi or check the input data."
-                );
-            }
-        }
-
-        return rs;
-    }
-
-    private static FoResponseModel<object> CreateFoError(List<ErrorInfoModel> arr)
-    {
-        FoResponseModel<object> rs_ = new() { txcode = "#sys:fo-sys-showError" };
-        Dictionary<string, object> input = new() { { "infoError", arr } };
-        rs_.input = input;
-        return rs_;
-    }
-
-    private (bool isNeedCheckSession, bool isRefreshToken) CheckInput(List<BoRequest> boArrays)
+    private (bool isNeedCheckSession, bool isRefreshToken) CheckInput(RequestModel request)
     {
         const string keyLogin = "LOGIN";
         bool isNeedCheckSession = true;
         bool isRefreshToken = true;
 
-        foreach (BoRequest e in boArrays)
+        string workflowStr = request.WorkflowId ?? string.Empty;
+        string learnApiStr = request.LearnApi ?? string.Empty;
+
+        if (
+            learnApiStr.Contains(keyLogin)
+            || workflowStr.Contains(keyLogin)
+            || _cmsSetting.ListWorkflowNotCheckSession.Contains(workflowStr)
+        )
         {
-            e.Input.TryGetValue("workflowid", out object? workflowId);
-            string workflowStr = workflowId as string ?? string.Empty;
+            isNeedCheckSession = false;
+        }
 
-            e.Input.TryGetValue("learn_api", out object? learnApi);
-            string learnApiStr = learnApi as string ?? string.Empty;
+        if (!workflowStr.Contains("REFRESH_TOKEN"))
+        {
+            isRefreshToken = false;
+        }
 
-            if (
-                learnApiStr.Contains(keyLogin)
-                || workflowStr.Contains(keyLogin)
-                || _cmsSetting.ListWorkflowNotCheckSession.Contains(workflowStr)
-            )
-            {
-                isNeedCheckSession = false;
-            }
+        if (_cmsSetting.ListWorkflowNotCheckSignature.Contains(workflowStr))
+        {
+            NeedCheckSignature = false;
+        }
 
-            if (!workflowStr.Contains("REFRESH_TOKEN"))
-            {
-                isRefreshToken = false;
-            }
-
-            if (_cmsSetting.ListWorkflowNotCheckSignature.Contains(workflowStr))
-            {
-                NeedCheckSignature = false;
-            }
-
-            if (!isNeedCheckSession && !isRefreshToken)
-            {
-                return (false, false);
-            }
+        if (!isNeedCheckSession && !isRefreshToken)
+        {
+            return (false, false);
         }
 
         return (isNeedCheckSession, isRefreshToken);
     }
 
-    private async Task<JObject> ExecuteAsync()
+    private async Task<JObject> ExecuteAsync(RequestModel requestModel)
     {
         try
         {
-            JObject boInput = context.Bo.GetBoInput();
-            if (boInput == null)
-            {
-                throw new ArgumentNullException(
-                    nameof(boInput),
-                    "BoInput cannot be null or empty!"
-                );
-            }
             string response;
-            if (
-                !boInput.TryGetValue("workflowid", out JToken? workflowIdToken)
-                || string.IsNullOrEmpty(workflowIdToken.ToString())
-            )
+            if (!string.IsNullOrEmpty(requestModel.LearnApi))
             {
-                string? learnApiId = boInput["learn_api"]?.ToString();
-                if (string.IsNullOrEmpty(learnApiId))
-                {
-                    throw new ArgumentNullException(
-                        nameof(learnApiId),
-                        "LearnApi cannot be null or empty!"
-                    );
-                }
+                string? learnApiId = requestModel.LearnApi;
+
                 LearnApi learnApi = await learnApiRepository.GetByChannelAndLearnApiIdAsync(
                     context.InfoApp.GetApp(),
                     learnApiId
                 );
-                JObject mappedRequest = BuildContentWorkflowRequest();
+                JObject mappedRequest = BuildContentWorkflowRequest(requestModel);
                 if (learnApi.LearnApiMapping.HasValue())
                 {
-                    mappedRequest = await dataMappingService.MapDataAsync(boInput, mappedRequest);
+                    mappedRequest = await dataMappingService.MapDataAsync(
+                        JObject.FromObject(requestModel),
+                        mappedRequest
+                    );
                 }
                 if (learnApi.URI.StartsWith("$"))
                 {
@@ -665,7 +606,7 @@ public class RequestHandler(
             }
             else
             {
-                JObject obContent = BuildContentWorkflowRequest();
+                JObject obContent = BuildContentWorkflowRequest(requestModel);
                 IWFOGrpcClientService? wfoGrpcClientService =
                     EngineContext.Current.Resolve<IWFOGrpcClientService>();
                 response = await wfoGrpcClientService.ExecuteWorkflowAsync(
@@ -695,9 +636,9 @@ public class RequestHandler(
         }
     }
 
-    private JObject BuildContentWorkflowRequest()
+    private JObject BuildContentWorkflowRequest(RequestModel requestModel)
     {
-        JObject sourceInput = context.Bo.GetBoInput();
+        JObject sourceInput = JObject.FromObject(requestModel);
         JObject wfInput = new(sourceInput)
         {
             ["lang"] = context.InfoRequest.Language,
@@ -772,7 +713,10 @@ public class RequestHandler(
         return result;
     }
 
-    public Task<ResponseModel> ProcessAsync(RequestModel request, HttpContext httpContext)
+    public Task<ActionsResponseModel<object>> HandleAsync(
+        BoRequestModel bo,
+        HttpContext httpContext
+    )
     {
         throw new NotImplementedException();
     }
