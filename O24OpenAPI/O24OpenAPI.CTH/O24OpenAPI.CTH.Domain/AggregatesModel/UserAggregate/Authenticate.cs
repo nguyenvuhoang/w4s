@@ -1,0 +1,24 @@
+using Newtonsoft.Json;
+using O24OpenAPI.Core.Domain;
+using System.Text.Json.Serialization;
+
+namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
+
+/// <summary>
+/// The user session class
+/// </summary>
+/// <seealso cref="BaseEntity"/>
+public class Authenticate : BaseEntity
+{
+
+    public string Token { get; set; }
+
+    public string RefreshToken { get; set; }
+
+    public DateTime ExpiredIn { get; set; }
+
+
+    public long ExpiredDuration { get; set; }
+
+    public bool IsFirstLogin { get; set; } = true;
+}
