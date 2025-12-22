@@ -9,6 +9,7 @@ using O24OpenAPI.CTH.API.Application.Utils;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.CTH.Infrastructure.Configurations;
 using O24OpenAPI.Framework;
+using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
@@ -70,6 +71,7 @@ public class LoginCommand : BaseTransactionModel, ICommand<LoginToO24OpenAPIRequ
     public string Memory { get; set; } = string.Empty;
 }
 
+[CqrsHandler]
 public class LoginHandel(
     IAuthenticateRepository authenticateRepository,
     ISupperAdminRepository supperAdminRepository,
@@ -82,6 +84,7 @@ public class LoginHandel(
     IUserPasswordRepository userPasswordRepository
 ) : ICommandHandler<LoginCommand, LoginToO24OpenAPIRequestModel>
 {
+    [WorkflowStep("UMG_LOGIN")]
     public async Task<AuthResponseModel> HandleAsync(
         LoginCommand request,
         CancellationToken cancellationToken = default
