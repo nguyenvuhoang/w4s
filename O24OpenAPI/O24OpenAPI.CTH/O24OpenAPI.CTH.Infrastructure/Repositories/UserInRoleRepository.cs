@@ -35,4 +35,10 @@ public class UserInRoleRepository(
             await BulkDelete(roles);
         }
     }
+
+    public async Task<List<UserInRole>> ListOfRole(string usercode)
+    {
+        List<UserInRole> listOfRole = await Table.Where(s => s.UserCode == usercode).ToListAsync();
+        return listOfRole;
+    }
 }

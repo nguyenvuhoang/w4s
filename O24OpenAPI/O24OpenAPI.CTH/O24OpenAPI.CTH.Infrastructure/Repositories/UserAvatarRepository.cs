@@ -2,8 +2,8 @@ using LinKit.Core.Abstractions;
 using LinqToDB;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Events;
-using O24OpenAPI.Data;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
+using O24OpenAPI.Data;
 
 namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
@@ -17,7 +17,7 @@ public class UserAvatarRepository(
         IUserAvatarRepository
 {
 
-    public async Task<UserAvatar?> GetByUserCodeAsync(string userCode)
+    public async Task<UserAvatar> GetByUserCodeAsync(string userCode)
     {
         return await Table.Where(s => s.UserCode == userCode).FirstOrDefaultAsync();
     }
