@@ -9,6 +9,7 @@ using O24OpenAPI.CTH.API.Application.Utils;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.CTH.Infrastructure.Configurations;
 using O24OpenAPI.Framework;
+using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
@@ -70,8 +71,8 @@ public class LoginCommand : BaseTransactionModel, ICommand<LoginToO24OpenAPIRequ
     public string Memory { get; set; } = string.Empty;
 }
 
+[CqrsHandler]
 public class LoginHandel(
-    IAuthenticateRepository authenticateRepository,
     ISupperAdminRepository supperAdminRepository,
     IUserAccountRepository userAccountRepository,
     IJwtTokenService jwtTokenService,
@@ -82,6 +83,7 @@ public class LoginHandel(
     IUserPasswordRepository userPasswordRepository
 ) : ICommandHandler<LoginCommand, LoginToO24OpenAPIRequestModel>
 {
+    [WorkflowStep("WF_STEP_CTH_LOGIN")]
     public async Task<AuthResponseModel> HandleAsync(
         LoginCommand request,
         CancellationToken cancellationToken = default
@@ -100,10 +102,10 @@ public class LoginHandel(
 
     private async Task<AuthResponseModel> GenerateTokenAndSession(LoginCommand model)
     {
-        var currentTime = DateTime.UtcNow;
-        var expireTime = currentTime.AddDays(Convert.ToDouble(webApiSettings.TokenLifetimeDays));
-        var token = model.CoreToken;
-        var refreshToken = model.RefreshToken;
+        DateTime currentTime = DateTime.UtcNow;
+        DateTime expireTime = currentTime.AddDays(Convert.ToDouble(webApiSettings.TokenLifetimeDays));
+        string token = model.CoreToken;
+        string refreshToken = model.RefreshToken;
         if (string.IsNullOrEmpty(token))
         {
             token = jwtTokenService.GetNewJwtToken(
@@ -123,14 +125,14 @@ public class LoginHandel(
         {
             refreshToken = JwtTokenService.GenerateRefreshToken();
         }
-        var hashedToken = token.Hash();
-        var hashedRefreshToken = refreshToken.Hash();
-        var stringJson = model.RoleChannel;
-        var listRoles = System.Text.Json.JsonSerializer.Deserialize<int[]>(stringJson);
-        var channelRoles = await userRightRepository.GetSetChannelInRoleAsync(listRoles);
+        string hashedToken = token.Hash();
+        string hashedRefreshToken = refreshToken.Hash();
+        string stringJson = model.RoleChannel;
+        int[]? listRoles = System.Text.Json.JsonSerializer.Deserialize<int[]>(stringJson);
+        HashSet<string> channelRoles = await userRightRepository.GetSetChannelInRoleAsync(listRoles);
         await userSessionRepository.RevokeByLoginName(model.LoginName);
 
-        var userSession = new UserSession
+        UserSession userSession = new()
         {
             Token = hashedToken,
             UserId = model.UserId,
@@ -160,10 +162,10 @@ public class LoginHandel(
 
     public async Task<AuthResponseModel> LoginByO24User(LoginCommand model)
     {
-        var currentTime = DateTime.UtcNow;
-        var expireTime = currentTime.AddDays(Convert.ToDouble(webApiSettings.TokenLifetimeDays));
+        DateTime currentTime = DateTime.UtcNow;
+        DateTime expireTime = currentTime.AddDays(Convert.ToDouble(webApiSettings.TokenLifetimeDays));
 
-        var userAccount = await GetLoginAccount(
+        UserAccount userAccount = await GetLoginAccount(
             model.LoginName,
             password: model.Password,
             model.ChannelId,
@@ -173,7 +175,7 @@ public class LoginHandel(
         await userDeviceRepository.EnsureUserDeviceAsync(
             userCode: userAccount.UserCode,
             loginName: model.LoginName,
-            deviceId: model.DeviceId + model.Modelname ?? "",
+            deviceId: (model.DeviceId + model.Modelname) ?? "",
             deviceType: model.DeviceType,
             userAgent: model.UserAgent,
             ipAddress: model.IpAddress,
@@ -191,7 +193,7 @@ public class LoginHandel(
             memory: model.Memory
         );
 
-        var token = jwtTokenService.GetNewJwtToken(
+        string token = jwtTokenService.GetNewJwtToken(
             new O24OpenAPI.Core.Domain.Users.User
             {
                 Id = userAccount.Id,
@@ -203,17 +205,17 @@ public class LoginHandel(
             },
             ((DateTimeOffset)expireTime).ToUnixTimeSeconds()
         );
-        var hashedToken = token.Hash();
-        var refreshToken = JwtTokenService.GenerateRefreshToken();
-        var hashedRefreshToken = refreshToken.Hash();
-        var stringJson = !string.IsNullOrEmpty(userAccount.RoleChannel)
+        string hashedToken = token.Hash();
+        string refreshToken = JwtTokenService.GenerateRefreshToken();
+        string hashedRefreshToken = refreshToken.Hash();
+        string stringJson = !string.IsNullOrEmpty(userAccount.RoleChannel)
             ? userAccount.RoleChannel
             : model.RoleChannel;
-        var listRoles = System.Text.Json.JsonSerializer.Deserialize<int[]>(stringJson);
-        var channelRoles = await userRightRepository.GetSetChannelInRoleAsync(listRoles);
+        int[]? listRoles = System.Text.Json.JsonSerializer.Deserialize<int[]>(stringJson);
+        HashSet<string> channelRoles = await userRightRepository.GetSetChannelInRoleAsync(listRoles);
         await userSessionRepository.RevokeByLoginName(model.LoginName);
 
-        var userSession = new UserSession
+        UserSession userSession = new()
         {
             Token = hashedToken,
             UserId = userAccount.UserId,
@@ -228,7 +230,7 @@ public class LoginHandel(
             UserCode = userAccount.UserCode,
             BranchCode = userAccount.BranchCode,
             UserName = userAccount.UserName,
-            Device = model.DeviceId + model.Modelname ?? "",
+            Device = (model.DeviceId + model.Modelname) ?? "",
         };
         await userSessionRepository.Insert(userSession);
 
@@ -250,7 +252,7 @@ public class LoginHandel(
 
     private async Task<AuthResponseModel> LoginBySupperAdmin(LoginCommand request)
     {
-        var sAdmin =
+        SupperAdmin sAdmin =
             await supperAdminRepository.IsExit()
             ?? throw new O24OpenAPIException("Supper Admin does not exit.");
 
@@ -260,17 +262,17 @@ public class LoginHandel(
         }
         ;
 
-        var userAccount = await GetLoginAccount(
+        UserAccount userAccount = await GetLoginAccount(
             request.LoginName,
             password: request.Password,
             request.ChannelId,
             request.Language
         );
 
-        var currentTime = DateTime.UtcNow;
-        var expireTime = currentTime.AddDays(Convert.ToDouble(webApiSettings.TokenLifetimeDays));
+        DateTime currentTime = DateTime.UtcNow;
+        DateTime expireTime = currentTime.AddDays(Convert.ToDouble(webApiSettings.TokenLifetimeDays));
 
-        var token = jwtTokenService.GetNewJwtToken(
+        string token = jwtTokenService.GetNewJwtToken(
             new O24OpenAPI.Core.Domain.Users.User
             {
                 Id = userAccount.Id,
@@ -283,11 +285,11 @@ public class LoginHandel(
             ((DateTimeOffset)expireTime).ToUnixTimeSeconds()
         );
 
-        var hashedToken = token.Hash();
-        var refreshToken = JwtTokenService.GenerateRefreshToken();
-        var hashedRefreshToken = refreshToken.Hash();
-        var channelRoles = await userRightRepository.GetSetChannelInRoleAsync(1);
-        var userSession = new UserSession
+        string hashedToken = token.Hash();
+        string refreshToken = JwtTokenService.GenerateRefreshToken();
+        string hashedRefreshToken = refreshToken.Hash();
+        HashSet<string> channelRoles = await userRightRepository.GetSetChannelInRoleAsync(1);
+        UserSession userSession = new()
         {
             Token = hashedToken,
             UserId = userAccount.UserId,
@@ -302,7 +304,7 @@ public class LoginHandel(
             UserCode = userAccount.UserCode,
             BranchCode = userAccount.BranchCode,
             UserName = userAccount.UserName,
-            Device = request.DeviceId + request.Modelname ?? "",
+            Device = (request.DeviceId + request.Modelname) ?? "",
         };
         await userSessionRepository.Insert(userSession);
         userAccount.LastLoginTime = DateTime.Now;
@@ -334,7 +336,7 @@ public class LoginHandel(
         string language
     )
     {
-        var user =
+        UserAccount user =
             await userAccountRepository
                 .Table.Where(s =>
                     s.ChannelId == channelId
@@ -348,7 +350,7 @@ public class LoginHandel(
                 [loginName]
             );
 
-        var userPassword =
+        UserPassword userPassword =
             await userPasswordRepository
                 .Table.Where(s => s.ChannelId == channelId && s.UserId == user.UserId)
                 .FirstOrDefaultAsync()
@@ -358,7 +360,7 @@ public class LoginHandel(
                 []
             );
 
-        var setting = EngineContext.Current.Resolve<ControlHubSetting>();
+        ControlHubSetting? setting = EngineContext.Current.Resolve<ControlHubSetting>();
 
         if (user.Status == Common.BLOCK && user.LockedUntil.HasValue)
         {
