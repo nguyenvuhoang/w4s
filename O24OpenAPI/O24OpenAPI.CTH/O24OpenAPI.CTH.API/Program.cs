@@ -34,5 +34,6 @@ AsyncScope.Scope = scope;
 await app.ConfigureInfrastructure();
 await app.StartEngine();
 app.ShowStartupBanner();
+//app.MapGeneratedEndpoints();
 
 app.Run();

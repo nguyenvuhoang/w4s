@@ -19,7 +19,6 @@ namespace O24OpenAPI.CMS.API.Application.Features.Hello
         [WorkflowStep("CMS_HELLO")]
         public Task<HelloResponse> HandleAsync(HelloCommand request, CancellationToken cancellationToken = default)
         {
-            throw new Exception("linh test exception");
             return Task.FromResult(new HelloResponse() { Message = $"Hello {request.Name}" });
         }
     }

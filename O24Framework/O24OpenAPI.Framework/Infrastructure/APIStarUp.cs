@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
@@ -33,6 +34,10 @@ public class APIStarUp : IO24OpenAPIStartup
             .AddNewtonsoftJson(opts =>
             {
                 opts.SerializerSettings.Converters.Add(new StringEnumConverter());
+                opts.SerializerSettings.ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new SnakeCaseNamingStrategy(),
+                };
             });
         services.AddGrpc(options =>
         {
