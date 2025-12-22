@@ -80,7 +80,8 @@ public class LoginHandler(
     IUserSessionRepository userSessionRepository,
     IUserDeviceRepository userDeviceRepository,
     WebApiSettings webApiSettings,
-    IUserPasswordRepository userPasswordRepository
+    IUserPasswordRepository userPasswordRepository,
+    IUserRightChannelRepository userRightChannelRepository
 ) : ICommandHandler<LoginCommand, AuthResponseModel>
 {
     [WorkflowStep("WF_STEP_CTH_LOGIN")]
@@ -130,7 +131,7 @@ public class LoginHandler(
         string hashedRefreshToken = refreshToken.Hash();
         string stringJson = model.RoleChannel;
         int[]? listRoles = System.Text.Json.JsonSerializer.Deserialize<int[]>(stringJson);
-        HashSet<string> channelRoles = await userRightRepository.GetSetChannelInRoleAsync(listRoles);
+        HashSet<string> channelRoles = await userRightChannelRepository.GetSetChannelInRoleAsync(listRoles);
         await userSessionRepository.RevokeByLoginName(model.LoginName);
 
         UserSession userSession = new()
@@ -213,7 +214,7 @@ public class LoginHandler(
             ? userAccount.RoleChannel
             : model.RoleChannel;
         int[]? listRoles = System.Text.Json.JsonSerializer.Deserialize<int[]>(stringJson);
-        HashSet<string> channelRoles = await userRightRepository.GetSetChannelInRoleAsync(listRoles);
+        HashSet<string> channelRoles = await userRightChannelRepository.GetSetChannelInRoleAsync(listRoles);
         await userSessionRepository.RevokeByLoginName(model.LoginName);
 
         UserSession userSession = new()
@@ -289,7 +290,7 @@ public class LoginHandler(
         string hashedToken = token.Hash();
         string refreshToken = JwtTokenService.GenerateRefreshToken();
         string hashedRefreshToken = refreshToken.Hash();
-        HashSet<string> channelRoles = await userRightRepository.GetSetChannelInRoleAsync(1);
+        HashSet<string> channelRoles = await userRightChannelRepository.GetSetChannelInRoleAsync(1);
         UserSession userSession = new()
         {
             Token = hashedToken,

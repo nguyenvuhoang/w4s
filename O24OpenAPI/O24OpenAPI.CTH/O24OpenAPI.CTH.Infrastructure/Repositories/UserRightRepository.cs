@@ -33,13 +33,5 @@ public class UserRightRepository(
             .ToListAsync();
     }
 
-    public Task<HashSet<string>> GetSetChannelInRoleAsync(int roleId)
-    {
-        throw new NotImplementedException();
-    }
 
-    public Task<HashSet<string>> GetSetChannelInRoleAsync(int[] roleId)
-    {
-        throw new NotImplementedException();
-    }
 }

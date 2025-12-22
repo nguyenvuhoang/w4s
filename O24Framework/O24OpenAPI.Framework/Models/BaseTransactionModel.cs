@@ -32,7 +32,7 @@ public class BaseTransactionModel : BaseO24OpenAPIModel
     /// </summary>
     [Newtonsoft.Json.JsonIgnore]
     [global::System.Text.Json.Serialization.JsonIgnore]
-    public List<GLEntries> Postings { get; set; } = new List<GLEntries>();
+    public List<GLEntries> Postings { get; set; } = [];
 
     /// <summary>
     ///
@@ -168,8 +168,8 @@ public class BaseTransactionModel : BaseO24OpenAPIModel
     /// <summary>Language</summary>
     [JsonPropertyName("channel_id")]
     [JsonProperty("channel_id")]
-    [Newtonsoft.Json.JsonIgnore]
-    [global::System.Text.Json.Serialization.JsonIgnore]
+    //[Newtonsoft.Json.JsonIgnore]
+    //[global::System.Text.Json.Serialization.JsonIgnore]
     public string ChannelId { get; set; }
 
     /// <summary>
@@ -246,5 +246,5 @@ public class BaseTransactionModel : BaseO24OpenAPIModel
     /// </summary>
     [JsonPropertyName("command_list")]
     [JsonProperty("command_list")]
-    public HashSet<string> CommandList { get; set; } = new HashSet<string>();
+    public HashSet<string> CommandList { get; set; } = [];
 }

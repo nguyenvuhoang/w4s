@@ -1,11 +1,10 @@
 using O24OpenAPI.Core.SeedWork;
-using System;
 
 namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate
+{
+    public interface IUserSessionRepository : IRepository<UserSession>
     {
-        public interface IUserSessionRepository : IRepository<UserSession>
-        {
         Task Insert(UserSession userSession);
         Task RevokeByLoginName(string loginName);
     }
-    }
+}

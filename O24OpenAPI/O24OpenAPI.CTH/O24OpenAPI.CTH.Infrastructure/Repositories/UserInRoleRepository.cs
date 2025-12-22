@@ -29,7 +29,7 @@ public class UserInRoleRepository(
 
     public async Task DeleteByUserCodeAsync(string userCode)
     {
-        var roles = await Table.Where(x => x.UserCode == userCode).ToListAsync();
+        List<UserInRole> roles = await Table.Where(x => x.UserCode == userCode).ToListAsync();
         if (roles.Count > 0)
         {
             await BulkDelete(roles);

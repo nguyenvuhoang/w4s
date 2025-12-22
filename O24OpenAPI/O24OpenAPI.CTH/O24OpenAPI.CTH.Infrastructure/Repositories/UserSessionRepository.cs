@@ -21,7 +21,7 @@ public class UserSessionRepository(
         bool activeOnly = true
     )
     {
-        var query = Table.Where(s => s.Token == hashedToken);
+        IQueryable<UserSession> query = Table.Where(s => s.Token == hashedToken);
 
         if (activeOnly)
         {
@@ -48,9 +48,12 @@ public class UserSessionRepository(
         return await Table.Where(s => s.RefreshToken == hashedRefreshToken).FirstOrDefaultAsync();
     }
 
-    public Task Insert(UserSession userSession)
+    public async Task Insert(UserSession userSession)
     {
-        throw new NotImplementedException();
+        //ArgumentNullException.ThrowIfNull(userSession);
+        await InsertAsync(userSession);
+        // var sessionModel = userSession.ToModel<UserSessionModel>();
+        await staticCacheManager.Set(CachingKey.SessionKey(userSession.Token), userSession);
     }
 
     public Task RevokeByLoginName(string loginName)

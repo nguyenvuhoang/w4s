@@ -3,8 +3,8 @@ using LinKit.Core.Endpoints;
 using O24OpenAPI.Core;
 using O24OpenAPI.CTH.API.Application.Utils;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
-using O24OpenAPI.Framework.Constants;
 using O24OpenAPI.Framework.Models;
+using O24OpenAPI.Framework.Utils.O9;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User;
 
@@ -149,17 +149,20 @@ public class CreateSupperAdminHandler(
             throw new O24OpenAPIException("Supper Admin already exits.");
         }
 
-        (string hashedPass, string salt) = PasswordUtils.HashPassword(request.Password);
+        //(string hashedPass, string salt) = PasswordUtils.HashPassword(request.Password);
+        string hashPassword = O9Encrypt.sha_sha256(request.Password, request.LoginName);
+        string salt = PasswordUtils.GenerateRandomSalt();
+
         string userId = Guid.NewGuid().ToString();
         SupperAdmin sAdmin = new()
         {
             UserId = userId,
             LoginName = request.LoginName,
-            PasswordHash = hashedPass,
+            PasswordHash = hashPassword,
         };
         UserAccount userAccount = new()
         {
-            ChannelId = ChannelId.Portal,
+            ChannelId = request.ChannelId,
             UserId = userId,
             UserName = request.LoginName,
             UserCode = Guid.NewGuid().ToString(),
@@ -174,7 +177,7 @@ public class CreateSupperAdminHandler(
         {
             ChannelId = request.ChannelId,
             UserId = sAdmin.UserId,
-            Password = hashedPass,
+            Password = hashPassword,
             Salt = salt
         };
 
