@@ -11,19 +11,15 @@ namespace O24OpenAPI.AI.Infrastructure;
 
 public static class InfrastructureExtensions
 {
-    public static IServiceCollection AddInfrastructureServices(
-        this IServiceCollection services,
-        WebApplicationBuilder builder
-    )
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
-        services.ConfigureApplicationServices(builder);
-        builder.ConfigureWebHost();
         services.AddGrpc(options =>
         {
             options.Interceptors.Add<GrpcLoggingInterceptor>();
         });
         services.AddLinKitDependency();
-        var qdrantSettingConfig = Singleton<AppSettings>.Instance.Get<QdrantSettingConfig>();
+        QdrantSettingConfig qdrantSettingConfig =
+            Singleton<AppSettings>.Instance.Get<QdrantSettingConfig>();
         services.AddSingleton(_ =>
         {
             return new QdrantClient(host: qdrantSettingConfig.Host, port: qdrantSettingConfig.Port);

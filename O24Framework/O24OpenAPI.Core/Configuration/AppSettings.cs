@@ -44,7 +44,7 @@ public class AppSettings
         where TConfig : class, IConfig
     {
         if (
-            !_configurations.TryGetValue(typeof(TConfig), out var configuration)
+            !_configurations.TryGetValue(typeof(TConfig), out IConfig? configuration)
             || configuration is null
             || configuration is not TConfig config
         )
@@ -53,7 +53,8 @@ public class AppSettings
             interpolatedStringHandler.AppendLiteral("No configuration with type '");
             interpolatedStringHandler.AppendFormatted<Type>(typeof(TConfig));
             interpolatedStringHandler.AppendLiteral("' found");
-            throw new O24OpenAPIException(interpolatedStringHandler.ToStringAndClear());
+            return null;
+            //throw new O24OpenAPIException(interpolatedStringHandler.ToStringAndClear());
         }
         return config;
     }
