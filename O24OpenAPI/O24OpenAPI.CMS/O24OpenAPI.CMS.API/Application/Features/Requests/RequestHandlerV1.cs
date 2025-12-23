@@ -211,6 +211,7 @@ public class RequestHandlerV1(
             }
             infoHeader.UserId = validateTokenResponse.UserId;
             _workContext.UserContext.SetUserId(infoHeader.UserId);
+            _workContext.SetDeviceRequest(infoHeader.MyDevice);
         }
         #endregion
         ResponseModel result = new();

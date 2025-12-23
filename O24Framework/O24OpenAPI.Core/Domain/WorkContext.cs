@@ -11,6 +11,7 @@ public class WorkContext
     public string WorkingLanguage { get; private set; } = "en";
     public string ExecutionLogId { get; private set; } = GuildUtils.GetNewStringGuild();
     public string ExecutionId { get; private set; } = GuildUtils.GetNewStringGuild();
+    public Dictionary<string, object> DeviceRequest { get; set; } = [];
 
     public void SetWorkContext(WorkContext workContext)
     {
@@ -80,6 +81,16 @@ public class WorkContext
         {
             ExecutionId = executionId;
         }
+    }
+
+    public void SetDeviceRequest(Dictionary<string, object> deviceRequest)
+    {
+        if (deviceRequest == null)
+        {
+            return;
+        }
+
+        DeviceRequest = deviceRequest;
     }
 }
 
