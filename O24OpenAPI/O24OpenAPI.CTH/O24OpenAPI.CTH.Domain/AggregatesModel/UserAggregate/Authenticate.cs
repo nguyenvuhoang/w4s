@@ -1,6 +1,4 @@
-using Newtonsoft.Json;
 using O24OpenAPI.Core.Domain;
-using System.Text.Json.Serialization;
 
 namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 

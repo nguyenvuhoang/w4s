@@ -1,7 +1,6 @@
 using System.Collections.Concurrent;
 using System.Threading.Channels;
 using O24OpenAPI.Client.Events.EventData;
-using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Core.Utils;
 using O24OpenAPI.Framework.Extensions;

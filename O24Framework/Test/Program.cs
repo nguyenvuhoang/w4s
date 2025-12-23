@@ -2,7 +2,6 @@
 using O24OpenAPI.Kit.OCR.Options;
 using O24OpenAPI.Kit.OCR.Services;
 using Tesseract;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.AI;
 using OpenAI;
 

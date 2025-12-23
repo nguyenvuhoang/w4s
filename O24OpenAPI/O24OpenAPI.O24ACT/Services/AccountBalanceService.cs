@@ -1,8 +1,6 @@
 using LinqToDB;
 using O24OpenAPI.Core;
-using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Caching;
-using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.O24ACT.Common;

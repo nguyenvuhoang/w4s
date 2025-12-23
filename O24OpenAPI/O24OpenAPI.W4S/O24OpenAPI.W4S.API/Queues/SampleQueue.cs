@@ -1,6 +1,5 @@
 ﻿using LinKit.Core.Cqrs;
 using O24OpenAPI.Client.Scheme.Workflow;
-using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Framework.Services.Queue;

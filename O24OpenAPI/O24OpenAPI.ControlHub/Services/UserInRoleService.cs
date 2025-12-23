@@ -1,6 +1,5 @@
 ﻿using O24OpenAPI.ControlHub.Domain;
 using O24OpenAPI.ControlHub.Services.Interfaces;
-using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data.System.Linq;
 
 namespace O24OpenAPI.ControlHub.Services;
@@ -34,7 +33,7 @@ public class UserInRoleService(IRepository<UserInRole> userInRoleRepository)
 
     public async Task<List<UserInRole>> GetListRoleByUserCodeAsync(string userCode)
     {
-        var getRoleList = await _userInRole
+        List<UserInRole> getRoleList = await _userInRole
             .Table.Where(s => s.UserCode.Equals(userCode))
             .ToListAsync();
         return getRoleList ?? [];
@@ -42,11 +41,11 @@ public class UserInRoleService(IRepository<UserInRole> userInRoleRepository)
 
     public async Task DeleteByUserCodeAsync(string userCode)
     {
-        var roles = await _userInRole.Table
+        List<UserInRole> roles = await _userInRole.Table
             .Where(x => x.UserCode == userCode)
             .ToListAsync();
 
-        foreach (var role in roles)
+        foreach (UserInRole role in roles)
         {
             await _userInRole.Delete(role);
         }

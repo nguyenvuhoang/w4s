@@ -1,7 +1,5 @@
 ﻿using LinKit.Core.Abstractions;
 using LinqToDB;
-using O24OpenAPI.CMS.Domain.AggregateModels;
-using O24OpenAPI.CMS.Domain.AggregateModels.AppAggregate;
 using O24OpenAPI.CMS.Domain.AggregateModels.LearnApiAggregate;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Events;

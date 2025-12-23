@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.CMS.API.Application.Models;
 using O24OpenAPI.CMS.API.Application.Models.ContextModels;
-using O24OpenAPI.CMS.API.Application.Models.Response;
 using O24OpenAPI.CMS.Domain.AggregateModels.Digital;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Data.Configuration;

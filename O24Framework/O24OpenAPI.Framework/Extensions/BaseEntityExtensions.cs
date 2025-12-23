@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
-using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Helpers;

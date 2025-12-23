@@ -1,28 +1,39 @@
 using Grpc.Core;
+using LinKit.Core.Cqrs;
+using LinKit.Generated.Cqrs;
+using O24OpenAPI.APIContracts.Models.CTH;
 using O24OpenAPI.Core.Infrastructure;
+using O24OpenAPI.CTH.API.Application.Features.UserCommands;
+using O24OpenAPI.CTH.API.Application.Features.UserDevice;
+using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Grpc.Common;
+using O24OpenAPI.Grpc.CTH;
 using O24OpenAPI.GrpcContracts.GrpcServerServices;
 using O24OpenAPI.Logging.Helpers;
+using static O24OpenAPI.Grpc.CTH.CTHGrpcService;
 
 namespace O24OpenAPI.CTH.API.Application.GrpcServices;
 
-/// <summary>
-/// The admin grpc service class
-/// </summary>
 public class CTHGrpcService : CTHGrpcServiceBase
 {
-    private readonly IUserSessionService _userSessionService =
-        EngineContext.Current.Resolve<IUserSessionService>();
-    private readonly IUserRightService _userRightService =
-        EngineContext.Current.Resolve<IUserRightService>();
-    private readonly IUserDeviceService _userDeviceService =
-        EngineContext.Current.Resolve<IUserDeviceService>();
-    private readonly IUserCommandService _userCommandService =
-        EngineContext.Current.Resolve<IUserCommandService>();
-    private readonly IUserInRoleService _userInRoleService =
-        EngineContext.Current.Resolve<IUserInRoleService>();
-    private readonly IUserAccountService _userAccountService =
-        EngineContext.Current.Resolve<IUserAccountService>();
+    private readonly IUserSessionRepository _userSessionRepository =
+        EngineContext.Current.Resolve<IUserSessionRepository>();
+    private readonly IUserRightRepository _userRightRepository =
+        EngineContext.Current.Resolve<IUserRightRepository>();
+    private readonly IUserRightChannelRepository _userRightChannelRepository =
+        EngineContext.Current.Resolve<IUserRightChannelRepository>();
+    private readonly IUserDeviceRepository _userDeviceRepository =
+        EngineContext.Current.Resolve<IUserDeviceRepository>();
+    private readonly IUserCommandRepository _userCommandRepository =
+        EngineContext.Current.Resolve<IUserCommandRepository>();
+
+    private readonly IUserAccountRepository _userAccountRepository =
+        EngineContext.Current.Resolve<IUserAccountRepository>();
+    private readonly IUserInRoleRepository userInRoleRepository =
+        EngineContext.Current.Resolve<IUserInRoleRepository>();
+
+    private readonly IMediator _mediator = EngineContext.Current.Resolve<Mediator>("cth");
 
     public override async Task<GrpcResponse> GetUserSession(
         GetUserSessionRequest request,
@@ -33,7 +44,7 @@ public class CTHGrpcService : CTHGrpcServiceBase
             context,
             async () =>
             {
-                return await _userSessionService.GetByToken(request.Token);
+                return await _userSessionRepository.GetByToken(request.Token);
             }
         );
     }
@@ -47,7 +58,7 @@ public class CTHGrpcService : CTHGrpcServiceBase
             context,
             async () =>
             {
-                return await _userRightService.GetSetChannelInRoleAsync(request.RoleId);
+                return await _userRightChannelRepository.GetSetChannelInRoleAsync(request.RoleId);
             }
         );
     }
@@ -61,8 +72,8 @@ public class CTHGrpcService : CTHGrpcServiceBase
             context,
             async () =>
             {
-                var userAccount = await _userDeviceService.GetByUserCodeAsync(request.UserCode);
-                var pushId = userAccount?.PushId ?? string.Empty;
+                UserDevice userAccount = await _userDeviceRepository.GetByUserCodeAsync(request.UserCode);
+                string pushId = userAccount?.PushId ?? string.Empty;
                 return pushId ?? "NONE";
             }
         );
@@ -77,7 +88,7 @@ public class CTHGrpcService : CTHGrpcServiceBase
             context,
             async () =>
             {
-                return await _userCommandService.LoadUserCommand(
+                return await _userCommandRepository.LoadUserCommand(
                     request.ApplicationCode,
                     request.RoleCommand
                 );
@@ -94,7 +105,7 @@ public class CTHGrpcService : CTHGrpcServiceBase
             context,
             async () =>
             {
-                return await _userCommandService.GetInfoFromFormCode(
+                return await _userCommandRepository.GetInfoFromFormCode(
                     request.ApplicationCode,
                     request.FormCode
                 );
@@ -111,7 +122,7 @@ public class CTHGrpcService : CTHGrpcServiceBase
             context,
             async () =>
             {
-                return await _userInRoleService.GetListRoleByUserCodeAsync(request.UserCode);
+                return await userInRoleRepository.GetListRoleByUserCodeAsync(request.UserCode);
             }
         );
     }
@@ -125,9 +136,12 @@ public class CTHGrpcService : CTHGrpcServiceBase
             context,
             async () =>
             {
-                return await _userCommandService.GetUserCommandInfoFromCommandId(
-                    request.ApplicationCode,
-                    request.CommandId
+                return await _mediator.QueryAsync(
+                    new GetUserCommandInfoFromCommandIdQuery
+                    {
+                        ApplicationCode = request.ApplicationCode,
+                        CommandId = request.CommandId,
+                    }
                 );
             }
         );
@@ -142,9 +156,12 @@ public class CTHGrpcService : CTHGrpcServiceBase
             context,
             async () =>
             {
-                return await _userCommandService.GetUserCommandInfoFromParentId(
-                    request.ApplicationCode,
-                    request.ParentId
+                return await _mediator.QueryAsync(
+                    new GetUserCommandInfoFromParentIdQuery
+                    {
+                        ApplicationCode = request.ApplicationCode,
+                        ParentId = request.ParentId,
+                    }
                 );
             }
         );
@@ -159,26 +176,26 @@ public class CTHGrpcService : CTHGrpcServiceBase
             context,
             async () =>
             {
-                return await _userAccountService.GetByUserCodeAsync(request.UserCode);
+                return await _userAccountRepository.GetByUserCodeAsync(request.UserCode);
             }
         );
     }
 
-    public override async Task<GrpcResponse> GetUserPushIdByContractNumber(
-        GetUserPushIdByContractNumberRequest request,
-        ServerCallContext context
-    )
-    {
-        return await GrpcExecutor.ExecuteAsync(
-            context,
-            async () =>
-            {
-                return await _userAccountService.GetUserPushIdByContractNumberAsync(
-                    request.ContractNumber
-                );
-            }
-        );
-    }
+    // public override async Task<GrpcResponse> GetUserPushIdByContractNumber(
+    //     GetUserPushIdByContractNumberRequest request,
+    //     ServerCallContext context
+    // )
+    // {
+    //     return await GrpcExecutor.ExecuteAsync(
+    //         context,
+    //         async () =>
+    //         {
+    //             return await _userAccountService.GetUserPushIdByContractNumberAsync(
+    //                 request.ContractNumber
+    //             );
+    //         }
+    //     );
+    // }
 
     /// <summary>
     /// Get user notification stream
@@ -193,12 +210,12 @@ public class CTHGrpcService : CTHGrpcServiceBase
         ServerCallContext context
     )
     {
-        var list = await _userDeviceService.GetMobileDevice();
+        List<CTHUserNotificationModel> list = await _mediator.QueryAsync(new GetMobileDeviceQuery());
 
-        foreach (var item in list)
+        foreach (CTHUserNotificationModel item in list)
         {
-            var reply = item.ToGetUserNotificationReply();
-            await responseStream.WriteAsync(reply);
+            GetUserNotificationReply reply = item.ToGetUserNotificationReply();
+            await responseStream.WriteAsync(reply!);
         }
     }
 
@@ -217,13 +234,13 @@ public class CTHGrpcService : CTHGrpcServiceBase
     {
         try
         {
-            var list = await _userCommandService.LoadFullUserCommandsAsync();
+            List<CTHUserCommandModel> list = await _mediator.QueryAsync(new LoadFullUserCommandsQuery());
 
-            foreach (var item in list)
+            foreach (CTHUserCommandModel item in list)
             {
                 try
                 {
-                    var reply = item.ToUserCommandReply();
+                    UserCommandReply reply = item.ToUserCommandReply();
                     await responseStream.WriteAsync(reply);
                 }
                 catch (Exception exItem)

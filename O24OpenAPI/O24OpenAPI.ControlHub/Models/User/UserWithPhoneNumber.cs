@@ -1,6 +1,5 @@
 ﻿namespace O24OpenAPI.ControlHub.Models.User;
 
-using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Framework.Models;
 
 /// <summary>

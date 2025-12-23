@@ -4,7 +4,6 @@ using O24OpenAPI.ControlHub.Models;
 using O24OpenAPI.ControlHub.Models.Roles;
 using O24OpenAPI.ControlHub.Models.User;
 using O24OpenAPI.ControlHub.Services.Interfaces;
-using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Helpers;

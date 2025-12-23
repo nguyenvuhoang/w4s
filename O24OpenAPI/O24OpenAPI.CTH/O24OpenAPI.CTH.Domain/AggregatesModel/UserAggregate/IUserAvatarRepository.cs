@@ -1,11 +1,9 @@
 using O24OpenAPI.Core.SeedWork;
-using System;
 
-namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate
+namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
+
+public interface IUserAvatarRepository : IRepository<UserAvatar>
 {
-    public interface IUserAvatarRepository : IRepository<UserAvatar>
-    {
-        Task<UserAvatar> GetByUserCodeAsync(string request);
+    Task<UserAvatar> GetByUserCodeAsync(string request);
 
-    }
 }

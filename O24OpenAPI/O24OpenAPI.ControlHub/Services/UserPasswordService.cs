@@ -1,7 +1,6 @@
 using LinqToDB;
 using O24OpenAPI.ControlHub.Domain;
 using O24OpenAPI.ControlHub.Services.Interfaces;
-using O24OpenAPI.Core.SeedWork;
 
 namespace O24OpenAPI.ControlHub.Services;
 

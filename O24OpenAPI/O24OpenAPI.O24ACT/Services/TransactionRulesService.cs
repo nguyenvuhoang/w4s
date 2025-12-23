@@ -1,6 +1,5 @@
 ﻿using System.Text.RegularExpressions;
 using Newtonsoft.Json;
-using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Helper;

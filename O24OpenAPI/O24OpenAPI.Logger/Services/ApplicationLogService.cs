@@ -1,6 +1,5 @@
 using O24OpenAPI.Logger.Domain;
 using O24OpenAPI.Logger.Services.Interfaces;
-using O24OpenAPI.Core.SeedWork;
 
 namespace O24OpenAPI.Logger.Services;
 

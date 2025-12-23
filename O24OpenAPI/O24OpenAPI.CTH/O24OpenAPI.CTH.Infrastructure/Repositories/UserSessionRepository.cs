@@ -17,6 +17,8 @@ public class UserSessionRepository(
     : EntityRepository<UserSession>(eventPublisher, dataProvider, staticCacheManager),
         IUserSessionRepository
 {
+    private readonly IStaticCacheManager _staticCacheManager = staticCacheManager;
+
     public async Task<UserSession?> GetByHashedTokenAsync(
         string hashedToken,
         bool activeOnly = true
@@ -54,7 +56,7 @@ public class UserSessionRepository(
         //ArgumentNullException.ThrowIfNull(userSession);
         await InsertAsync(userSession);
         // var sessionModel = userSession.ToModel<UserSessionModel>();
-        await staticCacheManager.Set(CachingKey.SessionKey(userSession.Token), userSession);
+        await _staticCacheManager.Set(CachingKey.SessionKey(userSession.Token), userSession);
     }
 
     public Task RevokeByLoginName(string loginName)
@@ -62,16 +64,42 @@ public class UserSessionRepository(
         throw new NotImplementedException();
     }
 
-    public async Task<UserSession> GetByRefreshToken(string token)
+    public async Task<UserSession?> GetByRefreshToken(string token)
     {
         var hashed = token.Hash();
         return await Table.Where(s => s.RefreshToken == hashed).FirstOrDefaultAsync();
     }
 
-    public async Task<UserSession> GetActiveByLoginName(string loginName)
+    public async Task<UserSession?> GetActiveByLoginName(string loginName)
     {
         return await Table
             .Where(x => x.LoginName == loginName && !x.IsRevoked && x.ExpiresAt > DateTime.UtcNow)
             .FirstOrDefaultAsync();
+    }
+
+    public async Task<UserSession?> GetByToken(string token, bool activeOnly = true)
+    {
+        var cacheKey = new CacheKey(token);
+        var session = await _staticCacheManager.Get<UserSession>(cacheKey);
+
+        if (session == null || session.Id == 0)
+        {
+            var hashedToken = token.Hash();
+            var query = Table.Where(s => s.Token == hashedToken);
+
+            if (activeOnly)
+            {
+                query = query.Where(s => !s.IsRevoked && s.ExpiresAt > DateTime.UtcNow);
+            }
+
+            session = await query.FirstOrDefaultAsync();
+
+            if (session != null)
+            {
+                await _staticCacheManager.Set(cacheKey, session);
+            }
+        }
+
+        return session;
     }
 }

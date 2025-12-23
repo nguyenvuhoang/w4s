@@ -1,7 +1,5 @@
 using AutoMapper;
-using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Infrastructure.Mapper;
-using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.Framework.Infrastructure.Mapper;
 

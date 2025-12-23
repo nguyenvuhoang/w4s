@@ -1,8 +1,7 @@
 using O24OpenAPI.Core.SeedWork;
 
-namespace O24OpenAPI.CTH.Domain.AggregatesModel.CalendarAggregate
+namespace O24OpenAPI.CTH.Domain.AggregatesModel.CalendarAggregate;
+
+public interface IBankWorkingCalendarRepository : IRepository<BankWorkingCalendar>
 {
-    public interface IBankWorkingCalendarRepository : IRepository<BankWorkingCalendar>
-    {
-    }
 }

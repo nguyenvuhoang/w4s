@@ -1,7 +1,6 @@
 ﻿using O24OpenAPI.ControlHub.Domain;
 using O24OpenAPI.ControlHub.Services.Interfaces;
 using O24OpenAPI.Core;
-using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.Framework.Models;
 

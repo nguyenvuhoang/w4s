@@ -1,5 +1,4 @@
-﻿using O24OpenAPI.CMS.Domain.AggregateModels.AppAggregate;
-using O24OpenAPI.Core.SeedWork;
+﻿using O24OpenAPI.Core.SeedWork;
 
 namespace O24OpenAPI.CMS.Domain.AggregateModels.LearnApiAggregate;
 

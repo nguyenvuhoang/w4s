@@ -1,8 +1,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.Core.Extensions;
-using O24OpenAPI.Framework.Extensions;
-using O24OpenAPI.Framework.Utils.O9;
 using QRCoder;
 
 namespace O24OpenAPI.CTH.API.Application.Utils;

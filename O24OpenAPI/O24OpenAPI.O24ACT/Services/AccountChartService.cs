@@ -1,9 +1,7 @@
 using System.Text.Json;
 using O24OpenAPI.Core;
-using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Extensions;
-using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.Framework.Exceptions;

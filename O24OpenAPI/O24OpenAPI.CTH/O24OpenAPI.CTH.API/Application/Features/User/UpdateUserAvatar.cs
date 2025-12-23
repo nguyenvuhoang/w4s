@@ -5,57 +5,56 @@ using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Core.Constants;
 
-namespace O24OpenAPI.CTH.API.Application.Features.User
+namespace O24OpenAPI.CTH.API.Application.Features.User;
+
+public class UpdateUserAvatarCommnad: BaseTransactionModel, ICommand<bool>
 {
-    public class UpdateUserAvatarCommnad: BaseTransactionModel, ICommand<bool>
-    {
-        public string UserCode { get; set; }
-        public string AvatarUrl { get; set; }
-        public DateTime DateInsert { get; set; }
-    }
+    public string UserCode { get; set; }
+    public string AvatarUrl { get; set; }
+    public DateTime DateInsert { get; set; }
+}
 
-    public class UpdateUserAvatarHandler(IUserAvatarRepository userAvatarRepository) : ICommandHandler<UpdateUserAvatarCommnad, bool>
+public class UpdateUserAvatarHandler(IUserAvatarRepository userAvatarRepository) : ICommandHandler<UpdateUserAvatarCommnad, bool>
+{
+    public async Task<bool> HandleAsync(UpdateUserAvatarCommnad request, CancellationToken cancellationToken = default)
     {
-        public async Task<bool> HandleAsync(UpdateUserAvatarCommnad request, CancellationToken cancellationToken = default)
+    try
         {
-        try
-            {
-                var entity = await userAvatarRepository.GetByUserCodeAsync(request.UserCode);
+            var entity = await userAvatarRepository.GetByUserCodeAsync(request.UserCode);
 
-                if (entity == null)
+            if (entity == null)
+            {
+                entity = new UserAvatar
                 {
-                    entity = new UserAvatar
-                    {
-                        UserCode = request.UserCode,
-                        ImageUrl = request.AvatarUrl,
-                        DateInsert = DateTime.UtcNow,
-                    };
+                    UserCode = request.UserCode,
+                    ImageUrl = request.AvatarUrl,
+                    DateInsert = DateTime.UtcNow,
+                };
 
-                    await userAvatarRepository.InsertAsync(entity);
-                }
-                else
-                {
-                    entity.ImageUrl = request.AvatarUrl;
-                    await userAvatarRepository.Update(entity);
-                }
+                await userAvatarRepository.InsertAsync(entity);
+            }
+            else
+            {
+                entity.ImageUrl = request.AvatarUrl;
+                await userAvatarRepository.Update(entity);
+            }
 
-                return true;
-            }
-            catch (O24Exception)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                await ex.LogErrorAsync(
-                    $"[UpdateUserAvatarAsync] Error for {request.UserCode}: {ex.Message}"
-                );
-                throw await O24Exception.CreateAsync(
-                    ResourceCode.Common.SystemError,
-                    request.Language,
-                    ex
-                );
-            }
+            return true;
+        }
+        catch (O24Exception)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            await ex.LogErrorAsync(
+                $"[UpdateUserAvatarAsync] Error for {request.UserCode}: {ex.Message}"
+            );
+            throw await O24Exception.CreateAsync(
+                ResourceCode.Common.SystemError,
+                request.Language,
+                ex
+            );
         }
     }
 }

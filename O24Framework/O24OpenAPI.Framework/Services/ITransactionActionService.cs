@@ -1,5 +1,4 @@
-﻿using O24OpenAPI.Core.Abstractions;
-using O24OpenAPI.Core.Domain;
+﻿using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.Framework.Services;

@@ -1,9 +1,7 @@
 using O24OpenAPI.Core.SeedWork;
-using System;
 
-namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate
+namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
+
+    public interface IRoleTypeRepository : IRepository<RoleType>
     {
-        public interface IRoleTypeRepository : IRepository<RoleType>
-        {
-        }
     }

@@ -1,7 +1,5 @@
 ﻿using LinKit.Core.Cqrs;
 using O24OpenAPI.AI.Domain.AggregatesModel.SampleAggregate;
-using O24OpenAPI.Core.Abstractions;
-using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Models;
 

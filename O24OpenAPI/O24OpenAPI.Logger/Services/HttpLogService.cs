@@ -1,5 +1,3 @@
-using O24OpenAPI.Core.Abstractions;
-using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.Framework.Domain.Logging;
 using O24OpenAPI.Framework.Helpers;

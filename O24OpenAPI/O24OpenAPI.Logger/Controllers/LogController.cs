@@ -1,6 +1,5 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Controllers;
 using O24OpenAPI.Framework.Models;

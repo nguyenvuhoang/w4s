@@ -1,5 +1,6 @@
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.CTH.API.Application;
+using O24OpenAPI.CTH.API.Application.GrpcServices;
 using O24OpenAPI.CTH.Infrastructure;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
@@ -26,6 +27,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 app.MapControllers();
+app.MapGrpcService<CTHGrpcService>();
 
 using IServiceScope scope = app.Services.CreateScope();
 AsyncScope.Scope = scope;
@@ -33,6 +35,7 @@ AsyncScope.Scope = scope;
 await app.ConfigureInfrastructure();
 await app.StartEngine();
 app.ShowStartupBanner();
+
 //app.MapGeneratedEndpoints();
 
 app.Run();

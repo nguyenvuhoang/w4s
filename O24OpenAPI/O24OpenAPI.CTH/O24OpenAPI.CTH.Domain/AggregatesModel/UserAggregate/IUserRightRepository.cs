@@ -1,8 +1,7 @@
 using O24OpenAPI.Core.SeedWork;
 
-namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate
+namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
+
+public interface IUserRightRepository : IRepository<UserRight>
 {
-    public interface IUserRightRepository : IRepository<UserRight>
-    {
-    }
 }

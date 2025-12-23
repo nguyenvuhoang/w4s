@@ -1,7 +1,6 @@
 using O24OpenAPI.APIContracts.Events;
 using O24OpenAPI.Client.EventBus.Abstractions;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Logger.Domain;
 using O24OpenAPI.Logger.Mapper;
 

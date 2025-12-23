@@ -3,7 +3,6 @@ global using System.Collections.Generic;
 global using System.Linq;
 global using System.Threading.Tasks;
 global using O24OpenAPI.Client.Scheme.Workflow;
-global using O24OpenAPI.CMS.Domain;
 global using O24OpenAPI.Core;
 global using O24OpenAPI.Core.Abstractions;
 global using O24OpenAPI.Core.Domain;

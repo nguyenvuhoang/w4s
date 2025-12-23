@@ -1,7 +1,6 @@
 using FluentValidation;
 using FluentValidation.Validators;
 using O24OpenAPI.Core;
-using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Domain.Localization;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;

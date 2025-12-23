@@ -1,6 +1,5 @@
 ﻿using LinKit.Core.Cqrs;
 using O24OpenAPI.AI.API.Application.Utils;
-using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Framework.Models;
 using Qdrant.Client;
 using Qdrant.Client.Grpc;
