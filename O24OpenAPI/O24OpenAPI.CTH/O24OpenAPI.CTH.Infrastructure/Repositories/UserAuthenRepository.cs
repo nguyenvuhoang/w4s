@@ -20,6 +20,14 @@ public class UserAuthenRepository(
     {
         return await Table.Where(s => s.UserCode == userCode).FirstOrDefaultAsync();
     }
+    public async Task<UserAuthen> AddAsync(UserAuthen user)
+    {
+        return await InsertAsync(user);
+    }
+    public async Task UpdateAsync(UserAuthen user)
+    {
+        await Update(user);
+    }
 
     public async Task<UserAuthen?> GetByUserAuthenInfoAsync(
         string userCode,

@@ -31,6 +31,17 @@ public class UserAccountRepository(
         throw new NotImplementedException();
     }
 
+    public async Task<UserAccount> GetByLoginNameAndEmailAsync(
+        string loginName,
+        string email,
+        string phonenumber
+    )
+    {
+        return await Table
+            .Where(s => s.LoginName == loginName && s.Email == email && s.Phone == phonenumber)
+            .FirstOrDefaultAsync();
+    }
+
     public async Task<UserAccount> GetLoginAccount(
         string loginName,
         string password,

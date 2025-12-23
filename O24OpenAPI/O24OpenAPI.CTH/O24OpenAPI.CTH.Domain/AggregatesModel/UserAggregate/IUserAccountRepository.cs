@@ -8,4 +8,9 @@ public interface IUserAccountRepository : IRepository<UserAccount>
 
     Task UpdateAsync(UserAccount userAccount);
     Task<UserAccount> GetByUserCodeAsync(string userCode);
+    Task<UserAccount> GetByLoginNameAndEmailAsync(
+        string loginName,
+        string email,
+        string phonenumber
+    );
 }

@@ -84,7 +84,6 @@ public class LoginHandler(
     IUserRightChannelRepository userRightChannelRepository
 ) : ICommandHandler<LoginCommand, AuthResponseModel>
 {
-    [WorkflowStep("UMG_LOGIN")]
     [WorkflowStep("WF_STEP_CTH_LOGIN")]
 
     public async Task<AuthResponseModel> HandleAsync(
