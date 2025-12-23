@@ -26,7 +26,6 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Services.ConfigureApplicationServices(builder);
 if (!builder.Environment.IsDevelopment())
 {
-
     builder.ConfigureWebHost();
 }
 builder.Services.AddGrpc(options =>

@@ -1,3 +1,4 @@
+using System.Reflection;
 using Linh.CodeEngine.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +19,6 @@ using O24OpenAPI.GrpcContracts.Extensions;
 using O24OpenAPI.Logging.Abstractions;
 using O24OpenAPI.Logging.Extensions;
 using StackExchange.Redis;
-using System.Reflection;
 
 namespace O24OpenAPI.Framework.Infrastructure.Extensions;
 
@@ -41,7 +41,7 @@ public static class ServiceCollectionExtensions
         JObject appSettings;
         if (builder.Environment.IsDevelopment())
         {
-            string json = File.ReadAllText("appsettings.json");
+            string json = File.ReadAllText("App_Data/appsettings.json");
             appSettings = JObject.Parse(json);
         }
         else
