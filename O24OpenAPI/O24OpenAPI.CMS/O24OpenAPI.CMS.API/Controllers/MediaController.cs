@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using O24OpenAPI.CMS.API.Application.Models.Media;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces.Media;
@@ -9,6 +8,7 @@ using O24OpenAPI.Framework.Controllers;
 using O24OpenAPI.Framework.Models.JwtModels;
 using O24OpenAPI.Framework.Services;
 using O24OpenAPI.Framework.Utils;
+using System.Security.Cryptography;
 
 namespace O24OpenAPI.CMS.API.Controllers;
 
@@ -34,7 +34,7 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
 
         if (header.TryGetValue("uid", out string token))
         {
-            IJwtTokenService? jwtTokenService = EngineContext.Current.Resolve<IJwtTokenService>();
+            IJwtTokenService jwtTokenService = EngineContext.Current.Resolve<IJwtTokenService>();
             ValidateTokenResponseModel validateTokenResponse = jwtTokenService.ValidateToken(token);
 
             if (validateTokenResponse.IsValid)
@@ -47,8 +47,8 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
         if (file == null || file.Length == 0)
             return BadRequest("File is empty.");
 
-        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".bmp" };
-        var extension = Path.GetExtension(file.FileName).ToLower();
+        string[] allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".bmp" };
+        string extension = Path.GetExtension(file.FileName).ToLower();
 
         if (!allowedExtensions.Contains(extension))
             return BadRequest("Invalid file format.");
@@ -58,24 +58,24 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
 
         // Read file to byte[]
         byte[] fileBytes;
-        using (var ms = new MemoryStream())
+        using (MemoryStream ms = new())
         {
             await file.CopyToAsync(ms);
             fileBytes = ms.ToArray();
         }
 
         // Compute hash
-        var hashBytes = SHA256.HashData(fileBytes);
-        var fileHash = Convert.ToHexStringLower(hashBytes);
+        byte[] hashBytes = SHA256.HashData(fileBytes);
+        string fileHash = Convert.ToHexStringLower(hashBytes);
 
         // Check duplicate
         MediaModel existedFile = await _mediaService.GetMediaByHashId(fileHash);
 
         if (existedFile != null)
         {
-            var existedTrackerCode = existedFile.TrackerCode;
-            var existedS3Key = existedFile.FileUrl;
-            var shortUrlExisting = $"{_cmsSetting.CMSURL?.TrimEnd('/')}/m/{existedTrackerCode}";
+            string existedTrackerCode = existedFile.TrackerCode;
+            string existedS3Key = existedFile.FileUrl;
+            string shortUrlExisting = $"{_cmsSetting.CMSURL?.TrimEnd('/')}/m/{existedTrackerCode}";
 
             return Ok(
                 new
@@ -96,9 +96,9 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
         // ============================
 
         IFileStorageService? storage = EngineContext.Current.Resolve<IFileStorageService>();
-        var category = string.IsNullOrWhiteSpace(folder) ? "general" : folder.Trim();
+        string category = string.IsNullOrWhiteSpace(folder) ? "general" : folder.Trim();
 
-        using var stream = new MemoryStream(fileBytes);
+        using MemoryStream stream = new(fileBytes);
 
         FileUploadResult uploadResult = await storage.UploadAsync(
             stream,
@@ -108,9 +108,9 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
             customercode
         );
 
-        var s3Key = uploadResult.Key;
+        string s3Key = uploadResult.Key;
 
-        var trackerCode = Guid.NewGuid().ToString("N");
+        string trackerCode = Guid.NewGuid().ToString("N");
         DateTime expiredOn = isTokenValid
             ? DateTime.UtcNow.AddDays(7)
             : DateTime.UtcNow.AddMinutes(5);
@@ -154,7 +154,7 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
             );
         }
 
-        var shortUrl = $"{_cmsSetting.CMSURL?.TrimEnd('/')}/m/{trackerCode}";
+        string shortUrl = $"{_cmsSetting.CMSURL?.TrimEnd('/')}/m/{trackerCode}";
 
         return Ok(
             new

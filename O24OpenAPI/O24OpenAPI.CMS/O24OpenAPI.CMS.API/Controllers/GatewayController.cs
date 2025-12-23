@@ -20,7 +20,7 @@ public partial class GatewayController(
                 HttpContext
             );
             bool checkedSession = false;
-            if (!getAllCookies.TryGetValue("device_id", out string? value))
+            if (!getAllCookies.TryGetValue("device_id", out string value))
             {
                 checkedSession = true;
             }
@@ -82,7 +82,7 @@ public partial class GatewayController(
                 HttpContext
             );
             bool checkedSession = false;
-            if (!getAllCookies.TryGetValue("device_id", out string? value))
+            if (!getAllCookies.TryGetValue("device_id", out string value))
             {
                 checkedSession = true;
             }
