@@ -2,6 +2,7 @@ using System.Reflection;
 using Linh.CodeEngine.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Linq;
@@ -41,6 +42,11 @@ public static class ServiceCollectionExtensions
         JObject appSettings;
         if (builder.Environment.IsDevelopment())
         {
+            builder.Configuration.AddJsonFile(
+                path: "App_Data/appsettings.json",
+                optional: false,
+                reloadOnChange: true
+            );
             string json = File.ReadAllText("App_Data/appsettings.json");
             appSettings = JObject.Parse(json);
         }
@@ -71,9 +77,9 @@ public static class ServiceCollectionExtensions
 
         foreach (IConfig instance in list)
         {
-            if (appSettings.TryGetValue(instance.Name, out var tokenSetting))
+            if (appSettings.TryGetValue(instance.Name, out JToken tokenSetting))
             {
-                var jObject = tokenSetting is JObject settingObject
+                JObject jObject = tokenSetting is JObject settingObject
                     ? settingObject
                     : JObject.FromObject(tokenSetting);
 

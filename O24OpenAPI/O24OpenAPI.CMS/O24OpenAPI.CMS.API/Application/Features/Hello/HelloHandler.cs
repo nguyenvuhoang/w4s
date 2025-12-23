@@ -13,10 +13,15 @@ public class HelloResponse
     public string Message { get; set; } = string.Empty;
 }
 
+public class Step
+{
+    public const string StepHello = "CMS_HELLO";
+}
+
 [CqrsHandler]
 public class HelloHandler : ICommandHandler<HelloCommand, HelloResponse>
 {
-    [WorkflowStep("CMS_HELLO")]
+    [WorkflowStep(Step.StepHello)]
     public Task<HelloResponse> HandleAsync(
         HelloCommand request,
         CancellationToken cancellationToken = default
