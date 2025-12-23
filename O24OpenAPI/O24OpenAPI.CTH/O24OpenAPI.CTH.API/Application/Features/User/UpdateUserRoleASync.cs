@@ -1,13 +1,11 @@
 using LinKit.Core.Cqrs;
 using LinqToDB;
-using O24OpenAPI.CTH.Constant;
-using O24OpenAPI.Framework.Models;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
-using O24OpenAPI.CTH.API.Application.Constants;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User
 {
-    public class UpdateUserRoleASyncCommnad: BaseTransactionModel, ICommand<bool>
+    public class UpdateUserRoleASyncCommnad : BaseTransactionModel, ICommand<bool>
     {
         public int RoleId { get; set; }
         public List<string> ListOfUser { get; set; }
@@ -18,9 +16,9 @@ namespace O24OpenAPI.CTH.API.Application.Features.User
     {
         public async Task<bool> HandleAsync(UpdateUserRoleASyncCommnad request, CancellationToken cancellationToken = default)
         {
-        if (request.IsAssign)
+            if (request.IsAssign)
             {
-                var toInsert = new List<UserInRole>();
+                List<UserInRole> toInsert = new();
 
                 foreach (var userCode in request.ListOfUser)
                 {
@@ -57,7 +55,7 @@ namespace O24OpenAPI.CTH.API.Application.Features.User
 
                 if (toDelete.Count != 0)
                 {
-                    await userInRoleRepository.DeleteBulkAsync(toDelete);
+                    await userInRoleRepository.BulkDelete(toDelete);
                 }
             }
 

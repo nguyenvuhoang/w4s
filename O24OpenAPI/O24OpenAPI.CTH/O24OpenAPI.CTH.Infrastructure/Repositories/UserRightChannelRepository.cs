@@ -2,8 +2,8 @@ using LinKit.Core.Abstractions;
 using LinqToDB;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Events;
-using O24OpenAPI.Data;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
+using O24OpenAPI.Data;
 
 namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
@@ -17,8 +17,33 @@ public class UserRightChannelRepository(
         IUserRightChannelRepository
 {
 
-public async Task<List<UserRightChannel>> GetByRoleIdAsync(int roleId)
-{
-    return await Table.Where(x => x.RoleId == roleId).ToListAsync();
-}
+    public async Task<List<UserRightChannel>> GetByRoleIdAsync(int roleId)
+    {
+        return await Table.Where(x => x.RoleId == roleId).ToListAsync();
+    }
+
+    public async Task<HashSet<string>> GetSetChannelInRoleAsync(int roleId)
+    {
+        return await Table
+            .Where(s => s.RoleId == roleId)
+            .Select(s => s.ChannelId)
+            .AsAsyncEnumerable()
+            .ToHashSetAsync();
+    }
+
+    public async Task<HashSet<string>> GetSetChannelInRoleAsync(int[] roleId)
+    {
+        HashSet<string> result = new();
+        foreach (var role in roleId)
+        {
+            var set = await
+                Table.Where(s => s.RoleId == role)
+                .Select(s => s.ChannelId)
+                .AsAsyncEnumerable()
+                .ToHashSetAsync();
+
+            result.UnionWith(set);
+        }
+        return result;
+    }
 }

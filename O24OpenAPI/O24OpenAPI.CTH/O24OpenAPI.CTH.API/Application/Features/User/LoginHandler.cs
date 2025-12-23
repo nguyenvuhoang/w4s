@@ -17,7 +17,7 @@ using O24OpenAPI.Framework.Services;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User;
 
-public class LoginCommand : BaseTransactionModel, ICommand<LoginToO24OpenAPIRequestModel>
+public class LoginCommand : BaseTransactionModel, ICommand<AuthResponseModel>
 {
     public string Reference { get; set; }
 
@@ -72,7 +72,7 @@ public class LoginCommand : BaseTransactionModel, ICommand<LoginToO24OpenAPIRequ
 }
 
 [CqrsHandler]
-public class LoginHandel(
+public class LoginHandler(
     ISupperAdminRepository supperAdminRepository,
     IUserAccountRepository userAccountRepository,
     IJwtTokenService jwtTokenService,
@@ -80,11 +80,13 @@ public class LoginHandel(
     IUserSessionRepository userSessionRepository,
     IUserDeviceRepository userDeviceRepository,
     WebApiSettings webApiSettings,
-    IUserPasswordRepository userPasswordRepository
-) : ICommandHandler<LoginCommand, LoginToO24OpenAPIRequestModel>
+    IUserPasswordRepository userPasswordRepository,
+    IUserRightChannelRepository userRightChannelRepository
+) : ICommandHandler<LoginCommand, AuthResponseModel>
 {
     [WorkflowStep("UMG_LOGIN")]
     [WorkflowStep("WF_STEP_CTH_LOGIN")]
+
     public async Task<AuthResponseModel> HandleAsync(
         LoginCommand request,
         CancellationToken cancellationToken = default
@@ -130,7 +132,7 @@ public class LoginHandel(
         string hashedRefreshToken = refreshToken.Hash();
         string stringJson = model.RoleChannel;
         int[]? listRoles = System.Text.Json.JsonSerializer.Deserialize<int[]>(stringJson);
-        HashSet<string> channelRoles = await userRightRepository.GetSetChannelInRoleAsync(listRoles);
+        HashSet<string> channelRoles = await userRightChannelRepository.GetSetChannelInRoleAsync(listRoles);
         await userSessionRepository.RevokeByLoginName(model.LoginName);
 
         UserSession userSession = new()
@@ -213,7 +215,7 @@ public class LoginHandel(
             ? userAccount.RoleChannel
             : model.RoleChannel;
         int[]? listRoles = System.Text.Json.JsonSerializer.Deserialize<int[]>(stringJson);
-        HashSet<string> channelRoles = await userRightRepository.GetSetChannelInRoleAsync(listRoles);
+        HashSet<string> channelRoles = await userRightChannelRepository.GetSetChannelInRoleAsync(listRoles);
         await userSessionRepository.RevokeByLoginName(model.LoginName);
 
         UserSession userSession = new()
@@ -257,7 +259,7 @@ public class LoginHandel(
             await supperAdminRepository.IsExit()
             ?? throw new O24OpenAPIException("Supper Admin does not exit.");
 
-        if (sAdmin.UserId != request.UserId || sAdmin.LoginName != request.LoginName)
+        if (sAdmin.LoginName != request.LoginName)
         {
             throw new O24OpenAPIException("Supper Admin does not exit or invalid login name.");
         }
@@ -289,7 +291,7 @@ public class LoginHandel(
         string hashedToken = token.Hash();
         string refreshToken = JwtTokenService.GenerateRefreshToken();
         string hashedRefreshToken = refreshToken.Hash();
-        HashSet<string> channelRoles = await userRightRepository.GetSetChannelInRoleAsync(1);
+        HashSet<string> channelRoles = await userRightChannelRepository.GetSetChannelInRoleAsync(1);
         UserSession userSession = new()
         {
             Token = hashedToken,
@@ -322,13 +324,6 @@ public class LoginHandel(
         };
     }
 
-    Task<LoginToO24OpenAPIRequestModel> IHandler<
-        LoginCommand,
-        LoginToO24OpenAPIRequestModel
-    >.HandleAsync(LoginCommand request, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
 
     private async Task<UserAccount> GetLoginAccount(
         string loginName,

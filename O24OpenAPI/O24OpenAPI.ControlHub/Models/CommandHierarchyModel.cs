@@ -4,7 +4,7 @@ public class CommandHierarchyModel
 {
     public string ParentId { get; set; }
     public string CommandId { get; set; }
-    public string Label { get; set; }
+    public string Label { get; set; } 
     public string CommandType { get; set; }
     public string CommandUri { get; set; }
     public int RoleId { get; set; }

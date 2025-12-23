@@ -38,7 +38,7 @@ public class UserAccountRepository(
         string language
     )
     {
-        var user =
+        UserAccount user =
             await Table
                 .Where(s =>
                     s.ChannelId == channelId
@@ -54,7 +54,7 @@ public class UserAccountRepository(
 
         var MaxFailedAttempts = 5;
 
-        var userPassword =
+        UserAccount userPassword =
             await Table
                 .Where(s => s.ChannelId == channelId && s.UserId == user.UserId)
                 .FirstOrDefaultAsync()
@@ -151,5 +151,10 @@ public class UserAccountRepository(
     public async Task UpdateAsync(UserAccount userAccount)
     {
         await Update(userAccount);
+    }
+
+    public async Task<UserAccount> GetByUserCodeAsync(string userCode)
+    {
+        return await Table.Where(s => s.UserCode == userCode).FirstOrDefaultAsync();
     }
 }
