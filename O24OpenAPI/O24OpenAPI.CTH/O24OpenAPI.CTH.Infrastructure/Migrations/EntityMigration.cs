@@ -1,5 +1,5 @@
 ﻿using FluentMigrator;
-using O24OpenAPI.AI.Domain.AggregatesModel.SampleAggregate;
+using O24OpenAPI.CTH.Domain.AggregatesModel.SampleAggregate;
 using O24OpenAPI.Data.Extensions;
 
 namespace O24OpenAPI.CTH.Infrastructure.Migrations;

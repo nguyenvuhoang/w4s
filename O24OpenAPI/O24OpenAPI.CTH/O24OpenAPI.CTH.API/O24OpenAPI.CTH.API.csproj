@@ -5,6 +5,9 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 	<ItemGroup>
+		<Content Include="App_Data\CreateDatabase.sql">
+		  <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+		</Content>
 		<Content Include="__jits_com_vn.pfx">
 			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
 		</Content>
