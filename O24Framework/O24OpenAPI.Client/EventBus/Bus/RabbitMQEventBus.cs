@@ -1,21 +1,19 @@
-﻿using System.Net.Sockets;
-using System.Text;
-using System.Text.Json;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using O24OpenAPI.Client;
 using O24OpenAPI.Client.EventBus.Abstractions;
 using O24OpenAPI.Contracts.Events;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Logging.Helpers;
 using Polly;
 using Polly.Retry;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
+using System.Net.Sockets;
+using System.Text;
+using System.Text.Json;
 
 namespace O24OpenAPI.Client.EventBus.Bus;
 
@@ -136,11 +134,8 @@ public sealed class RabbitMQEventBus(
 
             var body = SerializeMessage(@event);
 
-            BusinessLogHelper.Info(
-                "Preparing to publish event. Exchange: {Exchange}, RoutingKey: {RoutingKey}, BodySize: {BodySize} bytes",
-                ExchangeName,
-                routingKey,
-                body?.Length ?? 0
+            Console.WriteLine(
+                $"Preparing to publish event. Exchange: {ExchangeName}, RoutingKey: {routingKey}, BodySize: {body?.Length ?? 0} bytes"
             );
 
             await _pipeline.ExecuteAsync(
@@ -162,20 +157,14 @@ public sealed class RabbitMQEventBus(
                             cancellationToken: ct
                         );
 
-                        BusinessLogHelper.Info(
-                            "Event published successfully. RoutingKey: {RoutingKey}, EventType: {EventType}",
-                            routingKey,
-                            @event.GetType().Name
+                        Console.WriteLine(
+                            $"Event published successfully. RoutingKey: {routingKey}, EventType: {@event.GetType().Name}"
                         );
                     }
                     catch (Exception ex)
                     {
-                        BusinessLogHelper.Error(
-                            ex,
-                            "Failed to publish event. Exchange: {Exchange}, RoutingKey: {RoutingKey}, EventType: {EventType}",
-                            ExchangeName,
-                            routingKey,
-                            @event.GetType().Name
+                        Console.WriteLine(
+                            $"Failed to publish event. Exchange: {ExchangeName}, RoutingKey: {routingKey}, EventType: {@event.GetType().Name}. Exception: {ex}"
                         );
                         throw;
                     }
@@ -193,11 +182,7 @@ public sealed class RabbitMQEventBus(
     /// <returns></returns>
     private async Task OnMessageReceived(object sender, BasicDeliverEventArgs eventArgs)
     {
-        BusinessLogHelper.Info(
-            "Received message with RoutingKey: {RoutingKey}, DeliveryTag: {DeliveryTag}",
-            eventArgs.RoutingKey,
-            eventArgs.DeliveryTag
-        );
+        Console.WriteLine($"Received message with RoutingKey: {eventArgs.RoutingKey}, DeliveryTag: {eventArgs.DeliveryTag}");
         var eventName = eventArgs.RoutingKey;
         var message = Encoding.UTF8.GetString(eventArgs.Body.Span);
 
@@ -208,11 +193,8 @@ public sealed class RabbitMQEventBus(
         catch (Exception ex)
         {
             logger.LogWarning(ex, "Error processing message {Message}", message);
-            BusinessLogHelper.Error(
-                ex,
-                "Error processing message with RoutingKey: {RoutingKey}, DeliveryTag: {DeliveryTag}",
-                eventArgs.RoutingKey,
-                eventArgs.DeliveryTag
+            Console.WriteLine(
+                $"Error processing message with RoutingKey: {eventArgs.RoutingKey}, DeliveryTag: {eventArgs.DeliveryTag}. Exception: {ex}"
             );
         }
 
