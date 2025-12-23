@@ -19,6 +19,7 @@ if (!builder.Environment.IsDevelopment())
     builder.ConfigureWebHost();
 }
 builder.AddO24Logging();
+
 //builder.AddBackgroundJobs("StaticConfig/BackgroundJobsConfig.json");
 builder.Services.AddInfrastructureServices();
 WebApplication app = builder.Build();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Cryptography;
+using Microsoft.AspNetCore.Mvc;
 using O24OpenAPI.CMS.API.Application.Models.Media;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces.Media;
@@ -8,7 +9,6 @@ using O24OpenAPI.Framework.Controllers;
 using O24OpenAPI.Framework.Models.JwtModels;
 using O24OpenAPI.Framework.Services;
 using O24OpenAPI.Framework.Utils;
-using System.Security.Cryptography;
 
 namespace O24OpenAPI.CMS.API.Controllers;
 
@@ -17,7 +17,7 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
     private readonly IMediaService _mediaService = mediaService;
     private readonly CMSSetting _cmsSetting = cmsSetting;
 
-    [HttpPost("upload")]
+    [HttpPost("/api/v1/upload")]
     public async Task<IActionResult> UploadFile(
         IFormFile file,
         [FromQuery] string folder = null,
@@ -111,7 +111,9 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
         var s3Key = uploadResult.Key;
 
         var trackerCode = Guid.NewGuid().ToString("N");
-        DateTime expiredOn = isTokenValid ? DateTime.UtcNow.AddDays(7) : DateTime.UtcNow.AddMinutes(5);
+        DateTime expiredOn = isTokenValid
+            ? DateTime.UtcNow.AddDays(7)
+            : DateTime.UtcNow.AddMinutes(5);
 
         if (isTokenValid)
         {
@@ -184,7 +186,9 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
     [HttpGet]
     public async Task<IActionResult> GetCategories(CancellationToken cancellationToken)
     {
-        IReadOnlyList<string> categories = await _mediaService.ListCategoriesAsync(cancellationToken);
+        IReadOnlyList<string> categories = await _mediaService.ListCategoriesAsync(
+            cancellationToken
+        );
 
         return Ok(categories);
     }
@@ -196,7 +200,11 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
         CancellationToken cancellationToken
     )
     {
-        MediaBrowseResultModel result = await _mediaService.BrowseAsync(category, path, cancellationToken);
+        MediaBrowseResultModel result = await _mediaService.BrowseAsync(
+            category,
+            path,
+            cancellationToken
+        );
         return Ok(result);
     }
 
@@ -206,7 +214,10 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
         CancellationToken cancellationToken
     )
     {
-        MediaFolderNode tree = await _mediaService.BuildCategoryTreeAsync(category, cancellationToken);
+        MediaFolderNode tree = await _mediaService.BuildCategoryTreeAsync(
+            category,
+            cancellationToken
+        );
         return Ok(tree);
     }
 }
