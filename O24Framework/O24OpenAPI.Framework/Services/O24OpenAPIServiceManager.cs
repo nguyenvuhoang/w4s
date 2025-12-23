@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Linh.CodeEngine.Core;
 using LinKit.Core.Cqrs;
 using LinKit.Json.Runtime;
@@ -18,7 +19,6 @@ using O24OpenAPI.Framework.Models.Logging;
 using O24OpenAPI.Framework.Services.Configuration;
 using O24OpenAPI.Framework.Services.Logging;
 using O24OpenAPI.Framework.Services.Queue;
-using System.Text.Json;
 
 namespace O24OpenAPI.Framework.Services;
 
@@ -92,10 +92,17 @@ public class O24OpenAPIServiceManager
             string methodName = mapping.MethodName;
             BaseTransactionModel baseTranModel = await workflow.ToModel<BaseTransactionModel>();
             var json = JsonSerializer.Serialize(baseTranModel);
-            Dictionary<string, object> dictionary = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+            Dictionary<string, object> dictionary = JsonSerializer.Deserialize<
+                Dictionary<string, object>
+            >(json);
             workflow.request.request_header.tx_context = dictionary;
             Console.WriteLine($"wfScheme == {JsonSerializer.Serialize(workflow)}");
-            if (TryParseStoredProcedureParameter(fullClassName, out StoredProcedureStepConfig parameterConfig))
+            if (
+                TryParseStoredProcedureParameter(
+                    fullClassName,
+                    out StoredProcedureStepConfig parameterConfig
+                )
+            )
             {
                 return await BaseQueue.Invoke2<BaseTransactionModel>(workflow, parameterConfig);
             }
@@ -125,7 +132,8 @@ public class O24OpenAPIServiceManager
             }
             try
             {
-                IWorkflowStepInvoker stepInvoker = EngineContext.Current.Resolve<IWorkflowStepInvoker>();
+                IWorkflowStepInvoker stepInvoker =
+                    EngineContext.Current.Resolve<IWorkflowStepInvoker>();
                 Task<WFScheme> scheme = BaseQueue.Invoke<BaseTransactionModel>(
                     workflow,
                     async () =>
@@ -222,14 +230,15 @@ public class O24OpenAPIServiceManager
         {
             try
             {
-                StoreProcedureErrorModel errorResponse = JsonSerializer.Deserialize<StoreProcedureErrorModel>(
-                    ex.Message,
-                    new JsonSerializerOptions
-                    {
-                        AllowTrailingCommas = true,
-                        PropertyNameCaseInsensitive = true,
-                    }
-                );
+                StoreProcedureErrorModel errorResponse =
+                    JsonSerializer.Deserialize<StoreProcedureErrorModel>(
+                        ex.Message,
+                        new JsonSerializerOptions
+                        {
+                            AllowTrailingCommas = true,
+                            PropertyNameCaseInsensitive = true,
+                        }
+                    );
 
                 if (
                     errorResponse != null
