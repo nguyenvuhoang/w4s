@@ -6,5 +6,6 @@ namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate
     {
         Task<HashSet<string>> GetSetChannelInRoleAsync(int roleId);
         Task<HashSet<string>> GetSetChannelInRoleAsync(int[] roleId);
+        Task<List<int>> GetListRoleIdByChannelAsync(string channelId);
     }
 }

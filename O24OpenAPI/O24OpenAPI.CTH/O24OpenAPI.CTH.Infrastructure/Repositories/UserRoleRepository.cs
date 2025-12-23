@@ -20,6 +20,14 @@ public class UserRoleRepository(
     {
         throw new NotImplementedException();
     }
+    public async Task<List<int>> GetByRoleTypeAsync(string roletype)
+    {
+        return await Table
+            .Where(c => c.RoleType == roletype)
+            .Select(x => x.RoleId)
+            .Distinct()
+            .ToListAsync();
+    }
 
     public async Task<int> GetNextRoleIdAsync()
     {

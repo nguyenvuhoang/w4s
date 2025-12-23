@@ -7,6 +7,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="QRCoder" Version="1.7.0" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Core\O24OpenAPI.Core.csproj" />
 		<ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Data\O24OpenAPI.Data.csproj" />
 		<ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Framework\O24OpenAPI.Framework.csproj" />

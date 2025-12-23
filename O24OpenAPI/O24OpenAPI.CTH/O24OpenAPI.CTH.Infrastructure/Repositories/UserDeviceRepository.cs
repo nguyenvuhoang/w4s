@@ -5,6 +5,7 @@ using O24OpenAPI.Core.Events;
 using O24OpenAPI.CTH.Constant;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Data;
+using O24OpenAPI.Framework.Extensions;
 
 namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
@@ -56,6 +57,29 @@ public class UserDeviceRepository(
                 && !string.IsNullOrEmpty(d.PushId)
             )
             .ToListAsync();
+    }
+
+    public virtual async Task<UserDevice> GetByUserCodeAsync(string userCode)
+    {
+        if (string.IsNullOrWhiteSpace(userCode))
+        {
+            return null;
+        }
+
+        try
+        {
+            var query = Table;
+            return query == null
+                ? throw new InvalidOperationException("UserDevice repository table is null.")
+                : await query
+                    .Where(d => d.UserCode == userCode && d.Status == Code.ShowStatus.ACTIVE)
+                    .FirstOrDefaultAsync();
+        }
+        catch (Exception ex)
+        {
+            await ex.LogErrorAsync();
+            throw;
+        }
     }
 
     public Task<UserDevice> EnsureUserDeviceAsync(

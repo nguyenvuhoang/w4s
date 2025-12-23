@@ -21,6 +21,21 @@ public class UserPasswordRepository(
         return await Table.Where(s => s.UserId == userCode).FirstOrDefaultAsync();
     }
 
+    public async Task<UserPassword> AddAsync(UserPassword user)
+    {
+        return await InsertAsync(user);
+    }
+
+    public async Task DeletePasswordByUserIdAsync(string userId)
+    {
+        var entity = await Table.FirstOrDefaultAsync(x => x.UserId == userId);
+
+        if (entity != null)
+        {
+            await Delete(entity);
+        }
+    }
+
     public async Task<UserPassword?> GetByChannelAndUserAsync(string channelId, string userCode)
     {
         return await Table

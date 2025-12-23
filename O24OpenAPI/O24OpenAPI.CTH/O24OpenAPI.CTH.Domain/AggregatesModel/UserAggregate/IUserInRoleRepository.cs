@@ -5,5 +5,6 @@ namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate
     public interface IUserInRoleRepository : IRepository<UserInRole>
     {
         Task<List<UserInRole>> ListOfRole(string usercode);
+        Task DeleteByUserCodeAsync(string userCode);
     }
 }

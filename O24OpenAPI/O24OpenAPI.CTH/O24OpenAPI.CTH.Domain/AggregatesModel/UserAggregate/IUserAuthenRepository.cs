@@ -7,5 +7,10 @@ namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate
         Task<UserAuthen?> GetByUserCodeAsync(string userCode);
         Task UpdateAsync(UserAuthen user);
         Task<UserAuthen> AddAsync(UserAuthen user);
+        Task<UserAuthen?> GetByUserAuthenInfoAsync(
+            string userCode,
+            string authenType,
+            string phoneNumber
+        );
     }
 }

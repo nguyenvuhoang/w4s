@@ -12,6 +12,6 @@ namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate
     {
         Task<bool> DeleteBulkAsync();
         Task UpdateAsync(UserAccount userAccount);
-        
+        Task<List<int>> GetByRoleTypeAsync(string roletype);
     }
 }

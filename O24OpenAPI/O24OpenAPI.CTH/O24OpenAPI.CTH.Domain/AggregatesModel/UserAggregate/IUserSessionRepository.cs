@@ -6,5 +6,7 @@ namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate
     {
         Task Insert(UserSession userSession);
         Task RevokeByLoginName(string loginName);
+        Task<UserSession> GetByRefreshToken(string token);
+        Task<UserSession> GetActiveByLoginName(string loginName);
     }
 }

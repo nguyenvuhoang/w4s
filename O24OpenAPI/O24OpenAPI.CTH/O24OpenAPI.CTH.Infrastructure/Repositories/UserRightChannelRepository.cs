@@ -16,10 +16,14 @@ public class UserRightChannelRepository(
     : EntityRepository<UserRightChannel>(eventPublisher, dataProvider, staticCacheManager),
         IUserRightChannelRepository
 {
-
     public async Task<List<UserRightChannel>> GetByRoleIdAsync(int roleId)
     {
         return await Table.Where(x => x.RoleId == roleId).ToListAsync();
+    }
+
+    public async Task<List<int>> GetListRoleIdByChannelAsync(string channelId)
+    {
+        return await Table.Where(s => s.ChannelId == channelId).Select(s => s.RoleId).ToListAsync();
     }
 
     public async Task<HashSet<string>> GetSetChannelInRoleAsync(int roleId)
@@ -36,8 +40,8 @@ public class UserRightChannelRepository(
         HashSet<string> result = new();
         foreach (var role in roleId)
         {
-            var set = await
-                Table.Where(s => s.RoleId == role)
+            var set = await Table
+                .Where(s => s.RoleId == role)
                 .Select(s => s.ChannelId)
                 .AsAsyncEnumerable()
                 .ToHashSetAsync();

@@ -31,6 +31,27 @@ public class UserAccountRepository(
         throw new NotImplementedException();
     }
 
+    public async Task<bool> IsExist(string userName)
+    {
+        var useraccount = await Table.Where(s => s.UserName == userName).FirstOrDefaultAsync();
+        return useraccount != null;
+    }
+
+    public async Task DeleteUserByUserIdAsync(string userId)
+    {
+        var entity = await Table.FirstOrDefaultAsync(x => x.UserId == userId);
+
+        if (entity != null)
+        {
+            await Delete(entity);
+        }
+    }
+
+    public async Task<UserAccount> AddAsync(UserAccount user)
+    {
+        return await InsertAsync(user);
+    }
+
     public async Task<UserAccount> GetByLoginNameAndEmailAsync(
         string loginName,
         string email,
@@ -164,8 +185,20 @@ public class UserAccountRepository(
         await Update(userAccount);
     }
 
+    public async Task<UserAccount> GetByLoginNameAsync(string loginName)
+    {
+        return await Table.Where(s => s.LoginName == loginName).FirstOrDefaultAsync();
+    }
+
     public async Task<UserAccount> GetByUserCodeAsync(string userCode)
     {
         return await Table.Where(s => s.UserCode == userCode).FirstOrDefaultAsync();
+    }
+
+    public async Task<UserAccount> GetByLoginNameandChannelAsync(string loginName, string channelid)
+    {
+        return await Table
+            .Where(s => s.LoginName == loginName && s.ChannelId == channelid)
+            .FirstOrDefaultAsync();
     }
 }

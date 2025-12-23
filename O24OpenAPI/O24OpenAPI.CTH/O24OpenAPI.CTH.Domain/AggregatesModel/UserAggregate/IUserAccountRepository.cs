@@ -13,4 +13,10 @@ public interface IUserAccountRepository : IRepository<UserAccount>
         string email,
         string phonenumber
     );
+    Task<UserAccount> GetByLoginNameAsync(string loginName);
+
+    Task<UserAccount> GetByLoginNameandChannelAsync(string loginName, string channelid);
+    Task DeleteUserByUserIdAsync(string userId);
+    Task<bool> IsExist(string userName);
+    Task<UserAccount> AddAsync(UserAccount user);
 }

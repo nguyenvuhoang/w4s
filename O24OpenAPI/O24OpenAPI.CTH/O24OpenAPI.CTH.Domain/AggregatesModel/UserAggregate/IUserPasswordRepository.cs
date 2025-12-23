@@ -7,5 +7,7 @@ namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate
     {
         Task<UserPassword?> GetByUserCodeAsync(string userCode);
         Task UpdateAsync(UserPassword entity);
+        Task DeletePasswordByUserIdAsync(string userId);
+        Task<UserPassword> AddAsync(UserPassword user);
     }
 }

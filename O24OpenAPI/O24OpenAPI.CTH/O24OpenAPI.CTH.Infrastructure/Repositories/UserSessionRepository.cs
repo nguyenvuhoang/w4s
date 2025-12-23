@@ -2,6 +2,7 @@ using LinKit.Core.Abstractions;
 using LinqToDB;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Events;
+using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Data;
 
@@ -59,5 +60,18 @@ public class UserSessionRepository(
     public Task RevokeByLoginName(string loginName)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<UserSession> GetByRefreshToken(string token)
+    {
+        var hashed = token.Hash();
+        return await Table.Where(s => s.RefreshToken == hashed).FirstOrDefaultAsync();
+    }
+
+    public async Task<UserSession> GetActiveByLoginName(string loginName)
+    {
+        return await Table
+            .Where(x => x.LoginName == loginName && !x.IsRevoked && x.ExpiresAt > DateTime.UtcNow)
+            .FirstOrDefaultAsync();
     }
 }
