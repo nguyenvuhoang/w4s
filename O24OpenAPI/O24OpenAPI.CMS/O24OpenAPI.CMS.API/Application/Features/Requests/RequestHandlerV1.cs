@@ -1,4 +1,6 @@
-﻿using LinKit.Core.Abstractions;
+﻿using System.Text;
+using System.Text.Json.Serialization;
+using LinKit.Core.Abstractions;
 using LinKit.Json.Runtime;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Net.Http.Headers;
@@ -24,8 +26,6 @@ using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using O24OpenAPI.Logging.Helpers;
-using System.Text;
-using System.Text.Json.Serialization;
 
 namespace O24OpenAPI.CMS.API.Application.Features.Requests;
 
@@ -78,7 +78,7 @@ public class ResponseModel
     /// Dữ liệu trả về
     /// </summary>
     [JsonPropertyName("data")]
-    public object? Data { get; set; }
+    public object Data { get; set; }
 
     /// <summary>
     /// ID để trace/track execution
@@ -103,15 +103,13 @@ public class ResponseModel
     /// Metadata bổ sung (optional)
     /// </summary>
     [JsonPropertyName("metadata")]
-    public Dictionary<string, object>? Metadata { get; set; }
+    public Dictionary<string, object> Metadata { get; set; }
 }
 #endregion
 
 [RegisterService(Lifetime.Scoped)]
 public class RequestHandlerV1(
     ILocalizationService localizationService,
-    WebApiSettings webApiSettings,
-    IO24OpenAPIFileProvider fileProvider,
     JWebUIObjectContextModel context,
     CMSSetting cmsSetting,
     IJwtTokenService jwtTokenService,
@@ -121,8 +119,6 @@ public class RequestHandlerV1(
     IDataMappingService dataMappingService
 ) : IRequestHandler
 {
-    private readonly WebApiSettings _webApiSettings = webApiSettings;
-    private readonly IO24OpenAPIFileProvider _fileProvider = fileProvider;
     private readonly ILocalizationService _localizationService = localizationService;
     private readonly CMSSetting _cmsSetting = cmsSetting;
     private readonly WorkContext _workContext = workContext;
@@ -138,7 +134,7 @@ public class RequestHandlerV1(
     {
         (IsNeedCheckSession, IsRefreshToken) = CheckInput(request);
 
-        Dictionary<string, string>? infoHeaderDictionary = httpContext.GetHeaders();
+        Dictionary<string, string> infoHeaderDictionary = httpContext.GetHeaders();
         RequestHeaderModel infoHeaderModel = new();
         if (infoHeaderDictionary is not null)
         {
@@ -202,7 +198,6 @@ public class RequestHandlerV1(
         HttpContext httpContext
     )
     {
-        CTHUserSessionModel? currentSession = null;
         #region Validate token
         if (IsNeedCheckSession && !string.IsNullOrEmpty(infoHeader.Token))
         {
@@ -221,12 +216,12 @@ public class RequestHandlerV1(
         ResponseModel result = new();
         try
         {
-            string? appPost = infoHeader.App;
+            string appPost = infoHeader.App;
             _workContext.SetCurrentChannel(appPost);
             Dictionary<string, string> requestCookies = httpContext.GetCookies();
             string getSsidFromCookies = "";
             string sSIDStr = "device_id";
-            if (requestCookies.TryGetValue(sSIDStr, out string? value))
+            if (requestCookies.TryGetValue(sSIDStr, out string value))
             {
                 getSsidFromCookies = value;
             }
@@ -240,6 +235,7 @@ public class RequestHandlerV1(
                 if (!string.IsNullOrEmpty(infoHeader.Token) && !checkedSession && !IsRefreshToken)
                 {
                     bool isValid = false;
+                    CTHUserSessionModel currentSession;
                     try
                     {
                         currentSession = await _cthGrpcClientService.GetUserSessionAsync(
@@ -282,7 +278,7 @@ public class RequestHandlerV1(
                         {
                             throw new Exception("Signature is invalid.");
                         }
-                        string[]? roles = currentSession.ChannelRoles.FromJson<string[]>();
+                        string[] roles = currentSession.ChannelRoles.FromJson<string[]>();
                         if (!roles.Contains(appPost))
                         {
                             throw new Exception(
@@ -326,14 +322,14 @@ public class RequestHandlerV1(
             context.InfoRequest.SetRequestModel(requestModel);
             context.InfoRequest.DeviceID = StringUtils.Coalesce(
                 getSsidFromCookies,
-                infoHeader.MyDevice.TryGetValue("device_id", out object? deviceId)
+                infoHeader.MyDevice.TryGetValue("device_id", out object deviceId)
                     ? deviceId?.ToString()
                     : null,
                 ""
             );
             context.InfoRequest.DeviceType = StringUtils.Coalesce(
                 getSsidFromCookies,
-                infoHeader.MyDevice.TryGetValue("device_type", out object? deviceType)
+                infoHeader.MyDevice.TryGetValue("device_type", out object deviceType)
                     ? deviceType?.ToString()
                     : null,
                 ""
@@ -341,66 +337,66 @@ public class RequestHandlerV1(
 
             context.InfoRequest.OsVersion = infoHeader.MyDevice.TryGetValue(
                 "os_version",
-                out object? osVersion
+                out object osVersion
             )
                 ? osVersion?.ToString()
                 : "";
 
             context.InfoRequest.AppVersion = infoHeader.MyDevice.TryGetValue(
                 "app_version",
-                out object? appVersion
+                out object appVersion
             )
                 ? appVersion?.ToString()
                 : "";
 
             context.InfoRequest.DeviceName = infoHeader.MyDevice.TryGetValue(
                 "device_name",
-                out object? deviceName
+                out object deviceName
             )
                 ? deviceName?.ToString()
                 : "";
 
-            context.InfoRequest.Brand = infoHeader.MyDevice.TryGetValue("brand", out object? brand)
+            context.InfoRequest.Brand = infoHeader.MyDevice.TryGetValue("brand", out object brand)
                 ? brand?.ToString()
                 : "";
 
             context.InfoRequest.IsEmulator =
-                infoHeader.MyDevice.TryGetValue("is_emulator", out object? isEmulator)
+                infoHeader.MyDevice.TryGetValue("is_emulator", out object isEmulator)
                 && bool.TryParse(isEmulator?.ToString(), out bool isEmuVal)
                     ? isEmuVal
                     : false;
 
             context.InfoRequest.IsRootedOrJailbroken =
-                infoHeader.MyDevice.TryGetValue("is_rooted_or_jailbroken", out object? isRooted)
+                infoHeader.MyDevice.TryGetValue("is_rooted_or_jailbroken", out object isRooted)
                 && bool.TryParse(isRooted?.ToString(), out bool isRootedVal)
                     ? isRootedVal
                     : false;
 
             context.InfoRequest.UserAgent = infoHeader.MyDevice.TryGetValue(
                 "user_agent",
-                out object? userAgent
+                out object userAgent
             )
                 ? userAgent?.ToString()
                 : "";
 
             context.InfoRequest.IpAddress = infoHeader.MyDevice.TryGetValue(
                 "ip_address",
-                out object? ipAddress
+                out object ipAddress
             )
                 ? ipAddress?.ToString()
                 : "";
 
             context.InfoRequest.Modelname = infoHeader.MyDevice.TryGetValue(
                 "model_name",
-                out object? modelName
+                out object modelName
             )
                 ? modelName?.ToString()
                 : "";
 
             if (infoHeader.MyDevice != null)
             {
-                infoHeader.MyDevice.TryGetValue("network_type", out object? networkType);
-                infoHeader.MyDevice.TryGetValue("network_status", out object? networkStatus);
+                infoHeader.MyDevice.TryGetValue("network_type", out object networkType);
+                infoHeader.MyDevice.TryGetValue("network_status", out object networkStatus);
 
                 context.InfoRequest.Network = $"{networkType ?? ""} ({networkStatus ?? ""})".Trim();
             }
@@ -410,7 +406,7 @@ public class RequestHandlerV1(
             }
             context.InfoRequest.Memory = infoHeader.MyDevice.TryGetValue(
                 "total_memory",
-                out object? totalmemory
+                out object totalmemory
             )
                 ? totalmemory?.ToString()
                 : "";
@@ -474,15 +470,15 @@ public class RequestHandlerV1(
 
     private async Task<ResponseModel> ProcessBoRequest(RequestModel requestModel)
     {
-        WorkContext? workflowContext = EngineContext.Current.Resolve<WorkContext>();
+        WorkContext workflowContext = EngineContext.Current.Resolve<WorkContext>();
         string executeId = workflowContext.ExecutionId;
 
-        JObject? data = (await ExecuteAsync(requestModel)).Value<JObject>("data");
+        JObject data = (await ExecuteAsync(requestModel)).Value<JObject>("data");
 
         if (data != null)
         {
             if (
-                data.TryGetValue("error_message", out JToken? errorMessage)
+                data.TryGetValue("error_message", out JToken errorMessage)
                 && !string.IsNullOrWhiteSpace(errorMessage?.ToString())
             )
             {
@@ -559,7 +555,7 @@ public class RequestHandlerV1(
             string response;
             if (!string.IsNullOrEmpty(requestModel.LearnApi))
             {
-                string? learnApiId = requestModel.LearnApi;
+                string learnApiId = requestModel.LearnApi;
 
                 LearnApi learnApi = await learnApiRepository.GetByChannelAndLearnApiIdAsync(
                     context.InfoApp.GetApp(),
@@ -590,7 +586,7 @@ public class RequestHandlerV1(
                         }
                         else
                         {
-                            ICMSSettingService? settingService =
+                            ICMSSettingService settingService =
                                 EngineContext.Current.Resolve<ICMSSettingService>();
                             string setting = await settingService.GetStringValue(settingKey);
                             learnApi.URI = setting + remainingPath;
@@ -607,7 +603,7 @@ public class RequestHandlerV1(
             else
             {
                 JObject obContent = BuildContentWorkflowRequest(requestModel);
-                IWFOGrpcClientService? wfoGrpcClientService =
+                IWFOGrpcClientService wfoGrpcClientService =
                     EngineContext.Current.Resolve<IWFOGrpcClientService>();
                 response = await wfoGrpcClientService.ExecuteWorkflowAsync(
                     JsonConvert.SerializeObject(obContent)
@@ -615,7 +611,7 @@ public class RequestHandlerV1(
             }
 
             JObject result = JObject.Parse(response);
-            if (result.TryGetValue("error_message", out JToken? messageToken))
+            if (result.TryGetValue("error_message", out JToken messageToken))
             {
                 if (!string.IsNullOrEmpty(messageToken?.ToString()))
                 {

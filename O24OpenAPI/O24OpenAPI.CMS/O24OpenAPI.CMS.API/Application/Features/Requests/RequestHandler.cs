@@ -45,7 +45,7 @@ public class BoRequest : BaseO24OpenAPIModel
 }
 #endregion
 
-[RegisterService(Lifetime.Scoped)]
+// [RegisterService(Lifetime.Scoped)]
 public class RequestHandler(
     ILocalizationService localizationService,
     WebApiSettings webApiSettings,
