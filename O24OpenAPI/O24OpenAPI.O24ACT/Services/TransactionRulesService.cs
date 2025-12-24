@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+﻿using LinqToDB;
 using Newtonsoft.Json;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Extensions;
@@ -9,6 +9,7 @@ using O24OpenAPI.O24ACT.Domain;
 using O24OpenAPI.O24ACT.Models;
 using O24OpenAPI.O24ACT.Services.Interfaces;
 using O24OpenAPI.O24ACT.Utils;
+using System.Text.RegularExpressions;
 
 namespace O24OpenAPI.O24ACT.Services;
 
@@ -25,8 +26,8 @@ public class TransactionRulesService(
 
     async Task<List<TransactionRules>> GetByWorkflowId(string workflowId)
     {
-        var cacheKey = CachingKey.SessionKey(workflowId);
-        var lst = await _staticCacheManager.Get(
+        CacheKey cacheKey = CachingKey.SessionKey(workflowId);
+        List<TransactionRules> lst = await _staticCacheManager.Get(
             cacheKey,
             async () =>
             {
@@ -45,13 +46,13 @@ public class TransactionRulesService(
             return;
         }
 
-        var lstTransRule = await GetByWorkflowId(model.TransactionCode);
-        foreach (var item in lstTransRule)
+        List<TransactionRules> lstTransRule = await GetByWorkflowId(model.TransactionCode);
+        foreach (TransactionRules item in lstTransRule)
         {
-            var ruleDef = await _ruleService.GetByRuleName(item.RuleName);
+            RuleDefinition ruleDef = await _ruleService.GetByRuleName(item.RuleName);
             if (ruleDef != null)
             {
-                var rule = new BaseValidatorModel()
+                BaseValidatorModel rule = new BaseValidatorModel()
                 {
                     Parameter = item.Parameter,
                     Workflowid = item.WorkflowId,
@@ -71,7 +72,7 @@ public class TransactionRulesService(
                     );
                 }
 
-                var param = JsonConvert.DeserializeObject<Dictionary<string, object>>(
+                Dictionary<string, object> param = JsonConvert.DeserializeObject<Dictionary<string, object>>(
                     rule.Parameter
                 );
 
@@ -87,18 +88,18 @@ public class TransactionRulesService(
 
                 foreach (var field in lst)
                 {
-                    var regex = new Regex(@"\b" + field.Key + @"\b");
-                    var value = regex.Replace(
+                    Regex regex = new Regex(@"\b" + field.Key + @"\b");
+                    string value = regex.Replace(
                         Convert.ToString(param[field.Field]),
                         Convert.ToString(field.Value)
                     );
                     param[field.Field] = value;
                 }
 
-                var result = true;
+                bool result = true;
                 if (param.ContainsKey(nameof(BaseValidatorModel.Condition)))
                 {
-                    var cdt = param[nameof(BaseValidatorModel.Condition)];
+                    object cdt = param[nameof(BaseValidatorModel.Condition)];
                     string condition = Regex.Unescape(cdt.ToString() ?? string.Empty);
 
                     if (condition.HasValue()) { }

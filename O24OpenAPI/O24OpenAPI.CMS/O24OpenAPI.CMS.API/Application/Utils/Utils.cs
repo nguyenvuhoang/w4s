@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using System.Globalization;
-using System.Reflection;
-using CsvHelper;
+﻿using CsvHelper;
 using CsvHelper.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -11,7 +8,10 @@ using O24OpenAPI.CMS.Domain.AggregateModels.Digital;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Data.Configuration;
 using O24OpenAPI.Data.System.Linq;
-using O24OpenAPI.Framework.Extensions;
+using System.Diagnostics;
+using System.Globalization;
+using System.Linq.Expressions;
+using System.Reflection;
 using ILogger = O24OpenAPI.Framework.Services.Logging.ILogger;
 
 namespace O24OpenAPI.CMS.API.Application.Utils;
@@ -102,11 +102,11 @@ public static class Utils
     {
         if (dataKey.Contains('.'))
         {
-            var s_ = dataKey.Split("\\.");
+            string[] s_ = dataKey.Split("\\.");
             if (s_.Length > 0)
             {
                 JObject obLoop = data;
-                for (var i = 0; i < s_.Length; i++)
+                for (int i = 0; i < s_.Length; i++)
                 {
                     if (i == (s_.Length - 1))
                     {
@@ -149,11 +149,11 @@ public static class Utils
     {
         if (dataKey.Contains('.'))
         {
-            var s_ = dataKey.Split("\\.");
+            string[] s_ = dataKey.Split("\\.");
             if (s_.Length > 0)
             {
                 JObject obLoop = data;
-                for (var i = 0; i < s_.Length; i++)
+                for (int i = 0; i < s_.Length; i++)
                 {
                     if (i == (s_.Length - 1))
                     {
@@ -201,7 +201,7 @@ public static class Utils
         {
             try
             {
-                var obj = JObject.Parse(strInput);
+                JObject obj = JObject.Parse(strInput);
                 return true;
             }
             catch (JsonReaderException jex)
@@ -239,7 +239,7 @@ public static class Utils
         {
             try
             {
-                var obj = JArray.Parse(strInput);
+                JArray obj = JArray.Parse(strInput);
                 return true;
             }
             catch (JsonReaderException jex)
@@ -271,7 +271,7 @@ public static class Utils
 
     public static Dictionary<string, string> ToDictionaryString(this object model)
     {
-        var serializedModel = JsonConvert.SerializeObject(model, Formatting.None);
+        string serializedModel = JsonConvert.SerializeObject(model, Formatting.None);
         return JsonConvert.DeserializeObject<Dictionary<string, string>>(serializedModel);
     }
 
@@ -282,7 +282,7 @@ public static class Utils
     /// <returns></returns>
     public static Dictionary<string, object> ToDictionarySystemText(this object model)
     {
-        var serializedModel = System.Text.Json.JsonSerializer.Serialize(model);
+        string serializedModel = System.Text.Json.JsonSerializer.Serialize(model);
         return System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(
             serializedModel
         );
@@ -301,8 +301,8 @@ public static class Utils
     {
         try
         {
-            var mergeDic = obj1;
-            foreach (var item in obj2)
+            Dictionary<string, object> mergeDic = obj1;
+            foreach (KeyValuePair<string, object> item in obj2)
             {
                 if (!mergeDic.ContainsKey(item.Key))
                 {
@@ -361,7 +361,7 @@ public static class Utils
     public static JObject ConvertToJObject(Dictionary<string, object> lst)
     {
         JObject jsResult = new();
-        foreach (var item in lst) { }
+        foreach (KeyValuePair<string, object> item in lst) { }
 
         return jsResult;
     }
@@ -373,13 +373,13 @@ public static class Utils
     /// <returns></returns>
     public static object RemoveNull(object anonymousObj)
     {
-        var serilaizeJson = JsonConvert.SerializeObject(
+        string serilaizeJson = JsonConvert.SerializeObject(
             anonymousObj,
             Formatting.None,
             new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }
         );
 
-        var result = JsonConvert.DeserializeObject<dynamic>(serilaizeJson);
+        dynamic result = JsonConvert.DeserializeObject<dynamic>(serilaizeJson);
         return result;
     }
 
@@ -391,12 +391,12 @@ public static class Utils
     /// <returns></returns>
     public static string GetMobileVersion(string userAgent, string device)
     {
-        var temp = userAgent.Substring(userAgent.IndexOf(device) + device.Length).TrimStart();
-        var version = string.Empty;
+        string temp = userAgent.Substring(userAgent.IndexOf(device) + device.Length).TrimStart();
+        string version = string.Empty;
 
-        foreach (var character in temp)
+        foreach (char character in temp)
         {
-            var validCharacter = false;
+            bool validCharacter = false;
             int test = 0;
 
             if (int.TryParse(character.ToString(), out test))
@@ -429,7 +429,7 @@ public static class Utils
     {
         string rs_ = "";
 
-        var ua = httpContext.Request.Headers["User-Agent"].ToString();
+        string ua = httpContext.Request.Headers["User-Agent"].ToString();
 
         if (ua.Contains("Android"))
         {
@@ -507,7 +507,7 @@ public static class Utils
     public static string GetClientBrowser(HttpContext httpContext)
     {
         string browser = "";
-        var browserDetails = httpContext.Request.Headers["User-Agent"].ToString();
+        string browserDetails = httpContext.Request.Headers["User-Agent"].ToString();
         string user = browserDetails.ToLower();
         if (user.Contains("msie"))
         {
@@ -617,7 +617,7 @@ public static class Utils
     public static Dictionary<string, string> GetHeaders(HttpContext httpContext)
     {
         Dictionary<string, string> requestHeaders = [];
-        foreach (var header in httpContext.Request.Headers)
+        foreach (KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues> header in httpContext.Request.Headers)
         {
             requestHeaders.Add(header.Key.ToLower(), header.Value);
             Console.WriteLine($"{header.Key}: {header.Value}");
@@ -634,7 +634,7 @@ public static class Utils
     public static Dictionary<string, string> GetCookies(HttpContext httpContext)
     {
         Dictionary<string, string> requestCookies = [];
-        foreach (var header in httpContext.Request.Cookies)
+        foreach (KeyValuePair<string, string> header in httpContext.Request.Cookies)
         {
             requestCookies.Add(header.Key.ToLower(), header.Value);
         }
@@ -651,7 +651,7 @@ public static class Utils
     public static JArray BuildTableCodeForArray(JArray arr, string tableCode)
     {
         JArray arrRes = new();
-        foreach (var itemArr in arr)
+        foreach (JToken itemArr in arr)
         {
             JObject obj = new() { new JProperty(tableCode, itemArr) };
             arrRes.Add(obj);
@@ -716,7 +716,7 @@ public static class Utils
     public static string generateFileName(JObject jObj, HashSet<string> requestFields)
     {
         string fileName = "";
-        foreach (var item in requestFields)
+        foreach (string item in requestFields)
         {
             if (jObj.ContainsKey(item))
             {
@@ -743,17 +743,17 @@ public static class Utils
         where TEntity : BaseEntity
         where TRequestModel : BaseO24OpenAPIModel
     {
-        var listFiles = new List<FileModel>();
-        var repo = EngineContext.Current.Resolve<IRepository<TEntity>>();
-        var requestFields = new HashSet<string>();
+        List<FileModel> listFiles = new List<FileModel>();
+        IRepository<TEntity> repo = EngineContext.Current.Resolve<IRepository<TEntity>>();
+        HashSet<string> requestFields = new HashSet<string>();
         Func<TEntity, bool> conditionExport = s =>
         {
             bool result = false;
-            foreach (var requestModel in requestModels)
+            foreach (TRequestModel requestModel in requestModels)
             {
                 bool resultChild = true;
                 PropertyInfo[] propsRequest = typeof(TRequestModel).GetProperties();
-                foreach (var propRequest in propsRequest)
+                foreach (PropertyInfo propRequest in propsRequest)
                 {
                     requestFields.Add(propRequest.Name);
                     PropertyInfo propsEntity = typeof(TEntity).GetProperty(propRequest.Name);
@@ -770,15 +770,15 @@ public static class Utils
 
             return result;
         };
-        var listData = repo.Table.Where(conditionExport);
-        foreach (var item in listData)
+        IEnumerable<TEntity> listData = repo.Table.Where(conditionExport);
+        foreach (TEntity item in listData)
         {
             JArray jArray = new();
             string header = $@"{{'type':'header','command':'Export data to Json'}}";
             jArray.Add(JToken.Parse(header));
 
             // info
-            var dbProperties = await GetConnectionInfo();
+            Dictionary<string, string> dbProperties = await GetConnectionInfo();
             JObject info = new() { new JProperty(name: "exported_time", DateTime.UtcNow) };
             if (requestAddress != null)
             {
@@ -808,7 +808,7 @@ public static class Utils
 
             // data
             // var jListData = JArray.FromObject(listData);
-            var jListData = new JArray { item.ToJObject() };
+            JArray jListData = new JArray { item.ToJObject() };
             JObject data = new()
             {
                 new JProperty(name: "type", "data"),
@@ -816,7 +816,7 @@ public static class Utils
             };
             jArray.Add(data.ToObject<JToken>());
             Console.WriteLine("requestFields===" + requestFields.ToSerialize());
-            var filesName = generateFileName(item.ToJObject(), requestFields);
+            string filesName = generateFileName(item.ToJObject(), requestFields);
             listFiles.Add(
                 new FileModel
                 {
@@ -845,30 +845,38 @@ public static class Utils
         where TEntity : BaseEntity
         where TRequestModel : BaseO24OpenAPIModel
     {
-        var repo = EngineContext.Current.Resolve<IRepository<TEntity>>();
-        Func<TEntity, bool> conditionExport = s =>
-        {
-            bool result = false;
-            foreach (var requestModel in requestModels)
-            {
-                bool resultChild = true;
-                PropertyInfo[] propsRequest = typeof(TRequestModel).GetProperties();
-                foreach (var propRequest in propsRequest)
-                {
-                    PropertyInfo propsEntity = typeof(TEntity).GetProperty(propRequest.Name);
-                    resultChild &=
-                        (propRequest.GetValue(requestModel) is not null)
-                            ? propsEntity.GetValue(s).ToString()
-                                == propRequest.GetValue(requestModel).ToString()
-                            : true;
-                }
+        IRepository<TEntity> repo = EngineContext.Current.Resolve<IRepository<TEntity>>();
+        Expression<Func<TEntity, bool>> condition = e => false;
 
-                result |= resultChild;
+        ParameterExpression param = condition.Parameters[0];
+
+        foreach (TRequestModel request in requestModels)
+        {
+            Expression andExpr = Expression.Constant(true);
+
+            foreach (PropertyInfo propReq in typeof(TRequestModel).GetProperties())
+            {
+                object value = propReq.GetValue(request);
+                if (value == null) continue;
+
+                PropertyInfo propEntity = typeof(TEntity).GetProperty(propReq.Name);
+                if (propEntity == null) continue;
+
+                MemberExpression left = Expression.Property(param, propEntity);
+                ConstantExpression right = Expression.Constant(value);
+
+                BinaryExpression equal = Expression.Equal(left, right);
+
+                andExpr = Expression.AndAlso(andExpr, equal);
             }
 
-            return result;
-        };
-        var listData = await repo.Table.Where(conditionExport).ToListAsync();
+            condition = Expression.Lambda<Func<TEntity, bool>>(
+                Expression.OrElse(condition.Body, andExpr),
+                param
+            );
+        }
+
+        List<TEntity> listData = await repo.Table.Where(condition).ToListAsync();
         if (listData.Count != 0)
         {
             // header
@@ -877,7 +885,7 @@ public static class Utils
             jArray.Add(JToken.Parse(header));
 
             // info
-            var dbProperties = await GetConnectionInfo();
+            Dictionary<string, string> dbProperties = await GetConnectionInfo();
             JObject info = new() { new JProperty(name: "exported_time", DateTime.UtcNow) };
             if (requestAddress != null)
             {
@@ -906,7 +914,7 @@ public static class Utils
             jArray.Add(info.ToObject<JToken>());
 
             // data
-            var jListData = JArray.FromObject(listData);
+            JArray jListData = JArray.FromObject(listData);
             JObject data = new()
             {
                 new JProperty(name: "type", "data"),
@@ -933,9 +941,9 @@ public static class Utils
     public static async Task<FileModel> ExportAll<TEntity>(string requestAddress)
         where TEntity : BaseEntity
     {
-        var repo = EngineContext.Current.Resolve<IRepository<TEntity>>();
+        IRepository<TEntity> repo = EngineContext.Current.Resolve<IRepository<TEntity>>();
 
-        var listData = await repo.Table.ToListAsync();
+        List<TEntity> listData = await repo.Table.ToListAsync();
         if (listData.Any())
         {
             // header
@@ -944,7 +952,7 @@ public static class Utils
             jArray.Add(JToken.Parse(header));
 
             // info
-            var dbProperties = await GetConnectionInfo();
+            Dictionary<string, string> dbProperties = await GetConnectionInfo();
             JObject info = new() { new JProperty(name: "exported_time", DateTime.UtcNow) };
             if (requestAddress != null)
             {
@@ -969,7 +977,7 @@ public static class Utils
             jArray.Add(info.ToObject<JToken>());
 
             // data
-            var jListData = JArray.FromObject(listData);
+            JArray jListData = JArray.FromObject(listData);
             JObject data = new()
             {
                 new JProperty(name: "type", "data"),
@@ -1003,15 +1011,15 @@ public static class Utils
         where TEntity : BaseEntity
         where TRequestModel : BaseO24OpenAPIModel
     {
-        var repo = EngineContext.Current.Resolve<IRepository<TEntity>>();
+        IRepository<TEntity> repo = EngineContext.Current.Resolve<IRepository<TEntity>>();
         Func<TEntity, bool> conditionExport = s =>
         {
             bool result = false;
-            foreach (var requestModel in requestModels)
+            foreach (TRequestModel requestModel in requestModels)
             {
                 bool resultChild = true;
                 PropertyInfo[] propsRequest = typeof(TRequestModel).GetProperties();
-                foreach (var propRequest in propsRequest)
+                foreach (PropertyInfo propRequest in propsRequest)
                 {
                     PropertyInfo propsEntity = typeof(TEntity).GetProperty(propRequest.Name);
                     resultChild &=
@@ -1028,7 +1036,7 @@ public static class Utils
 
             return result;
         };
-        var listData = repo.Table.Where(conditionExport);
+        IEnumerable<TEntity> listData = repo.Table.Where(conditionExport);
         if (listData.Any())
         {
             // header
@@ -1037,7 +1045,7 @@ public static class Utils
             jArray.Add(JToken.Parse(header));
 
             // info
-            var dbProperties = await GetConnectionInfo();
+            Dictionary<string, string> dbProperties = await GetConnectionInfo();
             JObject info = new() { new JProperty(name: "exported_time", DateTime.UtcNow) };
             if (requestAddress != null)
             {
@@ -1066,7 +1074,7 @@ public static class Utils
             jArray.Add(info.ToObject<JToken>());
 
             // data
-            var jListData = JArray.FromObject(listData);
+            JArray jListData = JArray.FromObject(listData);
             JObject data = new()
             {
                 new JProperty(name: "type", "data"),
@@ -1095,81 +1103,100 @@ public static class Utils
     /// <typeparam name="TRequestModel"></typeparam>
     /// <returns></returns>
     public static async Task UploadData<TEntity, TRequestModel>(
-        string content,
-        int? skipValue = null,
-        int? maximunValue = null
-    )
-        where TEntity : BaseEntity
-        where TRequestModel : BaseO24OpenAPIModel
+    string content,
+    int? skipValue = null,
+    int? maximunValue = null
+)
+    where TEntity : BaseEntity, new()
+    where TRequestModel : BaseO24OpenAPIModel
     {
-        Stopwatch st = new();
-        st.Start();
+        Stopwatch stopwatch = Stopwatch.StartNew();
 
-        var listUploadData = await GetListEntityFromJson<TEntity>(content);
-        System.Console.WriteLine($"---ListUpload COunt {listUploadData.Count}");
-        PropertyInfo[] propsRequest = typeof(TRequestModel).GetProperties();
-        List<string> listPrimaryKey = new();
-        foreach (var item in propsRequest)
+        // 1. Parse upload data
+        List<TEntity> uploadData = await GetListEntityFromJson<TEntity>(content);
+        Console.WriteLine($"--- ListUpload Count: {uploadData.Count}");
+
+        // 2. Apply skip / take
+        if (skipValue is > 0)
+            uploadData = uploadData.Skip(skipValue.Value).ToList();
+
+        if (maximunValue is > 0)
+            uploadData = uploadData.Take(maximunValue.Value).ToList();
+
+        // 3. Prepare metadata
+        PropertyInfo[] requestProps = typeof(TRequestModel).GetProperties();
+
+        HashSet<string> primaryKeyNames = requestProps.Select(p => p.Name).ToHashSet();
+
+        HashSet<string> ignoreFields = new HashSet<string>
+    {
+        "Id",
+        "CreatedOnUtc",
+        "UpdatedOnUtc"
+    };
+        foreach (string pk in primaryKeyNames)
+            ignoreFields.Add(pk);
+
+        // 4. Resolve repository
+        IRepository<TEntity> repo = EngineContext.Current.Resolve<IRepository<TEntity>>();
+
+        // ⚠️ intentional sync load (reconciliation in memory)
+        List<TEntity> dbData = repo.Table.ToList();
+
+        // 5. Prepare result collections
+        List<TEntity> insertList = new List<TEntity>(uploadData);
+        List<TEntity> updateList = new List<TEntity>();
+
+        // 6. Build key selector (avoid reflection in inner loop)
+        string BuildKey(object obj)
         {
-            listPrimaryKey.Add(item.Name);
+            return string.Join('|',
+                requestProps.Select(p =>
+                    typeof(TEntity)
+                        .GetProperty(p.Name)?
+                        .GetValue(obj)?
+                        .ToString() ?? string.Empty
+                ));
         }
 
-        var ignoreFields = new List<string>() { "Id", "UpdatedOnUtc", "CreatedOnUtc" };
-        ignoreFields.AddRange(listPrimaryKey);
+        // 7. Index DB data by key
+        Dictionary<string, TEntity> dbLookup = dbData.ToDictionary(BuildKey);
 
-        if (skipValue is not null && skipValue > 0)
+        // 8. Process upload data
+        foreach (TEntity entity in uploadData)
         {
-            listUploadData = listUploadData.Skip(skipValue.Value).ToList();
-        }
+            string key = BuildKey(entity);
 
-        if (maximunValue is not null && maximunValue > 0)
-        {
-            listUploadData = listUploadData.Take(maximunValue.Value).ToList();
-        }
+            if (!dbLookup.TryGetValue(key, out TEntity dbEntity))
+                continue;
 
-        var ListInsert = listUploadData.ToList();
-        var repo = EngineContext.Current.Resolve<IRepository<TEntity>>();
-        var update = await (
-            from a in repo.Table.ToList()
-            from b in listUploadData.Where(s =>
+            // matched → not insert
+            insertList.Remove(entity);
+
+            // different → update
+            if (!IsModelEqual(entity, dbEntity, ignoreFields.ToArray()))
             {
-                var rs = true;
-                foreach (var item in propsRequest)
-                {
-                    PropertyInfo propsEntity = typeof(TEntity).GetProperty(item.Name);
-                    rs &=
-                        propsEntity.GetValue(s)?.ToString() == propsEntity.GetValue(a)?.ToString();
-                }
+                entity.Id = dbEntity.Id;
+                repo.Update(entity);
+                updateList.Add(entity);
+            }
+        }
 
-                if (!rs)
-                {
-                    return false;
-                }
+        Console.WriteLine($"==== ListUpdate: Count: {updateList.Count}");
+        Console.WriteLine($"==== ListInsert: Count: {insertList.Count}");
 
-                ListInsert.Remove(s);
+        // 9. Bulk insert new records
+        IO24OpenAPIDataProvider dataProvider = EngineContext.Current.Resolve<IO24OpenAPIDataProvider>();
+        await dataProvider.BulkInsertEntities(insertList);
 
-                if (rs && !IsModelEqual(s, a, [.. ignoreFields]))
-                {
-                    var item = s;
-                    item.Id = a.Id;
-                    repo.Update(item).GetAwaiter();
-                    return true;
-                }
+        stopwatch.Stop();
+        Console.WriteLine($"--- Total time upload (ms): {stopwatch.ElapsedMilliseconds}");
 
-                return false;
-            })
-            select b
-        ).ToListAsync();
-
-        System.Console.WriteLine($"==== ListUpdate:  Count: " + update.Count());
-        System.Console.WriteLine($"==== ListInsert:  Count: " + ListInsert.Count());
-
-        var neptuneDataProvider = EngineContext.Current.Resolve<IO24OpenAPIDataProvider>();
-        await neptuneDataProvider.BulkInsertEntities(ListInsert);
-        st.Stop();
-        System.Console.WriteLine($"--- Total time upload is (ms): {st.ElapsedMilliseconds} ms");
-        await EngineContext.Current.Resolve<ILogger>().Information($"{DateTime.Now} --- {content}");
+        await EngineContext.Current
+            .Resolve<ILogger>()
+            .Information($"{DateTime.Now} --- Upload completed");
     }
+
 
     /// <summary>
     /// UploadData
@@ -1181,10 +1208,10 @@ public static class Utils
     public static async Task MigrateData<TEntity>(string content, bool isTruncate = false)
         where TEntity : BaseEntity
     {
-        var listEntity = await GetListEntityFromJson<TEntity>(content);
+        List<TEntity> listEntity = await GetListEntityFromJson<TEntity>(content);
         if (listEntity.Count > 0)
         {
-            var neptuneDataProvider = EngineContext.Current.Resolve<IO24OpenAPIDataProvider>();
+            IO24OpenAPIDataProvider neptuneDataProvider = EngineContext.Current.Resolve<IO24OpenAPIDataProvider>();
             if (isTruncate)
             {
                 await neptuneDataProvider.Truncate<TEntity>(true);
@@ -1207,13 +1234,13 @@ public static class Utils
         {
             JArray jArray = JArray.Parse(content);
 
-            var jObject = jArray.Children<JObject>().FirstOrDefault(o => o["data"] != null);
+            JObject jObject = jArray.Children<JObject>().FirstOrDefault(o => o["data"] != null);
             if (jObject is not null)
             {
-                var data = jObject.Value<JArray>("data");
-                var strData = JsonConvert.SerializeObject(data);
+                JArray data = jObject.Value<JArray>("data");
+                string strData = JsonConvert.SerializeObject(data);
 
-                var listData = JsonConvert.DeserializeObject<List<TEntity>>(strData);
+                List<TEntity> listData = JsonConvert.DeserializeObject<List<TEntity>>(strData);
                 await Task.CompletedTask;
                 return listData;
             }
@@ -1240,13 +1267,13 @@ public static class Utils
         {
             JArray jArray = JArray.Parse(File.ReadAllText(path));
 
-            var jObject = jArray.Children<JObject>().FirstOrDefault(o => o["data"] != null);
+            JObject jObject = jArray.Children<JObject>().FirstOrDefault(o => o["data"] != null);
             if (jObject is not null)
             {
-                var data = jObject.Value<JArray>("data");
-                var strData = JsonConvert.SerializeObject(data);
+                JArray data = jObject.Value<JArray>("data");
+                string strData = JsonConvert.SerializeObject(data);
 
-                var listData = JsonConvert.DeserializeObject<List<TEntity>>(strData);
+                List<TEntity> listData = JsonConvert.DeserializeObject<List<TEntity>>(strData);
                 await Task.CompletedTask;
                 return listData;
             }
@@ -1274,20 +1301,20 @@ public static class Utils
         where TEntity : BaseEntity
     {
         JArray jArray = JArray.Parse(fileContent);
-        var dbProperties = jArray
+        JObject dbProperties = jArray
             .Children<JObject>()
             .FirstOrDefault(o => o["db_properties"] != null);
         if (dbProperties is not null)
         {
             // Check whether the Entity name is correct
-            var jArrayProperties = dbProperties.Value<JArray>("db_properties");
-            var jName = jArrayProperties
+            JArray jArrayProperties = dbProperties.Value<JArray>("db_properties");
+            JToken jName = jArrayProperties
                 .Children<JToken>()
                 .FirstOrDefault(o => o["name"].ToString() == "entity");
-            var name = jName?.Value<string>("value");
+            string name = jName?.Value<string>("value");
             if (name == typeof(TEntity).Name)
             {
-                var filtPath = typeof(TEntity).Name + "Data.json";
+                string filtPath = typeof(TEntity).Name + "Data.json";
                 await File.WriteAllTextAsync(filtPath, fileContent);
                 return new FileModel
                 {
@@ -1313,8 +1340,8 @@ public static class Utils
         // var connString = jToken.Value<string>("ConnectionString");
         // var dataProvider = jToken.Value<string>("DataProvider");
 
-        var connString = Singleton<DataConfig>.Instance.ConnectionString;
-        var dataProvider = Singleton<DataConfig>.Instance.DataProvider.ToString();
+        string connString = Singleton<DataConfig>.Instance.ConnectionString;
+        string dataProvider = Singleton<DataConfig>.Instance.DataProvider.ToString();
         IEnumerable<string[]> items;
         switch (dataProvider.ToLower())
         {
@@ -1324,7 +1351,7 @@ public static class Utils
                     .Split(';', StringSplitOptions.RemoveEmptyEntries)
                     .Select(s => s.Split('='));
                 foreach (
-                    var item in items.Where(s =>
+                    string[] item in items.Where(s =>
                         s[0].ToLower() == "server" || s[0].ToLower() == "port"
                     )
                 )
@@ -1334,10 +1361,10 @@ public static class Utils
 
                 break;
             case "sqlserver":
-                var server = connString
+                string server = connString
                     .Split(';', StringSplitOptions.RemoveEmptyEntries)
                     .FirstOrDefault(s => s.Contains("server"));
-                var temp = server?.Split(',');
+                string[] temp = server?.Split(',');
                 if (temp is not null && temp.Length == 2)
                 {
                     result.Add("server", temp[0]);
@@ -1350,7 +1377,7 @@ public static class Utils
                     .Split(';', StringSplitOptions.RemoveEmptyEntries)
                     .Select(s => s.Split('='));
                 foreach (
-                    var item in items.Where(s =>
+                    string[] item in items.Where(s =>
                         s[0].ToLower() == "host" || s[0].ToLower() == "port"
                     )
                 )
@@ -1364,7 +1391,7 @@ public static class Utils
                     .Split(new[] { '(', ')' }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(s => s.Split(new[] { '=' }));
                 foreach (
-                    var item in items.Where(s =>
+                    string[] item in items.Where(s =>
                         s[0].ToLower() == "host" || s[0].ToLower() == "port"
                     )
                 )
@@ -1394,7 +1421,7 @@ public static class Utils
     {
         PropertyInfo[] propsT1 = typeof(T1).GetProperties();
 
-        foreach (var propT1 in propsT1.Where(s => !s.Name.In(ignoreFields)))
+        foreach (PropertyInfo propT1 in propsT1.Where(s => !s.Name.In(ignoreFields)))
         {
             PropertyInfo propT2 = typeof(T2).GetProperty(propT1.Name);
             try
@@ -1426,25 +1453,25 @@ public static class Utils
         where TEntity : BaseEntity
     {
         JArray jArray = JArray.Parse(content);
-        var dbProperties = jArray
+        JObject dbProperties = jArray
             .Children<JObject>()
             .FirstOrDefault(o => o["db_properties"] != null);
 
         // Check whether the Entity name is correct
-        var jArrayProperties = dbProperties?.Value<JArray>("db_properties");
-        var jName = jArrayProperties
+        JArray jArrayProperties = dbProperties?.Value<JArray>("db_properties");
+        JToken jName = jArrayProperties
             ?.Children<JToken>()
             .FirstOrDefault(o => o["name"].ToString() == "entity");
-        var name = jName?.Value<string>("value");
+        string name = jName?.Value<string>("value");
         if (name == typeof(TEntity).Name)
         {
-            var repo = EngineContext.Current.Resolve<IRepository<TEntity>>();
-            var jObject = jArray.Children<JObject>().FirstOrDefault(o => o["data"] != null);
-            var data = jObject?.Value<JArray>("data");
+            IRepository<TEntity> repo = EngineContext.Current.Resolve<IRepository<TEntity>>();
+            JObject jObject = jArray.Children<JObject>().FirstOrDefault(o => o["data"] != null);
+            JArray data = jObject?.Value<JArray>("data");
             if (data is not null && data.Count > 0)
             {
-                var strData = JsonConvert.SerializeObject(data);
-                var listUploadData = JsonConvert.DeserializeObject<List<TEntity>>(strData);
+                string strData = JsonConvert.SerializeObject(data);
+                List<TEntity> listUploadData = JsonConvert.DeserializeObject<List<TEntity>>(strData);
                 if (listUploadData.Count > 0)
                 {
                     return listUploadData;
@@ -1460,7 +1487,7 @@ public static class Utils
     {
         if (_requestLanguage.Value == null)
         {
-            var context = EngineContext.Current.Resolve<JWebUIObjectContextModel>();
+            JWebUIObjectContextModel context = EngineContext.Current.Resolve<JWebUIObjectContextModel>();
             _requestLanguage.Value = context?.InfoRequest?.Language ?? "en";
         }
         return _requestLanguage.Value;
@@ -1469,11 +1496,11 @@ public static class Utils
     public static async Task<List<TEntity>> ReadDataCSV<TEntity>(string path)
         where TEntity : BaseEntity
     {
-        var listData = new List<TEntity>();
+        List<TEntity> listData = new List<TEntity>();
 
-        using (var reader = new StreamReader(path))
+        using (StreamReader reader = new StreamReader(path))
         using (
-            var csv = new CsvReader(
+            CsvReader csv = new CsvReader(
                 reader,
                 new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
@@ -1490,7 +1517,7 @@ public static class Utils
 
             while (await csv.ReadAsync())
             {
-                var entity = csv.GetRecord<TEntity>();
+                TEntity entity = csv.GetRecord<TEntity>();
                 listData.Add(entity);
             }
         }
@@ -1503,11 +1530,11 @@ public static class Utils
     {
         try
         {
-            var listData = new List<TEntity>();
+            List<TEntity> listData = new List<TEntity>();
 
-            using (var reader = new StreamReader(file.OpenReadStream()))
+            using (StreamReader reader = new StreamReader(file.OpenReadStream()))
             using (
-                var csv = new CsvReader(
+                CsvReader csv = new CsvReader(
                     reader,
                     new CsvConfiguration(CultureInfo.InvariantCulture)
                     {
@@ -1524,7 +1551,7 @@ public static class Utils
 
                 while (await csv.ReadAsync())
                 {
-                    var entity = csv.GetRecord<TEntity>();
+                    TEntity entity = csv.GetRecord<TEntity>();
                     listData.Add(entity);
                 }
             }
@@ -1539,11 +1566,11 @@ public static class Utils
 
     public static async Task<List<C_CODELIST>> ReadCodeListCSV(string path, string appCode)
     {
-        var listData = new List<C_CODELIST>();
+        List<C_CODELIST> listData = new List<C_CODELIST>();
 
-        using (var reader = new StreamReader(path))
+        using (StreamReader reader = new StreamReader(path))
         using (
-            var csv = new CsvReader(
+            CsvReader csv = new CsvReader(
                 reader,
                 new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
@@ -1560,8 +1587,8 @@ public static class Utils
 
             while (await csv.ReadAsync())
             {
-                var cdlist = csv.GetRecord<TellerAppCdlist>();
-                var entity = new C_CODELIST()
+                TellerAppCdlist cdlist = csv.GetRecord<TellerAppCdlist>();
+                C_CODELIST entity = new C_CODELIST()
                 {
                     CodeId = cdlist.CDID,
                     CodeName = cdlist.CDNAME,
@@ -1581,7 +1608,7 @@ public static class Utils
         return listData;
     }
 
-    
+
 
     public static string GetGroupId(S_USRCMD record, Dictionary<string, string> values)
     {

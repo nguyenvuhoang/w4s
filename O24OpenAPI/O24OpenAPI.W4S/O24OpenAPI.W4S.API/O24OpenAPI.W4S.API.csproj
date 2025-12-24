@@ -16,7 +16,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="LinKit.Core" Version="2.0.7" />
+    <PackageReference Include="LinKit.Core" Version="2.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
   </ItemGroup>
   <ItemGroup>

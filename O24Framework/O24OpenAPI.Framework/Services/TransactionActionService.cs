@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Globalization;
+﻿using LinqToDB;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.SeedWork;
@@ -8,6 +7,8 @@ using O24OpenAPI.Framework.Domain;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Helpers;
 using O24OpenAPI.Framework.Models;
+using System.ComponentModel;
+using System.Globalization;
 
 namespace O24OpenAPI.Framework.Services;
 
@@ -75,13 +76,13 @@ public class TransactionActionService(
             return string.Empty;
         }
 
-        var masterTypeName = typeof(T).FullName;
+        string masterTypeName = typeof(T).FullName;
         if (string.IsNullOrEmpty(masterTypeName))
         {
             return string.Empty;
         }
 
-        var mapping = await _masterMappingService.GetByMasterClass(masterTypeName);
+        MasterMapping mapping = await _masterMappingService.GetByMasterClass(masterTypeName);
         if (mapping is null)
         {
             return string.Empty;
@@ -98,17 +99,17 @@ public class TransactionActionService(
         }
 
         // ---- Build master dictionary for GL definition lookup -------------------
-        var masterFieldMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, string> masterFieldMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         if (!string.IsNullOrWhiteSpace(mapping.MasterFields))
         {
-            var pairs = mapping.MasterFields.Split(
+            string[] pairs = mapping.MasterFields.Split(
                 '#',
                 StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
             );
-            foreach (var pair in pairs)
+            foreach (string pair in pairs)
             {
-                var kv = pair.Split(
+                string[] kv = pair.Split(
                     ':',
                     StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
                 );
@@ -117,9 +118,9 @@ public class TransactionActionService(
                     continue;
                 }
 
-                var codeField = kv[0];
-                var valueField = kv[1];
-                var resolvedValue = master.GetMasterStringField(valueField);
+                string codeField = kv[0];
+                string valueField = kv[1];
+                string resolvedValue = master.GetMasterStringField(valueField);
                 if (!string.IsNullOrWhiteSpace(codeField))
                 {
                     masterFieldMap[codeField] = resolvedValue ?? string.Empty;
@@ -128,22 +129,22 @@ public class TransactionActionService(
         }
 
         // ---- Resolve GL definition (account) ------------------------------------
-        var glDef = await GetGL(mapping.MasterGLClass, sysAccountName, masterFieldMap);
+        BaseMasterGL glDef = await GetGL(mapping.MasterGLClass, sysAccountName, masterFieldMap);
         if (glDef is null || string.IsNullOrWhiteSpace(glDef.GLAccount))
         {
             return string.Empty;
         }
 
         // ---- Prepare posting data -----------------------------------------------
-        var transTableName = ResolveClassShortName(mapping.MasterTransClass);
+        string transTableName = ResolveClassShortName(mapping.MasterTransClass);
 
         // await the async getters
-        var branchTask = master.GetMasterRelatedStringFieldAsync(mapping.MasterBranchCodeField);
-        var currencyTask = master.GetMasterRelatedStringFieldAsync(mapping.MasterCurrencyCodeField);
+        Task<string> branchTask = master.GetMasterRelatedStringFieldAsync(mapping.MasterBranchCodeField);
+        Task<string> currencyTask = master.GetMasterRelatedStringFieldAsync(mapping.MasterCurrencyCodeField);
         await Task.WhenAll(branchTask, currencyTask);
 
-        var branchCode = branchTask.Result ?? string.Empty;
-        var currencyCode = currencyTask.Result ?? string.Empty;
+        string branchCode = branchTask.Result ?? string.Empty;
+        string currencyCode = currencyTask.Result ?? string.Empty;
         // ---- Post GL -------------------------------------------------------------
         await PostGL(
             transId: transId,
@@ -172,7 +173,7 @@ public class TransactionActionService(
                 return string.Empty;
             }
 
-            var parts = fullClassName.Split(
+            string[] parts = fullClassName.Split(
                 '.',
                 StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
             );
@@ -207,14 +208,14 @@ public class TransactionActionService(
         }
 
         // Avoid null refs; use case-insensitive keys if your data is config-ish
-        var searchGL = new Dictionary<string, string>(
+        Dictionary<string, string> searchGL = new Dictionary<string, string>(
             capacity: (masterFields?.Count ?? 0) + 1,
             comparer: StringComparer.OrdinalIgnoreCase
         );
 
         if (masterFields != null)
         {
-            foreach (var kv in masterFields)
+            foreach (KeyValuePair<string, string> kv in masterFields)
             {
                 if (!string.IsNullOrWhiteSpace(kv.Key))
                 {
@@ -227,9 +228,9 @@ public class TransactionActionService(
         searchGL["SysAccountName"] = sysAccountName;
 
         // For diagnostics: "Key - Value#Key - Value#..."
-        var textSearch = string.Join('#', searchGL.Select(kv => $"{kv.Key} - {kv.Value}"));
+        string textSearch = string.Join('#', searchGL.Select(kv => $"{kv.Key} - {kv.Value}"));
 
-        var glDef = await DynamicRepositoryHelper.DynamicGetByFields<BaseMasterGL>(
+        BaseMasterGL glDef = await DynamicRepositoryHelper.DynamicGetByFields<BaseMasterGL>(
             masterGLClass,
             searchGL
         );
@@ -286,7 +287,7 @@ public class TransactionActionService(
         {
             try
             {
-                var entry = new GLEntries
+                GLEntries entry = new GLEntries
                 {
                     TransactionNumber = transactionNumber.Trim(),
                     TransTableName = transTableName?.Trim(),
@@ -319,7 +320,7 @@ public class TransactionActionService(
         {
             try
             {
-                var query = _glEntriesRepository.Table.Where(g =>
+                IQueryable<GLEntries> query = _glEntriesRepository.Table.Where(g =>
                     g.TransactionNumber == transactionNumber
                 );
 
@@ -377,23 +378,23 @@ public class TransactionActionService(
             throw new ArgumentException("Transaction code is required.", nameof(code));
         }
 
-        var searchConfig = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        Dictionary<string, string> searchConfig = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
             ["TransCode"] = code,
         };
 
         if (!string.IsNullOrWhiteSpace(mappingFields))
         {
-            var pairs = mappingFields.Split(
+            string[] pairs = mappingFields.Split(
                 '#',
                 StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
             );
 
-            var asyncSetters = new List<Task>();
+            List<Task> asyncSetters = new List<Task>();
 
-            foreach (var pair in pairs)
+            foreach (string pair in pairs)
             {
-                var items = pair.Split(
+                string[] items = pair.Split(
                     ':',
                     StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
                 );
@@ -402,7 +403,7 @@ public class TransactionActionService(
                     continue;
                 }
 
-                var key = items[0];
+                string key = items[0];
                 if (string.IsNullOrWhiteSpace(key))
                 {
                     continue;
@@ -410,12 +411,12 @@ public class TransactionActionService(
 
                 if (items.Length == 1)
                 {
-                    var val = master.GetMasterStringField(key) ?? string.Empty;
+                    string val = master.GetMasterStringField(key) ?? string.Empty;
                     searchConfig[key] = val;
                 }
                 else
                 {
-                    var valueField = items[1];
+                    string valueField = items[1];
 
                     if (
                         valueField
@@ -427,7 +428,7 @@ public class TransactionActionService(
                             .Length < 2
                     )
                     {
-                        var val = master.GetMasterStringField(valueField) ?? string.Empty;
+                        string val = master.GetMasterStringField(valueField) ?? string.Empty;
                         searchConfig[key] = val;
                     }
                     else
@@ -435,7 +436,7 @@ public class TransactionActionService(
                         asyncSetters.Add(
                             Task.Run(async () =>
                             {
-                                var related = await master
+                                string related = await master
                                     .GetMasterRelatedStringFieldAsync(valueField)
                                     .ConfigureAwait(false);
                                 searchConfig[key] = related ?? string.Empty;
@@ -451,7 +452,7 @@ public class TransactionActionService(
             }
         }
 
-        var ruleConfig = await DynamicRepositoryHelper
+        BaseGLConfig ruleConfig = await DynamicRepositoryHelper
             .DynamicGetByFields<BaseGLConfig>(glConfigClass, searchConfig)
             .ConfigureAwait(false);
 
@@ -468,7 +469,7 @@ public class TransactionActionService(
         out object? result
     )
     {
-        var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
+        Type underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
 
         if (string.IsNullOrWhiteSpace(input))
         {
@@ -493,7 +494,7 @@ public class TransactionActionService(
                         input,
                         NumberStyles.Integer,
                         CultureInfo.InvariantCulture,
-                        out var enumInt
+                        out int enumInt
                     )
                 )
                 {
@@ -510,7 +511,7 @@ public class TransactionActionService(
             }
             else
             {
-                var converter = TypeDescriptor.GetConverter(underlying);
+                TypeConverter converter = TypeDescriptor.GetConverter(underlying);
                 if (converter != null && converter.CanConvertFrom(typeof(string)))
                 {
                     result = converter.ConvertFrom(null, CultureInfo.InvariantCulture, input);
@@ -561,14 +562,14 @@ public class TransactionActionService(
         }
 
         // 2) Resolve mapping
-        var mapping = await _masterMappingService.GetByMasterClass(master.GetType().FullName);
+        MasterMapping mapping = await _masterMappingService.GetByMasterClass(master.GetType().FullName);
         if (mapping == null || string.IsNullOrWhiteSpace(mapping.StatementClass))
         {
             return; // nothing to do without a statement class
         }
 
         // 3) Resolve statement type (SỬA: dùng StatementClass, không phải MasterTransClass)
-        var statementType =
+        Type statementType =
             TypeResolver.RequireType(mapping.StatementClass)
             ?? throw new InvalidOperationException($"Cannot find type '{mapping.StatementClass}'.");
 
@@ -577,7 +578,7 @@ public class TransactionActionService(
         {
             try
             {
-                var search = new Dictionary<string, string>
+                Dictionary<string, string> search = new Dictionary<string, string>
                 {
                     { "TransactionNumber", transaction.TransactionNumber },
                 };
@@ -600,7 +601,7 @@ public class TransactionActionService(
         }
 
         // 5) Normal flow: create and fill BaseStatement
-        var (_, masterValueField) = ParseMasterFields(mapping.MasterFields);
+        (string _, string masterValueField) = ParseMasterFields(mapping.MasterFields);
         if (string.IsNullOrWhiteSpace(masterValueField))
         {
             throw new InvalidOperationException(
@@ -615,7 +616,7 @@ public class TransactionActionService(
             );
         }
 
-        var accountNumber = master.GetMasterStringField(masterValueField);
+        string accountNumber = master.GetMasterStringField(masterValueField);
         if (string.IsNullOrWhiteSpace(accountNumber))
         {
             throw new InvalidOperationException(
@@ -623,7 +624,7 @@ public class TransactionActionService(
             );
         }
 
-        var currencyCode = master.GetMasterStringField(mapping.MasterCurrencyCodeField);
+        string currencyCode = master.GetMasterStringField(mapping.MasterCurrencyCodeField);
         if (string.IsNullOrWhiteSpace(currencyCode))
         {
             throw new InvalidOperationException(
@@ -661,8 +662,8 @@ public class TransactionActionService(
         }
 
         // Take first segment before '#'
-        var first = masterFields.Split('#')[0];
-        var parts = first.Split(':');
+        string first = masterFields.Split('#')[0];
+        string[] parts = first.Split(':');
 
         if (parts.Length >= 2)
         {
@@ -702,7 +703,7 @@ public class TransactionActionService(
         try
         {
             // Lấy danh sách action theo code
-            var actions = await ListByCode(code);
+            List<TransactionAction> actions = await ListByCode(code);
             if (actions == null || actions.Count == 0)
             {
                 throw new InvalidOperationException(
@@ -711,25 +712,25 @@ public class TransactionActionService(
             }
 
             // Mapping cho master type (không cần gọi lặp lại trong vòng lặp)
-            var mapping =
+            MasterMapping mapping =
                 await _masterMappingService.GetByMasterClass(typeof(T).FullName!)
                 ?? throw new InvalidOperationException(
                     $"Mapping not found for {typeof(T).FullName}"
                 );
             string currentAction = string.Empty;
 
-            foreach (var action in actions)
+            foreach (TransactionAction action in actions)
             {
                 // Lấy GL rule theo code
-                var ruleConfig = await GetGLConfig(
+                BaseGLConfig ruleConfig = await GetGLConfig(
                     master,
                     mapping.GLConfigClass,
                     mapping.MasterGLFields,
                     code
                 );
 
-                var creditAccountName = ruleConfig?.CreditSysAccountName ?? string.Empty;
-                var debitAccountName = ruleConfig?.DebitSysAccountName ?? string.Empty;
+                string creditAccountName = ruleConfig?.CreditSysAccountName ?? string.Empty;
+                string debitAccountName = ruleConfig?.DebitSysAccountName ?? string.Empty;
 
                 if (action.HasStatement)
                 {

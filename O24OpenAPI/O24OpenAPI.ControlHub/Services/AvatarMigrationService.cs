@@ -1,7 +1,7 @@
-﻿using O24OpenAPI.ControlHub.Domain;
+﻿using LinqToDB;
+using O24OpenAPI.ControlHub.Domain;
 using O24OpenAPI.ControlHub.Models;
 using O24OpenAPI.ControlHub.Services.Interfaces;
-using O24OpenAPI.Framework.Extensions;
 
 namespace O24OpenAPI.ControlHub.Services;
 
@@ -15,21 +15,21 @@ public class AvatarMigrationService(
 
     public async Task<AvatarMigrationResultModel> MigrateBase64AvatarsAsync()
     {
-        var result = new AvatarMigrationResultModel();
+        AvatarMigrationResultModel result = new AvatarMigrationResultModel();
 
-        var users = await _userAvatarRepository.Table.ToListAsync();
+        List<UserAvatar> users = await _userAvatarRepository.Table.ToListAsync();
 
-        foreach (var user in users)
+        foreach (UserAvatar user in users)
         {
             try
             {
-                var fileName = $"{user.UserCode}.png";
-                var relativePath = Path.Combine("uploads", "avatars", fileName);
-                var absolutePath = Path.Combine(_env.ContentRootPath, relativePath);
+                string fileName = $"{user.UserCode}.png";
+                string relativePath = Path.Combine("uploads", "avatars", fileName);
+                string absolutePath = Path.Combine(_env.ContentRootPath, relativePath);
 
                 Directory.CreateDirectory(Path.GetDirectoryName(absolutePath)!);
 
-                var bytes = Convert.FromBase64String(user.ImageUrl);
+                byte[] bytes = Convert.FromBase64String(user.ImageUrl);
                 await File.WriteAllBytesAsync(absolutePath, bytes);
 
                 user.ImageUrl = $"/{relativePath.Replace("\\", "/")}";

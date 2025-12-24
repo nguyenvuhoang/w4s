@@ -1,7 +1,7 @@
+using LinqToDB;
 using O24OpenAPI.Core.Enums;
 using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Framework.Domain;
-using O24OpenAPI.Framework.Extensions;
 
 namespace O24OpenAPI.Framework.Services;
 
@@ -40,7 +40,7 @@ public class EntityAuditService(IRepository<EntityAudit> repo) : IEntityAuditSer
     /// <returns>The items</returns>
     public async Task<List<EntityAudit>> GetUnsentItems()
     {
-        var items = await _repo
+        List<EntityAudit> items = await _repo
             .Table.Where(x => x.Status != (int)SendEnum.Sent)
             .OrderBy(x => x.CreatedOnUtc)
             .ToListAsync();

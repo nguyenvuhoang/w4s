@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Linq.Expressions;
+using LinqToDB;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -8,8 +7,9 @@ using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data.Configuration;
-using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models.UtilityModels;
+using System.Collections;
+using System.Linq.Expressions;
 
 namespace O24OpenAPI.Framework.Utils;
 
@@ -31,50 +31,50 @@ public class DataUtils
         List<Dictionary<string, object>> requestModels
     )
     {
-        var listFiles = new List<FileModel>();
-        var entityType = Singleton<ITypeFinder>.Instance.FindEntityTypeByName(entityName);
-        var typeRepo = typeof(IRepository<>).MakeGenericType(entityType);
+        List<FileModel> listFiles = new List<FileModel>();
+        Type entityType = Singleton<ITypeFinder>.Instance.FindEntityTypeByName(entityName);
+        Type typeRepo = typeof(IRepository<>).MakeGenericType(entityType);
         object repo = EngineContext.Current.Resolve(typeRepo);
-        var getTableMethod = typeRepo.GetMethod("GetTable");
-        var queryableTable = getTableMethod?.Invoke(repo, null) as IQueryable;
+        System.Reflection.MethodInfo getTableMethod = typeRepo.GetMethod("GetTable");
+        IQueryable queryableTable = getTableMethod?.Invoke(repo, null) as IQueryable;
 
-        var requestFields = new HashSet<string>();
-        var parameter = Expression.Parameter(entityType, "e");
+        HashSet<string> requestFields = new HashSet<string>();
+        ParameterExpression parameter = Expression.Parameter(entityType, "e");
         Expression finalExpression = Expression.Constant(false);
 
-        foreach (var requestModel in requestModels)
+        foreach (Dictionary<string, object> requestModel in requestModels)
         {
             Expression condition = Expression.Constant(true);
-            foreach (var kvp in requestModel)
+            foreach (KeyValuePair<string, object> kvp in requestModel)
             {
-                var prop = entityType.GetProperty(kvp.Key);
+                System.Reflection.PropertyInfo prop = entityType.GetProperty(kvp.Key);
                 if (prop != null)
                 {
                     requestFields.Add(kvp.Key);
-                    var entityProp = Expression.Property(parameter, prop);
-                    var requestValue = Expression.Constant(kvp.Value);
-                    var equalExpression = Expression.Equal(entityProp, requestValue);
+                    MemberExpression entityProp = Expression.Property(parameter, prop);
+                    ConstantExpression requestValue = Expression.Constant(kvp.Value);
+                    BinaryExpression equalExpression = Expression.Equal(entityProp, requestValue);
                     condition = Expression.AndAlso(condition, equalExpression);
                 }
             }
             finalExpression = Expression.OrElse(finalExpression, condition);
         }
 
-        var lambda = Expression.Lambda(finalExpression, parameter);
-        var whereMethod = typeof(Queryable)
+        LambdaExpression lambda = Expression.Lambda(finalExpression, parameter);
+        System.Reflection.MethodInfo whereMethod = typeof(Queryable)
             .GetMethods()
             .First(m => m.Name == "Where" && m.GetParameters().Length == 2)
             .MakeGenericMethod(entityType);
-        var listData =
+        IQueryable<object> listData =
             (IQueryable<object>)whereMethod.Invoke(null, new object[] { queryableTable, lambda });
 
-        foreach (var item in listData)
+        foreach (object item in listData)
         {
             JArray jArray = new();
             string header = $"{{'type':'header','command':'Export data to Json'}}";
             jArray.Add(JToken.Parse(header));
 
-            var dbProperties = GetConnectionInfo();
+            Dictionary<string, string> dbProperties = GetConnectionInfo();
             JObject info = new() { new JProperty("exported_time", DateTime.UtcNow) };
             if (requestAddress != null)
             {
@@ -100,7 +100,7 @@ public class DataUtils
             info.Add(new JProperty("exported_by_fields", JArray.FromObject(requestModels)));
             jArray.Add(info);
 
-            var jListData = new JArray { JObject.FromObject(item) };
+            JArray jListData = new JArray { JObject.FromObject(item) };
             JObject data = new()
             {
                 new JProperty("type", "data"),
@@ -108,7 +108,7 @@ public class DataUtils
             };
             jArray.Add(data);
 
-            var filesName = GenerateFileName(JObject.FromObject(item), requestFields);
+            string filesName = GenerateFileName(JObject.FromObject(item), requestFields);
             listFiles.Add(
                 new FileModel
                 {
@@ -134,41 +134,41 @@ public class DataUtils
         List<Dictionary<string, object>> requestModels
     )
     {
-        var listFiles = new List<FileModel>();
-        var entityType = Singleton<ITypeFinder>.Instance.FindEntityTypeByName(entityName);
-        var typeRepo = typeof(IRepository<>).MakeGenericType(entityType);
+        List<FileModel> listFiles = new List<FileModel>();
+        Type entityType = Singleton<ITypeFinder>.Instance.FindEntityTypeByName(entityName);
+        Type typeRepo = typeof(IRepository<>).MakeGenericType(entityType);
         object repo = EngineContext.Current.Resolve(typeRepo);
-        var getTableMethod = typeRepo.GetMethod("GetTable");
-        var queryableTable = getTableMethod?.Invoke(repo, null) as IQueryable;
+        System.Reflection.MethodInfo getTableMethod = typeRepo.GetMethod("GetTable");
+        IQueryable queryableTable = getTableMethod?.Invoke(repo, null) as IQueryable;
 
-        var requestFields = new HashSet<string>();
-        var parameter = Expression.Parameter(entityType, "e");
+        HashSet<string> requestFields = new HashSet<string>();
+        ParameterExpression parameter = Expression.Parameter(entityType, "e");
         Expression finalExpression = Expression.Constant(false);
 
-        foreach (var requestModel in requestModels)
+        foreach (Dictionary<string, object> requestModel in requestModels)
         {
             Expression condition = Expression.Constant(true);
-            foreach (var kvp in requestModel)
+            foreach (KeyValuePair<string, object> kvp in requestModel)
             {
-                var prop = entityType.GetProperty(kvp.Key);
+                System.Reflection.PropertyInfo prop = entityType.GetProperty(kvp.Key);
                 if (prop != null)
                 {
                     requestFields.Add(kvp.Key);
-                    var entityProp = Expression.Property(parameter, prop);
-                    var requestValue = Expression.Constant(kvp.Value);
-                    var equalExpression = Expression.Equal(entityProp, requestValue);
+                    MemberExpression entityProp = Expression.Property(parameter, prop);
+                    ConstantExpression requestValue = Expression.Constant(kvp.Value);
+                    BinaryExpression equalExpression = Expression.Equal(entityProp, requestValue);
                     condition = Expression.AndAlso(condition, equalExpression);
                 }
             }
             finalExpression = Expression.OrElse(finalExpression, condition);
         }
 
-        var lambda = Expression.Lambda(finalExpression, parameter);
-        var whereMethod = typeof(Queryable)
+        LambdaExpression lambda = Expression.Lambda(finalExpression, parameter);
+        System.Reflection.MethodInfo whereMethod = typeof(Queryable)
             .GetMethods()
             .First(m => m.Name == "Where" && m.GetParameters().Length == 2)
             .MakeGenericMethod(entityType);
-        var listData =
+        IQueryable<object> listData =
             (IQueryable<object>)whereMethod.Invoke(null, new object[] { queryableTable, lambda });
 
         JArray jArray = [];
@@ -176,7 +176,7 @@ public class DataUtils
         jArray.Add(JToken.Parse(header));
 
         // info
-        var dbProperties = GetConnectionInfo();
+        Dictionary<string, string> dbProperties = GetConnectionInfo();
         JObject info = new() { new JProperty(name: "exported_time", DateTime.UtcNow) };
         if (requestAddress != null)
         {
@@ -205,7 +205,7 @@ public class DataUtils
         jArray.Add(info.ToObject<JToken>());
 
         // data
-        var jListData = JArray.FromObject(listData);
+        JArray jListData = JArray.FromObject(listData);
         JObject data = new()
         {
             new JProperty(name: "type", "data"),
@@ -229,7 +229,7 @@ public class DataUtils
     public static string GenerateFileName(JObject jObj, HashSet<string> requestFields)
     {
         string fileName = "";
-        foreach (var item in requestFields)
+        foreach (string item in requestFields)
         {
             if (jObj.ContainsKey(item))
             {
@@ -247,9 +247,9 @@ public class DataUtils
     {
         Dictionary<string, string> result = [];
 
-        var _config = EngineContext.Current.Resolve<IConfiguration>();
-        var connString = Singleton<DataConfig>.Instance.ConnectionString;
-        var dataProvider = Singleton<DataConfig>.Instance.DataProvider.ToString();
+        IConfiguration _config = EngineContext.Current.Resolve<IConfiguration>();
+        string connString = Singleton<DataConfig>.Instance.ConnectionString;
+        string dataProvider = Singleton<DataConfig>.Instance.DataProvider.ToString();
         IEnumerable<string[]> items;
         switch (dataProvider.ToLower())
         {
@@ -259,7 +259,7 @@ public class DataUtils
                     .Split(';', StringSplitOptions.RemoveEmptyEntries)
                     .Select(s => s.Split('='));
                 foreach (
-                    var item in items.Where(s =>
+                    string[] item in items.Where(s =>
                         s[0].ToLower() == "server" || s[0].ToLower() == "port"
                     )
                 )
@@ -269,10 +269,10 @@ public class DataUtils
 
                 break;
             case "sqlserver":
-                var server = connString
+                string server = connString
                     .Split(';', StringSplitOptions.RemoveEmptyEntries)
                     .FirstOrDefault(s => s.Contains("server"));
-                var temp = server?.Split(',');
+                string[] temp = server?.Split(',');
                 if (temp is not null && temp.Length == 2)
                 {
                     result.Add("server", temp[0]);
@@ -285,7 +285,7 @@ public class DataUtils
                     .Split(';', StringSplitOptions.RemoveEmptyEntries)
                     .Select(s => s.Split('='));
                 foreach (
-                    var item in items.Where(s =>
+                    string[] item in items.Where(s =>
                         s[0].ToLower() == "host" || s[0].ToLower() == "port"
                     )
                 )
@@ -295,7 +295,7 @@ public class DataUtils
 
                 break;
             case "oracle":
-                var dataSource = connString
+                string dataSource = connString
                     .Split(';', StringSplitOptions.RemoveEmptyEntries)
                     .FirstOrDefault(s =>
                         s.Trim().StartsWith("Data Source", StringComparison.OrdinalIgnoreCase)
@@ -303,10 +303,10 @@ public class DataUtils
 
                 if (dataSource is not null)
                 {
-                    var parts = dataSource.Split('=')[1];
-                    var hostPort = parts.Split('/')[0];
-                    var host = hostPort.Split(':')[0];
-                    var port = hostPort.Split(':')[1];
+                    string parts = dataSource.Split('=')[1];
+                    string hostPort = parts.Split('/')[0];
+                    string host = hostPort.Split(':')[0];
+                    string port = hostPort.Split(':')[1];
 
                     result.Add("server", host);
                     result.Add("port", port);
@@ -325,73 +325,73 @@ public class DataUtils
     /// <returns></returns>
     public static async Task ImportFile(string content, List<string> filedConstraints)
     {
-        var data = JArray.Parse(content);
-        var info = data[1];
-        var dbProperties = info["db_properties"];
-        var entityName = dbProperties[3]["value"].ToString();
+        JArray data = JArray.Parse(content);
+        JToken info = data[1];
+        JToken dbProperties = info["db_properties"];
+        string entityName = dbProperties[3]["value"].ToString();
 
-        var entity = Singleton<ITypeFinder>.Instance.FindEntityTypeByName(entityName);
+        Type entity = Singleton<ITypeFinder>.Instance.FindEntityTypeByName(entityName);
 
-        var typeRepo = typeof(IRepository<>).MakeGenericType(entity);
+        Type typeRepo = typeof(IRepository<>).MakeGenericType(entity);
         object repo = EngineContext.Current.Resolve(typeRepo);
 
-        var getTableMethod = typeRepo.GetMethod("GetTable");
-        var insertMethod = typeRepo.GetMethod("Insert");
-        var deleteMethod = typeRepo.GetMethod("Delete");
+        System.Reflection.MethodInfo getTableMethod = typeRepo.GetMethod("GetTable");
+        System.Reflection.MethodInfo insertMethod = typeRepo.GetMethod("Insert");
+        System.Reflection.MethodInfo deleteMethod = typeRepo.GetMethod("Delete");
 
-        var queryableTable = getTableMethod?.Invoke(repo, null);
+        object queryableTable = getTableMethod?.Invoke(repo, null);
 
-        var dataInfo = data[2];
-        var listData = dataInfo["data"];
+        JToken dataInfo = data[2];
+        JToken listData = dataInfo["data"];
 
-        foreach (var item in listData)
+        foreach (JToken item in listData)
         {
-            var entityObj = item.ToObject(entity);
+            object entityObj = item.ToObject(entity);
 
-            var parameter = Expression.Parameter(entity, "x");
+            ParameterExpression parameter = Expression.Parameter(entity, "x");
             Expression predicate = Expression.Constant(true);
 
-            foreach (var field in filedConstraints)
+            foreach (string field in filedConstraints)
             {
-                var property = entity.GetProperty(field);
+                System.Reflection.PropertyInfo property = entity.GetProperty(field);
                 if (property != null)
                 {
-                    var value = property.GetValue(entityObj);
-                    var propertyAccess = Expression.Property(parameter, field);
-                    var valueExpression = Expression.Constant(value, property.PropertyType);
-                    var equality = Expression.Equal(propertyAccess, valueExpression);
+                    object value = property.GetValue(entityObj);
+                    MemberExpression propertyAccess = Expression.Property(parameter, field);
+                    ConstantExpression valueExpression = Expression.Constant(value, property.PropertyType);
+                    BinaryExpression equality = Expression.Equal(propertyAccess, valueExpression);
 
                     predicate = Expression.AndAlso(predicate, equality);
                 }
             }
 
-            var lambda = Expression.Lambda(predicate, parameter);
+            LambdaExpression lambda = Expression.Lambda(predicate, parameter);
 
-            var whereMethod = typeof(Queryable)
+            System.Reflection.MethodInfo whereMethod = typeof(Queryable)
                 .GetMethods()
                 .First(m => m.Name == "Where" && m.GetParameters().Length == 2)
                 .MakeGenericMethod(entity);
 
-            var filteredData = whereMethod.Invoke(null, new object[] { queryableTable, lambda });
+            object filteredData = whereMethod.Invoke(null, new object[] { queryableTable, lambda });
 
-            var toListAsyncMethod = typeof(LinqToDB.AsyncExtensions)
+            System.Reflection.MethodInfo toListAsyncMethod = typeof(LinqToDB.AsyncExtensions)
                 .GetMethod("ToListAsync")
                 ?.MakeGenericMethod(entity);
 
-            var task = (Task)
+            Task task = (Task)
                 toListAsyncMethod.Invoke(
                     null,
                     new object[] { filteredData, CancellationToken.None }
                 );
             await task.ConfigureAwait(false);
 
-            var listDbEntities = (IList)task.GetType().GetProperty("Result")?.GetValue(task);
+            IList listDbEntities = (IList)task.GetType().GetProperty("Result")?.GetValue(task);
 
             if (listDbEntities.Count > 0)
             {
-                foreach (var dbEntity in listDbEntities)
+                foreach (object dbEntity in listDbEntities)
                 {
-                    var deleteTask = (Task)
+                    Task deleteTask = (Task)
                         deleteMethod.Invoke(
                             repo,
                             new object[] { dbEntity, "", true, false, false }
@@ -413,9 +413,9 @@ public class DataUtils
     public static async Task<FileModel> ExportAll<TEntity>(string requestAddress)
         where TEntity : BaseEntity
     {
-        var repo = EngineContext.Current.Resolve<IRepository<TEntity>>();
+        IRepository<TEntity> repo = EngineContext.Current.Resolve<IRepository<TEntity>>();
 
-        var listData = await repo.Table.ToListAsync();
+        List<TEntity> listData = await repo.Table.ToListAsync();
         if (listData.Any())
         {
             // header
@@ -424,7 +424,7 @@ public class DataUtils
             jArray.Add(JToken.Parse(header));
 
             // info
-            var dbProperties = GetConnectionInfo();
+            Dictionary<string, string> dbProperties = GetConnectionInfo();
             JObject info = new() { new JProperty(name: "exported_time", DateTime.UtcNow) };
             if (requestAddress != null)
             {
@@ -449,7 +449,7 @@ public class DataUtils
             jArray.Add(info.ToObject<JToken>());
 
             // data
-            var jListData = JArray.FromObject(listData);
+            JArray jListData = JArray.FromObject(listData);
             JObject data = new()
             {
                 new JProperty(name: "type", "data"),
