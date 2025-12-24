@@ -19,11 +19,16 @@ namespace O24OpenAPI.CTH.API.Application.Features.User
 {
     public class GetUserByRoleIdCommand
         : BaseTransactionModel,
-            ICommand<PagedListModel<UserAccount, UserAccountResponseModel>> { }
+            ICommand<PagedListModel<UserAccount, UserAccountResponseModel>>
+    {
+        public int RoleId { get; set; }
+        public int PageIndex { get; set; } = 1;
+        public int PageSize { get; set; } = 20;
+        public string? Language { get; set; }
+    }
 
     [CqrsHandler]
     public class GetUserByRoleIdHandle(
-        WFScheme wFScheme,
         IUserAccountRepository userAccountRepository,
         IUserInRoleRepository userInRoleRepository
     )
@@ -38,7 +43,14 @@ namespace O24OpenAPI.CTH.API.Application.Features.User
             CancellationToken cancellationToken = default
         )
         {
-            var model = wFScheme.ToModel<ModelWithRoleId>();
+            var model = new ModelWithRoleId
+            {
+                RoleId = request.RoleId,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
+                Language = request.Language,
+            };
+
             var response = await GetUserByRoleIdASync(model);
             return response.ToPagedListModel<UserAccount, UserAccountResponseModel>();
         }

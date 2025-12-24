@@ -12,10 +12,14 @@ using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User
 {
-    public class LoadOperationCommand : BaseTransactionModel, ICommand<JObject> { }
+    public class LoadOperationCommand : BaseTransactionModel, ICommand<JObject>
+    {
+        public string? ChannelId { get; set; }
+        public string? CommandId { get; set; }
+    }
+
     [CqrsHandler]
     public class LoadOperationHandle(
-        WFScheme wFScheme,
         IUserCommandRepository userCommandRepository,
         IUserRoleRepository userRoleRepository,
         IUserRightRepository userRightRepository
@@ -27,10 +31,13 @@ namespace O24OpenAPI.CTH.API.Application.Features.User
             CancellationToken cancellationToken = default
         )
         {
-            var model = wFScheme.ToModel<UserCommandRequestModel>();
+            var model = new UserCommandRequestModel
+            {
+                ChannelId = request.ChannelId,
+                CommandId = request.CommandId,
+            };
 
-            var response = LoadRoleOperationAsync(model);
-            return response;
+            return LoadRoleOperationAsync(model);
         }
 
         public async Task<JObject> LoadRoleOperationAsync(UserCommandRequestModel model)

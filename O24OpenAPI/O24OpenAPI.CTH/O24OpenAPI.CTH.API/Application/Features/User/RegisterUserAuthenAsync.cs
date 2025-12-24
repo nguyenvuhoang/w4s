@@ -23,7 +23,7 @@ public class RegisterUserAuthenAsyncCommand : BaseTransactionModel, ICommand<boo
 public class RegisterUserAuthenAsyncHandle(IUserAuthenRepository userAuthenRepository)
     : ICommandHandler<RegisterUserAuthenAsyncCommand, bool>
 {
-    [WorkflowStep("WF_STEP_CTH_REGISTER_USER")]
+    [WorkflowStep("WF_STEP_CTH_REGISTER_USER_AUTHEN")]
     public async Task<bool> HandleAsync(
         RegisterUserAuthenAsyncCommand request,
         CancellationToken cancellationToken = default
@@ -45,10 +45,7 @@ public class RegisterUserAuthenAsyncHandle(IUserAuthenRepository userAuthenRepos
             {
                 string keyString = Guid.NewGuid().ToString();
                 string otpCodeString = request.SmartOTPCode;
-                string encryptedSmartOTP = OtpCryptoUtil.EncryptSmartOTP(
-                    keyString,
-                    otpCodeString
-                );
+                string encryptedSmartOTP = OtpCryptoUtil.EncryptSmartOTP(keyString, otpCodeString);
                 if (exists != null && exists.IsActive == false)
                 {
                     var userAuthen = exists;

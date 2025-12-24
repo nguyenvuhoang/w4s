@@ -71,11 +71,16 @@ public class LogoutHandleCommand : BaseTransactionModel, ICommand<bool>
     /// </summary>
     public string Modelname { get; set; } = string.Empty;
 }
+
 [CqrsHandler]
-public class LogoutHandle(IUserAccountRepository userAccountRepository) : ICommandHandler<LogoutHandleCommand, bool>
+public class LogoutHandle(IUserAccountRepository userAccountRepository)
+    : ICommandHandler<LogoutHandleCommand, bool>
 {
     [WorkflowStep("WF_STEP_CTH_LOGOUT")]
-    public async Task<bool> HandleAsync(LogoutHandleCommand request, CancellationToken cancellationToken = default)
+    public async Task<bool> HandleAsync(
+        LogoutHandleCommand request,
+        CancellationToken cancellationToken = default
+    )
     {
         try
         {

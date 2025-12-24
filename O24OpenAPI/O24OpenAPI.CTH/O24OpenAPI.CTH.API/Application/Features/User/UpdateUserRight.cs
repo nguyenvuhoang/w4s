@@ -10,11 +10,13 @@ using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User
 {
-    public class UpdateUserRightCommand : BaseTransactionModel, ICommand<bool> { }
+    public class UpdateUserRightCommand : BaseTransactionModel, ICommand<bool>
+    {
+        public UserRightUpdateModel Model { get; set; } = default!;
+    }
 
     [CqrsHandler]
     public class UpdateUserRightHandle(
-        WFScheme wFScheme,
         IUserCommandRepository userCommandRepository,
         IUserRightRepository userRightRepository,
         IUserRoleRepository userRoleRepository
@@ -26,12 +28,10 @@ namespace O24OpenAPI.CTH.API.Application.Features.User
             CancellationToken cancellationToken = default
         )
         {
-            var model = wFScheme.ToModel<UserRightUpdateModel>();
+            if (request.Model == null)
+                return false;
 
-            {
-                var response = await UpdateUserRightAsync(model);
-                return response;
-            }
+            return await UpdateUserRightAsync(request.Model);
         }
 
         public async Task<bool> UpdateUserRightAsync(UserRightUpdateModel model)

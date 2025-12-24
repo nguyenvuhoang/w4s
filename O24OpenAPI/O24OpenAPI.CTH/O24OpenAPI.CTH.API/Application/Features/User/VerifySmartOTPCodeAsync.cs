@@ -18,22 +18,27 @@ public class VerifySmartOTPCodeAsyncCommand
     public string UserCode { get; set; }
     public string SmartOTPCode { get; set; }
 }
+
 [CqrsHandler]
-public class VerifySmartOTPCodeAsyncHandle(IUserAuthenRepository userAuthenRepository) : ICommandHandler<VerifySmartOTPCodeAsyncCommand, VerifySmartOTPResponseModel>
+public class VerifySmartOTPCodeAsyncHandle(IUserAuthenRepository userAuthenRepository)
+    : ICommandHandler<VerifySmartOTPCodeAsyncCommand, VerifySmartOTPResponseModel>
 {
-    [WorkflowStep("WF_STEP_CTH_VERIFY_OTP")]
-    public async Task<VerifySmartOTPResponseModel> HandleAsync(VerifySmartOTPCodeAsyncCommand request, CancellationToken cancellationToken = default)
+    [WorkflowStep("WF_STEP_CTH_VERIFY_SMARTOTP_PINCODE")]
+    public async Task<VerifySmartOTPResponseModel> HandleAsync(
+        VerifySmartOTPCodeAsyncCommand request,
+        CancellationToken cancellationToken = default
+    )
     {
         var userAuthen =
-       await userAuthenRepository.GetByUserAuthenInfoAsync(
-           request.UserCode,
-           request.AuthenType,
-           request.PhoneNumber
-       )
-       ?? throw await O24Exception.CreateAsync(
-           O24CTHResourceCode.Operation.SmartOTPIncorrect,
-           request.Language
-       );
+            await userAuthenRepository.GetByUserAuthenInfoAsync(
+                request.UserCode,
+                request.AuthenType,
+                request.PhoneNumber
+            )
+            ?? throw await O24Exception.CreateAsync(
+                O24CTHResourceCode.Operation.SmartOTPIncorrect,
+                request.Language
+            );
 
         var otpCodeString = request.SmartOTPCode;
 
