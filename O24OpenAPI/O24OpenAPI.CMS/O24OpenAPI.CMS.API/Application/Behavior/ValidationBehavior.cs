@@ -4,7 +4,7 @@ using O24OpenAPI.Framework.Abstractions;
 namespace O24OpenAPI.CMS.API.Application.Behavior;
 
 [CqrsBehavior(typeof(ICommand), 1)]
-public class ValidationBehavior<TRequest, TResponse>(IValidator<TRequest> validator)
+public class ValidationBehavior<TRequest, TResponse>(IServiceProvider serviceProvider)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : ICommand<TResponse>
 {
@@ -14,7 +14,9 @@ public class ValidationBehavior<TRequest, TResponse>(IValidator<TRequest> valida
         CancellationToken cancellationToken
     )
     {
-        await validator.ValidateAsync(request);
+        var validator = serviceProvider.GetService<IValidator<IRequest>>();
+        if (validator is not null)
+            await validator.ValidateAsync(request);
         return await next();
     }
 }
