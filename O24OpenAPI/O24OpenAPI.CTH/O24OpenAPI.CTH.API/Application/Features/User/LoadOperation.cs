@@ -32,7 +32,6 @@ namespace O24OpenAPI.CTH.API.Application.Features.User
         {
             var model = new UserCommandRequestModel
             {
-                ChannelId = request.ChannelId,
                 CommandId = request.CommandId,
             };
 
