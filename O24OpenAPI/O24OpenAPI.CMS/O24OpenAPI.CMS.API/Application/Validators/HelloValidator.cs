@@ -1,9 +1,9 @@
-﻿using LinKit.Core.Abstractions;
+﻿using System.ComponentModel.DataAnnotations;
+using LinKit.Core.Abstractions;
 using O24OpenAPI.CMS.API.Application.Features.Hello;
 using O24OpenAPI.Framework.Abstractions;
-using System.ComponentModel.DataAnnotations;
 
-namespace O24OpenAPI.CMS.API.Application.Valiators;
+namespace O24OpenAPI.CMS.API.Application.Validators;
 
 [RegisterService(Lifetime.Scoped)]
 public class HelloValidator : IValidator<HelloCommand>
