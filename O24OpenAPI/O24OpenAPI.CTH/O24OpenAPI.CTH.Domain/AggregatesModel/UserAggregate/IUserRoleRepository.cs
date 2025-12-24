@@ -7,4 +7,6 @@ public interface IUserRoleRepository : IRepository<UserRole>
     Task<bool> DeleteBulkAsync();
     Task UpdateAsync(UserAccount userAccount);
     Task<List<int>> GetByRoleTypeAsync(string roletype);
+    Task<int> GetNextRoleIdAsync();
+    Task<UserRole> AddAsync(UserRole entity);
 }

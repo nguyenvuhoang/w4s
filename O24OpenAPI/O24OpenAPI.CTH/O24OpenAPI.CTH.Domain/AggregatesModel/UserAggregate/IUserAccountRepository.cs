@@ -19,4 +19,5 @@ public interface IUserAccountRepository : IRepository<UserAccount>
     Task DeleteUserByUserIdAsync(string userId);
     Task<bool> IsExist(string userName);
     Task<UserAccount> AddAsync(UserAccount user);
+    Task<UserAccount> GetUserByContractNumber(string contractnumber);
 }

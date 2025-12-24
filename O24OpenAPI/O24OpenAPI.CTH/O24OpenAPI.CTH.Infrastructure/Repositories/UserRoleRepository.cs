@@ -2,8 +2,8 @@ using LinKit.Core.Abstractions;
 using LinqToDB;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Events;
-using O24OpenAPI.Data;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
+using O24OpenAPI.Data;
 
 namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
@@ -20,6 +20,12 @@ public class UserRoleRepository(
     {
         throw new NotImplementedException();
     }
+
+    public async Task<UserRole> AddAsync(UserRole entity)
+    {
+        return await InsertAsync(entity);
+    }
+
     public async Task<List<int>> GetByRoleTypeAsync(string roletype)
     {
         return await Table
@@ -31,9 +37,7 @@ public class UserRoleRepository(
 
     public async Task<int> GetNextRoleIdAsync()
     {
-        var maxId = await Table
-            .Select(x => (int?)x.RoleId)
-            .MaxAsync();
+        var maxId = await Table.Select(x => (int?)x.RoleId).MaxAsync();
 
         return (maxId ?? 0) + 1;
     }
