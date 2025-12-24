@@ -28,7 +28,7 @@ public class RefreshTokenTellerHandle(
     IStaticCacheManager staticCacheManager
 ) : ICommandHandler<RefreshTokenTellerCommand, AuthResponseModel>
 {
-    [WorkflowStep("WF_STEP_CTH_REFESH_TOKEN_TELLER")]
+    [WorkflowStep("WF_STEP_UMG_REFRESH_TOKEN")]
     public async Task<AuthResponseModel> HandleAsync(
         RefreshTokenTellerCommand request,
         CancellationToken cancellationToken = default
@@ -43,9 +43,7 @@ public class RefreshTokenTellerHandle(
             );
 
         var currentTime = DateTime.UtcNow;
-        var expireTime = currentTime.AddDays(
-            Convert.ToDouble(webApiSettings.TokenLifetimeDays)
-        );
+        var expireTime = currentTime.AddDays(Convert.ToDouble(webApiSettings.TokenLifetimeDays));
 
         var token = request.CoreToken;
 

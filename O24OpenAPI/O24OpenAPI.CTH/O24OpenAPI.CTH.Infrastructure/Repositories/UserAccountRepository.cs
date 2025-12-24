@@ -31,6 +31,16 @@ public class UserAccountRepository(
         throw new NotImplementedException();
     }
 
+    public Task<UserAccount> GetUserByContractNumber(string contractnumber)
+    {
+        if (string.IsNullOrWhiteSpace(contractnumber))
+        {
+            throw new ArgumentNullException(nameof(contractnumber));
+        }
+
+        return Table.FirstOrDefaultAsync(s => s.ContractNumber == contractnumber);
+    }
+
     public async Task<bool> IsExist(string userName)
     {
         var useraccount = await Table.Where(s => s.UserName == userName).FirstOrDefaultAsync();
