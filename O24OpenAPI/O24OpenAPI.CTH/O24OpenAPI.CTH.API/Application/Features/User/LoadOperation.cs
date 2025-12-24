@@ -1,13 +1,10 @@
 ﻿using LinKit.Core.Cqrs;
 using LinqToDB;
 using Newtonsoft.Json.Linq;
-using O24OpenAPI.Client.Scheme.Workflow;
 using O24OpenAPI.CTH.API.Application.Models.Roles;
 using O24OpenAPI.CTH.API.Application.Models.UserCommandModels;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
-using O24OpenAPI.CTH.Infrastructure.Repositories;
 using O24OpenAPI.Framework.Attributes;
-using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User
@@ -33,6 +30,7 @@ namespace O24OpenAPI.CTH.API.Application.Features.User
             var model = new UserCommandRequestModel
             {
                 CommandId = request.CommandId,
+                ChannelId = request.ChannelId,
             };
 
             return LoadRoleOperationAsync(model);
@@ -42,9 +40,9 @@ namespace O24OpenAPI.CTH.API.Application.Features.User
         {
             var result = new JObject();
 
-            if (model.CommandId == null || model.ChannelId == null)
+            if (string.IsNullOrEmpty(model.CommandId) || string.IsNullOrEmpty(model.ChannelId))
             {
-                result["error"] = "Missing CommandId or ChannelId";
+                result["error"] = $"Missing CommandId {model.CommandId} or ChannelId {model.ChannelId}";
                 return result;
             }
 

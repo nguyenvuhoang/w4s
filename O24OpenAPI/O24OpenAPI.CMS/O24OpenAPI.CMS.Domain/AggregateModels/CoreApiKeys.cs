@@ -12,7 +12,7 @@ public class CoreApiKeys : BaseEntity
     public bool IsRevoked { get; set; } = false;
     public string? Status { get; set; } = "ACTIVE";
     public bool IsActive { get; set; } = true;
-    public DateTime CreatedOnUtc { get; set; } = DateTime.UtcNow;
+    public new DateTime CreatedOnUtc { get; set; } = DateTime.UtcNow;
     public string? CreatedBy { get; set; }
     public DateTime? LastUsedOnUtc { get; set; }
     public int UsageCount { get; set; } = 0;

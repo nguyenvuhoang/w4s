@@ -1,7 +1,7 @@
-using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using O24OpenAPI.Framework.Domain;
 using O24OpenAPI.Framework.Helpers;
+using System.Text.Json.Serialization;
 
 namespace O24OpenAPI.Framework.Models;
 

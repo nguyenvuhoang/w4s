@@ -9,7 +9,7 @@ using O24OpenAPI.Data.Migrations;
 namespace O24OpenAPI.CMS.Infrastructure.Migrations;
 
 [O24OpenAPIMigration(
-    "2025/01/01 21:18:07:0000000",
+    "2025/12/24 21:18:07:0000000",
     "4. Init table CMS Form",
     MigrationProcessType.Installation
 )]
@@ -110,5 +110,60 @@ public class TableMigration : AutoReversingMigration
                 .WithOptions()
                 .NonClustered();
         }
+
+        if (!Schema.Table(nameof(CoreApiKeys)).Exists())
+        {
+            Create.TableFor<CoreApiKeys>();
+
+            Create.Index("UQ_CoreApiKeys_ClientId_ClientSecret_BICCode")
+                .OnTable("CoreApiKeys")
+                .OnColumn("ClientId").Ascending()
+                .OnColumn("ClientSecret").Ascending()
+                .OnColumn("BICCode").Ascending()
+                .WithOptions().Unique();
+
+            Create.Index("IDX_CoreApiKeys_IsActive_IsRevoked")
+                .OnTable("CoreApiKeys")
+                .OnColumn("IsActive").Ascending()
+                .OnColumn("IsRevoked").Ascending()
+                .WithOptions().NonClustered();
+
+            Create.Index("IDX_CoreApiKeys_ExpiredOnUtc")
+                .OnTable("CoreApiKeys")
+                .OnColumn("ExpiredOnUtc").Descending()
+                .WithOptions().NonClustered();
+
+            Create.Index("IDX_CoreApiKeys_CreatedOnUtc")
+                .OnTable("CoreApiKeys")
+                .OnColumn("CreatedOnUtc").Descending()
+                .WithOptions().NonClustered();
+        }
+
+        if (!Schema.Table(nameof(CoreApiToken)).Exists())
+        {
+            Create.TableFor<CoreApiToken>();
+
+            Create.Index("UQ_CoreApiToken_Token")
+                .OnTable("CoreApiToken")
+                .OnColumn("Token").Ascending()
+                .WithOptions().Unique();
+
+            Create.Index("IDX_CoreApiToken_ClientId")
+                .OnTable("CoreApiToken")
+                .OnColumn("ClientId").Ascending()
+                .WithOptions().NonClustered();
+
+            Create.Index("IDX_CoreApiToken_IsRevoked_ExpiredAt")
+                .OnTable("CoreApiToken")
+                .OnColumn("IsRevoked").Ascending()
+                .OnColumn("ExpiredAt").Descending()
+                .WithOptions().NonClustered();
+
+            Create.Index("IDX_CoreApiToken_CreatedAt")
+                .OnTable("CoreApiToken")
+                .OnColumn("CreatedAt").Descending()
+                .WithOptions().NonClustered();
+        }
+
     }
 }
