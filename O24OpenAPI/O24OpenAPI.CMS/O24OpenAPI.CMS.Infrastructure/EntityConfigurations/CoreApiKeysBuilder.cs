@@ -1,0 +1,72 @@
+﻿using FluentMigrator.Builders.Create.Table;
+using O24OpenAPI.CMS.Domain.AggregateModels;
+using O24OpenAPI.Data.Mapping.Builders;
+
+namespace O24OpenAPI.CMS.Infrastructure.EntityConfigurations;
+
+public class CoreApiKeysBuilder : O24OpenAPIEntityBuilder<CoreApiKeys>
+{
+    public override void MapEntity(CreateTableExpressionBuilder table)
+    {
+        table
+            .WithColumn(nameof(CoreApiKeys.ClientId))
+            .AsString(100)
+            .NotNullable()
+            .WithColumn(nameof(CoreApiKeys.ClientSecret))
+            .AsString(256)
+            .NotNullable()
+            .WithColumn(nameof(CoreApiKeys.BICCode))
+            .AsString(11)
+            .Nullable()
+            .WithColumn(nameof(CoreApiKeys.DisplayName))
+            .AsString(200)
+            .Nullable()
+            .WithColumn(nameof(CoreApiKeys.Environment))
+            .AsString(50)
+            .NotNullable()
+            .WithColumn(nameof(CoreApiKeys.Scopes))
+            .AsString(500)
+            .Nullable()
+            .WithColumn(nameof(CoreApiKeys.ExpiredOnUtc))
+            .AsDateTime2()
+            .NotNullable()
+            .WithColumn(nameof(CoreApiKeys.IsRevoked))
+            .AsBoolean()
+            .NotNullable()
+            .WithDefaultValue(false)
+            .WithColumn(nameof(CoreApiKeys.Status))
+            .AsString(10)
+            .Nullable()
+            .WithColumn(nameof(CoreApiKeys.IsActive))
+            .AsBoolean()
+            .NotNullable()
+            .WithDefaultValue(true)
+            .WithColumn(nameof(CoreApiKeys.CreatedOnUtc))
+            .AsDateTime2()
+            .NotNullable()
+            .WithColumn(nameof(CoreApiKeys.CreatedBy))
+            .AsString(100)
+            .Nullable()
+            .WithColumn(nameof(CoreApiKeys.LastUsedOnUtc))
+            .AsDateTime2()
+            .Nullable()
+            .WithColumn(nameof(CoreApiKeys.UsageCount))
+            .AsInt32()
+            .NotNullable()
+            .WithDefaultValue(0)
+            .WithColumn(nameof(CoreApiKeys.AccessTokenTtlSeconds))
+            .AsInt32().NotNullable().WithDefaultValue(2592000)
+            .WithColumn(nameof(CoreApiKeys.AccessTokenMaxTtlSeconds))
+            .AsInt32().NotNullable().WithDefaultValue(2592000)
+            .WithColumn(nameof(CoreApiKeys.AccessTokenMaxUses))
+            .AsInt32().Nullable()
+            .WithColumn(nameof(CoreApiKeys.AccessTokenTrustedIPs))
+            .AsString(2000).Nullable()
+            .WithColumn(nameof(CoreApiKeys.ClientSecretTrustedIPs))
+            .AsString(2000).Nullable()
+            .WithColumn(nameof(CoreApiKeys.ClientSecretDescription))
+            .AsString(200).Nullable()
+            .WithColumn(nameof(CoreApiKeys.ClientSecretExpiresOnUtc))
+            .AsDateTime2().Nullable();
+    }
+}

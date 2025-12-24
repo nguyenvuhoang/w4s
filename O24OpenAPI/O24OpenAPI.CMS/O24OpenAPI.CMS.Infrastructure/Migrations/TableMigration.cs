@@ -9,7 +9,7 @@ using O24OpenAPI.Data.Migrations;
 namespace O24OpenAPI.CMS.Infrastructure.Migrations;
 
 [O24OpenAPIMigration(
-    "2025/12/24 21:18:07:0000000",
+    "2025/12/24 21:19:07:0000000",
     "4. Init table CMS Form",
     MigrationProcessType.Installation
 )]
