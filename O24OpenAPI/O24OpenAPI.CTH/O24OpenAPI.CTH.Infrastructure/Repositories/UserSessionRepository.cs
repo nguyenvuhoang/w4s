@@ -59,9 +59,19 @@ public class UserSessionRepository(
         await _staticCacheManager.Set(CachingKey.SessionKey(userSession.Token), userSession);
     }
 
-    public Task RevokeByLoginName(string loginName)
+    public async Task RevokeByLoginName(string loginName)
     {
-        throw new NotImplementedException();
+        var sessions = await Table
+            .Where(x => x.LoginName == loginName && !x.IsRevoked)
+            .ToListAsync();
+
+        foreach (var session in sessions)
+        {
+            session.IsRevoked = true;
+            session.ExpiresAt = DateTime.UtcNow;
+            await Update(session);
+            await _staticCacheManager.Remove(new CacheKey(session.Token));
+        }
     }
 
     public async Task<UserSession?> GetByRefreshToken(string token)

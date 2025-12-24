@@ -1,0 +1,119 @@
+﻿using LinKit.Core.Cqrs;
+using LinqToDB;
+using O24OpenAPI.Client.Scheme.Workflow;
+using O24OpenAPI.CTH.API.Application.Models.Roles;
+using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
+using O24OpenAPI.CTH.Infrastructure.Repositories;
+using O24OpenAPI.Framework.Attributes;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
+using O24OpenAPI.Framework.Models;
+
+namespace O24OpenAPI.CTH.API.Application.Features.User
+{
+    public class UpdateUserRightCommand : BaseTransactionModel, ICommand<bool> { }
+
+    [CqrsHandler]
+    public class UpdateUserRightHandle(
+        WFScheme wFScheme,
+        IUserCommandRepository userCommandRepository,
+        IUserRightRepository userRightRepository,
+        IUserRoleRepository userRoleRepository
+    ) : ICommandHandler<UpdateUserRightCommand, bool>
+    {
+        [WorkflowStep("WF_STEP_BO_GET_USER_BY_ROLE")]
+        public async Task<bool> HandleAsync(
+            UpdateUserRightCommand request,
+            CancellationToken cancellationToken = default
+        )
+        {
+            var model = wFScheme.ToModel<UserRightUpdateModel>();
+
+            {
+                var response = await UpdateUserRightAsync(model);
+                return response;
+            }
+        }
+
+        public async Task<bool> UpdateUserRightAsync(UserRightUpdateModel model)
+        {
+            foreach (var item in model.ListUserRight)
+            {
+                var getInfoFromCommandId =
+                    await GetInfoFromCommandId(model.ChannelId, item.CommandId) ?? [];
+
+                if (getInfoFromCommandId.Count > 0)
+                {
+                    var getCommand = getInfoFromCommandId
+                        .Where(s => s.CommandId == item.CommandId)
+                        .FirstOrDefault();
+                    if (getCommand != null)
+                    {
+                        var parentRight = await userRightRepository.GetByRoleIdAndCommandIdAsync(
+                            item.RoleId,
+                            getCommand.ParentId
+                        );
+
+                        if (parentRight == null)
+                        {
+                            var newUserRight = new UserRight
+                            {
+                                RoleId = item.RoleId,
+                                CommandId = getCommand.ParentId,
+                                CommandIdDetail = "A",
+                                Invoke = 1,
+                                Approve = 1,
+                                CreatedOnUtc = DateTime.UtcNow,
+                                UpdatedOnUtc = DateTime.UtcNow,
+                            };
+                            await userRightRepository.AddUserRightAsync(newUserRight);
+                        }
+                    }
+                }
+
+                var entity = await userRightRepository.GetByRoleIdAndCommandIdAsync(
+                    item.RoleId,
+                    item.CommandId
+                );
+                if (entity != null)
+                {
+                    entity = item.ToEntity(entity);
+                    await userRightRepository.UpdateAsync(entity);
+                }
+                else
+                {
+                    entity = item.FromModel<UserRight>();
+                    await userRightRepository.AddUserRightAsync(entity);
+                }
+            }
+            return true;
+        }
+
+        public virtual async Task<List<UserCommandResponseModel>> GetInfoFromCommandId(
+            string applicationCode,
+            string commandId
+        )
+        {
+            var listLeftJoin = await (
+                from userCommand in userCommandRepository.Table
+                join userRight in userRightRepository.Table
+                    on userCommand.CommandId equals userRight.CommandId
+                join userRole in userRoleRepository.Table on userRight.RoleId equals userRole.RoleId
+                where
+                    userCommand.ApplicationCode == applicationCode
+                    && userCommand.CommandId == commandId
+                    && userCommand.Enabled
+                select new UserCommandResponseModel
+                {
+                    ParentId = userCommand.ParentId,
+                    CommandId = userCommand.CommandId,
+                    CommandNameLanguage = userCommand.CommandName,
+                    Icon = userCommand.GroupMenuIcon,
+                    GroupMenuVisible = userCommand.GroupMenuVisible,
+                    GroupMenuId = userCommand.GroupMenuId,
+                }
+            ).ToListAsync();
+
+            return listLeftJoin;
+        }
+    }
+}

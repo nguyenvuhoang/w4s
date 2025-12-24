@@ -7,4 +7,5 @@ public interface IUserInRoleRepository : IRepository<UserInRole>
     Task<List<UserInRole>> ListOfRole(string usercode);
     Task DeleteByUserCodeAsync(string userCode);
     Task<List<UserInRole>> GetListRoleByUserCodeAsync(string userCode);
+    Task<List<UserInRole>> GetUserInRolesByRoleIdAsync(int roleId);
 }

@@ -33,5 +33,20 @@ public class UserRightRepository(
             .ToListAsync();
     }
 
+    public async Task<UserRight> GetByRoleIdAndCommandIdAsync(int roleId, string commandId)
+    {
+        return await Table
+            .Where(s => s.RoleId == roleId && s.CommandId == commandId)
+            .FirstOrDefaultAsync();
+    }
 
+    public async Task<UserRight> AddUserRightAsync(UserRight entity)
+    {
+        return await InsertAsync(entity);
+    }
+
+    public async Task UpdateAsync(UserRight userRight)
+    {
+        await Update(userRight);
+    }
 }
