@@ -14,8 +14,7 @@ namespace O24OpenAPI.CTH.API.Application.Features.User
 {
     public class LoadOperationCommand : BaseTransactionModel, ICommand<JObject>
     {
-        public string? ChannelId { get; set; }
-        public string? CommandId { get; set; }
+        public string CommandId { get; set; }
     }
 
     [CqrsHandler]
