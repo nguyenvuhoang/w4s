@@ -1,23 +1,22 @@
 using LinKit.Core.Abstractions;
+using O24OpenAPI.Core;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Events;
-using O24OpenAPI.Data;
 using O24OpenAPI.CTH.Domain.AggregatesModel.TransactionAggregate;
-using O24OpenAPI.Core;
+using O24OpenAPI.Data;
+
 namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
 using O24OpenAPI.Data.System.Linq;
 
 [RegisterService(Lifetime.Scoped)]
 public class TransactionDefinitionRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
 )
-    : EntityRepository<TransactionDefinition>(eventPublisher, dataProvider, staticCacheManager),
+    : EntityRepository<TransactionDefinition>(dataProvider, staticCacheManager),
         ITransactionDefinitionRepository
 {
-
     private static readonly StringComparison ICIC = StringComparison.InvariantCultureIgnoreCase;
 
     public async Task<List<TransactionDefinition>> GetAllAsync()
@@ -30,7 +29,9 @@ public class TransactionDefinitionRepository(
         return await Table.Where(t => t.TransactionCode == transactionCode).FirstOrDefaultAsync();
     }
 
-    public async Task<IPagedList<TransactionDefinition>> SearchAsync(O24OpenAPI.Framework.Models.SimpleSearchModel model)
+    public async Task<IPagedList<TransactionDefinition>> SearchAsync(
+        O24OpenAPI.Framework.Models.SimpleSearchModel model
+    )
     {
         model.PageSize = model.PageSize == 0 ? int.MaxValue : model.PageSize;
         model.SearchText ??= string.Empty;

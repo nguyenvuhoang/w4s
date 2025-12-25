@@ -14,23 +14,10 @@ namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
 [RegisterService(Lifetime.Scoped)]
 public class UserAccountRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<UserAccount>(eventPublisher, dataProvider, staticCacheManager),
-        IUserAccountRepository
+) : EntityRepository<UserAccount>(dataProvider, staticCacheManager), IUserAccountRepository
 {
-    public Task<IPagedList<UserAccount>> GetAllPaged(
-        Func<IQueryable<UserAccount>, Task<IQueryable<UserAccount>>> func = null,
-        int pageIndex = 0,
-        int pagSize = int.MaxValue,
-        bool getOnlyTotalCount = false
-    )
-    {
-        throw new NotImplementedException();
-    }
-
     public Task<UserAccount> GetUserByContractNumber(string contractnumber)
     {
         if (string.IsNullOrWhiteSpace(contractnumber))

@@ -55,7 +55,7 @@ public partial class AccountCommonService(
     /// <returns></returns>
     public virtual async Task<IPagedList<AccountCommon>> Search(SimpleSearchModel model)
     {
-        var commons = await _accountCommonRepository.GetAllPaged(
+        IPagedList<AccountCommon> commons = await _accountCommonRepository.GetAllPaged(
             query =>
             {
                 if (!string.IsNullOrEmpty(model.SearchText))
@@ -84,7 +84,7 @@ public partial class AccountCommonService(
     /// <returns></returns>
     public virtual async Task<IPagedList<AccountCommon>> Search(AccountCommonSearchModel model)
     {
-        var commons = await _accountCommonRepository.GetAllPaged(
+        IPagedList<AccountCommon> commons = await _accountCommonRepository.GetAllPaged(
             query =>
             {
                 if (!string.IsNullOrEmpty(model.AccountNumber))
@@ -154,13 +154,13 @@ public partial class AccountCommonService(
             throw new O24OpenAPIException($"Common Account is not exist");
         }
 
-        var check = await GetByAccountName(common.AccountName);
+        AccountCommon check = await GetByAccountName(common.AccountName);
         if (check != null && check.Id != common.Id)
         {
             throw new O24OpenAPIException("Account Name is existing");
         }
 
-        await _accountCommonRepository.Update(common, referenceId);
+        await _accountCommonRepository.Update(common);
     }
 
     /// <summary>
@@ -170,10 +170,10 @@ public partial class AccountCommonService(
     /// <returns></returns>
     public virtual bool IsAccountNameExist(string acountName)
     {
-        var common = _accountCommonRepository
+        AccountCommon common = _accountCommonRepository
             .Table.Where(c => c.AccountName.Equals(acountName))
             .FirstOrDefault();
-        return (common != null);
+        return common != null;
     }
 
     /// <summary>
@@ -205,7 +205,7 @@ public partial class AccountCommonService(
         string currencyCode
     )
     {
-        var accountCommon = await GetByAccountName(accountName);
+        AccountCommon accountCommon = await GetByAccountName(accountName);
         var accountNumber = accountCommon.AccountNumber;
 
         if (accountNumber.Contains("----"))
@@ -215,7 +215,7 @@ public partial class AccountCommonService(
 
         if (accountNumber.Contains("**") || accountNumber.Contains("?"))
         {
-            var currency = await _currencyService.GetCurrency(currencyCode);
+            GetCurrencyResponse currency = await _currencyService.GetCurrency(currencyCode);
             accountNumber = accountNumber.Replace("**", currency.ShortCurrencyId);
             accountNumber = accountNumber.Replace(
                 "?",

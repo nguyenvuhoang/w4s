@@ -40,8 +40,14 @@ public class LanguageService : ILanguageService
         IList<Language> languages = await _languageRepository.GetAll(
             query =>
             {
-                var parameterExpression = Expression.Parameter(typeof(Language), "language");
-                var idProperty = Expression.Property(parameterExpression, nameof(BaseEntity.Id));
+                ParameterExpression parameterExpression = Expression.Parameter(
+                    typeof(Language),
+                    "language"
+                );
+                MemberExpression idProperty = Expression.Property(
+                    parameterExpression,
+                    nameof(BaseEntity.Id)
+                );
                 var orderByExpression = Expression.Lambda<Func<Language, int>>(
                     idProperty,
                     parameterExpression
@@ -60,7 +66,7 @@ public class LanguageService : ILanguageService
     /// <returns></returns>
     public virtual async Task<Language> GetById(int languageId)
     {
-        Language byId = await _languageRepository.GetById(new int?(languageId), cache => null);
+        Language byId = await _languageRepository.GetById(languageId, cache => null);
         return byId;
     }
 

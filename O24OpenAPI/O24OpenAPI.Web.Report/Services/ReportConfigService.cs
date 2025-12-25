@@ -63,7 +63,7 @@ public partial class ReportConfigService(IRepository<ReportConfig> reportConfigR
     {
         System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(model));
         model.PageSize = model.PageSize == 0 ? int.MaxValue : model.PageSize;
-        var companies = await _reportConfigRepository.GetAllPaged(
+        IPagedList<ReportConfig> companies = await _reportConfigRepository.GetAllPaged(
             query =>
             {
                 query = query.OrderByDescending(a => a.Id);
@@ -94,7 +94,7 @@ public partial class ReportConfigService(IRepository<ReportConfig> reportConfigR
     /// <returns></returns>
     public virtual async Task Update(ReportConfig reportConfig, string referenceId = "")
     {
-        await _reportConfigRepository.Update(reportConfig, referenceId);
+        await _reportConfigRepository.Update(reportConfig);
     }
 
     /// <summary>
@@ -104,7 +104,7 @@ public partial class ReportConfigService(IRepository<ReportConfig> reportConfigR
     /// <returns></returns>
     public virtual async Task Delete(int reportConfigId)
     {
-        var reportConfig = await GetById(reportConfigId);
+        ReportConfig reportConfig = await GetById(reportConfigId);
         await _reportConfigRepository.Delete(reportConfig);
     }
 }

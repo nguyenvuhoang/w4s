@@ -6,9 +6,6 @@ using O24OpenAPI.W4S.Domain.AggregatesModel.SampleAggregate;
 namespace O24OpenAPI.W4S.Infrastructure.Repositories;
 
 public class SampleRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<Sample>(eventPublisher, dataProvider, staticCacheManager),
-        ISampleRepository { }
+) : EntityRepository<Sample>(dataProvider, staticCacheManager), ISampleRepository { }

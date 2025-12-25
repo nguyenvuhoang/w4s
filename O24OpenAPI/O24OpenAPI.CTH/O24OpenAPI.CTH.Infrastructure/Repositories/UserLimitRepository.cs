@@ -9,18 +9,19 @@ namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
 [RegisterService(Lifetime.Scoped)]
 public class UserLimitRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<UserLimit>(eventPublisher, dataProvider, staticCacheManager),
-        IUserLimitRepository
+) : EntityRepository<UserLimit>(dataProvider, staticCacheManager), IUserLimitRepository
 {
-
-    public async Task<UserLimit> GetUserLimitToUpdate(int roleId, string commandId, string currencyCode, string limitType )
+    public async Task<UserLimit> GetUserLimitToUpdate(
+        int roleId,
+        string commandId,
+        string currencyCode,
+        string limitType
+    )
     {
-        var uLimit = await 
-            Table.Where(s =>
+        var uLimit = await Table
+            .Where(s =>
                 s.RoleId == roleId
                 && s.CommandId == commandId
                 && s.CurrencyCode == currencyCode

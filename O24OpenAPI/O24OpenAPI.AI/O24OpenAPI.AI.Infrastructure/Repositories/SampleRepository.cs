@@ -8,12 +8,9 @@ namespace O24OpenAPI.AI.Infrastructure.Repositories;
 
 [RegisterService(Lifetime.Scoped)]
 public class SampleRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<Sample>(eventPublisher, dataProvider, staticCacheManager),
-        ISampleRepository
+) : EntityRepository<Sample>(dataProvider, staticCacheManager), ISampleRepository
 {
     public void Add(Sample sample)
     {

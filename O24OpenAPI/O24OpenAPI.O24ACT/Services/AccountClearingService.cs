@@ -258,7 +258,7 @@ public partial class AccountClearingService(
             );
         }
 
-        await _accountClearingRepository.Update(clearing, referenceId);
+        await _accountClearingRepository.Update(clearing);
     }
 
     /// <summary>

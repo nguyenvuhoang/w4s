@@ -9,12 +9,9 @@ namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
 [RegisterService(Lifetime.Scoped)]
 public class UserRoleRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<UserRole>(eventPublisher, dataProvider, staticCacheManager),
-        IUserRoleRepository
+) : EntityRepository<UserRole>(dataProvider, staticCacheManager), IUserRoleRepository
 {
     public Task<bool> DeleteBulkAsync()
     {

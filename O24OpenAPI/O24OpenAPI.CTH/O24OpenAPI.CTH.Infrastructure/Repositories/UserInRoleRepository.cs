@@ -10,12 +10,9 @@ namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
 [RegisterService(Lifetime.Scoped)]
 public class UserInRoleRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<UserInRole>(eventPublisher, dataProvider, staticCacheManager),
-        IUserInRoleRepository
+) : EntityRepository<UserInRole>(dataProvider, staticCacheManager), IUserInRoleRepository
 {
     public async Task<List<UserInRole>> GetUserInRolesByRoleIdAsync(int roleId)
     {

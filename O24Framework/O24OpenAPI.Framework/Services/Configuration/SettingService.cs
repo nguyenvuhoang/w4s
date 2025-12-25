@@ -138,7 +138,7 @@ public class SettingService(
     /// <param name="clearCache">The clear cache</param>
     public virtual async Task InsertSetting(Setting setting, bool clearCache = true)
     {
-        await _settingRepository.Insert(setting);
+        await _settingRepository.InsertAsync(setting);
         if (!clearCache)
         {
             return;
@@ -191,7 +191,7 @@ public class SettingService(
     /// <returns>The by id</returns>
     public virtual async Task<Setting> GetSettingById(int settingId)
     {
-        Setting byId = await _settingRepository.GetById(new int?(settingId), cache => null);
+        Setting byId = await _settingRepository.GetById(settingId, cache => null);
         return byId;
     }
 
@@ -542,14 +542,14 @@ public class SettingService(
     {
         if (!(keySelector.Body is MemberExpression member))
         {
-            var errorMessage = $"Expression '{keySelector}' refers to a method, not a property.";
+            string errorMessage = $"Expression '{keySelector}' refers to a method, not a property.";
             throw new ArgumentException(errorMessage);
         }
 
         PropertyInfo propInfo = member.Member as PropertyInfo;
         if (propInfo == null)
         {
-            var errorMessage = $"Expression '{keySelector}' refers to a field, not a property.";
+            string errorMessage = $"Expression '{keySelector}' refers to a field, not a property.";
             throw new ArgumentException(errorMessage);
         }
 
@@ -689,7 +689,7 @@ public class SettingService(
     /// <returns>The setting</returns>
     public async Task<Setting> UpdateByKey(string key, string value)
     {
-        var setting = await GetSetting(key);
+        Setting setting = await GetSetting(key);
         setting.Value = value;
         await UpdateSetting(setting);
         return setting;
@@ -712,7 +712,9 @@ public class SettingService(
     /// <returns></returns>
     public virtual async Task<Setting> GetByPrimaryKey(string name)
     {
-        var query = await _settingRepository.Table.Where(s => s.Name == name).FirstOrDefaultAsync();
+        Setting query = await _settingRepository
+            .Table.Where(s => s.Name == name)
+            .FirstOrDefaultAsync();
         return query;
     }
 
@@ -723,7 +725,7 @@ public class SettingService(
     /// <returns></returns>
     public virtual async Task<Setting> View(int id)
     {
-        var getSetting =
+        Setting getSetting =
             await _settingRepository.GetById(id)
             ?? throw new O24OpenAPIException("CMS.Setting.Value.NotFound");
         return getSetting;
@@ -736,13 +738,13 @@ public class SettingService(
     /// <returns></returns>
     public virtual async Task<IPagedList<Setting>> Search(SimpleSearchModel model)
     {
-        var viewTable = _settingRepository.Table.Where(s =>
+        IQueryable<Setting> viewTable = _settingRepository.Table.Where(s =>
             s.Name.Contains(model.SearchText, StringComparison.OrdinalIgnoreCase)
             || s.Value.Contains(model.SearchText, StringComparison.OrdinalIgnoreCase)
             || s.OrganizationId.ToString().Equals(model.SearchText)
         );
 
-        var result = await viewTable.ToPagedList(model.PageIndex, model.PageSize);
+        IPagedList<Setting> result = await viewTable.ToPagedList(model.PageIndex, model.PageSize);
         return result;
     }
 
@@ -753,7 +755,7 @@ public class SettingService(
     /// <returns></returns>
     public virtual async Task<IPagedList<Setting>> Search(SettingSearchModel model)
     {
-        var query = _settingRepository.Table;
+        IQueryable<Setting> query = _settingRepository.Table;
         if (model.Name.HasValue())
         {
             query = query.Where(s =>
@@ -780,13 +782,13 @@ public class SettingService(
     /// <returns></returns>
     public virtual async Task<Setting> Create(SettingCreateModel model)
     {
-        var getSetting = await GetByPrimaryKey(model.Name);
+        Setting getSetting = await GetByPrimaryKey(model.Name);
         if (getSetting != null)
         {
             throw new O24OpenAPIException("CMS.Setting.Value.Exist");
         }
 
-        var newModel = new Setting()
+        Setting newModel = new()
         {
             Name = model.Name,
             Value = model.Value,
@@ -813,7 +815,7 @@ public class SettingService(
     /// <returns></returns>
     public virtual async Task Insert(Setting value, string referenceId = "")
     {
-        await _settingRepository.Insert(value, referenceId);
+        await _settingRepository.InsertAsync(value);
     }
 
     /// <summary>
@@ -827,7 +829,7 @@ public class SettingService(
         string referenceId = ""
     )
     {
-        var getSetting =
+        Setting getSetting =
             await GetById(model.Id) ?? throw new O24OpenAPIException("Setting not found");
 
         // convert
@@ -835,7 +837,7 @@ public class SettingService(
         getSetting.Value = model.Value;
         getSetting.OrganizationId = model.OrganizationId;
 
-        await _settingRepository.Update(getSetting, referenceId);
+        await _settingRepository.Update(getSetting);
         // await _staticCacheManager.RemoveByPrefix(NeptuneEntityCacheDefaults<Setting>.Prefix);
         // var allSettingKey = Framework
         //     .Services
@@ -855,13 +857,13 @@ public class SettingService(
     /// <returns></returns>
     public virtual async Task<Setting> Delete(int id, string referenceId = "")
     {
-        var getSetting = await GetById(id);
+        Setting getSetting = await GetById(id);
         if (getSetting == null)
         {
             throw new O24OpenAPIException("CMS.Setting.Value.NotFound");
         }
 
-        await _settingRepository.Delete(getSetting, referenceId);
+        await _settingRepository.Delete(getSetting);
         // await _staticCacheManager.RemoveByPrefix(NeptuneEntityCacheDefaults<Setting>.Prefix);
         // var allSettingKey = Framework
         //     .Services

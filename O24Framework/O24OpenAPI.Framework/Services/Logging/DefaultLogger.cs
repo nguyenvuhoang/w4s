@@ -42,7 +42,7 @@ public class DefaultLogger(IRepository<Log> logRepository, IWorkContext workCont
     public virtual async Task Delete(Log log)
     {
         ArgumentNullException.ThrowIfNull(log);
-        await _logRepository.Delete(log, "", true, false, false);
+        await _logRepository.Delete(log);
     }
 
     /// <summary>Error</summary>
@@ -110,7 +110,7 @@ public class DefaultLogger(IRepository<Log> logRepository, IWorkContext workCont
     /// <returns>Log item</returns>
     public virtual async Task<Log> GetById(int logId)
     {
-        Log byId = await _logRepository.GetById(new int?(logId), null);
+        Log byId = await _logRepository.GetById(logId, null);
         return byId;
     }
 
@@ -154,12 +154,14 @@ public class DefaultLogger(IRepository<Log> logRepository, IWorkContext workCont
         string pageUrl = ""
     )
     {
-        Log log1 = new Log();
-        log1.LogLevel = logLevel;
-        log1.ShortMessage = shortMessage;
-        log1.FullMessage = fullMessage;
-        log1.UserId = user?.Id;
-        log1.CreatedOnUtc = DateTime.UtcNow;
+        Log log1 = new()
+        {
+            LogLevel = logLevel,
+            ShortMessage = shortMessage,
+            FullMessage = fullMessage,
+            UserId = user?.Id,
+            CreatedOnUtc = DateTime.UtcNow,
+        };
         Log log2 = log1;
         string str = await _workContext.GetCurrentRefId();
         log2.ReferredUrl = str;
@@ -234,7 +236,7 @@ public class DefaultLogger(IRepository<Log> logRepository, IWorkContext workCont
     {
         try
         {
-            var eventData = new LogEventData
+            LogEventData eventData = new()
             {
                 log_type = logType,
                 from_service_code = serviceId,
@@ -243,12 +245,10 @@ public class DefaultLogger(IRepository<Log> logRepository, IWorkContext workCont
                 text_data = System.Text.Json.JsonSerializer.Serialize(request),
             };
 
-            var o24Event = new O24OpenAPIEvent<LogEventData>(
-                O24OpenAPIWorkflowEventTypeEnum.EventLog
-            );
+            O24OpenAPIEvent<LogEventData> o24Event = new(O24OpenAPIWorkflowEventTypeEnum.EventLog);
             o24Event.EventData.data = eventData;
 
-            var queueClient = Singleton<QueueClient>.Instance;
+            QueueClient queueClient = Singleton<QueueClient>.Instance;
             if (queueClient is not null)
             {
                 await queueClient.SendMessage(

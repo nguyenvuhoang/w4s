@@ -9,12 +9,9 @@ namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
 [RegisterService(Lifetime.Scoped)]
 public class UserRightRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<UserRight>(eventPublisher, dataProvider, staticCacheManager),
-        IUserRightRepository
+) : EntityRepository<UserRight>(dataProvider, staticCacheManager), IUserRightRepository
 {
     public async Task<List<string>> GetExistingCommandIdsAsync(
         int roleId,

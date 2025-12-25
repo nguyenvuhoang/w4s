@@ -587,7 +587,7 @@ public partial class AccountChartService(
             };
             await accountBalance.Insert();
             chart.IsAccountLeave = true;
-            await _accountChartRepository.Update(chart, referenceId);
+            await _accountChartRepository.Update(chart);
         }
         var chartResult = chart.ToModel<AccountChartCRUDReponseModel>();
         chartResult.MultiValueNameLang = JsonSerializer.Deserialize<MultiValueName>(
@@ -808,7 +808,7 @@ public partial class AccountChartService(
             throw new O24OpenAPIException("Bank Account Number is not exist");
         }
 
-        await _accountChartRepository.Update(chart, referenceId);
+        await _accountChartRepository.Update(chart);
         var chartResult = chart.ToModel<AccountChartCRUDReponseModel>();
         chartResult.MultiValueNameLang = JsonSerializer.Deserialize<MultiValueName>(
             chart.MultiValueName

@@ -9,11 +9,10 @@ namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
 [RegisterService(Lifetime.Scoped)]
 public class UserRightChannelRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
 )
-    : EntityRepository<UserRightChannel>(eventPublisher, dataProvider, staticCacheManager),
+    : EntityRepository<UserRightChannel>(dataProvider, staticCacheManager),
         IUserRightChannelRepository
 {
     public async Task<List<UserRightChannel>> GetByRoleIdAsync(int roleId)

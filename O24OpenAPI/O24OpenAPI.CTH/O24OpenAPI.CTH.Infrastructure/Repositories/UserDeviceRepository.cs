@@ -12,12 +12,9 @@ namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
 [RegisterService(Lifetime.Scoped)]
 public class UserDeviceRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<UserDevice>(eventPublisher, dataProvider, staticCacheManager),
-        IUserDeviceRepository
+) : EntityRepository<UserDevice>(dataProvider, staticCacheManager), IUserDeviceRepository
 {
     public async Task<UserDevice?> GetActiveByUserCodeAsync(string userCode)
     {

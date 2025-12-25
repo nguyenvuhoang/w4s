@@ -8,8 +8,6 @@ namespace O24OpenAPI.CMS.Infrastructure.Repositories;
 
 [RegisterService(Lifetime.Scoped)]
 internal class AppRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-) : EntityRepository<App>(eventPublisher, dataProvider, staticCacheManager), IAppRepository
-{ }
+) : EntityRepository<App>(dataProvider, staticCacheManager), IAppRepository { }

@@ -9,21 +9,20 @@ namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
 [RegisterService(Lifetime.Scoped)]
 public class UserAuthenRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<UserAuthen>(eventPublisher, dataProvider, staticCacheManager),
-        IUserAuthenRepository
+) : EntityRepository<UserAuthen>(dataProvider, staticCacheManager), IUserAuthenRepository
 {
     public async Task<UserAuthen?> GetByUserCodeAsync(string userCode)
     {
         return await Table.Where(s => s.UserCode == userCode).FirstOrDefaultAsync();
     }
+
     public async Task<UserAuthen> AddAsync(UserAuthen user)
     {
         return await InsertAsync(user);
     }
+
     public async Task UpdateAsync(UserAuthen user)
     {
         await Update(user);

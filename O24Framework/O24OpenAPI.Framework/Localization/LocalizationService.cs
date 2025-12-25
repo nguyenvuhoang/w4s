@@ -91,7 +91,7 @@ public class LocalizationService : ILocalizationService
     /// <returns></returns>
     public virtual async Task<LocaleStringResource> GetById(int localeStringResourceId)
     {
-        LocaleStringResource byId = await _lsrRepository.GetById(new int?(localeStringResourceId));
+        LocaleStringResource byId = await _lsrRepository.GetById(localeStringResourceId);
         return byId;
     }
 
@@ -101,7 +101,7 @@ public class LocalizationService : ILocalizationService
     /// <returns></returns>
     public virtual async Task<LocaleStringResource> GetByName(string resourceName, string language)
     {
-        var defaultLang = "en";
+        string defaultLang = "en";
         var query = _lsrRepository
             .Table.OrderBy(lsr => lsr.ResourceName)
             .Where(lsr =>

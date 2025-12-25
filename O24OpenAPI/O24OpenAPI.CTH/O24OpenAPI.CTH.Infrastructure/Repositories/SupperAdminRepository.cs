@@ -9,12 +9,9 @@ namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
 [RegisterService(Lifetime.Scoped)]
 public class SupperAdminRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<SupperAdmin>(eventPublisher, dataProvider, staticCacheManager),
-        ISupperAdminRepository
+) : EntityRepository<SupperAdmin>(dataProvider, staticCacheManager), ISupperAdminRepository
 {
     public async Task<SupperAdmin?> GetByUserNameAsync(string userName)
     {

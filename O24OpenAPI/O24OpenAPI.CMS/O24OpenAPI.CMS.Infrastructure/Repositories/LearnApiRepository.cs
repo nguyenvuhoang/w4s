@@ -9,12 +9,9 @@ namespace O24OpenAPI.CMS.Infrastructure.Repositories;
 
 [RegisterService(Lifetime.Scoped)]
 internal class LearnApiRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<LearnApi>(eventPublisher, dataProvider, staticCacheManager),
-        ILearnApiRepository
+) : EntityRepository<LearnApi>(dataProvider, staticCacheManager), ILearnApiRepository
 {
     private readonly IStaticCacheManager _staticCacheManager = staticCacheManager;
 

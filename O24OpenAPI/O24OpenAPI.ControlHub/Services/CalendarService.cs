@@ -59,7 +59,7 @@ public partial class CalendarService(
     public virtual async Task<IPagedList<Calendar>> Search(SimpleSearchModel model)
     {
         model.PageSize = model.PageSize == 0 ? int.MaxValue : model.PageSize;
-        var calendars = await _calendarRepository.GetAllPaged(
+        IPagedList<Calendar> calendars = await _calendarRepository.GetAllPaged(
             query =>
             {
                 query = query.OrderBy(a => a.Id);
@@ -79,7 +79,7 @@ public partial class CalendarService(
     public virtual async Task<IPagedList<Calendar>> Search(CalendarSearchModel model)
     {
         model.PageSize = model.PageSize == 0 ? int.MaxValue : model.PageSize;
-        var calendars = await _calendarRepository.GetAllPaged(
+        IPagedList<Calendar> calendars = await _calendarRepository.GetAllPaged(
             query =>
             {
                 if (model.Year != null)
@@ -122,7 +122,7 @@ public partial class CalendarService(
     /// <returns></returns>
     public virtual async Task Update(Calendar calendar, string referenceId = "")
     {
-        await _calendarRepository.Update(calendar, referenceId);
+        await _calendarRepository.Update(calendar);
     }
 
     /// <summary>
@@ -142,7 +142,7 @@ public partial class CalendarService(
     /// <returns></returns>
     public virtual async Task Delete(int calendarId)
     {
-        var calendar = await GetById(calendarId);
+        Calendar calendar = await GetById(calendarId);
         if (calendar == null)
         {
             throw new O24OpenAPIException(
@@ -171,8 +171,8 @@ public partial class CalendarService(
             return date;
         }
 
-        var returnDay = date;
-        var query = await _calendarRepository.Table.Where(c => c.SqnDate == date).ToListAsync();
+        DateTime returnDay = date;
+        List<Calendar> query = await _calendarRepository.Table.Where(c => c.SqnDate == date).ToListAsync();
         var count = query.Count;
         if (count == 0)
         {
@@ -227,7 +227,7 @@ public partial class CalendarService(
         }
         else
         {
-            var query2 = await _calendarRepository
+            List<Calendar> query2 = await _calendarRepository
                 .Table.Where(c => c.IsHoliday == 0 && c.SqnDate <= date)
                 .ToListAsync();
             if (date == toDate)
@@ -296,9 +296,11 @@ public partial class CalendarService(
         var listCalendars = new List<Calendar>() { };
         do
         {
-            var newCalendar = new Calendar();
-            newCalendar.SqnDate = maxDate;
-            newCalendar.CurrencyCode = currencyCode;
+            var newCalendar = new Calendar
+            {
+                SqnDate = maxDate,
+                CurrencyCode = currencyCode
+            };
             if (maxDate.DayOfWeek == DayOfWeek.Saturday || maxDate.DayOfWeek == DayOfWeek.Sunday)
             {
                 newCalendar.IsHoliday = 1;
@@ -372,7 +374,7 @@ public partial class CalendarService(
         } while (maxDate.ToString("dd/MM") != "01/01");
 
         await Insert(listCalendars);
-        var pagedListCalendars = await listCalendars.AsQueryable().ToPagedList(pageIndex, pageSize);
+        IPagedList<Calendar> pagedListCalendars = await listCalendars.AsQueryable().ToPagedList(pageIndex, pageSize);
         return pagedListCalendars;
     }
 
@@ -456,10 +458,10 @@ public partial class CalendarService(
             currencyCode = _adminSetting.BaseCurrency;
         }
 
-        var query = _calendarRepository.Table;
+        IQueryable<Calendar> query = _calendarRepository.Table;
         query = query.Where(c => c.IsCurrentDate == 1 && c.CurrencyCode == currencyCode);
 
-        var calendar = await query.FirstOrDefaultAsync();
+        Calendar calendar = await query.FirstOrDefaultAsync();
         return await CreateIfNotExists(calendar, _bankService.GetWorkingDate().Date, currencyCode);
     }
 
@@ -476,10 +478,10 @@ public partial class CalendarService(
             currencyCode = _adminSetting.BaseCurrency;
         }
 
-        var query = _calendarRepository.Table;
+        IQueryable<Calendar> query = _calendarRepository.Table;
         query = query.Where(c => c.SqnDate == date && c.CurrencyCode == currencyCode);
 
-        var calendar = await query.FirstOrDefaultAsync();
+        Calendar calendar = await query.FirstOrDefaultAsync();
         return await CreateIfNotExists(calendar, date, currencyCode);
     }
 
@@ -497,13 +499,13 @@ public partial class CalendarService(
         }
 
         //ensure calendar exist
-        var c = await GetCalendar(date.AddDays(1).Date, currencyCode);
+        Calendar c = await GetCalendar(date.AddDays(1).Date, currencyCode);
 
-        var query = _calendarRepository.Table;
+        IQueryable<Calendar> query = _calendarRepository.Table;
         query = query.Where(c => c.SqnDate > date && c.CurrencyCode == currencyCode);
         query = query.OrderBy(c => c.SqnDate);
 
-        var calendar = await query.FirstOrDefaultAsync();
+        Calendar calendar = await query.FirstOrDefaultAsync();
         return await CreateIfNotExists(calendar, date.AddDays(1).Date, currencyCode);
     }
 
@@ -530,7 +532,7 @@ public partial class CalendarService(
         try
         {
             var baseCurrency = _adminSetting.BaseCurrency;
-            var currentCalendar = await GetCurrentCalendar(baseCurrency);
+            Calendar currentCalendar = await GetCurrentCalendar(baseCurrency);
             await ChangeWorkingDate(currentCalendar.SqnDate.AddDays(1));
         }
         catch (Exception ex)
@@ -549,7 +551,7 @@ public partial class CalendarService(
     )
     {
         model.PageSize = (model.PageSize == 0) ? int.MaxValue : model.PageSize;
-        var listYear = await (
+        IPagedList<GetListYearResponseModel> listYear = await (
             from calendar in _calendarRepository.Table
             select new GetListYearResponseModel() { Caption = calendar.SqnDate.Year }
         )
@@ -566,7 +568,7 @@ public partial class CalendarService(
     public virtual async Task<Calendar> GetSequenceDateByDays(int days)
     {
         DateTime busDate = ParamAdmin.GetBusDate();
-        var calendar = await _calendarRepository
+        Calendar calendar = await _calendarRepository
             .Table.Where(c =>
                 (c.SqnDate.Date >= busDate.Date.AddDays(-365))
                 && (c.SqnDate.Date <= busDate.Date.AddDays(-days))
@@ -641,7 +643,7 @@ public partial class CalendarService(
         DateTime date = fromDate;
         DateTime predate = date;
         DateTime creditMaturityDateOfPredate = date;
-        DateTime creditMaturityDate = (await CreditMaturityDate(fromDate, holidayMoveOn, toDate));
+        DateTime creditMaturityDate = await CreditMaturityDate(fromDate, holidayMoveOn, toDate);
         DateTime creditMaturityToDate =
             holidayMoveOn > 0
                 ? (await CreditMaturityDate(toDate, -1, toDate))
@@ -668,16 +670,16 @@ public partial class CalendarService(
                 {
                     predate = date;
                     date = NextDueDate(fromDate, tenor, 1, tenornun);
-                    creditMaturityDate = (
+                    creditMaturityDate =
                         await CreditMaturityDate(
-                            (new DateTime(Math.Min(date.Ticks, toDate.Ticks))),
+                            new DateTime(Math.Min(date.Ticks, toDate.Ticks)),
                             holidayMoveOn,
                             toDate
                         )
-                    );
-                    creditMaturityDateOfPredate = (
+                    ;
+                    creditMaturityDateOfPredate =
                         await CreditMaturityDate(predate, holidayMoveOn, toDate)
-                    );
+                    ;
                     countTemp = 1;
                 }
                 while (date <= toDate)
@@ -686,16 +688,16 @@ public partial class CalendarService(
                     listDate.Add(creditMaturityDate);
                     predate = date;
                     date = NextDueDate(fromDate, tenor, count + countTemp, tenornun);
-                    creditMaturityDate = (
+                    creditMaturityDate =
                         await CreditMaturityDate(
-                            (new DateTime(Math.Min(date.Ticks, toDate.Ticks))),
+                            new DateTime(Math.Min(date.Ticks, toDate.Ticks)),
                             holidayMoveOn,
                             toDate
                         )
-                    );
-                    creditMaturityDateOfPredate = (
+                    ;
+                    creditMaturityDateOfPredate =
                         await CreditMaturityDate(predate, holidayMoveOn, toDate)
-                    );
+                    ;
                 }
                 if (
                     date > toDate
@@ -709,7 +711,7 @@ public partial class CalendarService(
             }
         }
         count = 0;
-        foreach (var d in listDate.Distinct().OrderBy(d => d))
+        foreach (DateTime d in listDate.Distinct().OrderBy(d => d))
         {
             count++;
             response.Add(
@@ -732,7 +734,7 @@ public partial class CalendarService(
     /// <returns></returns>
     public async Task<bool> IsHoliday(DateTime date, string currencyCode)
     {
-        var cal = await _calendarRepository
+        Calendar cal = await _calendarRepository
             .Table.Where(x => x.SqnDate.Date == date.Date && x.CurrencyCode == currencyCode)
             .FirstOrDefaultAsync();
         return Convert.ToBoolean(cal?.IsHoliday);

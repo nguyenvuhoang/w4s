@@ -10,14 +10,10 @@ namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
 [RegisterService(Lifetime.Scoped)]
 public class UserBannerRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<UserBanner>(eventPublisher, dataProvider, staticCacheManager),
-        IUserBannerRepository
+) : EntityRepository<UserBanner>(dataProvider, staticCacheManager), IUserBannerRepository
 {
-
     public async Task<UserBanner?> GetByUserCodeAsync(string userCode)
     {
         return await Table.Where(x => x.UserCode == userCode).FirstOrDefaultAsync();
@@ -25,15 +21,18 @@ public class UserBannerRepository(
 
     public async Task<string?> GetBannerSourceAsync(string userCode)
     {
-        return await Table.Where(x => x.UserCode == userCode).Select(x => x.BannerSource).FirstOrDefaultAsync();
+        return await Table
+            .Where(x => x.UserCode == userCode)
+            .Select(x => x.BannerSource)
+            .FirstOrDefaultAsync();
     }
 
     public async Task<string> GetUserBannerAsync(string usercode)
     {
         try
         {
-            return
-                    Table.Where(x => x.UserCode == usercode)
+            return Table
+                    .Where(x => x.UserCode == usercode)
                     .Select(x => x.BannerSource)
                     .FirstOrDefault() ?? "default";
         }

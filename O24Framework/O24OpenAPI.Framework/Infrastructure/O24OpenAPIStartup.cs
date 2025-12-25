@@ -123,5 +123,6 @@ internal class O24OpenAPIStartup : IO24OpenAPIStartup
         services.AddScoped<ITransactionActionService, TransactionActionService>();
         services.AddScoped<IMasterMappingService, MasterMappingService>();
         services.AddScoped<ICdcKeyConfigService, CdcKeyConfigService>();
+        services.AddLinKitDependency();
     }
 }

@@ -10,12 +10,9 @@ namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
 [RegisterService(Lifetime.Scoped)]
 public class UserCommandRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<UserCommand>(eventPublisher, dataProvider, staticCacheManager),
-        IUserCommandRepository
+) : EntityRepository<UserCommand>(dataProvider, staticCacheManager), IUserCommandRepository
 {
     public async Task<List<string>> GetListCommandParentAsync(string applicationCode)
     {

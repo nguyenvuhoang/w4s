@@ -9,12 +9,9 @@ namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
 [RegisterService(Lifetime.Scoped)]
 public class UserPasswordRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<UserPassword>(eventPublisher, dataProvider, staticCacheManager),
-        IUserPasswordRepository
+) : EntityRepository<UserPassword>(dataProvider, staticCacheManager), IUserPasswordRepository
 {
     public async Task<UserPassword?> GetByUserCodeAsync(string userCode)
     {

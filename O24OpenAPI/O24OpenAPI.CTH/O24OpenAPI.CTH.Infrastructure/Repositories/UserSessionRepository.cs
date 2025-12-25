@@ -10,12 +10,9 @@ namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
 [RegisterService(Lifetime.Scoped)]
 public class UserSessionRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<UserSession>(eventPublisher, dataProvider, staticCacheManager),
-        IUserSessionRepository
+) : EntityRepository<UserSession>(dataProvider, staticCacheManager), IUserSessionRepository
 {
     private readonly IStaticCacheManager _staticCacheManager = staticCacheManager;
 

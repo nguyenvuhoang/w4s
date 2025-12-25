@@ -9,14 +9,10 @@ namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
 [RegisterService(Lifetime.Scoped)]
 public class UserAvatarRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<UserAvatar>(eventPublisher, dataProvider, staticCacheManager),
-        IUserAvatarRepository
+) : EntityRepository<UserAvatar>(dataProvider, staticCacheManager), IUserAvatarRepository
 {
-
     public async Task<UserAvatar> GetByUserCodeAsync(string userCode)
     {
         return await Table.Where(s => s.UserCode == userCode).FirstOrDefaultAsync();

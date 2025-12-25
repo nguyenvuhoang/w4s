@@ -62,7 +62,7 @@ public partial class ViewerSettingService(
     /// <returns></returns>
     public virtual async Task Update(ViewerSetting viewerSetting, string referenceId = "")
     {
-        await _viewerSettingRepository.Update(viewerSetting, referenceId);
+        await _viewerSettingRepository.Update(viewerSetting);
     }
 
     /// <summary>
@@ -72,7 +72,7 @@ public partial class ViewerSettingService(
     /// <returns></returns>
     public virtual async Task Delete(int viewerSettingId)
     {
-        var viewerSetting = await GetById(viewerSettingId);
+        ViewerSetting viewerSetting = await GetById(viewerSettingId);
         if (viewerSetting == null)
         {
             throw new O24OpenAPIException(

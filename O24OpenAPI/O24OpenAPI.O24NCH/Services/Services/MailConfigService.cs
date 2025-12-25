@@ -139,7 +139,7 @@ public partial class MailConfigService : IMailConfigService
             );
         }
 
-        var getMailConfig =
+        MailConfig getMailConfig =
             await GetById(mailConfig.Id) ?? throw new O24OpenAPIException("MailConfig not found");
         getMailConfig.Sender = mailConfig.Sender;
         getMailConfig.Host = mailConfig.Host;
@@ -148,7 +148,7 @@ public partial class MailConfigService : IMailConfigService
         getMailConfig.EmailTest = mailConfig.EmailTest;
         getMailConfig.Password = mailConfig.Password;
 
-        await _mailConfigRepository.Update(getMailConfig, referenceId);
+        await _mailConfigRepository.Update(getMailConfig);
         return mailConfig;
     }
 
@@ -183,7 +183,7 @@ public partial class MailConfigService : IMailConfigService
     public async Task<IPagedList<MailConfig>> Search(MailConfigSearchModel model)
     {
         model.PageSize = model.PageSize == 0 ? int.MaxValue : model.PageSize;
-        var query = _mailConfigRepository.Table;
+        IQueryable<MailConfig> query = _mailConfigRepository.Table;
         if (!string.IsNullOrEmpty(model.ConfigId))
         {
             query = query.Where(c => c.ConfigId.Contains(model.ConfigId, ICIC));
@@ -216,7 +216,7 @@ public partial class MailConfigService : IMailConfigService
 
         query = query.OrderBy(c => c.ConfigId);
 
-        var response = await query.ToPagedList(model.PageIndex, model.PageSize);
+        IPagedList<MailConfig> response = await query.ToPagedList(model.PageIndex, model.PageSize);
         return response;
     }
 
@@ -228,7 +228,7 @@ public partial class MailConfigService : IMailConfigService
     public async Task<bool> ValidMailConfig(string configId)
     {
         var result = false;
-        var query = await _mailConfigRepository
+        MailConfig query = await _mailConfigRepository
             .Table.Where(s => s.ConfigId == configId)
             .FirstOrDefaultAsync();
         if (query != null)

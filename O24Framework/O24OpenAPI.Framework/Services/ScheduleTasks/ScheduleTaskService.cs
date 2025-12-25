@@ -23,7 +23,7 @@ public class ScheduleTaskService(
     /// <param name="task">The task</param>
     public virtual async Task Delete(ScheduleTask task)
     {
-        await _taskRepository.Delete(task, publishEvent: false);
+        await _taskRepository.Delete(task);
     }
 
     /// <summary>
@@ -33,7 +33,7 @@ public class ScheduleTaskService(
     /// <returns>The by id</returns>
     public virtual async Task<ScheduleTask> GetById(int taskId)
     {
-        ScheduleTask byId = await _taskRepository.GetById(new int?(taskId), _ => null);
+        ScheduleTask byId = await _taskRepository.GetById(taskId, _ => null);
         return byId;
     }
 
@@ -102,7 +102,7 @@ public class ScheduleTaskService(
         {
             task.LastEnabledUtc = new DateTime?(DateTime.UtcNow);
         }
-        await _taskRepository.Insert(task, publishEvent: false);
+        await _taskRepository.Insert(task);
     }
 
     /// <summary>
@@ -111,6 +111,6 @@ public class ScheduleTaskService(
     /// <param name="task">The task</param>
     public virtual async Task Update(ScheduleTask task)
     {
-        await _taskRepository.Update(task, publishEvent: false);
+        await _taskRepository.Update(task);
     }
 }

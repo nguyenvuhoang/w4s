@@ -6,10 +6,6 @@ using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 namespace O24OpenAPI.W4S.Infrastructure.Repositories;
 
 public class WalletBudgetRepository(
-    IEventPublisher eventPublisher,
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<WalletBudget>(eventPublisher, dataProvider, staticCacheManager),
-        IWalletBudgetRepository
-{ }
+) : EntityRepository<WalletBudget>(dataProvider, staticCacheManager), IWalletBudgetRepository { }
