@@ -18,119 +18,15 @@ using O24OpenAPI.Framework.Services.Logging;
 
 namespace O24OpenAPI.Framework.Services.Queue;
 
-/// <summary>
-/// The base queue class
-/// </summary>
 public abstract class BaseQueue
 {
-    /// <summary>
-    /// The semaphore slim
-    /// </summary>
     private static readonly SemaphoreSlim _semaphore = new(1, 1);
 
-    /// <summary>
-    /// Return workflow with Success status
-    /// </summary>
-    /// <param name="workflow"></param>
-    /// <param name="name"></param>
-    /// <param name="content"></param>
-    /// <returns></returns>
-    public static WFScheme Success(WFScheme workflow, string name, object content)
-    {
-        workflow.response.data = content.ToDictionary(name);
-        workflow.response.status = WFScheme.RESPONSE.EnumResponseStatus.SUCCESS;
-        return workflow;
-    }
-
-    /// <summary>
-    /// Return workflow with Success status
-    /// </summary>
-    /// <param name="workflow"></param>
-    /// <param name="content"></param>
-    /// <returns></returns>
-    public static WFScheme Success(WFScheme workflow, object content)
-    {
-        if (content is string || content is ValueType) // Nếu là kiểu dữ liệu cơ bản
-        {
-            workflow.response.data = new { data = content };
-        }
-        else if ((content is IEnumerable<object> || content is Array) && content is not JObject) // Nếu là List, Array, IEnumerable
-        {
-            workflow.response.data = new { data = content };
-        }
-        else
-        {
-            workflow.response.data = content; // Nếu là object, JObject, Dictionary thì giữ nguyên
-        }
-
-        workflow.response.status = WFScheme.RESPONSE.EnumResponseStatus.SUCCESS;
-        return workflow;
-    }
-
-    /// <summary>
-    /// Return workflow with Error status
-    /// </summary>
-    /// <param name="workflow"></param>
-    /// <param name="validationResult">Validation results</param>
-    /// <param name="errorMessage">Validation results</param>
-    /// <returns></returns>
-    public static WFScheme Error<TModel>(
-        WFScheme workflow,
-        ValidationResult validationResult,
-        string errorMessage = ""
-    )
-        where TModel : BaseTransactionModel
-    {
-        workflow.response.data = new { };
-        if (string.IsNullOrEmpty(errorMessage))
-        {
-            workflow.response.error_code = "ERRROR";
-            workflow.response.error_message = string.Join("\n", validationResult.Errors);
-        }
-        else
-        {
-            workflow.response.error_code = "ERROR";
-            workflow.response.error_message = errorMessage;
-        }
-        if (validationResult.Errors.Any())
-        {
-            workflow.response.error_code = string.Join(
-                "\n",
-                validationResult.Errors.Select(e => e.ErrorCode)
-            );
-        }
-        workflow.response.data = null;
-        workflow.response.status = WFScheme.RESPONSE.EnumResponseStatus.ERROR;
-        try
-        {
-            //EngineContext
-            //    .Current.Resolve<IGrpcService>()
-            //    ?.SendCentralizedLog(workflow.response.error_message);
-        }
-        catch { }
-        return workflow;
-    }
-
-    /// <summary>
-    /// Invokes the workflow
-    /// </summary>
-    /// <typeparam name="TModel">The model</typeparam>
-    /// <param name="workflow">The workflow</param>
-    /// <param name="acquire">The acquire</param>
-    /// <param name="keyName">The key name</param>
-    /// <param name="removeSensitive">The remove sensitive</param>
-    /// <param name="replacePosting">The replace posting</param>
-    /// <param name="useTransactionScope">The use transaction scope</param>
-    /// <param name="singleThread">The single thread</param>
-    /// <exception cref="O24OpenAPIException">Mapping not found for stepCode: {stepCode}</exception>
-    /// <exception cref="O24OpenAPIException">system_busy System is busy now, please try again later</exception>
-    /// <returns>A task containing the wf scheme</returns>
     public static async Task<WFScheme> Invoke<TModel>(
         WFScheme workflow,
         Func<Task<object>> acquire,
         string keyName = "",
         bool removeSensitive = true,
-        bool replacePosting = false,
         bool useTransactionScope = true,
         bool singleThread = true
     )
@@ -227,14 +123,6 @@ public abstract class BaseQueue
         }
     }
 
-    /// <summary>
-    /// Invokes the 2 using the specified workflow
-    /// </summary>
-    /// <typeparam name="TRequestModel">The request model</typeparam>
-    /// <param name="workflow">The workflow</param>
-    /// <param name="storedProcedureParameters">The stored procedure parameters</param>
-    /// <param name="checkValidation">The check validation</param>
-    /// <returns>A task containing the wf scheme</returns>
     public static async Task<WFScheme> Invoke2<TRequestModel>(
         WFScheme workflow,
         StoredProcedureStepConfig storedProcedureParameters,
@@ -250,18 +138,6 @@ public abstract class BaseQueue
         );
     }
 
-    /// <summary>
-    /// Invokes the 2 using the specified workflow
-    /// </summary>
-    /// <typeparam name="TRequestModel">The request model</typeparam>
-    /// <param name="workflow">The workflow</param>
-    /// <param name="storedProcedureName">The stored procedure name</param>
-    /// <param name="replacePosting">The replace posting</param>
-    /// <param name="checkValidation">The check validation</param>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="O24OpenAPIException"></exception>
-    /// <exception cref="O24OpenAPIException">Error occurs when executing service [{GrpcClient.ClientConfig.YourServiceID}] validation : {ex.Message}</exception>
-    /// <returns>The response</returns>
     public static async Task<WFScheme> Invoke2<TRequestModel>(
         WFScheme workflow,
         string storedProcedureName,
@@ -323,11 +199,25 @@ public abstract class BaseQueue
         return response;
     }
 
-    /// <summary>
-    /// Calculates the timeout using the specified workflow
-    /// </summary>
-    /// <param name="workflow">The workflow</param>
-    /// <returns>The int timeout string error message</returns>
+    public static async Task<WFScheme> InvokeCommandQuery(WFScheme workflow)
+    {
+        var model = await workflow.ToModel<ModelWithQuery>();
+        if (workflow == null)
+        {
+            throw new ArgumentNullException(nameof(workflow), "Workflow scheme cannot be null.");
+        }
+
+        var result = await Invoke<ModelWithQuery>(
+            workflow,
+            async () =>
+            {
+                var executeQueryService = EngineContext.Current.Resolve<IExecuteQueryService>();
+                return await executeQueryService.SqlQuery(model);
+            }
+        );
+        return result;
+    }
+
     private static (int timeout, string errorMessage) CalculateTimeout(WFScheme workflow)
     {
         var stepTimeout = workflow.request.request_header.step_timeout;
@@ -353,30 +243,12 @@ public abstract class BaseQueue
         return (timeout, errorMessage);
     }
 
-    /// <summary>
-    /// Creates the success response using the specified workflow
-    /// </summary>
-    /// <param name="workflow">The workflow</param>
-    /// <returns>The workflow</returns>
     private static WFScheme CreateSuccessResponse(WFScheme workflow)
     {
         workflow.response.status = WFScheme.RESPONSE.EnumResponseStatus.SUCCESS;
         return workflow;
     }
 
-    /// <summary>
-    /// Does the transaction using the specified workflow
-    /// </summary>
-    /// <param name="workflow">The workflow</param>
-    /// <param name="acquire">The acquire</param>
-    /// <param name="isReverse">The is reverse</param>
-    /// <param name="addInformation">The add information</param>
-    /// <param name="removeSensitive">The remove sensitive</param>
-    /// <param name="IsCompensated">The is compensated</param>
-    /// <param name="useTransactionScope">The use transaction scope</param>
-    /// <param name="isInquiry">The is inquiry</param>
-    /// <exception cref="O24OpenAPIException">MessageOutdate Message is outdate</exception>
-    /// <returns>A task containing the dynamic</returns>
     private static async Task<object> DoTransaction(
         WFScheme workflow,
         Func<Task<object>> acquire,
@@ -446,11 +318,6 @@ public abstract class BaseQueue
         }
     }
 
-    /// <summary>
-    /// Adds the business information using the specified workflow
-    /// </summary>
-    /// <param name="workflow">The workflow</param>
-    /// <returns>The workflow</returns>
     private static async Task<WFScheme> AddBusinessInformation(WFScheme workflow)
     {
         if (!workflow.request.request_header.tx_context.ContainsKey("transaction_date"))
@@ -469,28 +336,60 @@ public abstract class BaseQueue
         return workflow;
     }
 
-    /// <summary>
-    /// Invokes the command query using the specified workflow
-    /// </summary>
-    /// <param name="workflow">The workflow</param>
-    /// <exception cref="ArgumentNullException">Workflow scheme cannot be null.</exception>
-    /// <returns>The result</returns>
-    public static async Task<WFScheme> InvokeCommandQuery(WFScheme workflow)
+    private static WFScheme Success(WFScheme workflow, string name, object content)
     {
-        var model = await workflow.ToModel<ModelWithQuery>();
-        if (workflow == null)
+        workflow.response.data = content.ToDictionary(name);
+        workflow.response.status = WFScheme.RESPONSE.EnumResponseStatus.SUCCESS;
+        return workflow;
+    }
+
+    private static WFScheme Success(WFScheme workflow, object content)
+    {
+        if (content is string || content is ValueType) // Nếu là kiểu dữ liệu cơ bản
         {
-            throw new ArgumentNullException(nameof(workflow), "Workflow scheme cannot be null.");
+            workflow.response.data = new { data = content };
+        }
+        else if ((content is IEnumerable<object> || content is Array) && content is not JObject) // Nếu là List, Array, IEnumerable
+        {
+            workflow.response.data = new { data = content };
+        }
+        else
+        {
+            workflow.response.data = content; // Nếu là object, JObject, Dictionary thì giữ nguyên
         }
 
-        var result = await Invoke<ModelWithQuery>(
-            workflow,
-            async () =>
-            {
-                var executeQueryService = EngineContext.Current.Resolve<IExecuteQueryService>();
-                return await executeQueryService.SqlQuery(model);
-            }
-        );
-        return result;
+        workflow.response.status = WFScheme.RESPONSE.EnumResponseStatus.SUCCESS;
+        return workflow;
+    }
+
+    private static WFScheme Error<TModel>(
+        WFScheme workflow,
+        ValidationResult validationResult,
+        string errorMessage = ""
+    )
+        where TModel : BaseTransactionModel
+    {
+        workflow.response.data = new { };
+        if (string.IsNullOrEmpty(errorMessage))
+        {
+            workflow.response.error_code = "ERRROR";
+            workflow.response.error_message = string.Join("\n", validationResult.Errors);
+        }
+        else
+        {
+            workflow.response.error_code = "ERROR";
+            workflow.response.error_message = errorMessage;
+        }
+        if (validationResult.Errors.Any())
+        {
+            workflow.response.error_code = string.Join(
+                "\n",
+                validationResult.Errors.Select(e => e.ErrorCode)
+            );
+        }
+        workflow.response.data = null;
+        workflow.response.status = WFScheme.RESPONSE.EnumResponseStatus.ERROR;
+
+        return workflow;
     }
 }
