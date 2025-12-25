@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Net.Sockets;
+using System.Text;
+using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -11,14 +14,10 @@ using Polly.Retry;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
-using System.Net.Sockets;
-using System.Text;
-using System.Text.Json;
 
 namespace O24OpenAPI.Client.EventBus.Bus;
 
 public sealed class RabbitMQEventBus(
-    ILogger<RabbitMQEventBus> logger,
     IServiceProvider serviceProvider,
     IOptions<EventBusOptions> options,
     IOptions<EventBusSubscriptionInfo> subscriptionOptions
@@ -49,12 +48,12 @@ public sealed class RabbitMQEventBus(
 
             if (newConn == null)
             {
-                logger.LogWarning("RabbitMQ connection is null (QueueClient not ready).");
+                Console.WriteLine("RabbitMQ connection is null (QueueClient not ready).");
                 throw new InvalidOperationException("RabbitMQ connection not available.");
             }
 
             _rabbitMQConnection = newConn;
-            logger.LogInformation("RabbitMQ connection (re)established.");
+            Console.WriteLine("RabbitMQ connection (re)established.");
         }
 
         return _rabbitMQConnection;
@@ -74,7 +73,8 @@ public sealed class RabbitMQEventBus(
 
         _consumerChannel.CallbackExceptionAsync += async (sender, ea) =>
         {
-            logger.LogWarning(ea.Exception, "RabbitMQ consumer channel exception. Recreating...");
+            Console.WriteLine(ea.Exception.ToString());
+            Console.WriteLine("RabbitMQ consumer channel exception. Recreating... ");
             _consumerChannel?.Dispose();
             _consumerChannel = null;
             await EnsureConsumerChannel(cancellationToken);
@@ -108,7 +108,7 @@ public sealed class RabbitMQEventBus(
             );
         }
 
-        logger.LogInformation("RabbitMQ consumer channel started.");
+        Console.WriteLine("RabbitMQ consumer channel started.");
         return _consumerChannel;
     }
 
@@ -182,7 +182,9 @@ public sealed class RabbitMQEventBus(
     /// <returns></returns>
     private async Task OnMessageReceived(object sender, BasicDeliverEventArgs eventArgs)
     {
-        Console.WriteLine($"Received message with RoutingKey: {eventArgs.RoutingKey}, DeliveryTag: {eventArgs.DeliveryTag}");
+        Console.WriteLine(
+            $"Received message with RoutingKey: {eventArgs.RoutingKey}, DeliveryTag: {eventArgs.DeliveryTag}"
+        );
         var eventName = eventArgs.RoutingKey;
         var message = Encoding.UTF8.GetString(eventArgs.Body.Span);
 
@@ -192,7 +194,7 @@ public sealed class RabbitMQEventBus(
         }
         catch (Exception ex)
         {
-            logger.LogWarning(ex, "Error processing message {Message}", message);
+            Console.WriteLine("Error processing message {Message}", message);
             Console.WriteLine(
                 $"Error processing message with RoutingKey: {eventArgs.RoutingKey}, DeliveryTag: {eventArgs.DeliveryTag}. Exception: {ex}"
             );
@@ -210,7 +212,7 @@ public sealed class RabbitMQEventBus(
 
         if (!_subscriptionInfo.EventTypes.TryGetValue(eventName, out var eventType))
         {
-            logger.LogWarning("Unknown event type {EventName}", eventName);
+            Console.WriteLine("Unknown event type {EventName}", eventName);
             return;
         }
 
@@ -250,10 +252,10 @@ public sealed class RabbitMQEventBus(
                     await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                logger.LogError(ex, "RabbitMQ consumer loop error. Retrying in 5s...");
-                await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+                Console.WriteLine("RabbitMQ consumer loop error. Retrying in 5s...");
+                await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
             }
         }
     }
