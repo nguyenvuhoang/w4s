@@ -1,8 +1,10 @@
 ﻿using LinKit.Core.Cqrs;
+using LinKit.Core.Endpoints;
 using O24OpenAPI.Framework.Attributes;
 
 namespace O24OpenAPI.CMS.API.Application.Features.Hello;
 
+[ApiEndpoint(ApiMethod.Post, "say-hello", MediatorKey = "cms")]
 public class HelloCommand : BaseTransactionModel, ICommand<HelloResponse>
 {
     public string Name { get; set; }

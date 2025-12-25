@@ -1008,7 +1008,7 @@ public class QueueClient : MyConsole
     {
         workflow.request.request_header.service_instance_id = Singleton<O24OpenAPIConfiguration>
             .Instance
-            .InstanceId;
+            .YourInstanceID;
         if (workflow?.request?.request_header?.step_mode.EqualsOrdinalIgnoreCase("TWOWAY") == true)
         {
             if (workflow?.response?.data != null)

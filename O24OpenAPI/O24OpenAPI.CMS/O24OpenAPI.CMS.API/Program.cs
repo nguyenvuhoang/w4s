@@ -36,4 +36,5 @@ app.ConfigureRequestPipeline();
 
 await app.StartEngine();
 app.ShowStartupBanner();
+app.MapGeneratedEndpoints();
 await app.RunAsync();

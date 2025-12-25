@@ -52,7 +52,7 @@ public class O24OpenAPIStartup : IO24OpenAPIStartup
         services.AddScoped<IFormFieldDefinitionService, FormFieldDefinitionService>();
         services.AddScoped<ICoreAPIService, CoreAPIService>();
         services.AddScoped<ISignalHubBusinessService, SignalHubBusinessService>();
-        services.AddLinKitCqrs("CMS");
+        services.AddLinKitCqrs("cms");
         services.AddLinKitDependency();
         services.AddSingleton<IWorkflowStepInvoker, Workflow.Generated.WorkflowStepInvoker>();
     }

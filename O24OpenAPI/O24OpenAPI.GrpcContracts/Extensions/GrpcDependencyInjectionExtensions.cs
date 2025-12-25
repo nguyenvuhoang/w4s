@@ -68,7 +68,7 @@ public static class GrpcDependencyInjectionExtensions
                         serviceCode: Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID,
                         serviceHandleName: grpcService,
                         grpcEndpointURL: Singleton<O24OpenAPIConfiguration>.Instance.YourGrpcURL,
-                        instanceID: Singleton<O24OpenAPIConfiguration>.Instance.InstanceId,
+                        instanceID: Singleton<O24OpenAPIConfiguration>.Instance.YourInstanceID,
                         serviceAssemblyName: Singleton<O24OpenAPIConfiguration>
                             .Instance
                             .AssemblyMigration
