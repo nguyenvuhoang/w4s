@@ -1,6 +1,6 @@
 using FluentMigrator.Builders.Create.Table;
+using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Data.Mapping.Builders;
-using O24OpenAPI.Framework.Domain;
 
 namespace O24OpenAPI.Framework.Migrations.Builder;
 
@@ -20,16 +20,25 @@ public class EntityAuditBuilder : O24OpenAPIEntityBuilder<EntityAudit>
             .WithColumn(nameof(EntityAudit.EntityName))
             .AsString(255)
             .NotNullable()
+            .WithColumn(nameof(EntityAudit.EntityId))
+            .AsInt32()
+            .NotNullable()
+            .WithColumn(nameof(EntityAudit.UserId))
+            .AsString(255)
+            .NotNullable()
+            .WithColumn(nameof(EntityAudit.ExecutionId))
+            .AsString(255)
+            .NotNullable()
             .WithColumn(nameof(EntityAudit.ActionType))
             .AsString(255)
             .NotNullable()
-            .WithColumn(nameof(EntityAudit.Status))
-            .AsInt16()
-            .NotNullable()
-            .WithColumn(nameof(EntityAudit.Data))
+            .WithColumn(nameof(EntityAudit.Changes))
             .AsString(int.MaxValue)
             .NotNullable()
             .WithColumn(nameof(EntityAudit.CreatedOnUtc))
+            .AsDateTime2()
+            .NotNullable()
+            .WithColumn(nameof(EntityAudit.UpdatedOnUtc))
             .AsDateTime2()
             .NotNullable();
     }

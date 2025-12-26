@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class MediaFile : BaseEntity
+public partial class MediaFile : BaseEntity
 {
     public string TrackerCode { get; set; }
     public string FileUrl { get; set; }
@@ -14,5 +14,4 @@ public class MediaFile : BaseEntity
     public DateTime CreatedOnUtc { get; set; } = DateTime.UtcNow;
     public DateTime? ExpiredOnUtc { get; set; }
     public string CreatedBy { get; set; }
-
 }

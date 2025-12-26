@@ -5,7 +5,7 @@ using O24OpenAPI.Core.Domain;
 /// <summary>
 /// Defines the <see cref="APISpec" />
 /// </summary>
-public class APISpec : BaseEntity
+public partial class APISpec : BaseEntity
 {
     /// <summary>
     /// Gets or sets the ApiServiceId
@@ -20,7 +20,7 @@ public class APISpec : BaseEntity
     /// <summary>
     /// Gets or sets the SpecFormat
     /// </summary>
-    public string SpecFormat { get; set; } = "OPENAPI";// OPENAPI, ASYNCAPI, PROTO
+    public string SpecFormat { get; set; } = "OPENAPI"; // OPENAPI, ASYNCAPI, PROTO
 
     /// <summary>
     /// Gets or sets the SpecRaw

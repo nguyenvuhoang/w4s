@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class D_DIGITALBANKINGUSER : BaseEntity
+public partial class D_DIGITALBANKINGUSER : BaseEntity
 {
     public string UserName { get; set; }
 

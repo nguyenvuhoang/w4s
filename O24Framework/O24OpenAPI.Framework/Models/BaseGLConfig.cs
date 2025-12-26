@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.Framework.Models;
 
-public abstract class BaseGLConfig : BaseEntity
+public abstract partial class BaseGLConfig : BaseEntity
 {
     public string ConfigurationGroup { get; set; }
 

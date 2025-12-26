@@ -6,7 +6,7 @@ namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 /// The supper admin class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class SupperAdmin : BaseEntity
+public partial class SupperAdmin : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the user id

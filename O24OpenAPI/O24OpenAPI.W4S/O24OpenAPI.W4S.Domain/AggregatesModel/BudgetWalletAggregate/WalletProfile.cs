@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
-public class WalletProfile : BaseEntity
+public partial class WalletProfile : BaseEntity
 {
     /// <summary>
     /// Unique wallet identifier
@@ -36,14 +36,15 @@ public class WalletProfile : BaseEntity
 
     #region Constructor
 
-    protected WalletProfile() { }
+    public WalletProfile() { }
 
     public WalletProfile(
         Guid walletId,
         Guid userId,
         string walletName,
         string walletType,
-        string defaultCurrency)
+        string defaultCurrency
+    )
     {
         WalletId = walletId;
         UserId = userId;

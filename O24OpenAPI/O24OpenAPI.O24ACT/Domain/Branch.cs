@@ -3,7 +3,7 @@ using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.O24ACT.Domain;
 
-public class Branch : BaseEntity
+public partial class Branch : BaseEntity
 {
     /// <summary>
     /// BranchCode

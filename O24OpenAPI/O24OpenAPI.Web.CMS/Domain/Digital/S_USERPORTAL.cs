@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class S_USERPORTAL : BaseEntity
+public partial class S_USERPORTAL : BaseEntity
 {
     public string UserName { get; set; }
 

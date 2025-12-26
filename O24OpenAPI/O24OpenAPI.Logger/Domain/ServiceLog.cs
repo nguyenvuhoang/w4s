@@ -7,7 +7,7 @@ namespace O24OpenAPI.Logger.Domain;
 /// The service log class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class ServiceLog : BaseEntity
+public partial class ServiceLog : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the execution log id

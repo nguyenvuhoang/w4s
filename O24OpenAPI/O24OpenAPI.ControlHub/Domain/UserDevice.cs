@@ -3,7 +3,7 @@ using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.ControlHub.Domain;
 
-public class UserDevice : BaseEntity
+public partial class UserDevice : BaseEntity
 {
     public string UserCode { get; set; }
     public string DeviceId { get; set; }

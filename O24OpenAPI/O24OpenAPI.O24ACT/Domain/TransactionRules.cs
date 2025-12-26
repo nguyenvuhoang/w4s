@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.O24ACT.Domain;
 
-public class TransactionRules : BaseEntity
+public partial class TransactionRules : BaseEntity
 {
     public string WorkflowId { get; set; }
     public string RuleName { get; set; }

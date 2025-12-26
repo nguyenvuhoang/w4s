@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.Web.Report.Domain;
 
-public class ReportDesign : BaseEntity
+public partial class ReportDesign : BaseEntity
 {
     public ReportDesign() { }
 

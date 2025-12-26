@@ -72,7 +72,9 @@ public class CTHGrpcService : CTHGrpcServiceBase
             context,
             async () =>
             {
-                UserDevice userAccount = await _userDeviceRepository.GetByUserCodeAsync(request.UserCode);
+                UserDevice userAccount = await _userDeviceRepository.GetByUserCodeAsync(
+                    request.UserCode
+                );
                 string pushId = userAccount?.PushId ?? string.Empty;
                 return pushId ?? "NONE";
             }
@@ -210,7 +212,9 @@ public class CTHGrpcService : CTHGrpcServiceBase
         ServerCallContext context
     )
     {
-        List<CTHUserNotificationModel> list = await _mediator.QueryAsync(new GetMobileDeviceQuery());
+        List<CTHUserNotificationModel> list = await _mediator.QueryAsync(
+            new GetMobileDeviceQuery()
+        );
 
         foreach (CTHUserNotificationModel item in list)
         {
@@ -234,7 +238,9 @@ public class CTHGrpcService : CTHGrpcServiceBase
     {
         try
         {
-            List<CTHUserCommandModel> list = await _mediator.QueryAsync(new LoadFullUserCommandsQuery());
+            List<CTHUserCommandModel> list = await _mediator.QueryAsync(
+                new LoadFullUserCommandsQuery()
+            );
 
             foreach (CTHUserCommandModel item in list)
             {

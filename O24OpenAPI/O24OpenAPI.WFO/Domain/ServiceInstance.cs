@@ -2,7 +2,7 @@ using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.WFO.Domain;
 
-public class ServiceInstance : BaseEntity
+public partial class ServiceInstance : BaseEntity
 {
     public string InstanceID { get; set; }
     public string GrpcUrl { get; set; }

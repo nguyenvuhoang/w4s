@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.O24NCH.Domain;
 
-public class SMSProviderStatus : BaseEntity
+public partial class SMSProviderStatus : BaseEntity
 {
     /// <summary>
     /// Foreign key to SMSProvider
@@ -23,6 +23,7 @@ public class SMSProviderStatus : BaseEntity
     /// Response time in milliseconds
     /// </summary>
     public int ResponseTimeMs { get; set; } = 0;
+
     /// <summary>
     /// Response message
     /// </summary>
@@ -32,10 +33,12 @@ public class SMSProviderStatus : BaseEntity
     /// Error message if the provider check failed
     /// </summary>
     public string ErrorDetail { get; set; }
+
     /// <summary>
     /// CreatedOnUtc Date Time
     /// </summary>
     public DateTime CreatedOnUtc { get; set; }
+
     /// <summary>
     /// UpdateOnUtc Date Time
     /// </summary>

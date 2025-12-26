@@ -1,8 +1,7 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class D_REWARDS : BaseEntity
+public partial class D_REWARDS : BaseEntity
 {
-
     public string GiftName { get; set; }
 
     public string LocalGiftName { get; set; }
@@ -34,5 +33,4 @@ public class D_REWARDS : BaseEntity
     public DateTime? ExpireAt { get; set; }
 
     public string Reason { get; set; }
-
 }

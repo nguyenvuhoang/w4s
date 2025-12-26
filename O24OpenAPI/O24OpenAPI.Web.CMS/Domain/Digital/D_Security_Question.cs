@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class D_SECURITY_QUESTION : BaseEntity
+public partial class D_SECURITY_QUESTION : BaseEntity
 {
     /// <summary>D_SECURITY_QUESTION
     ///

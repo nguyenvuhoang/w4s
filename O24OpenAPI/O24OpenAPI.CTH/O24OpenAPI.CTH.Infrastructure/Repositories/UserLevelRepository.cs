@@ -1,6 +1,5 @@
 using LinKit.Core.Abstractions;
 using O24OpenAPI.Core.Caching;
-using O24OpenAPI.Core.Events;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Data;
 

@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class D_CARD_USER : BaseEntity
+public partial class D_CARD_USER : BaseEntity
 {
     public string UserCode { get; set; }
     public string CardCode { get; set; }

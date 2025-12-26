@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace O24OpenAPI.Web.CMS.Domain;
 
-public class S_USER_POLICY : BaseEntity
+public partial class S_USER_POLICY : BaseEntity
 {
     [JsonProperty("policyID")]
     public int PolicyID { get; set; } // Thêm thuộc tính PolicyID

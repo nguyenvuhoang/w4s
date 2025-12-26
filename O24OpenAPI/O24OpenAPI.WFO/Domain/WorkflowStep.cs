@@ -4,7 +4,7 @@ using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.WFO.Domain;
 
-public class WorkflowStep : BaseEntity
+public partial class WorkflowStep : BaseEntity
 {
     [JsonProperty("workflow_id")]
     public string WorkflowId { get; set; }

@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.Web.CMS.Domain;
 
-public class LearnApiExecutionLog : BaseEntity
+public partial class LearnApiExecutionLog : BaseEntity
 {
     /// <summary>
     ///

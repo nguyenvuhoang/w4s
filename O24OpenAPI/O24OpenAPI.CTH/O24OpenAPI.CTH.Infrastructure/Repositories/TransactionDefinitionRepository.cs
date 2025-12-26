@@ -1,7 +1,6 @@
 using LinKit.Core.Abstractions;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Caching;
-using O24OpenAPI.Core.Events;
 using O24OpenAPI.CTH.Domain.AggregatesModel.TransactionAggregate;
 using O24OpenAPI.Data;
 

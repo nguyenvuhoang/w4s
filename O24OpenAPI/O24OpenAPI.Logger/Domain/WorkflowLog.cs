@@ -6,7 +6,7 @@ namespace O24OpenAPI.Logger.Domain;
 /// The workflow log class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class WorkflowLog : BaseEntity
+public partial class WorkflowLog : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the execution id

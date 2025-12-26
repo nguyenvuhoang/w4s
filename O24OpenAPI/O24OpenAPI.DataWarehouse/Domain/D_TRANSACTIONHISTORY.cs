@@ -1,9 +1,9 @@
-﻿using O24OpenAPI.Core.Domain;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.DataWarehouse.Domain;
 
-public class D_TRANSACTIONHISTORY : BaseEntity
+public partial class D_TRANSACTIONHISTORY : BaseEntity
 {
     public string TRANSACTIONID { get; set; }
 
@@ -11,6 +11,7 @@ public class D_TRANSACTIONHISTORY : BaseEntity
     public DateTime? TRANSACTIONENDDATE { get; set; }
     public DateTime? TRANSACTIONWORKDATE { get; set; }
     public string TRANSACTIONNAME { get; set; } = string.Empty;
+
     [Required]
     [MaxLength(20)]
     public string TRANSACTIONCODE { get; set; }

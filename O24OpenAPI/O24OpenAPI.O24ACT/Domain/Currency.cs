@@ -3,7 +3,7 @@ using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.O24ACT.Domain;
 
-public class Currency : BaseEntity
+public partial class Currency : BaseEntity
 {
     /// <summary>
     /// Currency

@@ -9,7 +9,7 @@ public class Singleton<T> : BaseSingleton
     /// <summary>
     /// The instance
     /// </summary>
-    private static T instance;
+    private static T? instance;
 
     /// <summary>
     /// Gets or sets the value of the instance

@@ -2,9 +2,10 @@
 
 namespace O24OpenAPI.O24NCH.Domain;
 
-public class SMSProvider : BaseEntity
+public partial class SMSProvider : BaseEntity
 {
     public string ProviderName { get; set; } = string.Empty;
+
     // "http://unicontact.unitel.com.la:8181/apiSendSms.php?wsdl"
     public string ApiUrl { get; set; } = string.Empty;
     public string CountryPrefix { get; set; } = string.Empty;

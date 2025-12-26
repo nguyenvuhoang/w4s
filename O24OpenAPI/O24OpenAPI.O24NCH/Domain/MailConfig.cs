@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.O24NCH.Domain;
 
-public class MailConfig : BaseEntity
+public partial class MailConfig : BaseEntity
 {
     public string ConfigId { get; set; }
     public string Host { get; set; }
@@ -11,7 +11,6 @@ public class MailConfig : BaseEntity
     public string Password { get; set; }
     public bool EnableTLS { get; set; }
     public string EmailTest { get; set; }
-
 
     public MailConfig() { }
 
@@ -25,7 +24,15 @@ public class MailConfig : BaseEntity
     /// <param name="password"></param>
     /// <param name="enableTLS"></param>
     /// <param name="emailTest"></param>
-    public MailConfig(string configId, string host, int port, string sender, string password, bool enableTLS, string emailTest)
+    public MailConfig(
+        string configId,
+        string host,
+        int port,
+        string sender,
+        string password,
+        bool enableTLS,
+        string emailTest
+    )
     {
         this.ConfigId = configId;
         this.Host = host;

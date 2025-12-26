@@ -1,5 +1,6 @@
 ﻿using LinKit.Core.Cqrs;
 using LinqToDB;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.CTH.API.Application.Constants;
@@ -28,7 +29,7 @@ public class RefreshTokenAsyncHandle(
     IStaticCacheManager staticCacheManager
 ) : ICommandHandler<RefreshTokenAsyncCommand, AuthResponseModel>
 {
-    [WorkflowStep("WF_STEP_CTH_REFRESH_TOKEN")]
+    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_REFRESH_TOKEN)]
     public async Task<AuthResponseModel> HandleAsync(
         RefreshTokenAsyncCommand request,
         CancellationToken cancellationToken = default

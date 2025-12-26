@@ -1,41 +1,38 @@
 ﻿using LinKit.Core.Cqrs;
 using LinqToDB;
-using O24OpenAPI.Client.Scheme.Workflow;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.CTH.API.Application.Models.Roles;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
-using O24OpenAPI.CTH.Infrastructure.Repositories;
 using O24OpenAPI.Framework.Attributes;
-using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 
-namespace O24OpenAPI.CTH.API.Application.Features.User
+namespace O24OpenAPI.CTH.API.Application.Features.User;
+
+public class LoadMenuByChannelCommand
+    : BaseTransactionModel,
+        ICommand<List<UserCommandResponseModel>>
 {
-    public class LoadMenuByChannelCommand
-        : BaseTransactionModel,
-            ICommand<List<UserCommandResponseModel>>
-    {
-        public string CommandId { get; set; }
-        public string Channel { get; set; } = string.Empty;
-    }
+    public string CommandId { get; set; }
+    public string Channel { get; set; } = string.Empty;
+}
 
-    [CqrsHandler]
-    public class LoadMenuByChannelHandle(IUserCommandRepository userCommandRepository)
-        : ICommandHandler<LoadMenuByChannelCommand, List<UserCommandResponseModel>>
+[CqrsHandler]
+public class LoadMenuByChannelHandle(IUserCommandRepository userCommandRepository)
+    : ICommandHandler<LoadMenuByChannelCommand, List<UserCommandResponseModel>>
+{
+    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_LOAD_MENU)]
+    public async Task<List<UserCommandResponseModel>> HandleAsync(
+        LoadMenuByChannelCommand request,
+        CancellationToken cancellationToken = default
+    )
     {
-        [WorkflowStep("WF_STEP_CTH_LOAD_MENU")]
-        public async Task<List<UserCommandResponseModel>> HandleAsync(
-            LoadMenuByChannelCommand request,
-            CancellationToken cancellationToken = default
-        )
-        {
-            var commandMenus = await userCommandRepository
-                .Table.Where(s =>
-                    s.ApplicationCode == request.ChannelId && s.CommandType == "M" && s.Enabled
-                )
-                .Select(s => new UserCommandResponseModel(s))
-                .ToListAsync();
+        var commandMenus = await userCommandRepository
+            .Table.Where(s =>
+                s.ApplicationCode == request.ChannelId && s.CommandType == "M" && s.Enabled
+            )
+            .Select(s => new UserCommandResponseModel(s))
+            .ToListAsync();
 
-            return [.. commandMenus.OrderBy(x => x.DisplayOrder)];
-        }
+        return [.. commandMenus.OrderBy(x => x.DisplayOrder)];
     }
 }

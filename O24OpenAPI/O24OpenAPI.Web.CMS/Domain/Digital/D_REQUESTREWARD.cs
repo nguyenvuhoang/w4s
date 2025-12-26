@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class D_REQUESTREWARD : BaseEntity
+public partial class D_REQUESTREWARD : BaseEntity
 {
     public decimal IPCTRANSID { get; set; }
 
@@ -25,10 +25,7 @@ public class D_REQUESTREWARD : BaseEntity
 
     public DateTime? ModifiedAt { get; set; }
 
-    public string  Status { get; set; }
+    public string Status { get; set; }
 
     public string Reason { get; set; }
-
-
-
 }

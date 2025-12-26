@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Data.System.Linq;
-using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Helpers;
 using O24OpenAPI.Framework.Models.O24OpenAPI;
 using O24OpenAPI.Framework.Models.UtilityModels;

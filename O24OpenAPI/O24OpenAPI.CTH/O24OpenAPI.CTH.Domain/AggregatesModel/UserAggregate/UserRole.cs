@@ -1,7 +1,9 @@
-﻿using O24OpenAPI.Core.Domain;
+﻿using O24OpenAPI.Core.Attributes;
+using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 
+[Auditable]
 public partial class UserRole : BaseEntity
 {
     public int RoleId { get; set; } // ID của vai trò

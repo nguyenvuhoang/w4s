@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class D_PRODUCT : BaseEntity
+public partial class D_PRODUCT : BaseEntity
 {
     public string ProductID { get; set; }
     public string ProductName { get; set; }

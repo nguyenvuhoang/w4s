@@ -13,16 +13,19 @@ public partial class AccountMappingDetail : BaseEntity
     /// AccountMappingDetail
     /// </summary>
     public AccountMappingDetail() { }
+
     /// <summary>
     /// MappingId
     /// </summary>
     [JsonProperty("mapping_id")]
     public string MappingId { get; set; }
+
     /// <summary>
     /// SystemAccountNumber
     /// </summary>
     [JsonProperty("system_account_number")]
     public string SystemAccountNumber { get; set; }
+
     /// <summary>
     /// BankAccountNumber
     /// </summary>
@@ -40,5 +43,4 @@ public partial class AccountMappingDetail : BaseEntity
     /// </summary>
     [JsonProperty("updated_on_utc")]
     public DateTime? UpdatedOnUtc { get; set; }
-
 }

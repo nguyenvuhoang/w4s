@@ -1,4 +1,5 @@
 using LinKit.Core.Cqrs;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.Core.Constants;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
@@ -19,7 +20,7 @@ public class UpdateUserAvatarCommnad : BaseTransactionModel, ICommand<bool>
 public class UpdateUserAvatarHandler(IUserAvatarRepository userAvatarRepository)
     : ICommandHandler<UpdateUserAvatarCommnad, bool>
 {
-    [WorkflowStep("WF_STEP_CTH_UPDATE_USER")]
+    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_UPDATE_USER)]
     public async Task<bool> HandleAsync(
         UpdateUserAvatarCommnad request,
         CancellationToken cancellationToken = default

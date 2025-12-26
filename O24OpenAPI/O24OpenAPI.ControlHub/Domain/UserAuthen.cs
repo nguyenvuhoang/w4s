@@ -6,12 +6,13 @@ namespace O24OpenAPI.ControlHub.Domain;
 /// The user password class
 /// </summary>
 /// /// <seealso cref="BaseEntity"/>
-public class UserAuthen : BaseEntity
+public partial class UserAuthen : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the channel id
     /// </summary>
     public string ChannelId { get; set; }
+
     /// <summary>
     /// Gets or sets the value of the channel id
     /// </summary>
@@ -36,10 +37,12 @@ public class UserAuthen : BaseEntity
     /// Gets or sets the value of the PinCode
     /// </summary>
     public string PinCode { get; set; }
+
     /// <summary>
     /// Gets or sets the value of the SMSOTP
     /// </summary>
     public string SMSOTP { get; set; }
+
     /// <summary>
     /// Gets or sets the value of the Phone
     /// </summary>

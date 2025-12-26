@@ -1,17 +1,17 @@
 ﻿namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
-using O24OpenAPI.Core.Domain;
 using System.ComponentModel.DataAnnotations;
+using O24OpenAPI.Core.Domain;
 
 /// <summary>
 /// Defines the <see cref="WalletTransaction" />
 /// </summary>
-public class WalletTransaction : BaseEntity
+public partial class WalletTransaction : BaseEntity
 {
     /// <summary>
     /// Gets or sets the TransactionId
     /// </summary>
-    public required string TransactionId { get; set; }
+    public string? TransactionId { get; set; }
 
     /// <summary>
     /// Gets or sets the TransactionDate

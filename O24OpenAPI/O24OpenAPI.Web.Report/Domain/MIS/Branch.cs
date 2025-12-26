@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.Web.Report.Domain.MIS;
 
-public class Branch : BaseEntity
+public partial class Branch : BaseEntity
 {
     public string BranchCode { get; set; }
     public string BranchName { get; set; }

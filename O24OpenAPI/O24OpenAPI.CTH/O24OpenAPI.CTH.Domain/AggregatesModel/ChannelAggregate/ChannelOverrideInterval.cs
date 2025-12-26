@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.CTH.Domain.AggregatesModel.ChannelAggregate;
 
-public class ChannelOverrideInterval : BaseEntity
+public partial class ChannelOverrideInterval : BaseEntity
 {
     public int ChannelOverrideIdRef { get; set; }
     public TimeOnly StartTime { get; set; }

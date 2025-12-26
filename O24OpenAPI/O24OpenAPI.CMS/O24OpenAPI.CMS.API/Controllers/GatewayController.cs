@@ -2,6 +2,7 @@
 using O24OpenAPI.CMS.API.Application.Features.Requests;
 using O24OpenAPI.CMS.API.Application.Models.ContextModels;
 using O24OpenAPI.CMS.API.Application.Models.Response;
+using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Framework.Controllers;
 
 namespace O24OpenAPI.CMS.API.Controllers;
@@ -128,5 +129,11 @@ public partial class GatewayController(
 
             return Ok(ResponseFactory.Error(listError));
         }
+    }
+
+    public virtual async Task<IActionResult> ClearCache()
+    {
+        await EngineContext.Current.Resolve<IStaticCacheManager>().Clear();
+        return Ok("Successful!");
     }
 }

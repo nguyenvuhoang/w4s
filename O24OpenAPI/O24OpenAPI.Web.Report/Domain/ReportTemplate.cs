@@ -70,18 +70,19 @@ public partial class ReportTemplate : BaseEntity
     /// </summary>
     [JsonProperty("margins")]
     public string Margins { get; set; }
+
     /// <summary>
     /// reportunit
     /// </summary>
     [JsonProperty("reportunit")]
     public string ReportUnit { get; set; }
 
-
     /// <summary>
     /// file_content
     /// </summary>
     [JsonProperty("file_content")]
     public string FileContent { get; set; }
+
     /// <summary>
     /// file_content
     /// </summary>

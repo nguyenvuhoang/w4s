@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class DataMappingDefine : BaseEntity
+public partial class DataMappingDefine : BaseEntity
 {
     public string ServiceId { get; set; }
     public string WorkflowId { get; set; }

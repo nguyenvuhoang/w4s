@@ -1,5 +1,6 @@
 ﻿using LinKit.Core.Cqrs;
 using LinqToDB;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
@@ -84,8 +85,7 @@ public class LoginHandler(
     IUserRightChannelRepository userRightChannelRepository
 ) : ICommandHandler<LoginCommand, AuthResponseModel>
 {
-    [WorkflowStep("WF_STEP_CTH_LOGIN")]
-
+    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_LOGIN)]
     public async Task<AuthResponseModel> HandleAsync(
         LoginCommand request,
         CancellationToken cancellationToken = default
@@ -105,7 +105,9 @@ public class LoginHandler(
     private async Task<AuthResponseModel> GenerateTokenAndSession(LoginCommand model)
     {
         DateTime currentTime = DateTime.UtcNow;
-        DateTime expireTime = currentTime.AddDays(Convert.ToDouble(webApiSettings.TokenLifetimeDays));
+        DateTime expireTime = currentTime.AddDays(
+            Convert.ToDouble(webApiSettings.TokenLifetimeDays)
+        );
         string token = model.CoreToken;
         string refreshToken = model.RefreshToken;
         if (string.IsNullOrEmpty(token))
@@ -131,7 +133,9 @@ public class LoginHandler(
         string hashedRefreshToken = refreshToken.Hash();
         string stringJson = model.RoleChannel;
         int[]? listRoles = System.Text.Json.JsonSerializer.Deserialize<int[]>(stringJson);
-        HashSet<string> channelRoles = await userRightChannelRepository.GetSetChannelInRoleAsync(listRoles);
+        HashSet<string> channelRoles = await userRightChannelRepository.GetSetChannelInRoleAsync(
+            listRoles
+        );
         await userSessionRepository.RevokeByLoginName(model.LoginName);
 
         UserSession userSession = new()
@@ -165,7 +169,9 @@ public class LoginHandler(
     public async Task<AuthResponseModel> LoginByO24User(LoginCommand model)
     {
         DateTime currentTime = DateTime.UtcNow;
-        DateTime expireTime = currentTime.AddDays(Convert.ToDouble(webApiSettings.TokenLifetimeDays));
+        DateTime expireTime = currentTime.AddDays(
+            Convert.ToDouble(webApiSettings.TokenLifetimeDays)
+        );
 
         UserAccount userAccount = await GetLoginAccount(
             model.LoginName,
@@ -214,7 +220,9 @@ public class LoginHandler(
             ? userAccount.RoleChannel
             : model.RoleChannel;
         int[]? listRoles = System.Text.Json.JsonSerializer.Deserialize<int[]>(stringJson);
-        HashSet<string> channelRoles = await userRightChannelRepository.GetSetChannelInRoleAsync(listRoles);
+        HashSet<string> channelRoles = await userRightChannelRepository.GetSetChannelInRoleAsync(
+            listRoles
+        );
         await userSessionRepository.RevokeByLoginName(model.LoginName);
 
         UserSession userSession = new()
@@ -272,7 +280,9 @@ public class LoginHandler(
         );
 
         DateTime currentTime = DateTime.UtcNow;
-        DateTime expireTime = currentTime.AddDays(Convert.ToDouble(webApiSettings.TokenLifetimeDays));
+        DateTime expireTime = currentTime.AddDays(
+            Convert.ToDouble(webApiSettings.TokenLifetimeDays)
+        );
 
         string token = jwtTokenService.GetNewJwtToken(
             new O24OpenAPI.Core.Domain.Users.User
@@ -322,7 +332,6 @@ public class LoginHandler(
             ExpiredDuration = (long)(expireTime - DateTime.Now).TotalSeconds,
         };
     }
-
 
     private async Task<UserAccount> GetLoginAccount(
         string loginName,

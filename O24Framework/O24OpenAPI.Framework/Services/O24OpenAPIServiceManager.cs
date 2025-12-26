@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Linh.CodeEngine.Core;
+using LinKit.Core.Abstractions;
 using LinKit.Core.Cqrs;
 using LinKit.Json.Runtime;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,7 @@ using O24OpenAPI.Core;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
+using O24OpenAPI.Data;
 using O24OpenAPI.Framework.Abstractions;
 using O24OpenAPI.Framework.Domain;
 using O24OpenAPI.Framework.Exceptions;
@@ -16,6 +18,7 @@ using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Helpers;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Framework.Models.Logging;
+using O24OpenAPI.Framework.Repositories;
 using O24OpenAPI.Framework.Services.Configuration;
 using O24OpenAPI.Framework.Services.Logging;
 using O24OpenAPI.Framework.Services.Queue;
@@ -29,9 +32,18 @@ public class StoredProcedureStepConfig
     public bool IsReplacePostingInContext { get; set; } = false;
 }
 
-public class O24OpenAPIServiceManager
+public interface IO24OpenAPIServiceManager
 {
-    public static async Task<WFScheme> ConsumeWorkflow(WFScheme workflow)
+    Task<WFScheme> ConsumeWorkflow(WFScheme workflow);
+}
+
+[RegisterService(Lifetime.Scoped)]
+public class O24OpenAPIServiceManager(
+    IEntityAuditRepository entityAuditRepository,
+    IO24OpenAPIDataProvider dataProvider
+) : IO24OpenAPIServiceManager
+{
+    public async Task<WFScheme> ConsumeWorkflow(WFScheme workflow)
     {
         if (workflow == null)
         {
@@ -114,47 +126,65 @@ public class O24OpenAPIServiceManager
         }
     }
 
-    private static async Task<WFScheme> HandleStandardWorkflow(
+    private async Task<WFScheme> HandleStandardWorkflow(
         WFScheme workflow,
         O24OpenAPIService mapping
     )
     {
         try
         {
-            if (mapping.IsModuleExecute == true)
+            if (workflow.request.request_header.is_compensated != "Y")
             {
-                var executionResult = await DynamicCodeEngine.ExecuteAsync(
-                    moduleName: mapping.FullClassName,
-                    methodName: mapping.MethodName,
-                    parameters: [workflow]
+                if (mapping.IsModuleExecute == true)
+                {
+                    var executionResult = await DynamicCodeEngine.ExecuteAsync(
+                        moduleName: mapping.FullClassName,
+                        methodName: mapping.MethodName,
+                        parameters: [workflow]
+                    );
+                    return executionResult as WFScheme;
+                }
+                try
+                {
+                    IWorkflowStepInvoker stepInvoker =
+                        EngineContext.Current.Resolve<IWorkflowStepInvoker>(mapping.MediatorKey);
+                    Task<WFScheme> scheme = BaseQueue.Invoke<BaseTransactionModel>(
+                        workflow,
+                        async () =>
+                        {
+                            return await stepInvoker.InvokeAsync(
+                                mapping.StepCode,
+                                workflow,
+                                EngineContext.Current.Resolve<IMediator>(mapping.MediatorKey),
+                                CancellationToken.None
+                            );
+                        }
+                    );
+                    return await scheme;
+                }
+                catch (KeyNotFoundException)
+                {
+                    return await workflow.InvokeAsync(mapping.FullClassName, mapping.MethodName);
+                }
+                throw new O24OpenAPIException(
+                    $"Workflow step invoker could not be resolved for step code '{mapping.StepCode}'."
                 );
-                return executionResult as WFScheme;
             }
-            try
+            else
             {
-                IWorkflowStepInvoker stepInvoker =
-                    EngineContext.Current.Resolve<IWorkflowStepInvoker>();
-                Task<WFScheme> scheme = BaseQueue.Invoke<BaseTransactionModel>(
-                    workflow,
-                    async () =>
-                    {
-                        return await stepInvoker.InvokeAsync(
-                            mapping.StepCode,
-                            workflow,
-                            EngineContext.Current.Resolve<IMediator>(mapping.MediatorKey),
-                            CancellationToken.None
-                        );
-                    }
+                var entityAudits = await entityAuditRepository.GetByExecutionIdAsync(
+                    workflow.request.request_header.execution_id
                 );
-                return await scheme;
+                var revertSql = await EntityAuditReverter.GenerateRevertSqlBlock(
+                    entityAudits,
+                    workflow.request.request_header.execution_id
+                );
+                await dataProvider.ExecuteNonQuery(revertSql);
+                workflow.response.status = WFScheme.RESPONSE.EnumResponseStatus.SUCCESS;
+                workflow.response.data = JsonSerializer.Serialize(new { });
+                _ = entityAuditRepository.BulkDelete(entityAudits);
+                return workflow;
             }
-            catch (KeyNotFoundException)
-            {
-                return await workflow.InvokeAsync(mapping.FullClassName, mapping.MethodName);
-            }
-            throw new O24OpenAPIException(
-                $"Workflow step invoker could not be resolved for step code '{mapping.StepCode}'."
-            );
         }
         catch (Exception ex)
         {

@@ -1,11 +1,13 @@
-using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Transactions;
+using LinKit.Json.Runtime;
 using LinqToDB;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Caching;
+using O24OpenAPI.Core.Constants;
 using O24OpenAPI.Core.Domain;
+using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data.System.Linq;
 
@@ -19,7 +21,7 @@ public class EntityRepository<TEntity>(
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
 ) : IRepository<TEntity>
-    where TEntity : BaseEntity
+    where TEntity : BaseEntity, new()
 {
     private readonly IO24OpenAPIDataProvider _dataProvider = dataProvider;
     private readonly IStaticCacheManager _staticCacheManager = staticCacheManager;
@@ -195,10 +197,7 @@ public class EntityRepository<TEntity>(
 
     public virtual async Task Insert(TEntity entity)
     {
-        ArgumentNullException.ThrowIfNull(entity);
-        entity.CreatedOnUtc = DateTime.UtcNow;
-        entity.UpdatedOnUtc = DateTime.UtcNow;
-        TEntity entity1 = await _dataProvider.InsertEntity(entity);
+        await InsertAsync(entity);
     }
 
     public virtual async Task<TEntity> InsertAsync(TEntity entity)
@@ -209,6 +208,22 @@ public class EntityRepository<TEntity>(
         entity.UpdatedOnUtc = DateTime.UtcNow;
 
         TEntity entity1 = await _dataProvider.InsertEntity(entity);
+        if (entity.IsAuditable())
+        {
+            var workContext = EngineContext.Current.Resolve<WorkContext>();
+            var entityAudit = new EntityAudit
+            {
+                EntityName = typeof(TEntity).Name,
+                EntityId = entity1.Id,
+                UserId = workContext.UserContext.UserId,
+                ExecutionId = workContext.ExecutionId,
+                ActionType = EntityAuditActionType.Insert,
+                Changes = string.Empty,
+                CreatedOnUtc = DateTime.UtcNow,
+                UpdatedOnUtc = DateTime.UtcNow,
+            };
+            await _dataProvider.InsertEntity(entityAudit);
+        }
 
         return entity1;
     }
@@ -230,183 +245,46 @@ public class EntityRepository<TEntity>(
     {
         ArgumentNullException.ThrowIfNull(entity);
         await _dataProvider.UpdateEntity(entity);
-    }
-
-    private static List<ActionChain> SortAction(List<ActionChain> actionChains)
-    {
-        List<ActionChain> source = new List<ActionChain>();
-        string str1 = "xxx";
-        Decimal num = 0M;
-        string str2 = "";
-        foreach (
-            ActionChain actionChain in (IEnumerable<ActionChain>)
-                actionChains
-                    .OrderBy(a => a.UpdateField)
-                    .ThenBy(a => a.UpdateFields)
-                    .ThenBy(a => a.Action)
-        )
+        if (entity.IsAuditable())
         {
-            ActionChain action = actionChain;
-            if (
-                (action.UpdateFields == null || !action.UpdateFields.Any())
-                && str1 == action.UpdateField
-                && "D,C".Contains(action.Action)
-            )
+            var workContext = EngineContext.Current.Resolve<WorkContext>();
+            var changes = entity.GetChanges(await LoadOriginalCopy(entity));
+            var entityAudit = new EntityAudit
             {
-                if (str2 == action.Action)
-                {
-                    num += (Decimal)action.UpdateValue;
-                }
-                else if (num >= (Decimal)action.UpdateValue)
-                {
-                    num -= (Decimal)action.UpdateValue;
-                }
-                else
-                {
-                    num = (Decimal)action.UpdateValue - num;
-                    string action1 = action.Action;
-                }
-
-                source.Where(s => s.UpdateField == action.UpdateField).First().UpdateValue = num;
-            }
-            else
-            {
-                source.Add(action);
-                num = !(action.UpdateValue is Decimal) ? 0M : (Decimal)action.UpdateValue;
-            }
-
-            str1 = action.UpdateField;
-            str2 = action.Action;
+                EntityName = typeof(TEntity).Name,
+                EntityId = entity.Id,
+                UserId = workContext.UserContext.UserId,
+                ExecutionId = workContext.ExecutionId,
+                ActionType = EntityAuditActionType.Update,
+                Changes = changes.ToJson(),
+                CreatedOnUtc = DateTime.UtcNow,
+                UpdatedOnUtc = DateTime.UtcNow,
+            };
+            await _dataProvider.InsertEntity(entityAudit);
         }
-
-        return source;
-    }
-
-    private static TransactionDetails GenUpdateAudit(
-        string refId,
-        string entityName,
-        int entityId,
-        PropertyInfo prop,
-        object currentValue = null,
-        object inputValue = null,
-        string updateType = "A"
-    )
-    {
-        object obj = inputValue;
-        if (prop.PropertyType == typeof(Decimal) || prop.PropertyType == typeof(Decimal?))
-        {
-            switch (updateType)
-            {
-                case "C":
-                    obj = (Decimal)(currentValue ?? 0M) + (Decimal)inputValue;
-                    break;
-                case "D":
-                    obj = (Decimal)(currentValue ?? 0M) - (Decimal)inputValue;
-                    break;
-            }
-        }
-        else if (prop.PropertyType == typeof(int) || prop.PropertyType == typeof(int?))
-        {
-            switch (updateType)
-            {
-                case "C":
-                    obj = (int)currentValue + (int)inputValue;
-                    break;
-                case "D":
-                    obj = (int)currentValue - (int)inputValue;
-                    break;
-            }
-        }
-
-        string invariantString1 =
-            currentValue == null
-                ? ""
-                : TypeDescriptor
-                    .GetConverter(prop.PropertyType)
-                    .ConvertToInvariantString(currentValue);
-        string invariantString2 =
-            obj == null
-                ? ""
-                : TypeDescriptor.GetConverter(prop.PropertyType).ConvertToInvariantString(obj);
-        if (updateType == "U")
-        {
-            updateType = "A";
-        }
-
-        if (invariantString1.Equals(invariantString2))
-        {
-            return null;
-        }
-
-        if (prop.PropertyType == typeof(Decimal) || prop.PropertyType == typeof(Decimal?))
-        {
-            Decimal num1 = Convert.ToDecimal(currentValue);
-            Decimal num2 = Convert.ToDecimal(obj);
-            if (num1 == num2)
-            {
-                return null;
-            }
-
-            updateType = !(num1 > num2) ? "C" : "D";
-        }
-        else if (prop.PropertyType == typeof(int) || prop.PropertyType == typeof(int?))
-        {
-            int int32_1 = Convert.ToInt32(currentValue);
-            int int32_2 = Convert.ToInt32(obj);
-            if (int32_1 == int32_2)
-            {
-                return null;
-            }
-
-            updateType = int32_1 <= int32_2 ? "C" : "D";
-        }
-
-        return new TransactionDetails()
-        {
-            RefId = refId,
-            Entity = entityName,
-            EntityId = entityId,
-            FieldName = prop.Name,
-            OldValue = invariantString1,
-            NewValue = invariantString2,
-            Status = "N",
-            UpdateType = updateType,
-            Description = "",
-        };
-    }
-
-    private static TransactionDetails GenDeleteAudit(
-        string refId,
-        string entityName,
-        int entityId,
-        PropertyInfo prop,
-        object entity
-    )
-    {
-        object obj = prop.GetValue(entity, (object[])null);
-        string str = "R";
-        string invariantString =
-            obj == null
-                ? ""
-                : TypeDescriptor.GetConverter(prop.PropertyType).ConvertToInvariantString(obj);
-        return new TransactionDetails()
-        {
-            RefId = refId,
-            Entity = entityName,
-            EntityId = entityId,
-            FieldName = prop.Name,
-            OldValue = invariantString,
-            NewValue = string.Empty,
-            Status = "N",
-            UpdateType = str,
-            Description = "",
-        };
     }
 
     public virtual async Task Delete(TEntity entity)
     {
         ArgumentNullException.ThrowIfNull(entity);
         await _dataProvider.DeleteEntity(entity);
+        if (entity.IsAuditable())
+        {
+            var workContext = EngineContext.Current.Resolve<WorkContext>();
+            var changes = new TEntity().GetChanges(entity);
+            var entityAudit = new EntityAudit
+            {
+                EntityName = typeof(TEntity).Name,
+                EntityId = entity.Id,
+                UserId = workContext.UserContext.UserId,
+                ExecutionId = workContext.ExecutionId,
+                ActionType = EntityAuditActionType.Delete,
+                Changes = changes.ToJson(),
+                CreatedOnUtc = DateTime.UtcNow,
+                UpdatedOnUtc = DateTime.UtcNow,
+            };
+            await _dataProvider.InsertEntity(entityAudit);
+        }
     }
 
     public virtual async Task BulkDelete(IList<TEntity> entities)
@@ -446,7 +324,7 @@ public class EntityRepository<TEntity>(
     {
         TEntity entity1 = await _dataProvider
             .GetTable<TEntity>()
-            .FirstOrDefaultAsync(e => e.Id == Convert.ToInt32(entity.Id));
+            .FirstOrDefaultAsync(e => e.Id == entity.Id);
         return entity1;
     }
 

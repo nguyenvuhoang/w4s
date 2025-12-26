@@ -2,7 +2,7 @@ using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.WFO.Domain;
 
-public class ServiceDef : BaseEntity
+public partial class ServiceDef : BaseEntity
 {
     public string ServiceID { get; set; }
     public string ServiceCode { get; set; }

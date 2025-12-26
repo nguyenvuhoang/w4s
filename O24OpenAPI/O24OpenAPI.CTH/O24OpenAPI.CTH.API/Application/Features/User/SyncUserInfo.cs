@@ -1,84 +1,83 @@
 ﻿using LinKit.Core.Cqrs;
-using O24OpenAPI.Client.Scheme.Workflow;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Models;
 
-namespace O24OpenAPI.CTH.API.Application.Features.User
+namespace O24OpenAPI.CTH.API.Application.Features.User;
+
+public class SyncUserInfoCommand : BaseTransactionModel, ICommand<bool>
 {
-    public class SyncUserInfoCommand : BaseTransactionModel, ICommand<bool>
+    public SyncUserInfoModel Model { get; set; } = default!;
+}
+
+[CqrsHandler]
+public class SyncUserInfoHandle(IUserAccountRepository userAccountRepository)
+    : ICommandHandler<SyncUserInfoCommand, bool>
+{
+    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_SYNC_USER_INFO)]
+    public async Task<bool> HandleAsync(
+        SyncUserInfoCommand request,
+        CancellationToken cancellationToken = default
+    )
     {
-        public SyncUserInfoModel Model { get; set; } = default!;
+        return await SyncUserInfoAsync(request.Model);
     }
 
-    [CqrsHandler]
-    public class SyncUserInfoHandle(IUserAccountRepository userAccountRepository)
-        : ICommandHandler<SyncUserInfoCommand, bool>
+    public async Task<bool> SyncUserInfoAsync(SyncUserInfoModel model)
     {
-        [WorkflowStep("WF_STEP_CTH_SYNC_USER_INFO")]
-        public async Task<bool> HandleAsync(
-            SyncUserInfoCommand request,
-            CancellationToken cancellationToken = default
-        )
+        if (model == null)
         {
-            return await SyncUserInfoAsync(request.Model);
+            return false;
         }
 
-        public async Task<bool> SyncUserInfoAsync(SyncUserInfoModel model)
+        if (string.IsNullOrWhiteSpace(model.ContractNumber))
         {
-            if (model == null)
-            {
-                return false;
-            }
+            return false;
+        }
 
-            if (string.IsNullOrWhiteSpace(model.ContractNumber))
-            {
-                return false;
-            }
+        var user = await userAccountRepository.GetUserByContractNumber(
+            model.ContractNumber.Trim()
+        );
+        if (user == null)
+        {
+            return false;
+        }
 
-            var user = await userAccountRepository.GetUserByContractNumber(
-                model.ContractNumber.Trim()
-            );
-            if (user == null)
-            {
-                return false;
-            }
+        var newPhone = NormalizePhone(model.PhoneNumber);
+        if (string.IsNullOrWhiteSpace(newPhone))
+        {
+            return false;
+        }
 
-            var newPhone = NormalizePhone(model.PhoneNumber);
-            if (string.IsNullOrWhiteSpace(newPhone))
-            {
-                return false;
-            }
-
-            if (string.Equals(user.Phone, newPhone, StringComparison.Ordinal))
-            {
-                return true;
-            }
-
-            user.Phone = newPhone;
-            user.UpdatedOnUtc = DateTime.UtcNow;
-            user.UserModified = model.CurrentUserCode ?? "SYSTEM";
-
-            await userAccountRepository.Update(user);
+        if (string.Equals(user.Phone, newPhone, StringComparison.Ordinal))
+        {
             return true;
         }
 
-        private static string NormalizePhone(string? input)
+        user.Phone = newPhone;
+        user.UpdatedOnUtc = DateTime.UtcNow;
+        user.UserModified = model.CurrentUserCode ?? "SYSTEM";
+
+        await userAccountRepository.Update(user);
+        return true;
+    }
+
+    private static string NormalizePhone(string? input)
+    {
+        var v = (input ?? string.Empty).Trim();
+        if (v.Length == 0)
         {
-            var v = (input ?? string.Empty).Trim();
-            if (v.Length == 0)
-            {
-                return string.Empty;
-            }
-
-            v = v.Replace(" ", "")
-                .Replace("-", "")
-                .Replace(".", "")
-                .Replace("(", "")
-                .Replace(")", "");
-
-            return v;
+            return string.Empty;
         }
+
+        v = v.Replace(" ", "")
+            .Replace("-", "")
+            .Replace(".", "")
+            .Replace("(", "")
+            .Replace(")", "");
+
+        return v;
     }
 }

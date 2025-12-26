@@ -1,7 +1,7 @@
+using System.Linq.Expressions;
 using LinqToDB.Data;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Data.Mapping;
-using System.Linq.Expressions;
 
 namespace O24OpenAPI.Data;
 
@@ -66,11 +66,7 @@ public interface IO24OpenAPIDataProvider : IMappingEntityAccessor
     /// <param name="entities">The entities</param>
     /// <param name="propertyName">The property name</param>
     /// <param name="value">The value</param>
-    Task UpdateEntities<TEntity>(
-        IQueryable<TEntity> entities,
-        string propertyName,
-        string value
-    )
+    Task UpdateEntities<TEntity>(IQueryable<TEntity> entities, string propertyName, string value)
         where TEntity : BaseEntity;
 
     /// <summary>

@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.ControlHub.Domain;
 
-public class UserLevel : BaseEntity
+public partial class UserLevel : BaseEntity
 {
     public string LevelCode { get; set; }
     public string LevelName { get; set; }

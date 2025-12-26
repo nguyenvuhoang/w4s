@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.CTH.Domain.AggregatesModel.TransactionAggregate;
 
-public class TransactionDefinition : BaseEntity
+public partial class TransactionDefinition : BaseEntity
 {
     public string TransactionCode { get; set; } = null!;
     public string WorkflowId { get; set; }

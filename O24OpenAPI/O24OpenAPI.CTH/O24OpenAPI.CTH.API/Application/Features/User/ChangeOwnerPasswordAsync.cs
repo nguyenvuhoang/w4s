@@ -1,4 +1,5 @@
 ﻿using LinKit.Core.Cqrs;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.Core;
 using O24OpenAPI.CTH.API.Application.Constants;
 using O24OpenAPI.CTH.API.Application.Utils;
@@ -16,6 +17,7 @@ public class ChangeOwnerPasswordAsyncCommand : BaseTransactionModel, ICommand<bo
     public string OldPassword { get; set; }
     public string Password { get; set; }
 }
+
 [CqrsHandler]
 public class ChangeOwnerPasswordHandle(
     IUserAccountRepository userAccountRepository,
@@ -23,7 +25,7 @@ public class ChangeOwnerPasswordHandle(
     IUserSessionRepository userSessionRepository
 ) : ICommandHandler<ChangeOwnerPasswordAsyncCommand, bool>
 {
-    [WorkflowStep("WF_STEP_CTH_CHANGE_OWNER_PW")]
+    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_CHANGE_OWNER_PW)]
     public async Task<bool> HandleAsync(
         ChangeOwnerPasswordAsyncCommand request,
         CancellationToken cancellationToken = default
@@ -38,9 +40,7 @@ public class ChangeOwnerPasswordHandle(
 
         string hashPassword = O9Encrypt.sha_sha256(request.Password, userAccount.UserCode);
 
-        var userPassword = await userPasswordRepository.GetByUserCodeAsync(
-            userAccount.UserCode
-        );
+        var userPassword = await userPasswordRepository.GetByUserCodeAsync(userAccount.UserCode);
 
         if (userPassword == null)
         {

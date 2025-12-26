@@ -1,6 +1,7 @@
 ﻿using LinKit.Core.Cqrs;
 using LinqToDB;
 using Newtonsoft.Json;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.CTH.API.Application.Models;
@@ -13,8 +14,7 @@ namespace O24OpenAPI.CTH.API.Application.Features.Application;
 
 public class ApplicationInfoCommand
     : BaseTransactionModel,
-        ICommand<ApplicationInfoResponseModel>
-{ }
+        ICommand<ApplicationInfoResponseModel> { }
 
 public class ApplicationInfoResponseModel(
     string userCode,
@@ -60,7 +60,7 @@ public class ApplicationInfoHandler(
     IUserBannerRepository userBannerRepository
 ) : ICommandHandler<ApplicationInfoCommand, ApplicationInfoResponseModel>
 {
-    [WorkflowStep("WF_STEP_CTH_APP_INFO")]
+    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_APP_INFO)]
     public async Task<ApplicationInfoResponseModel> HandleAsync(
         ApplicationInfoCommand command,
         CancellationToken cancellationToken
@@ -133,9 +133,13 @@ public class ApplicationInfoHandler(
             })
             .ToList();
 
-        UserAccount userAccount = await userAccountService.GetByUserCodeAsync(command.CurrentUserCode);
+        UserAccount userAccount = await userAccountService.GetByUserCodeAsync(
+            command.CurrentUserCode
+        );
 
-        UserAvatar avatarRecord = await userAvatarRepository.GetByUserCodeAsync(userAccount.UserCode);
+        UserAvatar avatarRecord = await userAvatarRepository.GetByUserCodeAsync(
+            userAccount.UserCode
+        );
 
         O24OpenAPIConfiguration openApiConfig =
             Singleton<AppSettings>.Instance.Get<O24OpenAPIConfiguration>();
@@ -231,7 +235,9 @@ public class ApplicationInfoHandler(
 
         try
         {
-            Dictionary<string, string> dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            Dictionary<string, string> dict = JsonConvert.DeserializeObject<
+                Dictionary<string, string>
+            >(json);
             return dict.TryGetValue(lang, out string value) ? value : "";
         }
         catch

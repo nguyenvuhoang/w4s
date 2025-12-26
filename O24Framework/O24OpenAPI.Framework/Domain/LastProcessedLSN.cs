@@ -6,7 +6,7 @@ namespace O24OpenAPI.Framework.Domain;
 /// The last processed lsn class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class LastProcessedLSN : BaseEntity
+public partial class LastProcessedLSN : BaseEntity
 {
     /// <summary>
     /// /// Gets or sets the value of the table name

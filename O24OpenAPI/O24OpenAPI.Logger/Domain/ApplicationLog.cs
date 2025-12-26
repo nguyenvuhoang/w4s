@@ -2,7 +2,7 @@ using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.Logger.Domain;
 
-public class ApplicationLog : BaseEntity
+public partial class ApplicationLog : BaseEntity
 {
     public DateTimeOffset LogTimestamp { get; set; }
     public string? LogLevel { get; set; }

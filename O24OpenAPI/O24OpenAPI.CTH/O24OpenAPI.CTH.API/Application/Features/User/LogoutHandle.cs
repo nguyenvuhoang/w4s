@@ -1,4 +1,5 @@
 ﻿using LinKit.Core.Cqrs;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.Core.Constants;
 using O24OpenAPI.CTH.API.Application.Constants;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
@@ -76,7 +77,7 @@ public class LogoutHandleCommand : BaseTransactionModel, ICommand<bool>
 public class LogoutHandle(IUserAccountRepository userAccountRepository)
     : ICommandHandler<LogoutHandleCommand, bool>
 {
-    [WorkflowStep("WF_STEP_CTH_LOGOUT")]
+    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_LOGOUT)]
     public async Task<bool> HandleAsync(
         LogoutHandleCommand request,
         CancellationToken cancellationToken = default

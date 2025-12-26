@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.O24ACT.Domain;
 
-public class RuleDefinition : BaseEntity
+public partial class RuleDefinition : BaseEntity
 {
     public string RuleName { get; set; }
     public string FullClassName { get; set; }

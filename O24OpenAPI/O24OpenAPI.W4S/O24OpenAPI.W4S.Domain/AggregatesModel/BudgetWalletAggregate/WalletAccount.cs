@@ -2,12 +2,12 @@
 
 namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
-public class WalletAccount : BaseEntity
+public partial class WalletAccount : BaseEntity
 {
-    public required string AccountNumber { get; set; }
-    public required string WalletId { get; set; }
-    public required string AccountType { get; set; }
-    public required string CurrencyCode { get; set; }
+    public string? AccountNumber { get; set; }
+    public string? WalletId { get; set; }
+    public string? AccountType { get; set; }
+    public string? CurrencyCode { get; set; }
     public bool IsPrimary { get; set; }
-    public required string Status { get; set; }
+    public string? Status { get; set; }
 }

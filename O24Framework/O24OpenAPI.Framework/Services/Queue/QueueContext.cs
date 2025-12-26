@@ -46,7 +46,9 @@ public class QueueContext
 
     private static async Task WorkflowDelivering(WFScheme workflow)
     {
-        workflow = await O24OpenAPIServiceManager.ConsumeWorkflow(workflow);
+        workflow = await EngineContext
+            .Current.Resolve<IO24OpenAPIServiceManager>()
+            .ConsumeWorkflow(workflow);
         await Singleton<QueueClient>.Instance.ReplyWorkflow(workflow);
     }
 

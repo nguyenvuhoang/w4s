@@ -29,6 +29,7 @@ public class HelloHandler : ICommandHandler<HelloCommand, HelloResponse>
         CancellationToken cancellationToken = default
     )
     {
+        throw new Exception("Linh test revert");
         return Task.FromResult(new HelloResponse() { Message = $"Hello {request.Name}" });
     }
 }

@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.ControlHub.Domain;
 
-public class ChannelUserOverride : BaseEntity
+public partial class ChannelUserOverride : BaseEntity
 {
     public int ChannelIdRef { get; set; }
     public string UserId { get; set; } = default!;

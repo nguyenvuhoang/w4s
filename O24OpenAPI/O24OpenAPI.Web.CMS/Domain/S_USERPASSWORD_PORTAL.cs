@@ -1,6 +1,6 @@
 namespace O24OpenAPI.Web.CMS.Domain;
 
-public class S_USERPASSWORD_PORTAL : BaseEntity
+public partial class S_USERPASSWORD_PORTAL : BaseEntity
 {
     public string UserCode { get; set; } // Mã người dùng
     public string Password { get; set; } // Mật khẩu

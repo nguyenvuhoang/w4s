@@ -11,25 +11,25 @@ public partial class Form : BaseEntity
     /// info
     /// </summary>
     [JsonProperty("info")]
-    public string Info { get; set; }
+    public string? Info { get; set; }
 
     /// <summary>
     /// list_layout
     /// </summary>
     [JsonProperty("list_layout")]
-    public string ListLayout { get; set; }
+    public string? ListLayout { get; set; }
 
     /// <summary>
     /// form_id
     /// </summary>
     [JsonProperty("form_id")]
-    public string FormId { get; set; }
+    public string? FormId { get; set; }
 
     /// <summary>
     /// app
     /// </summary>
     [JsonProperty("app")]
-    public string App { get; set; }
+    public string? App { get; set; }
 
-    public string MasterData { get; set; }
+    public string? MasterData { get; set; }
 }

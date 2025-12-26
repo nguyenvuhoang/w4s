@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class MediaStaging : BaseEntity
+public partial class MediaStaging : BaseEntity
 {
     public string TrackerCode { get; set; }
     public string FileUrl { get; set; }

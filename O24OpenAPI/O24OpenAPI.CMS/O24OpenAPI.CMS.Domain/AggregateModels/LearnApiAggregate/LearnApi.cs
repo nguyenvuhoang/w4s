@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.CMS.Domain.AggregateModels.LearnApiAggregate;
 
-public class LearnApi : BaseEntity
+public partial class LearnApi : BaseEntity
 {
     /// <summary>
     /// User code
@@ -15,42 +15,42 @@ public class LearnApi : BaseEntity
     /// </summary>
     /// <value></value>
     [JsonProperty("learn_api_name")]
-    public string LearnApiName { get; set; }
+    public string? LearnApiName { get; set; }
 
     /// <summary>
     ///
     /// </summary>
     /// <value></value>
     [JsonProperty("learn_api_data")]
-    public string LearnApiData { get; set; }
+    public string? LearnApiData { get; set; }
 
     /// <summary>
     ///
     /// </summary>
     /// <value></value>
     [JsonProperty("learn_api_node_data")]
-    public string LearnApiNodeData { get; set; }
+    public string? LearnApiNodeData { get; set; }
 
     /// <summary>
     ///
     /// </summary>
     /// <value></value>
     [JsonProperty("learn_api_method")]
-    public string LearnApiMethod { get; set; }
+    public string? LearnApiMethod { get; set; }
 
     /// <summary>
     ///
     /// </summary>
     /// <value></value>
     [JsonProperty("learn_api_header")]
-    public string LearnApiHeader { get; set; }
+    public string? LearnApiHeader { get; set; }
 
     /// <summary>
     ///
     /// </summary>
     /// <value></value>
     [JsonProperty("learn_api_mapping")]
-    public string LearnApiMapping { get; set; }
+    public string? LearnApiMapping { get; set; }
 
     /// <summary>
     ///
@@ -63,39 +63,39 @@ public class LearnApi : BaseEntity
     /// </summary>
     /// <value></value>
     [JsonProperty("key_read_data")]
-    public string KeyReadData { get; set; }
+    public string? KeyReadData { get; set; }
 
     /// <summary>
     ///
     /// </summary>
     /// <value></value>
-    public string LearnApiIdClear { get; set; }
+    public string? LearnApiIdClear { get; set; }
 
     /// <summary>
     ///
     /// </summary>
     /// <value></value>
     [JsonProperty("channel")]
-    public string Channel { get; set; }
+    public string? Channel { get; set; }
 
     /// <summary>
     ///
     /// </summary>
     /// <value></value>
     [JsonProperty("learn_api_mapping_response")]
-    public string LearnApiMappingResponse { get; set; }
+    public string? LearnApiMappingResponse { get; set; }
 
     // /// <summary>
     // ///
     // /// </summary>
     [JsonProperty("full_interface_name")]
-    public string FullInterfaceName { get; set; }
+    public string? FullInterfaceName { get; set; }
 
     // /// <summary>
     // ///
     // /// </summary>
     [JsonProperty("method_name")]
-    public string MethodName { get; set; }
+    public string? MethodName { get; set; }
 
     [JsonProperty("uri")]
     public string URI { get; set; } = string.Empty;

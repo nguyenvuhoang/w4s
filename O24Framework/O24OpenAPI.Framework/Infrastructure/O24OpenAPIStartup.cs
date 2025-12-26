@@ -56,7 +56,7 @@ internal class O24OpenAPIStartup : IO24OpenAPIStartup
             serviceProvider.GetRequiredService<IDataProviderManager>().DataProvider
         );
         services.AddScoped(typeof(IRepository<>), typeof(EntityRepository<>));
-        var distributedCacheConfig = Singleton<AppSettings>.Instance.Get<DistributedCacheConfig>();
+        DistributedCacheConfig distributedCacheConfig = Singleton<AppSettings>.Instance.Get<DistributedCacheConfig>();
         if (distributedCacheConfig.Enabled)
         {
             services.AddScoped<ILocker, DistributedCacheManager>();
@@ -82,8 +82,8 @@ internal class O24OpenAPIStartup : IO24OpenAPIStartup
                 setting,
                 serviceProvider =>
                 {
-                    var service = serviceProvider.GetService<ISettingService>();
-                    var ob = service.LoadSetting(setting).GetAsyncResult();
+                    ISettingService service = serviceProvider.GetService<ISettingService>();
+                    ISettings ob = service.LoadSetting(setting).GetAsyncResult();
                     return ob;
                 }
             );
@@ -114,7 +114,7 @@ internal class O24OpenAPIStartup : IO24OpenAPIStartup
         services.AddScoped<IO24OpenAPIMappingService, O24OpenAPIMappingService>();
         services.AddScoped<IDataMappingService, DataMappingService>();
         services.AddScoped<IDataMapper, DataMapper>();
-        services.AddScoped<IEntityAuditService, EntityAuditService>();
+        //services.AddScoped<IEntityAuditService, EntityAuditService>();
         services.AddScoped<WorkContext>();
         services.AddScoped<ILoggerService, FileLoggerService>();
         services.AddKeyedScoped<ILoggerService, DbLoggerService>("Db");

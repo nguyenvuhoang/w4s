@@ -3,7 +3,7 @@ using O24OpenAPI.Client.Enums;
 
 namespace O24OpenAPI.Web.CMS.Domain;
 
-public class WorkflowStep : BaseEntity
+public partial class WorkflowStep : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the workflow id

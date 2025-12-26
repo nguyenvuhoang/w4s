@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class D_CURRENCY : BaseEntity
+public partial class D_CURRENCY : BaseEntity
 {
     public string CurrencyCode { get; set; }
 

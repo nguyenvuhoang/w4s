@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.Web.Report.Domain.MIS;
 
-public class CustomerListing : BaseEntity
+public partial class CustomerListing : BaseEntity
 {
     public string CustomerCode { get; set; }
     public DateTime CreateDate { get; set; }

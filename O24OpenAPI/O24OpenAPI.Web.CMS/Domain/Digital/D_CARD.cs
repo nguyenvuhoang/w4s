@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class D_CARD : BaseEntity
+public partial class D_CARD : BaseEntity
 {
     public string CardCode { get; set; }
     public string CardLogo { get; set; }

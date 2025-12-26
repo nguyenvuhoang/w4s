@@ -4,7 +4,7 @@ namespace O24OpenAPI.CTH.Domain.AggregatesModel.ChannelAggregate;
 
 public partial class ChannelSchedule : BaseEntity
 {
-    public int ChannelIdRef { get; set; }          // FK -> Channel
+    public int ChannelIdRef { get; set; } // FK -> Channel
     public DayOfWeek DayOfWeek { get; set; }
 
     /// <summary>Khoảng hiệu lực (nullable = vĩnh viễn).</summary>

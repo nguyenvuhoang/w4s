@@ -12,9 +12,13 @@ public class UpdateUserRoleASyncCommnad : BaseTransactionModel, ICommand<bool>
     public bool IsAssign { get; set; }
 }
 
-public class UpdateUserRoleASyncHandler(IUserInRoleRepository userInRoleRepository) : ICommandHandler<UpdateUserRoleASyncCommnad, bool>
+public class UpdateUserRoleASyncHandler(IUserInRoleRepository userInRoleRepository)
+    : ICommandHandler<UpdateUserRoleASyncCommnad, bool>
 {
-    public async Task<bool> HandleAsync(UpdateUserRoleASyncCommnad request, CancellationToken cancellationToken = default)
+    public async Task<bool> HandleAsync(
+        UpdateUserRoleASyncCommnad request,
+        CancellationToken cancellationToken = default
+    )
     {
         if (request.IsAssign)
         {
@@ -50,7 +54,9 @@ public class UpdateUserRoleASyncHandler(IUserInRoleRepository userInRoleReposito
         {
             // Bulk delete users from role
             var toDelete = await userInRoleRepository
-                .Table.Where(u => request.ListOfUser.Contains(u.UserCode) && u.RoleId == request.RoleId)
+                .Table.Where(u =>
+                    request.ListOfUser.Contains(u.UserCode) && u.RoleId == request.RoleId
+                )
                 .ToListAsync();
 
             if (toDelete.Count != 0)

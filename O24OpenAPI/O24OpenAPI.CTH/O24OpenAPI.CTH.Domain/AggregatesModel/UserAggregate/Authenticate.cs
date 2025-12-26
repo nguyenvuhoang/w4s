@@ -6,15 +6,13 @@ namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 /// The user session class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class Authenticate : BaseEntity
+public partial class Authenticate : BaseEntity
 {
-
     public string Token { get; set; }
 
     public string RefreshToken { get; set; }
 
     public DateTime ExpiredIn { get; set; }
-
 
     public long ExpiredDuration { get; set; }
 

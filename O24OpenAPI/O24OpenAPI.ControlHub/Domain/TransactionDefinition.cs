@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.ControlHub.Domain;
 
-public class TransactionDefinition : BaseEntity
+public partial class TransactionDefinition : BaseEntity
 {
     public string TransactionCode { get; set; } = null!;
     public string WorkflowId { get; set; }

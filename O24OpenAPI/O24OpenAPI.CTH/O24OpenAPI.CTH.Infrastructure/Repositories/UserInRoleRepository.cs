@@ -1,10 +1,8 @@
 using LinKit.Core.Abstractions;
 using LinqToDB;
 using O24OpenAPI.Core.Caching;
-using O24OpenAPI.Core.Events;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Data;
-using O24OpenAPI.Framework.Extensions;
 
 namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 

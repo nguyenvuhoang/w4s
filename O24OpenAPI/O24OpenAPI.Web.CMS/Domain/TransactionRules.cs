@@ -1,6 +1,6 @@
 namespace O24OpenAPI.Web.CMS.Domain;
 
-public class TransactionRules : BaseEntity
+public partial class TransactionRules : BaseEntity
 {
     public string WorkflowId { get; set; } // ID của workflow
     public string RuleName { get; set; } // Tên quy tắc

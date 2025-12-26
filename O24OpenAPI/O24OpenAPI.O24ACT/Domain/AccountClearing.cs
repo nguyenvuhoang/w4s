@@ -13,36 +13,43 @@ public partial class AccountClearing : BaseEntity
     /// AccountClearing
     /// </summary>
     public AccountClearing() { }
+
     /// <summary>
     /// BranchCodeOriginal
     /// </summary>
     [JsonProperty("branch_code")]
     public string BranchCode { get; set; }
+
     /// <summary>
     /// CurrencyId
     /// </summary>
     [JsonProperty("currency_code")]
     public string CurrencyId { get; set; }
+
     /// <summary>
     /// ClearingId
     /// </summary>
     [JsonProperty("clearing_branch_code")]
     public string ClearingBranchCode { get; set; }
+
     /// <summary>
     /// ClearingType
     /// </summary>
     [JsonProperty("clearing_type")]
     public string ClearingType { get; set; }
+
     /// <summary>
     /// AccountName
     /// </summary>
     [JsonProperty("account_name")]
     public string AccountName { get; set; }
+
     /// <summary>
     /// AccountNumber
     /// </summary>
     [JsonProperty("account_number")]
     public string AccountNumber { get; set; }
+
     /// <summary>
     /// Last update date
     /// </summary>

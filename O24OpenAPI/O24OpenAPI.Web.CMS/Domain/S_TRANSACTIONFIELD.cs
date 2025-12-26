@@ -1,6 +1,6 @@
 namespace O24OpenAPI.Web.CMS.Domain;
 
-public class S_TRANSACTIONFIELD : BaseEntity
+public partial class S_TRANSACTIONFIELD : BaseEntity
 {
     public string TransactionCode { get; set; }
     public string TransactionField { get; set; }

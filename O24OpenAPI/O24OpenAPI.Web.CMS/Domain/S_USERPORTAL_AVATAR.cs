@@ -1,6 +1,6 @@
 namespace O24OpenAPI.Web.CMS.Domain;
 
-public class S_USERPORTAL_AVATAR : BaseEntity
+public partial class S_USERPORTAL_AVATAR : BaseEntity
 {
     public string USERID { get; set; }
     public string IMAGEBIN { get; set; }

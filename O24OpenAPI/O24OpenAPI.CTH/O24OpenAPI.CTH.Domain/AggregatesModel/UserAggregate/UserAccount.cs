@@ -6,7 +6,7 @@ namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 /// The user account class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class UserAccount : BaseEntity
+public partial class UserAccount : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the channel id
@@ -95,10 +95,12 @@ public class UserAccount : BaseEntity
     /// Gets or sets the value of the is Biometric Supported
     /// </summary>
     public bool IsBiometricSupported { get; set; }
+
     /// <summary>
     /// LockedUntil
     /// </summary>
     public DateTime? LockedUntil { get; set; }
+
     /// <summary>
     /// NotificationType
     /// </summary>

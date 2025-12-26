@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.CTH.Domain.AggregatesModel.ChannelAggregate;
 
-public class ChannelUserOverride : BaseEntity
+public partial class ChannelUserOverride : BaseEntity
 {
     public string ChannelIdRef { get; set; }
     public string UserCode { get; set; } = default!;

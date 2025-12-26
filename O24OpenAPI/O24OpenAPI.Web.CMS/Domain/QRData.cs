@@ -1,6 +1,6 @@
 namespace O24OpenAPI.Web.CMS.Domain;
 
-public class QRData : BaseEntity
+public partial class QRData : BaseEntity
 {
     public string ChannelId { get; set; }
     public string HashedId { get; set; }

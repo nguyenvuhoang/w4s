@@ -2,4 +2,4 @@
 
 namespace O24OpenAPI.AI.Domain.AggregatesModel.SampleAggregate;
 
-public class Sample : BaseEntity { }
+public partial class Sample : BaseEntity { }

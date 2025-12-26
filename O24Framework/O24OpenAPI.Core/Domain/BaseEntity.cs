@@ -1,22 +1,17 @@
-using Newtonsoft.Json;
 using System.Windows.Input;
+using Newtonsoft.Json;
 
 namespace O24OpenAPI.Core.Domain;
 
-/// <summary>
-/// The base entity class
-/// </summary>
 public abstract class BaseEntity
 {
-    /// <summary>
-    /// Gets or sets the value of the id
-    /// </summary>
     [JsonProperty("id")]
     public int Id { get; set; }
 
     public DateTime? CreatedOnUtc { get; set; }
     public DateTime? UpdatedOnUtc { get; set; }
 
+    [JsonIgnore]
     private readonly List<ICommand> _domainEvents = [];
     public IReadOnlyCollection<ICommand> DomainEvents => _domainEvents.AsReadOnly();
 
@@ -24,4 +19,22 @@ public abstract class BaseEntity
     {
         _domainEvents.Add(domainEvent);
     }
+
+    public virtual List<AuditDiff>? GetChanges(BaseEntity oldEntity)
+    {
+        return null;
+    }
+
+    public virtual bool IsAuditable()
+    {
+        return false;
+    }
+}
+
+public class AuditDiff
+{
+    public string? FieldName { get; set; }
+    public object? OldValue { get; set; }
+    public object? NewValue { get; set; }
+    public decimal? Delta { get; set; } // For numeric fields = default(decimal?);
 }

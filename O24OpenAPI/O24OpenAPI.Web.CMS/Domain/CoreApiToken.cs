@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class CoreApiToken : BaseEntity
+public partial class CoreApiToken : BaseEntity
 {
     public string ClientId { get; set; }
     public string Token { get; set; }

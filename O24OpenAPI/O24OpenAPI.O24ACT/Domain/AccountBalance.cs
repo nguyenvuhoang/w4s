@@ -15,13 +15,13 @@ public partial class AccountBalance : BaseEntity
     public string AccountNumber { get; set; }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [JsonProperty("branch_code")]
     public string BranchCode { get; set; }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [JsonProperty("currency_code")]
     public string CurrencyCode { get; set; }
@@ -109,6 +109,7 @@ public partial class AccountBalance : BaseEntity
     /// </summary>
     [JsonProperty("week_average_balance")]
     public decimal WeekAverageBalance { get; set; }
+
     /// <summary>
     /// MonthAverageBalance
     /// </summary>
@@ -132,16 +133,4 @@ public partial class AccountBalance : BaseEntity
     /// </summary>
     [JsonProperty("year_average_balance")]
     public decimal YearAverageBalance { get; set; }
-
-    /// <summary>
-    /// create date
-    /// </summary>
-    [JsonProperty("created_on_utc")]
-    public DateTime? CreatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    [JsonProperty("updated_on_utc")]
-    public DateTime? UpdatedOnUtc { get; set; }
 }

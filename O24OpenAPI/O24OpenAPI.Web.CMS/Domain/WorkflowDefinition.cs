@@ -2,7 +2,7 @@ using O24OpenAPI.Web.CMS.Constant;
 
 namespace O24OpenAPI.Web.CMS.Domain;
 
-public class WorkflowDefinition : BaseEntity
+public partial class WorkflowDefinition : BaseEntity
 {
     public string WFId { get; set; }
     public string WFName { get; set; }

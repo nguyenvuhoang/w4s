@@ -2,7 +2,7 @@ using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.WFO.Domain;
 
-public class WorkflowStepInfo : BaseEntity
+public partial class WorkflowStepInfo : BaseEntity
 {
     public WorkflowStepInfo() { }
 

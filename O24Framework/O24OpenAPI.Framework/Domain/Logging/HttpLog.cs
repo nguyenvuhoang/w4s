@@ -8,7 +8,7 @@ namespace O24OpenAPI.Framework.Domain.Logging;
 /// The http log class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class HttpLog : BaseEntity
+public partial class HttpLog : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the request id

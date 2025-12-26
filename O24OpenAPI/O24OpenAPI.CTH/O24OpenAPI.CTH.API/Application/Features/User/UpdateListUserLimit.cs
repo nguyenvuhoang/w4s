@@ -5,22 +5,32 @@ using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User;
 
-public class UpdateListUserLimitCommnad : BaseTransactionModel, ICommand<List<UserLimitUpdateResponseModel>>
+public class UpdateListUserLimitCommnad
+    : BaseTransactionModel,
+        ICommand<List<UserLimitUpdateResponseModel>>
 {
     public List<UserLimitUpdateResponseModel> ListUserLimit { get; set; }
 }
 
-
-public class UpdateListUserLimitHandler(IUserLimitRepository userLimitRepository) : ICommandHandler<UpdateListUserLimitCommnad, List<UserLimitUpdateResponseModel>>
+public class UpdateListUserLimitHandler(IUserLimitRepository userLimitRepository)
+    : ICommandHandler<UpdateListUserLimitCommnad, List<UserLimitUpdateResponseModel>>
 {
-    public async Task<List<UserLimitUpdateResponseModel>> HandleAsync(UpdateListUserLimitCommnad request, CancellationToken cancellationToken = default)
+    public async Task<List<UserLimitUpdateResponseModel>> HandleAsync(
+        UpdateListUserLimitCommnad request,
+        CancellationToken cancellationToken = default
+    )
     {
         UserLimit checkUserLimit;
         var respone = new List<UserLimitUpdateResponseModel>();
 
         foreach (var item in request.ListUserLimit)
         {
-            checkUserLimit = await userLimitRepository.GetUserLimitToUpdate(item.RoleId, item.CommandId, item.CurrencyCode, item.LimitType);
+            checkUserLimit = await userLimitRepository.GetUserLimitToUpdate(
+                item.RoleId,
+                item.CommandId,
+                item.CurrencyCode,
+                item.LimitType
+            );
 
             if (checkUserLimit != null)
             {
@@ -54,6 +64,4 @@ public class UpdateListUserLimitHandler(IUserLimitRepository userLimitRepository
         }
         return respone;
     }
-
-    
 }

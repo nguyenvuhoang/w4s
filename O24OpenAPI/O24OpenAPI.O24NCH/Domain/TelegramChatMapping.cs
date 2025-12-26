@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.O24NCH.Domain;
 
-public class TelegramChatMapping : BaseEntity
+public partial class TelegramChatMapping : BaseEntity
 {
     public string UserCode { get; set; }
     public string PhoneNumber { get; set; }

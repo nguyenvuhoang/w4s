@@ -1,28 +1,27 @@
 using LinKit.Core.Abstractions;
 using LinqToDB;
 using O24OpenAPI.Core.Caching;
-using O24OpenAPI.Core.Events;
+using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data;
-using O24OpenAPI.Framework.Domain;
 
 namespace O24OpenAPI.Framework.Repositories;
 
-public interface IAuditLogRepository : IRepository<AuditLog>
+public interface IEntityAuditRepository : IRepository<EntityAudit>
 {
-    Task<List<AuditLog>> GetByExecutionIdAsync(
+    Task<List<EntityAudit>> GetByExecutionIdAsync(
         string executionId,
         CancellationToken cancellationToken = default
     );
 }
 
 [RegisterService(Lifetime.Scoped)]
-public class AuditLogRepository(
+public class EntityAuditRepository(
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-) : EntityRepository<AuditLog>(dataProvider, staticCacheManager), IAuditLogRepository
+) : EntityRepository<EntityAudit>(dataProvider, staticCacheManager), IEntityAuditRepository
 {
-    public async Task<List<AuditLog>> GetByExecutionIdAsync(
+    public async Task<List<EntityAudit>> GetByExecutionIdAsync(
         string executionId,
         CancellationToken cancellationToken = default
     )

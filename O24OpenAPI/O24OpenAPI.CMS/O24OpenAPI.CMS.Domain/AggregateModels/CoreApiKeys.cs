@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.CMS.Domain.AggregateModels;
 
-public class CoreApiKeys : BaseEntity
+public partial class CoreApiKeys : BaseEntity
 {
     public string? ClientId { get; set; }
     public string? ClientSecret { get; set; }

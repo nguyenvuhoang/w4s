@@ -1,6 +1,6 @@
 namespace O24OpenAPI.Web.CMS.Domain;
 
-public class D_NOTIFICATION : BaseEntity
+public partial class D_NOTIFICATION : BaseEntity
 {
     public string UserCode { get; set; }
     public string AppType { get; set; }

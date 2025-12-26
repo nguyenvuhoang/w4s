@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.Framework.Domain;
 
-public class MasterMapping : BaseEntity
+public partial class MasterMapping : BaseEntity
 {
     public string MasterClass { get; set; } = string.Empty;
 

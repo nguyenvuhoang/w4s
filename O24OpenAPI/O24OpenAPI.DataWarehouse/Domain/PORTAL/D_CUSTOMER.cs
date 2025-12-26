@@ -1,9 +1,9 @@
-using O24OpenAPI.Core.Domain;
 using System.ComponentModel.DataAnnotations;
+using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.DataWarehouse.Domain.PORTAL;
 
-public class D_CUSTOMER : BaseEntity
+public partial class D_CUSTOMER : BaseEntity
 {
     [Required]
     public string CUSTID { get; set; }
@@ -14,6 +14,7 @@ public class D_CUSTOMER : BaseEntity
     public string ADDRTEMP { get; set; }
     public char SEX { get; set; }
     public string NATION { get; set; }
+
     [Required]
     public string TEL { get; set; }
     public string FAX { get; set; }
@@ -32,6 +33,7 @@ public class D_CUSTOMER : BaseEntity
     public string CUSTCODE { get; set; }
     public string CFCode { get; set; }
     public string CTYPE { get; set; }
+
     [Required]
     public string PhoneCountryCode { get; set; }
     public string LinkedUserID { get; set; }
@@ -41,14 +43,17 @@ public class D_CUSTOMER : BaseEntity
     public DateTime? ExpiryDate { get; set; }
     public string KycID { get; set; }
     public string UserCreated { get; set; }
+
     [Required]
     public DateTime DateCreated { get; set; }
     public string UserModified { get; set; }
     public DateTime? LastModified { get; set; }
     public string UserApproved { get; set; }
     public DateTime? DateApproved { get; set; }
+
     [Required]
     public string Township { get; set; }
+
     [Required]
     public string Region { get; set; }
     public string FULLNAMEMM { get; set; }

@@ -1,4 +1,5 @@
 ﻿using LinKit.Core.Cqrs;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.CTH.API.Application.Constants;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
@@ -20,7 +21,7 @@ public class DeactivateSmartOTPAsyncCommand : BaseTransactionModel, ICommand<boo
 public class DeactivateSmartOTPAsyncHandle(IUserAuthenRepository userAuthenRepository)
     : ICommandHandler<DeactivateSmartOTPAsyncCommand, bool>
 {
-    [WorkflowStep("WF_STEP_CTH_DEACTIVE_USER_AUTHEN")]
+    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_DEACTIVE_USER_AUTHEN)]
     public async Task<bool> HandleAsync(
         DeactivateSmartOTPAsyncCommand request,
         CancellationToken cancellationToken = default

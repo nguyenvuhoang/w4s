@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace O24OpenAPI.Web.CMS.Domain;
 
-public class D_BANK : BaseEntity
+public partial class D_BANK : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the name
@@ -44,7 +44,6 @@ public class D_BANK : BaseEntity
     /// <summary>
     /// Gets or sets the value of the lookup supported
     /// </summary>
-
     [JsonProperty("lookupsupported")]
     public int LookupSupported { get; set; }
 
@@ -74,7 +73,6 @@ public class D_BANKModel : BaseTransactionModel
     /// <summary>
     /// Gets or sets the value of the name
     /// </summary>
-
     public string Name { get; set; }
 
     /// <summary>

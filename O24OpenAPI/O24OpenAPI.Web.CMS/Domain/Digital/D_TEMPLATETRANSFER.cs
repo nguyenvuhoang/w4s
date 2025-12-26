@@ -1,6 +1,6 @@
 namespace O24OpenAPI.Web.CMS.Domain;
 
-public class D_TEMPLATETRANSFER : BaseEntity
+public partial class D_TEMPLATETRANSFER : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the application code

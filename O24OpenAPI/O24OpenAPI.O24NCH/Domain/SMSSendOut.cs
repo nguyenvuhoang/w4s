@@ -3,7 +3,7 @@ using O24OpenAPI.O24NCH.Constant;
 
 namespace O24OpenAPI.O24NCH.Domain;
 
-public class SMSSendOut : BaseEntity
+public partial class SMSSendOut : BaseEntity
 {
     public string EndToEnd { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;

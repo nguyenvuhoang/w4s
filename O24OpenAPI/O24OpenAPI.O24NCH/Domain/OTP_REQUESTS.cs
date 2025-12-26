@@ -3,7 +3,7 @@ using O24OpenAPI.O24NCH.Constant;
 
 namespace O24OpenAPI.O24NCH.Domain;
 
-public class OTP_REQUESTS : BaseEntity
+public partial class OTP_REQUESTS : BaseEntity
 {
     public string UserCode { get; set; }
     public string PhoneNumber { get; set; } = string.Empty;

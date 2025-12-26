@@ -1,6 +1,6 @@
 namespace O24OpenAPI.Web.CMS.Domain;
 
-public class UserAccount : BaseEntity
+public partial class UserAccount : BaseEntity
 {
     public string UserCode { get; set; } // Mã người dùng
     public string OldUserCode { get; set; } // Mã người dùng cũ

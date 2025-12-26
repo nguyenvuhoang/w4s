@@ -1,3 +1,7 @@
+using System.Collections.Concurrent;
+using System.Data.Common;
+using System.Linq.Expressions;
+using System.Reflection;
 using FluentMigrator.Builders.Create.Table;
 using FluentMigrator.Expressions;
 using LinqToDB;
@@ -14,10 +18,6 @@ using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.Mapping;
 using O24OpenAPI.Data.Migrations;
-using System.Collections.Concurrent;
-using System.Data.Common;
-using System.Linq.Expressions;
-using System.Reflection;
 
 namespace O24OpenAPI.Data.DataProviders;
 
@@ -33,12 +33,11 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
     protected static ConcurrentDictionary<
         Type,
         O24OpenAPIEntityDescriptor
-    > EntityDescriptors
-    { get; } = new ConcurrentDictionary<Type, O24OpenAPIEntityDescriptor>();
+    > EntityDescriptors { get; } = new ConcurrentDictionary<Type, O24OpenAPIEntityDescriptor>();
 
     /// <summary>
     /// Gets the value of the linq to db data provider
-    /// </summary>
+    /// /// </summary>
     protected abstract IDataProvider LinqToDbDataProvider { get; }
 
     /// <summary>
@@ -123,7 +122,7 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
     {
         return EntityDescriptors.GetOrAdd(
             entityType,
-            delegate (Type t)
+            delegate(Type t)
             {
                 string tableName = NameCompatibilityManager.GetTableName(t);
                 string schemaName = AppSettingsHelper.GetSchemaName(t);
@@ -185,22 +184,23 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
             try
             {
                 return Array
-                .Find(
-                    targetType.GetProperties(
-                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty
-                    ),
-                    pi => name.Equals(NameCompatibilityManager.GetColumnName(targetType, pi.Name))
-                )
-                .PropertyType.GetTypeToMap()
-                .propType;
+                    .Find(
+                        targetType.GetProperties(
+                            BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty
+                        ),
+                        pi =>
+                            name.Equals(NameCompatibilityManager.GetColumnName(targetType, pi.Name))
+                    )
+                    .PropertyType.GetTypeToMap()
+                    .propType;
             }
             catch (Exception ex)
             {
-
-                Console.WriteLine($"[ERROR] Failed to get property type for column '{name}' in type '{targetType.Name}': {ex.Message}");
+                Console.WriteLine(
+                    $"[ERROR] Failed to get property type for column '{name}' in type '{targetType.Name}': {ex.Message}"
+                );
                 throw;
             }
-
         }
     }
 

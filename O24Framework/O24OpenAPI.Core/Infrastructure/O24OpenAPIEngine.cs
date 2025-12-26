@@ -61,12 +61,12 @@ public class O24OpenAPIEngine : IEngine
     /// <summary>
     /// Gets or sets the value of the service provider
     /// </summary>
-    public virtual IServiceProvider ServiceProvider { get; protected set; }
+    public virtual IServiceProvider? ServiceProvider { get; protected set; }
 
     /// <summary>
     /// Gets or sets the value of the service scope factory
     /// </summary>
-    public static IServiceScopeFactory ServiceScopeFactory { get; protected set; }
+    public static IServiceScopeFactory? ServiceScopeFactory { get; protected set; }
 
     /// <summary>
     /// Configures the request pipeline using the specified application

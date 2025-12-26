@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class D_SERVICE : BaseEntity
+public partial class D_SERVICE : BaseEntity
 {
     /// <summary>
     ///

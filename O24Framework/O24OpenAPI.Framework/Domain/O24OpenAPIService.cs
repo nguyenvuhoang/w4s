@@ -2,7 +2,7 @@ using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.Framework.Domain;
 
-public class O24OpenAPIService : BaseEntity
+public partial class O24OpenAPIService : BaseEntity
 {
     public string StepCode { get; set; }
     public string FullClassName { get; set; }
@@ -11,4 +11,5 @@ public class O24OpenAPIService : BaseEntity
     public bool ShouldAwait { get; set; } = false;
     public bool IsInquiry { get; set; } = false;
     public bool IsModuleExecute { get; set; } = false;
+    public bool IsAutoReverse { get; set; } = true;
 }

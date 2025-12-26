@@ -2,7 +2,7 @@ using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 
-public class UserCommand : BaseEntity
+public partial class UserCommand : BaseEntity
 {
     public string ApplicationCode { get; set; }
     public string CommandId { get; set; }

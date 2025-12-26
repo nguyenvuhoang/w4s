@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class FormFieldDefinition : BaseEntity
+public partial class FormFieldDefinition : BaseEntity
 {
     public string FormId { get; set; }
     public string FieldName { get; set; }

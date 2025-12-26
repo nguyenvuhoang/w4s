@@ -19,6 +19,7 @@ public partial class ReportConfig : BaseEntity
     /// </summary>
     [JsonProperty("name")]
     public string Name { get; set; }
+
     /// <summary>
     ///
     /// </summary>

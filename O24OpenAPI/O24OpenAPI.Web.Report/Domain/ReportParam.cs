@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.Web.Report.Domain;
 
-public class ReportParam : BaseEntity
+public partial class ReportParam : BaseEntity
 {
     public ReportParam() { }
 

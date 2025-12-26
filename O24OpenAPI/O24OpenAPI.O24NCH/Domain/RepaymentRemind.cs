@@ -5,12 +5,13 @@ using O24OpenAPI.Core.Domain;
 /// <summary>
 /// Defines the <see cref="RepaymentRemind" />
 /// </summary>
-public class RepaymentRemind : BaseEntity
+public partial class RepaymentRemind : BaseEntity
 {
     /// <summary>
     /// Gets or sets the AccountNumber
     /// </summary>
     public string AccountNumber { get; set; }
+
     /// <summary>
     /// Get or sets the CustomerName
     /// </summary>
@@ -20,6 +21,7 @@ public class RepaymentRemind : BaseEntity
     /// Gets or sets the DueDate
     /// </summary>
     public DateTime DueDate { get; set; }
+
     /// <summary>
     /// Due amount
     /// </summary>

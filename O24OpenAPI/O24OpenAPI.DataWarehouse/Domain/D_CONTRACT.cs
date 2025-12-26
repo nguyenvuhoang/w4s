@@ -1,38 +1,47 @@
-using O24OpenAPI.Core.Domain;
 using System.ComponentModel.DataAnnotations;
+using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.DataWarehouse.Domain;
 
-public class D_CONTRACT : BaseEntity
+public partial class D_CONTRACT : BaseEntity
 {
     [Required]
     public string ContractNumber { get; set; }
     public string ContractCode { get; set; }
+
     [Required]
     public string CustomerCode { get; set; }
     public string ContractType { get; set; }
+
     [Required]
     public string UserType { get; set; }
     public string ProductID { get; set; }
+
     [Required]
     public string BranchID { get; set; }
+
     [Required]
     public DateTime CreateDate { get; set; }
+
     [Required]
     public DateTime EndDate { get; set; }
     public DateTime? LastModify { get; set; }
+
     [Required]
     public string UserCreate { get; set; }
     public string UserLastModify { get; set; }
+
     [Required]
     public string UserApprove { get; set; }
     public DateTime? ApproveDate { get; set; }
+
     [Required]
     public string Status { get; set; }
     public string IsSpecialMan { get; set; }
     public string IsReceiverList { get; set; }
     public string IsAutoRenew { get; set; }
     public string Description { get; set; }
+
     [Required]
     public int ContractLevelId { get; set; }
     public string Mer_Code { get; set; }

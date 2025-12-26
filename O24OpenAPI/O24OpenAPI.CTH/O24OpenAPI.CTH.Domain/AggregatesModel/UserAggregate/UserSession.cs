@@ -6,7 +6,7 @@ namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 /// The user session class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class UserSession : BaseEntity
+public partial class UserSession : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the user id

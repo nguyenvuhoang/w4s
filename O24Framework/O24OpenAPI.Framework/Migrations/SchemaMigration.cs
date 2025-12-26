@@ -102,7 +102,7 @@ public class SchemaMigration : AutoReversingMigration
         if (!Schema.Table(nameof(EntityAudit)).Exists())
         {
             Create.TableFor<EntityAudit>();
-            Create.Index().OnTable(nameof(EntityAudit)).OnColumn(nameof(EntityAudit.Status));
+            Create.Index().OnTable(nameof(EntityAudit)).OnColumn(nameof(EntityAudit.ExecutionId));
         }
     }
 }

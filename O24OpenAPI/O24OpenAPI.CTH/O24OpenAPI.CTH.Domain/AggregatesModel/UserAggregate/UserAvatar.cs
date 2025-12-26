@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 
-public class UserAvatar : BaseEntity
+public partial class UserAvatar : BaseEntity
 {
     public string UserCode { get; set; }
     public string ImageUrl { get; set; }

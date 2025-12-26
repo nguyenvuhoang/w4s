@@ -6,7 +6,7 @@ namespace O24OpenAPI.Framework.Domain;
 /// The sql audit log class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class SQLAuditLog : BaseEntity
+public partial class SQLAuditLog : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the command name

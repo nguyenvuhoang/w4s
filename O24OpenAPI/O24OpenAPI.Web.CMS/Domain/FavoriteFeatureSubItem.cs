@@ -3,7 +3,7 @@
 namespace O24OpenAPI.Web.CMS.Domain;
 
 [Table("D_FAVORITEFEATURESUBITEM")]
-public class FavoriteFeatureSubItem : BaseEntity
+public partial class FavoriteFeatureSubItem : BaseEntity
 {
     public string SubItemCode { get; set; }
     public string Icon { get; set; }

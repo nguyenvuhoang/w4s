@@ -2,9 +2,9 @@
 
 namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
-public class WalletBalance : BaseEntity
+public partial class WalletBalance : BaseEntity
 {
-    public required string AccountNumber { get; set; }
+    public string? AccountNumber { get; set; }
     public decimal Balance { get; set; }
     public decimal BonusBalance { get; set; }
     public decimal LockedBalance { get; set; }

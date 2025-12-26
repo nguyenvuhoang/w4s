@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.O24NCH.Domain;
 
-public class EmailSendOut : BaseEntity
+public partial class EmailSendOut : BaseEntity
 {
     public string ConfigId { get; set; }
     public string TemplateId { get; set; }

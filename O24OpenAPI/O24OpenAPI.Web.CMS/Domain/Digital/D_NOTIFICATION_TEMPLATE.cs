@@ -1,6 +1,6 @@
 namespace O24OpenAPI.Web.CMS.Domain;
 
-public class D_NOTIFICATION_TEMPLATE : BaseEntity
+public partial class D_NOTIFICATION_TEMPLATE : BaseEntity
 {
     public string TemplateID { get; set; }
     public string Title { get; set; }

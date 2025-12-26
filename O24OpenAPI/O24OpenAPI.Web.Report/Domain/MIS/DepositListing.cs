@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.Web.Report.Domain.MIS;
 
-public class DepositListing : BaseEntity
+public partial class DepositListing : BaseEntity
 {
     public string AccountNumber { get; set; }
     public DateTime OpenDate { get; set; }

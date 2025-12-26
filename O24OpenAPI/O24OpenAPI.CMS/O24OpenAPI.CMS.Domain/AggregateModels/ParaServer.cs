@@ -4,25 +4,25 @@ public partial class ParaServer : BaseEntity
 {
     /// <summary>
     /// </summary>
-    public string Code { get; set; }
+    public string? Code { get; set; }
 
     /// <summary>
     ///
     /// </summary>
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     /// <summary>
     ///
     /// </summary>
-    public string Value { get; set; }
+    public string? Value { get; set; }
 
     /// <summary>
     ///
     /// </summary>
-    public string DataType { get; set; }
+    public string? DataType { get; set; }
 
     /// <summary>
     ///
     /// </summary>
-    public string App { get; set; }
+    public string? App { get; set; }
 }

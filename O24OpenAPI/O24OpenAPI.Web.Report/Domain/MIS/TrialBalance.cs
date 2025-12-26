@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.Web.Report.Domain.MIS;
 
-public class TrialBalance : BaseEntity
+public partial class TrialBalance : BaseEntity
 {
     public string SubCOA { get; set; }
     public string BranchCode { get; set; }

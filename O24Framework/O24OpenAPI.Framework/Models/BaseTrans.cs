@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.Framework.Models;
 
-public abstract class BaseTrans : BaseEntity
+public abstract partial class BaseTrans : BaseEntity
 {
     public string TransId { get; set; }
 

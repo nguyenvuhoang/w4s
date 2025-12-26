@@ -2,7 +2,7 @@ using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.Web.Report.Domain.PORTAL;
 
-public class D_CONTRACT : BaseEntity
+public partial class D_CONTRACT : BaseEntity
 {
     public string ContractNumber { get; set; }
     public string ContractCode { get; set; }

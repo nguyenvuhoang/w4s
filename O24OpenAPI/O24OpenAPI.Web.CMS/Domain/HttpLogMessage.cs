@@ -4,7 +4,7 @@ namespace O24OpenAPI.Web.CMS.Domain;
 /// The request log class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class HttpLogMessage : BaseEntity
+public partial class HttpLogMessage : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the begin time
@@ -14,7 +14,6 @@ public class HttpLogMessage : BaseEntity
     /// <summary>
     /// Gets or sets the value of the begin time
     /// </summary>
-
     public DateTimeOffset EndTime { get; set; }
 
     /// <summary>

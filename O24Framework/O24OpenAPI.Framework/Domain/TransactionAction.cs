@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.Framework.Domain;
 
-public class TransactionAction : BaseEntity
+public partial class TransactionAction : BaseEntity
 {
     public string TransCode { get; set; }
 

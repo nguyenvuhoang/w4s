@@ -6,7 +6,7 @@ namespace O24OpenAPI.Framework.Domain;
 /// /// The session manager class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class SessionManager : BaseEntity
+public partial class SessionManager : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the token

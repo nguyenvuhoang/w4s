@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.O24NCH.Domain;
 
-public class PushNotificationLog : BaseEntity
+public partial class PushNotificationLog : BaseEntity
 {
     public string Token { get; set; }
     public string Title { get; set; }

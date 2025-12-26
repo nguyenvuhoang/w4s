@@ -2,6 +2,4 @@
 
 namespace O24OpenAPI.W4S.Domain.AggregatesModel.SampleAggregate;
 
-public class Sample : BaseEntity
-{
-}
+public partial class Sample : BaseEntity { }

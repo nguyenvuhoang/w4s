@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 
-public class RoleType : BaseEntity
+public partial class RoleType : BaseEntity
 {
     public string RoleTypeCode { get; set; } = string.Empty;
     public string RoleTypeName { get; set; } = string.Empty;

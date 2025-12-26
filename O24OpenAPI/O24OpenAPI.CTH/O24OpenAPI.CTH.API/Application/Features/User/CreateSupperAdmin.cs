@@ -135,7 +135,8 @@ public class CreateSupperAdminCommand : BaseTransactionModel, ICommand<bool?>
 [CqrsHandler]
 public class CreateSupperAdminHandler(
     ISupperAdminRepository supperAdminRepository,
-    IUserAccountRepository userAccountRepository, IUserPasswordRepository userPasswordRepository
+    IUserAccountRepository userAccountRepository,
+    IUserPasswordRepository userPasswordRepository
 ) : ICommandHandler<CreateSupperAdminCommand, bool?>
 {
     public async Task<bool?> HandleAsync(
@@ -178,7 +179,7 @@ public class CreateSupperAdminHandler(
             ChannelId = request.ChannelId,
             UserId = sAdmin.UserId,
             Password = hashPassword,
-            Salt = salt
+            Salt = salt,
         };
 
         await userAccountRepository.InsertAsync(userAccount);

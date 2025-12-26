@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class TranslationEntry : BaseEntity
+public partial class TranslationEntry : BaseEntity
 {
     public string Key { get; set; }
     public string English { get; set; }

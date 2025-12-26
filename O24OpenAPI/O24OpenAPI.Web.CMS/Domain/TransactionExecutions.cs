@@ -1,6 +1,6 @@
 namespace O24OpenAPI.Web.CMS.Domain;
 
-public class TransactionExecutions : BaseEntity
+public partial class TransactionExecutions : BaseEntity
 {
     public string WorkflowId { get; set; } // ID của workflow
     public string StoreProcedure { get; set; } // Tên thủ tục lưu trữ

@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.O24NCH.Domain;
 
-public class MailTemplate : BaseEntity
+public partial class MailTemplate : BaseEntity
 {
     public string TemplateId { get; set; }
     public string Status { get; set; }
@@ -14,7 +14,17 @@ public class MailTemplate : BaseEntity
     public string Attachments { get; set; }
 
     public MailTemplate() { }
-    public MailTemplate(string templateId, string status, string description, string subject, string body, string dataSample, bool sendAsPDF, string attachments)
+
+    public MailTemplate(
+        string templateId,
+        string status,
+        string description,
+        string subject,
+        string body,
+        string dataSample,
+        bool sendAsPDF,
+        string attachments
+    )
     {
         TemplateId = templateId;
         Status = status;

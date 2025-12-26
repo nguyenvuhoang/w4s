@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.O24NCH.Domain;
 
-public class NotificationTemplate : BaseEntity
+public partial class NotificationTemplate : BaseEntity
 {
     public string TemplateID { get; set; } = null!;
     public string Title { get; set; } = null!;

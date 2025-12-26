@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.ControlHub.Domain;
 
-public class UserBanner : BaseEntity
+public partial class UserBanner : BaseEntity
 {
     public string UserCode { get; set; }
     public string BannerSource { get; set; }

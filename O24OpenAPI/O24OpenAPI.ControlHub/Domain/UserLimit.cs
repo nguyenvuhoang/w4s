@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.ControlHub.Domain;
 
-public class UserLimit : BaseEntity
+public partial class UserLimit : BaseEntity
 {
     public int RoleId { get; set; }
     public string CommandId { get; set; } = null!;

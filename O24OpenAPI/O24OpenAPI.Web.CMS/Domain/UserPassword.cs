@@ -1,6 +1,6 @@
 namespace O24OpenAPI.Web.CMS.Domain;
 
-public class UserPassword : BaseEntity
+public partial class UserPassword : BaseEntity
 {
     public string UserCode { get; set; } // Mã người dùng
     public string Password { get; set; } // Mật khẩu

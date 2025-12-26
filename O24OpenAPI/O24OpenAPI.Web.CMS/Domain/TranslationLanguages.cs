@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class TranslationLanguages : BaseEntity
+public partial class TranslationLanguages : BaseEntity
 {
     public string ChannelId { get; set; }
     public string Language { get; set; }

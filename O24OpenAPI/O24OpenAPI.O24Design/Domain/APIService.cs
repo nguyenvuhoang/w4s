@@ -5,7 +5,7 @@ using O24OpenAPI.Core.Domain;
 /// <summary>
 /// Defines the <see cref="APIService" />
 /// </summary>
-public class APIService : BaseEntity
+public partial class APIService : BaseEntity
 {
     /// <summary>
     /// Gets or sets the ServiceCode
@@ -25,7 +25,7 @@ public class APIService : BaseEntity
     /// <summary>
     /// Gets or sets the ServiceType
     /// </summary>
-    public string ServiceType { get; set; } = "REST";// REST, GRPC, ASYNC, MCP
+    public string ServiceType { get; set; } = "REST"; // REST, GRPC, ASYNC, MCP
 
     /// <summary>
     /// Gets or sets the BaseUrl

@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.Web.Report.Domain.MIS;
 
-public class MISIndicatorDefinition : BaseEntity
+public partial class MISIndicatorDefinition : BaseEntity
 {
     public string ReportCode { get; set; }
     public string ColumnName { get; set; }

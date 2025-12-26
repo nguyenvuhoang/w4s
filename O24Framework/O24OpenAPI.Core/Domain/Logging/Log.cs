@@ -4,7 +4,7 @@ namespace O24OpenAPI.Core.Domain.Logging;
 /// The log class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class Log : BaseEntity
+public partial class Log : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the log level id
@@ -14,17 +14,17 @@ public class Log : BaseEntity
     /// <summary>
     /// Gets or sets the value of the short message
     /// </summary>
-    public string ShortMessage { get; set; }
+    public string? ShortMessage { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the full message
     /// </summary>
-    public string FullMessage { get; set; }
+    public string? FullMessage { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the ip address
     /// </summary>
-    public string IpAddress { get; set; }
+    public string? IpAddress { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the user id
@@ -34,12 +34,12 @@ public class Log : BaseEntity
     /// <summary>
     /// Gets or sets the value of the page url
     /// </summary>
-    public string PageUrl { get; set; }
+    public string? PageUrl { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the referred url
     /// </summary>
-    public string ReferredUrl { get; set; }
+    public string? ReferredUrl { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the created on utc

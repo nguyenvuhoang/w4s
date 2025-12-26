@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.ControlHub.Domain;
 
-public class BankWorkingCalendar : BaseEntity
+public partial class BankWorkingCalendar : BaseEntity
 {
     /// <summary>Bank code, e.g., "EMI".</summary>
     public string BankCode { get; set; } = null!;

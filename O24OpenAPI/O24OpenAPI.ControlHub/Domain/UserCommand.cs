@@ -2,7 +2,7 @@ using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.ControlHub.Domain;
 
-public class UserCommand : BaseEntity
+public partial class UserCommand : BaseEntity
 {
     public string ApplicationCode { get; set; }
     public string CommandId { get; set; }

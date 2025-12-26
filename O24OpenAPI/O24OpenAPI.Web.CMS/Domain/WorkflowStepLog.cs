@@ -4,7 +4,7 @@ namespace O24OpenAPI.Web.CMS.Domain;
 /// The workflow step log class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class WorkflowStepLog : BaseEntity
+public partial class WorkflowStepLog : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the execution id

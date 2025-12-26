@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.Web.Report.Domain.PORTAL;
 
-public class D_COUNTRY : BaseEntity
+public partial class D_COUNTRY : BaseEntity
 {
     /// <summary>
     ///

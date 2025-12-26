@@ -1,6 +1,7 @@
 ﻿using LinKit.Core.Cqrs;
 using LinqToDB;
 using Newtonsoft.Json.Linq;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.CTH.API.Application.Constants;
@@ -39,7 +40,7 @@ public class ChangePasswordByO24UserHandle(
     IUserAccountRepository userAccountRepository
 ) : ICommandHandler<ChangePasswordByO24UserCommand, JToken>
 {
-    [WorkflowStep("WF_STEP_CTH_CHANGE_PASSWORD")]
+    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_CHANGE_PASSWORD)]
     public async Task<JToken> HandleAsync(
         ChangePasswordByO24UserCommand request,
         CancellationToken cancellationToken = default
@@ -58,15 +59,11 @@ public class ChangePasswordByO24UserHandle(
             );
         string hashPassword = O9Encrypt.sha_sha256(request.NewPassword, userAccount.UserCode);
 
-        var userPassword = await userPasswordRepository.GetByUserCodeAsync(
-            userAccount.UserCode
-        );
+        var userPassword = await userPasswordRepository.GetByUserCodeAsync(userAccount.UserCode);
 
         if (userPassword == null)
         {
-            throw new O24OpenAPIException(
-                $"This user {request.LoginName} have no user password"
-            );
+            throw new O24OpenAPIException($"This user {request.LoginName} have no user password");
         }
         else
         {

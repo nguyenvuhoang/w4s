@@ -6,7 +6,4 @@ namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 /// The user session class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class IJwtToken : BaseEntity
-{
-
-}
+public partial class IJwtToken : BaseEntity { }

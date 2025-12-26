@@ -6,7 +6,7 @@ namespace O24OpenAPI.Framework.Domain;
 /// The gl entries class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class GLEntries : BaseEntity
+public partial class GLEntries : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the transaction number

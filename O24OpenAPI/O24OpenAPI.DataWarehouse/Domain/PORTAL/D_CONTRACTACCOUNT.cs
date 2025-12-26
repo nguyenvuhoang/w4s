@@ -2,7 +2,7 @@ using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.DataWarehouse.Domain.PORTAL;
 
-public class D_CONTRACTACCOUNT : BaseEntity
+public partial class D_CONTRACTACCOUNT : BaseEntity
 {
     public string ContractNumber { get; set; }
     public string AccountNumber { get; set; }

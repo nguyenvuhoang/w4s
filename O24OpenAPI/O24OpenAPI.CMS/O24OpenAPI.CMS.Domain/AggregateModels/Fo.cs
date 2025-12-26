@@ -8,37 +8,37 @@ public partial class Fo : BaseEntity
     /// User code
     /// </summary>
     [JsonProperty("input")]
-    public string Input { get; set; }
+    public string? Input { get; set; }
 
     /// <summary>
     /// Username
     /// </summary>
     [JsonProperty("actions")]
-    public string Actions { get; set; }
+    public string? Actions { get; set; }
 
     /// <summary>
     /// User code
     /// </summary>
     [JsonProperty("request")]
-    public string Request { get; set; }
+    public string? Request { get; set; }
 
     /// <summary>
     /// Username
     /// </summary>
     [JsonProperty("status")]
-    public string Status { get; set; }
+    public string? Status { get; set; }
 
     /// <summary>
     /// User code
     /// </summary>
     [JsonProperty("txtype")]
-    public string Txtype { get; set; }
+    public string? Txtype { get; set; }
 
     /// <summary>
     /// Username
     /// </summary>
     [JsonProperty("txcode")]
-    public string Txcode { get; set; }
+    public string? Txcode { get; set; }
 
     /// <summary>
     /// User code
@@ -56,7 +56,7 @@ public partial class Fo : BaseEntity
     /// User code
     /// </summary>
     [JsonProperty("txname")]
-    public string Txname { get; set; }
+    public string? Txname { get; set; }
 
     /// <summary>
     /// User code
@@ -75,5 +75,5 @@ public partial class Fo : BaseEntity
     /// </summary>
     /// <value></value>
     [JsonProperty("app")]
-    public string App { get; set; }
+    public string? App { get; set; }
 }

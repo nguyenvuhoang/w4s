@@ -12,6 +12,7 @@ public partial class AccountingTransaction : BaseEntity
     /// AccountCommon
     /// </summary>
     public AccountingTransaction() { }
+
     /// <summary>
     /// Txrefid
     /// </summary>

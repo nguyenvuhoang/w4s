@@ -8,7 +8,6 @@ using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Helper;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Framework.Models.O24OpenAPI;
 using O24OpenAPI.Framework.Services;

@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.Web.Report.Domain.MIS;
 
-public class MISReport : BaseEntity
+public partial class MISReport : BaseEntity
 {
     public string ReportCode { get; set; }
     public string Item { get; set; }

@@ -14,8 +14,8 @@ public partial class Fo : BaseEntity
     /// Username
     /// </summary>
     [JsonProperty("actions")]
-
     public string Actions { get; set; }
+
     /// <summary>
     /// User code
     /// </summary>
@@ -27,6 +27,7 @@ public partial class Fo : BaseEntity
     /// </summary>
     [JsonProperty("status")]
     public string Status { get; set; }
+
     /// <summary>
     /// User code
     /// </summary>
@@ -38,6 +39,7 @@ public partial class Fo : BaseEntity
     /// </summary>
     [JsonProperty("txcode")]
     public string Txcode { get; set; }
+
     /// <summary>
     /// User code
     /// </summary>
@@ -49,6 +51,7 @@ public partial class Fo : BaseEntity
     /// </summary>
     [JsonProperty("updateTime")]
     public long Updatetime { get; set; } = DateTime.Now.Ticks;
+
     /// <summary>
     /// User code
     /// </summary>
@@ -66,6 +69,7 @@ public partial class Fo : BaseEntity
     /// </summary>
     [JsonProperty("order")]
     public int DisplayOrder { get; set; } = 1;
+
     /// <summary>
     ///
     /// </summary>

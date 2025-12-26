@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.Web.Report.Domain.PORTAL;
 
-public class D_REGION : BaseEntity
+public partial class D_REGION : BaseEntity
 {
     public string RegionCode { get; set; }
     public string RegionName { get; set; }

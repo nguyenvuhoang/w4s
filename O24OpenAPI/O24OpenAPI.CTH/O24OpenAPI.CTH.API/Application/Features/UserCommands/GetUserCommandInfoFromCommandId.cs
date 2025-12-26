@@ -31,9 +31,7 @@ public class GetUserCommandInfoFromCommandIdHandler(
             )
             from userRole in userRoleRepository.Table.DefaultIfEmpty()
             from userRight in userRightRepository
-                .Table.Where(s =>
-                    s.CommandId == request.CommandId && s.RoleId == userRole.RoleId
-                )
+                .Table.Where(s => s.CommandId == request.CommandId && s.RoleId == userRole.RoleId)
                 .DefaultIfEmpty()
 
             select new CommandIdInfoModel()

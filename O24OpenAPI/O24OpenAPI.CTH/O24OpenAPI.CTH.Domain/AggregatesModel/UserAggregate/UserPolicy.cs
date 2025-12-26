@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 
-public class UserPolicy : BaseEntity
+public partial class UserPolicy : BaseEntity
 {
     public int PolicyCode { get; set; }
     public string ServiceID { get; set; } = string.Empty;

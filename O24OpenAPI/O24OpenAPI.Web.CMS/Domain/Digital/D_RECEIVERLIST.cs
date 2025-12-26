@@ -4,7 +4,7 @@ namespace O24OpenAPI.Web.CMS.Domain;
 /// The receiverlist class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class D_RECEIVERLIST : BaseEntity
+public partial class D_RECEIVERLIST : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the code

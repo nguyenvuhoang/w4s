@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.DataWarehouse.Domain;
 
-public class C_CODELIST : BaseEntity
+public partial class C_CODELIST : BaseEntity
 {
     public string CodeId { get; set; }
     public string CodeName { get; set; }

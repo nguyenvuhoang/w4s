@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class D_COUNTRY : BaseEntity
+public partial class D_COUNTRY : BaseEntity
 {
     /// <summary>
     ///

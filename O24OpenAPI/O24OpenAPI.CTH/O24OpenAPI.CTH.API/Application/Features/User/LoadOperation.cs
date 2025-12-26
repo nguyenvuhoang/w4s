@@ -1,197 +1,190 @@
 ﻿using LinKit.Core.Cqrs;
 using LinqToDB;
 using Newtonsoft.Json.Linq;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.CTH.API.Application.Models.Roles;
 using O24OpenAPI.CTH.API.Application.Models.UserCommandModels;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Models;
 
-namespace O24OpenAPI.CTH.API.Application.Features.User
+namespace O24OpenAPI.CTH.API.Application.Features.User;
+
+public class LoadOperationCommand : BaseTransactionModel, ICommand<JObject>
 {
-    public class LoadOperationCommand : BaseTransactionModel, ICommand<JObject>
+    public string CommandId { get; set; }
+}
+
+[CqrsHandler]
+public class LoadOperationHandle(
+    IUserCommandRepository userCommandRepository,
+    IUserRoleRepository userRoleRepository,
+    IUserRightRepository userRightRepository
+) : ICommandHandler<LoadOperationCommand, JObject>
+{
+    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_LOAD_OPERATION)]
+    public Task<JObject> HandleAsync(
+        LoadOperationCommand request,
+        CancellationToken cancellationToken = default
+    )
     {
-        public string CommandId { get; set; }
+        var model = new UserCommandRequestModel
+        {
+            CommandId = request.CommandId,
+            ChannelId = request.ChannelId,
+        };
+
+        return LoadRoleOperationAsync(model);
     }
 
-    [CqrsHandler]
-    public class LoadOperationHandle(
-        IUserCommandRepository userCommandRepository,
-        IUserRoleRepository userRoleRepository,
-        IUserRightRepository userRightRepository
-    ) : ICommandHandler<LoadOperationCommand, JObject>
+    public async Task<JObject> LoadRoleOperationAsync(UserCommandRequestModel model)
     {
-        [WorkflowStep("WF_STEP_CTH_LOAD_OPERATION")]
-        public Task<JObject> HandleAsync(
-            LoadOperationCommand request,
-            CancellationToken cancellationToken = default
-        )
+        var result = new JObject();
+
+        if (string.IsNullOrEmpty(model.CommandId) || string.IsNullOrEmpty(model.ChannelId))
         {
-            var model = new UserCommandRequestModel
-            {
-                CommandId = request.CommandId,
-                ChannelId = request.ChannelId,
-            };
-
-            return LoadRoleOperationAsync(model);
-        }
-
-        public async Task<JObject> LoadRoleOperationAsync(UserCommandRequestModel model)
-        {
-            var result = new JObject();
-
-            if (string.IsNullOrEmpty(model.CommandId) || string.IsNullOrEmpty(model.ChannelId))
-            {
-                result["error"] = $"Missing CommandId {model.CommandId} or ChannelId {model.ChannelId}";
-                return result;
-            }
-
-            var command_id = model.CommandId;
-            var app = model.ChannelId;
-
-            var getOperationData = await GetUserCommandInfoFromParentId(app, command_id);
-            var getCommandsFromCommand =
-                await GetUserCommandInfoFromCommandId(app, command_id) ?? [];
-
-            getCommandsFromCommand.AddRange(getOperationData ?? []);
-            getCommandsFromCommand = [.. getCommandsFromCommand.OrderBy(x => x.RoleId)];
-
-            var operationHeader = getCommandsFromCommand
-                .Where(s => s.ParentId == command_id && s.CommandType == "C")
-                .Select(s => new OperationHeaderModel
-                {
-                    cmdid = s.CommandId,
-                    caption = s.CommandName,
-                })
-                .DistinctBy(p => p.cmdid)
-                .ToList();
-
-            var operationBody = getCommandsFromCommand
-                .Where(s => s.CommandId == command_id || s.CommandType == "C")
-                .ToList();
-
-            result["operation_header"] = JArray.FromObject(operationHeader);
-            result["operation_body"] = JArray.FromObject(operationBody);
-
+            result["error"] =
+                $"Missing CommandId {model.CommandId} or ChannelId {model.ChannelId}";
             return result;
         }
 
-        public virtual async Task<List<CommandIdInfoModel>> GetUserCommandInfoFromParentId(
-            string applicationCode,
-            string parentId
-        )
-        {
-            var listLeftJoin = await (
-                from userCommand in userCommandRepository.Table.Where(s =>
-                    s.ApplicationCode == applicationCode && s.ParentId == parentId && s.Enabled
+        var command_id = model.CommandId;
+        var app = model.ChannelId;
+
+        var getOperationData = await GetUserCommandInfoFromParentId(app, command_id);
+        var getCommandsFromCommand =
+            await GetUserCommandInfoFromCommandId(app, command_id) ?? [];
+
+        getCommandsFromCommand.AddRange(getOperationData ?? []);
+        getCommandsFromCommand = [.. getCommandsFromCommand.OrderBy(x => x.RoleId)];
+
+        var operationHeader = getCommandsFromCommand
+            .Where(s => s.ParentId == command_id && s.CommandType == "C")
+            .Select(s => new OperationHeaderModel
+            {
+                cmdid = s.CommandId,
+                caption = s.CommandName,
+            })
+            .DistinctBy(p => p.cmdid)
+            .ToList();
+
+        var operationBody = getCommandsFromCommand
+            .Where(s => s.CommandId == command_id || s.CommandType == "C")
+            .ToList();
+
+        result["operation_header"] = JArray.FromObject(operationHeader);
+        result["operation_body"] = JArray.FromObject(operationBody);
+
+        return result;
+    }
+
+    public virtual async Task<List<CommandIdInfoModel>> GetUserCommandInfoFromParentId(
+        string applicationCode,
+        string parentId
+    )
+    {
+        var listLeftJoin = await (
+            from userCommand in userCommandRepository.Table.Where(s =>
+                s.ApplicationCode == applicationCode && s.ParentId == parentId && s.Enabled
+            )
+            from userRole in userRoleRepository.Table.DefaultIfEmpty()
+            from userRight in userRightRepository
+                .Table.Where(s =>
+                    s.CommandId == userCommand.CommandId && s.RoleId == userRole.RoleId
                 )
-                from userRole in userRoleRepository.Table.DefaultIfEmpty()
-                from userRight in userRightRepository
-                    .Table.Where(s =>
-                        s.CommandId == userCommand.CommandId && s.RoleId == userRole.RoleId
+                .DefaultIfEmpty()
+
+            select new CommandIdInfoModel()
+            {
+                ParentId = userCommand.ParentId,
+                CommandId = userCommand.CommandId,
+                CommandName = userCommand.CommandName,
+                ApplicationCode = userCommand.ApplicationCode,
+                CommandType = userCommand.CommandType,
+                RoleId = userRole.RoleId,
+                RoleName = userRole.RoleName,
+                CommandIdDetail =
+                    (
+                        userCommand.CommandId == userRight.CommandId
+                        && userRole.RoleId == userRight.RoleId
                     )
-                    .DefaultIfEmpty()
+                        ? userRight.CommandIdDetail
+                        : null,
+                Invoke =
+                    (
+                        userCommand.CommandId == userRight.CommandId
+                        && userRole.RoleId == userRight.RoleId
+                    )
+                        ? userRight.Invoke
+                        : 0,
+                Approve =
+                    (
+                        userCommand.CommandId == userRight.CommandId
+                        && userRole.RoleId == userRight.RoleId
+                    )
+                        ? userRight.Approve
+                        : 0,
+                GroupMenuIcon = userCommand.GroupMenuIcon,
+                GroupMenuVisible = userCommand.GroupMenuVisible,
+                GroupMenuId = userCommand.GroupMenuId,
+                GroupMenuListAuthorizeForm = userCommand.GroupMenuListAuthorizeForm,
+            }
+        ).OrderBy(s => s.RoleId).ThenBy(s => s.ParentId).ThenBy(s => s.CommandId).ToListAsync();
 
-                select new CommandIdInfoModel()
-                {
-                    ParentId = userCommand.ParentId,
-                    CommandId = userCommand.CommandId,
-                    CommandName = userCommand.CommandName,
-                    ApplicationCode = userCommand.ApplicationCode,
-                    CommandType = userCommand.CommandType,
-                    RoleId = userRole.RoleId,
-                    RoleName = userRole.RoleName,
-                    CommandIdDetail =
-                        (
-                            userCommand.CommandId == userRight.CommandId
-                            && userRole.RoleId == userRight.RoleId
-                        )
-                            ? userRight.CommandIdDetail
-                            : null,
-                    Invoke =
-                        (
-                            userCommand.CommandId == userRight.CommandId
-                            && userRole.RoleId == userRight.RoleId
-                        )
-                            ? userRight.Invoke
-                            : 0,
-                    Approve =
-                        (
-                            userCommand.CommandId == userRight.CommandId
-                            && userRole.RoleId == userRight.RoleId
-                        )
-                            ? userRight.Approve
-                            : 0,
-                    GroupMenuIcon = userCommand.GroupMenuIcon,
-                    GroupMenuVisible = userCommand.GroupMenuVisible,
-                    GroupMenuId = userCommand.GroupMenuId,
-                    GroupMenuListAuthorizeForm = userCommand.GroupMenuListAuthorizeForm,
-                }
+        return listLeftJoin;
+    }
+
+    public virtual async Task<List<CommandIdInfoModel>> GetUserCommandInfoFromCommandId(
+        string applicationCode,
+        string commandId
+    )
+    {
+        var listLeftJoin = await (
+            from userCommand in userCommandRepository.Table.Where(s =>
+                s.ApplicationCode == applicationCode && s.CommandId == commandId && s.Enabled
             )
-                .OrderBy(s => s.RoleId)
-                .ThenBy(s => s.ParentId)
-                .ThenBy(s => s.CommandId)
-                .ToListAsync();
+            from userRole in userRoleRepository.Table.DefaultIfEmpty()
+            from userRight in userRightRepository
+                .Table.Where(s => s.CommandId == commandId && s.RoleId == userRole.RoleId)
+                .DefaultIfEmpty()
 
-            return listLeftJoin;
-        }
+            select new CommandIdInfoModel()
+            {
+                ParentId = userCommand.ParentId,
+                CommandId = userCommand.CommandId,
+                CommandName = userCommand.CommandName,
+                ApplicationCode = userCommand.ApplicationCode,
+                CommandType = userCommand.CommandType,
+                RoleId = userRole.RoleId,
+                RoleName = userRole.RoleName,
+                CommandIdDetail =
+                    (
+                        userCommand.CommandId == userRight.CommandId
+                        && userRole.RoleId == userRight.RoleId
+                    )
+                        ? userRight.CommandIdDetail
+                        : null,
+                Invoke =
+                    (
+                        userCommand.CommandId == userRight.CommandId
+                        && userRole.RoleId == userRight.RoleId
+                    )
+                        ? userRight.Invoke
+                        : 0,
+                Approve =
+                    (
+                        userCommand.CommandId == userRight.CommandId
+                        && userRole.RoleId == userRight.RoleId
+                    )
+                        ? userRight.Approve
+                        : 0,
+                GroupMenuIcon = userCommand.GroupMenuIcon,
+                GroupMenuVisible = userCommand.GroupMenuVisible,
+                GroupMenuId = userCommand.GroupMenuId,
+                GroupMenuListAuthorizeForm = userCommand.GroupMenuListAuthorizeForm,
+            }
+        ).OrderBy(s => s.RoleId).ThenBy(s => s.ParentId).ThenBy(s => s.CommandId).ToListAsync();
 
-        public virtual async Task<List<CommandIdInfoModel>> GetUserCommandInfoFromCommandId(
-            string applicationCode,
-            string commandId
-        )
-        {
-            var listLeftJoin = await (
-                from userCommand in userCommandRepository.Table.Where(s =>
-                    s.ApplicationCode == applicationCode && s.CommandId == commandId && s.Enabled
-                )
-                from userRole in userRoleRepository.Table.DefaultIfEmpty()
-                from userRight in userRightRepository
-                    .Table.Where(s => s.CommandId == commandId && s.RoleId == userRole.RoleId)
-                    .DefaultIfEmpty()
-
-                select new CommandIdInfoModel()
-                {
-                    ParentId = userCommand.ParentId,
-                    CommandId = userCommand.CommandId,
-                    CommandName = userCommand.CommandName,
-                    ApplicationCode = userCommand.ApplicationCode,
-                    CommandType = userCommand.CommandType,
-                    RoleId = userRole.RoleId,
-                    RoleName = userRole.RoleName,
-                    CommandIdDetail =
-                        (
-                            userCommand.CommandId == userRight.CommandId
-                            && userRole.RoleId == userRight.RoleId
-                        )
-                            ? userRight.CommandIdDetail
-                            : null,
-                    Invoke =
-                        (
-                            userCommand.CommandId == userRight.CommandId
-                            && userRole.RoleId == userRight.RoleId
-                        )
-                            ? userRight.Invoke
-                            : 0,
-                    Approve =
-                        (
-                            userCommand.CommandId == userRight.CommandId
-                            && userRole.RoleId == userRight.RoleId
-                        )
-                            ? userRight.Approve
-                            : 0,
-                    GroupMenuIcon = userCommand.GroupMenuIcon,
-                    GroupMenuVisible = userCommand.GroupMenuVisible,
-                    GroupMenuId = userCommand.GroupMenuId,
-                    GroupMenuListAuthorizeForm = userCommand.GroupMenuListAuthorizeForm,
-                }
-            )
-                .OrderBy(s => s.RoleId)
-                .ThenBy(s => s.ParentId)
-                .ThenBy(s => s.CommandId)
-                .ToListAsync();
-
-            return listLeftJoin;
-        }
+        return listLeftJoin;
     }
 }

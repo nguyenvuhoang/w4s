@@ -7,7 +7,7 @@ namespace O24OpenAPI.Web.CMS.Domain;
 /// The user sessions class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class UserSessions : BaseEntity
+public partial class UserSessions : BaseEntity
 {
     /// <summary>
     ///

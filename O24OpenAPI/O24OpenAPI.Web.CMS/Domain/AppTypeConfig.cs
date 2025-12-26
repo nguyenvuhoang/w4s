@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class AppTypeConfig : BaseEntity
+public partial class AppTypeConfig : BaseEntity
 {
     public string AppCode { get; set; }
     public string AppName { get; set; }
@@ -11,5 +11,4 @@ public class AppTypeConfig : BaseEntity
     public bool IsActive { get; set; } = true;
     public DateTime CreatedOnUtc { get; set; }
     public DateTime? UpdatedOnUtc { get; set; }
-
 }

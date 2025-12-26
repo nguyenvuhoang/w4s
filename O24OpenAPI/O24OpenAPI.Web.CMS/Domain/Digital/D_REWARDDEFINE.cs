@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class D_REWARDDEFINE : BaseEntity
+public partial class D_REWARDDEFINE : BaseEntity
 {
     public int RewardTypeID { get; set; }
 
@@ -13,6 +13,4 @@ public class D_REWARDDEFINE : BaseEntity
     public bool isApprove { get; set; }
 
     public string Status { get; set; }
-
-
 }

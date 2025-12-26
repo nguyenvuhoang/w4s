@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.O24NCH.Domain;
 
-public class SMSMappingResponse : BaseEntity
+public partial class SMSMappingResponse : BaseEntity
 {
     /// <summary>
     /// Tên provider, ví dụ: UNITEL, ETL, LTC
@@ -38,11 +38,11 @@ public class SMSMappingResponse : BaseEntity
     /// Is this a fallback mapping?
     /// </summary>
     public bool IsFallback { get; set; } = false;
+
     /// <summary>
     /// Is this a retry mapping?
     /// </summary>
     public bool IsRetry { get; set; } = false;
-
 
     /// <summary>
     /// Ngày tạo

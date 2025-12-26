@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.O24NCH.Domain;
 
-public class SMSProviderConfig : BaseEntity
+public partial class SMSProviderConfig : BaseEntity
 {
     public string SMSProviderId { get; set; }
     public string ConfigKey { get; set; } = string.Empty;

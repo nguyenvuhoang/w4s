@@ -1,4 +1,5 @@
 ﻿using LinKit.Core.Cqrs;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.CTH.API.Application.Constants;
 using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.API.Application.Utils;
@@ -23,7 +24,7 @@ public class VerifySmartOTPCodeAsyncCommand
 public class VerifySmartOTPCodeAsyncHandle(IUserAuthenRepository userAuthenRepository)
     : ICommandHandler<VerifySmartOTPCodeAsyncCommand, VerifySmartOTPResponseModel>
 {
-    [WorkflowStep("WF_STEP_CTH_VERIFY_SMARTOTP_PINCODE")]
+    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_VERIFY_SMARTOTP_PINCODE)]
     public async Task<VerifySmartOTPResponseModel> HandleAsync(
         VerifySmartOTPCodeAsyncCommand request,
         CancellationToken cancellationToken = default

@@ -2,7 +2,7 @@ using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.Web.Report.Domain.PORTAL;
 
-public class D_CUSTOMER : BaseEntity
+public partial class D_CUSTOMER : BaseEntity
 {
     public string CUSTID { get; set; }
     public string FULLNAME { get; set; }

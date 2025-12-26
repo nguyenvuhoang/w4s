@@ -6,7 +6,7 @@ namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 /// The user password class
 /// </summary>
 /// /// <seealso cref="BaseEntity"/>
-public class UserPassword : BaseEntity
+public partial class UserPassword : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the channel id

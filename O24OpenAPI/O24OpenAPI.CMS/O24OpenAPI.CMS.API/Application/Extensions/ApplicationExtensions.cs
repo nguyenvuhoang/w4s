@@ -54,7 +54,7 @@ public class O24OpenAPIStartup : IO24OpenAPIStartup
         services.AddScoped<ISignalHubBusinessService, SignalHubBusinessService>();
         services.AddLinKitCqrs("cms");
         services.AddLinKitDependency();
-        services.AddSingleton<IWorkflowStepInvoker, Workflow.Generated.WorkflowStepInvoker>();
+        services.AddKeyedSingleton<IWorkflowStepInvoker, Workflow.Generated.WorkflowStepInvoker>("cms");
     }
 
     /// <summary>

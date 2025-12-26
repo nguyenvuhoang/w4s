@@ -22,5 +22,4 @@ public partial class Channel : BaseEntity
 
     public virtual ICollection<ChannelSchedule> Schedules { get; set; } = [];
     public virtual ICollection<ChannelOverride> Overrides { get; set; } = [];
-
 }

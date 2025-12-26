@@ -8,7 +8,7 @@ namespace O24OpenAPI.Data.Migrations;
 /// </summary>
 /// <seealso cref="BaseEntity"/>
 /// <seealso cref="IVersionTableMetaData"/>
-public class MigrationVersionInfo : BaseEntity, IVersionTableMetaData
+public partial class MigrationVersionInfo : BaseEntity, IVersionTableMetaData
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="MigrationVersionInfo"/> class

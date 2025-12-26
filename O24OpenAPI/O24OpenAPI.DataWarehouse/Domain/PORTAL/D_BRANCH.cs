@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.DataWarehouse.Domain.PORTAL;
 
-public class D_BRANCH : BaseEntity
+public partial class D_BRANCH : BaseEntity
 {
     public string BranchID { get; set; }
     public string BranchName { get; set; }

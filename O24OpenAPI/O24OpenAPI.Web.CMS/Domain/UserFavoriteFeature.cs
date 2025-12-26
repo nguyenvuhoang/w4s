@@ -3,7 +3,7 @@
 namespace O24OpenAPI.Web.CMS.Domain;
 
 [Table("D_USER_FAVORITEFEATURE")]
-public class UserFavoriteFeature : BaseEntity
+public partial class UserFavoriteFeature : BaseEntity
 {
     public string UserCode { get; set; }
     public int FavoriteFeatureID { get; set; }

@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.Framework.Domain;
 
-public class TableKeyConfig : BaseEntity
+public partial class TableKeyConfig : BaseEntity
 {
     public string SchemaName { get; set; } = default!;
     public string TableName { get; set; } = default!;

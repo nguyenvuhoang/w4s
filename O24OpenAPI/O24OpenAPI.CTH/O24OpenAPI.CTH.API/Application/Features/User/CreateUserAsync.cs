@@ -1,4 +1,5 @@
 ﻿using LinKit.Core.Cqrs;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.APIContracts.Models.DTS;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Constants;
@@ -48,7 +49,7 @@ public class CreateUserAsyncHandle(
     IUserRoleRepository userRoleRepository
 ) : ICommandHandler<CreateUserAsyncCommand, UserResponseModel>
 {
-    [WorkflowStep("WF_STEP_CTH_CERATE_USER")]
+    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_CERATE_USER)]
     public async Task<UserResponseModel> HandleAsync(
         CreateUserAsyncCommand request,
         CancellationToken cancellationToken = default
@@ -122,9 +123,7 @@ public class CreateUserAsyncHandle(
                 Gender = request.Gender,
                 Address = request.Address,
                 Phone = request.Phone,
-                Birthday = DateTime.TryParse(request.Birthday, out var birthday)
-                    ? birthday
-                    : null,
+                Birthday = DateTime.TryParse(request.Birthday, out var birthday) ? birthday : null,
                 PolicyID = request.PolicyId,
                 UserLevel = int.Parse(request.UserLevel),
                 CreatedOnUtc = now,

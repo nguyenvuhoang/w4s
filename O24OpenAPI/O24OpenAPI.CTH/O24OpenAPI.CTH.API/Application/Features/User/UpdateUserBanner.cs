@@ -1,4 +1,5 @@
 using LinKit.Core.Cqrs;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Models;
@@ -15,7 +16,7 @@ public class UpdateUserBannerCommnad : BaseTransactionModel, ICommand<bool>
 public class UpdateUserBannerHandler(IUserBannerRepository userBannerRepository)
     : ICommandHandler<UpdateUserBannerCommnad, bool>
 {
-    [WorkflowStep("WF_STEP_CTH_UPDATE_USER_BANNER")]
+    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_UPDATE_USER_BANNER)]
     public async Task<bool> HandleAsync(
         UpdateUserBannerCommnad request,
         CancellationToken cancellationToken = default

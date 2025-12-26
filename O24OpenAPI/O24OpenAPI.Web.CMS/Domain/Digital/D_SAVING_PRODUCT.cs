@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class D_SAVING_PRODUCT : BaseEntity
+public partial class D_SAVING_PRODUCT : BaseEntity
 {
     public string ProductCode { get; set; }
     public string ProductName { get; set; }
@@ -10,5 +10,4 @@ public class D_SAVING_PRODUCT : BaseEntity
     public bool IsAllowRegister { get; set; }
 
     public string ProductUrl { get; set; }
-
 }

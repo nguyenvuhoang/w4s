@@ -2,7 +2,7 @@ using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.Web.Report.Domain;
 
-public class ReportData : BaseEntity
+public partial class ReportData : BaseEntity
 {
     public string ReportCode { get; set; }
     public string DataSourceName { get; set; }

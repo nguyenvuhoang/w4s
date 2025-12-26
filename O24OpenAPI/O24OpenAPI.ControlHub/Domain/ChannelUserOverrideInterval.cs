@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.ControlHub.Domain;
 
-public class ChannelUserOverrideInterval : BaseEntity
+public partial class ChannelUserOverrideInterval : BaseEntity
 {
     public int ChannelUserOverrideIdRef { get; set; }
     public TimeSpan StartTime { get; set; }

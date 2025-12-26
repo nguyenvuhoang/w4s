@@ -1,5 +1,6 @@
 ﻿using LinKit.Core.Cqrs;
 using LinqToDB;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.APIContracts.Events;
 using O24OpenAPI.APIContracts.Models.DTS;
 using O24OpenAPI.Client.EventBus.Abstractions;
@@ -21,9 +22,7 @@ using QRCoder;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User;
 
-public class ResetPasswordAsyncCommand
-    : BaseTransactionModel,
-        ICommand<ResetPasswordResponseModel>
+public class ResetPasswordAsyncCommand : BaseTransactionModel, ICommand<ResetPasswordResponseModel>
 {
     public string UserCode { get; set; }
     public string PhoneNumber { get; set; }
@@ -39,7 +38,7 @@ public class ResetPasswordAsyncHandle(
     IUserDeviceRepository userDeviceRepository
 ) : ICommandHandler<ResetPasswordAsyncCommand, ResetPasswordResponseModel>
 {
-    [WorkflowStep("WF_STEP_CTH_RESET_PASSWORD")]
+    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_RESET_PASSWORD)]
     public async Task<ResetPasswordResponseModel> HandleAsync(
         ResetPasswordAsyncCommand request,
         CancellationToken cancellationToken = default
@@ -171,10 +170,7 @@ public class ResetPasswordAsyncHandle(
             userAccount.MiddleName,
             userAccount.LastName,
         };
-        var fullname = string.Join(
-            " ",
-            nameParts.Where(part => !string.IsNullOrWhiteSpace(part))
-        );
+        var fullname = string.Join(" ", nameParts.Where(part => !string.IsNullOrWhiteSpace(part)));
 
         var qrImageBytes = GenerateQRCodeBytes(newPassword);
         var mimeEntities = new List<DTSMimeEntityModel>

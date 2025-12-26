@@ -1,4 +1,5 @@
 ﻿using LinKit.Core.Cqrs;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.CTH.API.Application.Constants;
 using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
@@ -31,7 +32,7 @@ public class VerifyUserAsyncCommand : BaseTransactionModel, ICommand<VerifyUserR
 public class VerifyUserAsyncHandle(IUserAccountRepository userAccountRepository)
     : ICommandHandler<VerifyUserAsyncCommand, VerifyUserResponseModel>
 {
-    [WorkflowStep("WF_STEP_CTH_VERIFY_USER")]
+    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_VERIFY_USER)]
     public async Task<VerifyUserResponseModel> HandleAsync(
         VerifyUserAsyncCommand request,
         CancellationToken cancellationToken = default

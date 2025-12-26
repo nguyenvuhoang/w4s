@@ -1,6 +1,6 @@
 namespace O24OpenAPI.Web.CMS.Domain;
 
-public class APIOUTPUTDATADEFINE : BaseEntity
+public partial class APIOUTPUTDATADEFINE : BaseEntity
 {
     public string SOURCEID { get; set; }
     public string DESTID { get; set; }

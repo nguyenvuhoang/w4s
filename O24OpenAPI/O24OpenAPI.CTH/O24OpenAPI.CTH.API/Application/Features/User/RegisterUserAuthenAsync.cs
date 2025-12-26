@@ -1,4 +1,5 @@
 ﻿using LinKit.Core.Cqrs;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.CTH.API.Application.Constants;
 using O24OpenAPI.CTH.API.Application.Utils;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
@@ -23,7 +24,7 @@ public class RegisterUserAuthenAsyncCommand : BaseTransactionModel, ICommand<boo
 public class RegisterUserAuthenAsyncHandle(IUserAuthenRepository userAuthenRepository)
     : ICommandHandler<RegisterUserAuthenAsyncCommand, bool>
 {
-    [WorkflowStep("WF_STEP_CTH_REGISTER_USER_AUTHEN")]
+    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_REGISTER_USER_AUTHEN)]
     public async Task<bool> HandleAsync(
         RegisterUserAuthenAsyncCommand request,
         CancellationToken cancellationToken = default

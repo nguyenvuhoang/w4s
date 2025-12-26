@@ -1,6 +1,6 @@
 namespace O24OpenAPI.Web.CMS.Domain;
 
-public class UserCommand : BaseEntity
+public partial class UserCommand : BaseEntity
 {
     public string ApplicationCode { get; set; }
     public string CommandId { get; set; }

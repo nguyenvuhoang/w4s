@@ -12,6 +12,7 @@ public partial class Calendar : BaseEntity
     /// Calendar constructor
     /// </summary>
     public Calendar() { }
+
     /// <summary>
     /// sqndt
     /// </summary>
@@ -171,5 +172,4 @@ public partial class Calendar : BaseEntity
     /// Last update date
     /// </summary>
     public DateTime? CreatedOnUtc { get; set; }
-
 }

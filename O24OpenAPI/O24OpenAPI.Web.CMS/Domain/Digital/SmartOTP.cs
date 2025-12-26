@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.Web.CMS.Domain;
 
-public class SmartOTPInfo : BaseEntity
+public partial class SmartOTPInfo : BaseEntity
 {
     public string UserCode { get; set; }
     public string PrivateKey { get; set; }

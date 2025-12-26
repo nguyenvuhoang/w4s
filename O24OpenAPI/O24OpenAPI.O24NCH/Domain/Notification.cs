@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.O24NCH.Domain;
 
-public class Notification : BaseEntity
+public partial class Notification : BaseEntity
 {
     public string UserCode { get; set; } = null!;
     public string AppType { get; set; } = null!;

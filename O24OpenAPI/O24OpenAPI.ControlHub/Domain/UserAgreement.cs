@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.ControlHub.Domain;
 
-public class UserAgreement : BaseEntity
+public partial class UserAgreement : BaseEntity
 {
     public string AgreementNumber { get; set; }
     public string AgreementType { get; set; }
@@ -13,6 +13,6 @@ public class UserAgreement : BaseEntity
     public bool IsActive { get; set; }
     public DateTime? CreatedUTC { get; set; }
     public DateTime? ModifiedUTC { get; set; }
-    public UserAgreement() { }
 
+    public UserAgreement() { }
 }
