@@ -13,6 +13,8 @@ public interface IEntityAuditRepository : IRepository<EntityAudit>
         string executionId,
         CancellationToken cancellationToken = default
     );
+
+    Task ClearOldAudits();
 }
 
 [RegisterService(Lifetime.Scoped)]
@@ -21,6 +23,13 @@ public class EntityAuditRepository(
     IStaticCacheManager staticCacheManager
 ) : EntityRepository<EntityAudit>(dataProvider, staticCacheManager), IEntityAuditRepository
 {
+    private readonly IO24OpenAPIDataProvider _dataProvider = dataProvider;
+
+    public async Task ClearOldAudits()
+    {
+        await DeleteWhere(s => s.CreatedOnUtc.Value.Date < DateTime.UtcNow.Date);
+    }
+
     public async Task<List<EntityAudit>> GetByExecutionIdAsync(
         string executionId,
         CancellationToken cancellationToken = default

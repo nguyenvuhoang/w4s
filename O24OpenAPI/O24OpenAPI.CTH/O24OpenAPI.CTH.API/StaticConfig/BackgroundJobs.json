@@ -8,6 +8,14 @@
         "MaxParallel": 1,
         "CorrelationId": "CDCJOb",
         "IsActive": false
+      },
+      {
+        "Name": "ClearEntityAuditJob",
+        "AssemblyName": "O24OpenAPI.Framework",
+        "IsActive": true,
+        "RunOnStart": true,
+        "ScheduleType": "Daily",
+        "TimeOfDay": "00:00:01"
       }
     ]
   }

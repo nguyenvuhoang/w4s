@@ -3,7 +3,6 @@ using O24OpenAPI.APIContracts.Events;
 using O24OpenAPI.Client.EventBus.Abstractions;
 using O24OpenAPI.Logging.Abstractions;
 using O24OpenAPI.Logging.Extensions;
-using O24OpenAPI.Logging.Helpers;
 using Serilog.Events;
 
 namespace O24OpenAPI.Client.EventBus.Submitters;
@@ -36,7 +35,7 @@ public class RabbitMqLogSubmitter(IServiceProvider serviceProvider) : ILogSubmit
             Console.WriteLine(
                 $"[FATAL][RabbitMqLogSubmitter] Failed to submit logs via RabbitMQ. Error: {ex.Message}"
             );
-            ex.WriteError("");
+            await Task.Delay(5000);
         }
     }
 
