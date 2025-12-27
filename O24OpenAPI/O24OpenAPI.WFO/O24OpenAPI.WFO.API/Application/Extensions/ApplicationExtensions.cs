@@ -8,6 +8,7 @@ public static class ApplicationExtensions
     {
         services.AddScoped<WorkflowExecution>();
         services.AddLinKitDependency();
+
         return services;
     }
 }

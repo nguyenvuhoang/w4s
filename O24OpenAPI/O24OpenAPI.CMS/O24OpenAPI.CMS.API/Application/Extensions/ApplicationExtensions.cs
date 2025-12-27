@@ -24,7 +24,7 @@ public class O24OpenAPIStartup : IO24OpenAPIStartup
             );
         });
 
-        string? appVersion = configuration["AppVersion"];
+        string appVersion = configuration["AppVersion"];
 
         //common
         services.AddScoped<ICommonService, CommonService>();
@@ -55,12 +55,24 @@ public class O24OpenAPIStartup : IO24OpenAPIStartup
         services.AddLinKitCqrs("cms");
         services.AddLinKitDependency();
         services.AddKeyedSingleton<IWorkflowStepInvoker, Workflow.Generated.WorkflowStepInvoker>("cms");
+        services
+            .AddHttpClient(
+                "DefaultClient",
+                client =>
+                {
+                    client.DefaultRequestHeaders.Add("Accept", "application/json");
+                }
+            )
+            .ConfigurePrimaryHttpMessageHandler(() =>
+                new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (sender, cert, chain, errors) =>
+                        true,
+                }
+            );
+        ;
     }
 
-    /// <summary>
-    /// Configure the using of added middleware
-    /// </summary>
-    /// <param name="application">Builder for configuring an application's request pipeline</param>
     public void Configure(IApplicationBuilder application)
     {
         application.UseCors("CORSPolicy");
@@ -71,8 +83,5 @@ public class O24OpenAPIStartup : IO24OpenAPIStartup
         });
     }
 
-    /// <summary>
-    /// Gets order of this dependency registrar implementation
-    /// </summary>
     public int Order => 2000;
 }

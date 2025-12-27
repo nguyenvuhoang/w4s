@@ -1,7 +1,6 @@
 ﻿using LinKit.Core.Abstractions;
 using LinKit.Json.Runtime;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.APIContracts.Models.CTH;
@@ -686,16 +685,8 @@ public class RequestHandlerV1(
         string headerToken = ""
     )
     {
-        HttpClientHandler clientHandler = new()
-        {
-            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) =>
-            {
-                return true;
-            },
-        };
-
-        HttpClient httpClient = new(clientHandler);
-        httpClient.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+        IHttpClientFactory httpClientFactory = EngineContext.Current.Resolve<IHttpClientFactory>();
+        HttpClient httpClient = httpClientFactory.CreateClient("DefaultClient");
         if (!string.IsNullOrEmpty(headerToken))
         {
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + headerToken);
