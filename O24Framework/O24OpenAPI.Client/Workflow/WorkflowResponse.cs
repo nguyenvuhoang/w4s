@@ -13,22 +13,22 @@ public class WorkflowResponse<T>
     /// <summary>
     /// Gets or sets the value of the status
     /// </summary>
-    public string status { get; set; }
+    public string? status { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the description
     /// </summary>
-    public string description { get; set; }
+    public string? description { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the execution id
     /// </summary>
-    public string execution_id { get; set; }
+    public string? execution_id { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the data
     /// </summary>
-    public T data { get; set; }
+    public T? data { get; set; }
 }
 
 /// <summary>
@@ -44,43 +44,43 @@ public class WorkflowResponse
     /// <summary>
     /// Gets or sets the value of the status
     /// </summary>
-    public string status { get; set; }
+    public string? status { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the description
     /// </summary>
-    public string description { get; set; }
+    public string? description { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the error code
     /// </summary>
-    public string error_code { get; set; }
+    public string? error_code { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the error message
     /// </summary>
-    public string error_message { get; set; }
+    public string? error_message { get; set; }
 
     /// <summary>
     /// /// Gets or sets the value of the execution id
     /// </summary>
-    public string execution_id { get; set; }
-    public string error_next_action { get; set; }
+    public string? execution_id { get; set; }
+    public string? error_next_action { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the transaction number
     /// </summary>
-    public object transaction_number { get; set; }
+    public object? transaction_number { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the transaction date
     /// </summary>
-    public object transaction_date { get; set; }
+    public object? transaction_date { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the value date
     /// </summary>
-    public object value_date { get; set; }
+    public object? value_date { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the data

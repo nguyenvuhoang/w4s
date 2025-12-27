@@ -1,4 +1,3 @@
-using System.Globalization;
 using FluentValidation.Results;
 using Humanizer;
 using Newtonsoft.Json;
@@ -9,6 +8,7 @@ using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Domain;
 using O24OpenAPI.Framework.Services;
+using System.Globalization;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace O24OpenAPI.Framework.Models;
@@ -211,7 +211,7 @@ public static class O24OpenApiExtensions
         }
         if (!model.IgnoreSession)
         {
-            var token = model.Token;
+            string token = model.Token;
 
             if (string.IsNullOrEmpty(model.Token))
             {
@@ -312,7 +312,7 @@ public static class O24OpenApiExtensions
             }
         }
 
-        return new List<GLEntries>();
+        return [];
     }
 
     /// <summary>
@@ -342,7 +342,7 @@ public static class O24OpenApiExtensions
     /// <returns>The dictionary</returns>
     public static Dictionary<string, object> ToDictionary(this List<ValidationFailure> errors)
     {
-        Dictionary<string, object> dictionary = new Dictionary<string, object>();
+        Dictionary<string, object> dictionary = [];
         foreach (ValidationFailure error in errors)
         {
             string str = error.PropertyName.Underscore();
@@ -361,7 +361,7 @@ public static class O24OpenApiExtensions
     /// <param name="model">The model</param>
     /// <param name="name">The name</param>
     /// <returns>A dictionary of string and object</returns>
-    public static Dictionary<string, object> ToDictionary(this object model, string name)
+    internal static Dictionary<string, object> ToDictionary(this object model, string name)
     {
         return new Dictionary<string, object>() { { name.Underscore(), model } };
     }

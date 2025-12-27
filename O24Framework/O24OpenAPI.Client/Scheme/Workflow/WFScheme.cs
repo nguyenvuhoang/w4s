@@ -119,12 +119,12 @@ public class WFScheme : IValidScheme
             /// <summary>
             /// Gets or sets the value of the cache execution id
             /// </summary>
-            public string cache_execution_id { get; set; }
+            public string? cache_execution_id { get; set; }
 
             /// <summary>
             /// Gets or sets the value of the user id
             /// </summary>
-            public string user_id { get; set; }
+            public string? user_id { get; set; }
 
             /// <summary>
             /// Gets or sets the value of the user_code
@@ -134,7 +134,7 @@ public class WFScheme : IValidScheme
             /// <summary>
             /// Gets or sets the value of the organization id
             /// </summary>
-            public string organization_id { get; set; }
+            public string? organization_id { get; set; }
 
             /// <summary>
             /// Gets or sets the value of the workflow type
@@ -144,12 +144,12 @@ public class WFScheme : IValidScheme
             /// <summary>
             /// Gets or sets the value of the reversal execution id
             /// </summary>
-            public string reversal_execution_id { get; set; }
+            public string? reversal_execution_id { get; set; }
 
             /// <summary>
             /// Gets or sets the value of the approval execution id
             /// </summary>
-            public string approval_execution_id { get; set; }
+            public string? approval_execution_id { get; set; }
 
             /// <summary>
             /// Gets or sets the value of the sending condition passed
@@ -249,7 +249,7 @@ public class WFScheme : IValidScheme
             /// <summary>
             /// Gets or sets the value of the data
             /// </summary>
-            public Dictionary<string, object> data { get; set; }
+            public Dictionary<string, object>? data { get; set; }
 
             /// <summary>
             /// Ises the valid using the specified error

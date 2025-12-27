@@ -68,22 +68,22 @@ public class O24OpenAPIJsonMapper
     /// <summary>
     /// Gets or sets the value of the asembly
     /// </summary>
-    public string asembly { get; set; }
+    public string? asembly { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the func
     /// </summary>
-    public string func { get; set; }
+    public string? func { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the type
     /// </summary>
-    public string type { get; set; }
+    public string? type { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the paras
     /// </summary>
-    public object[] paras { get; set; }
+    public object[]? paras { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the mapping dictionary
@@ -94,7 +94,7 @@ public class O24OpenAPIJsonMapper
     /// <summary>
     /// Gets or sets the value of the redis server name
     /// </summary>
-    public static string RedisServerName { get; set; }
+    public static string? RedisServerName { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the redis server port
@@ -104,12 +104,12 @@ public class O24OpenAPIJsonMapper
     /// <summary>
     /// Gets or sets the value of the redis user name
     /// </summary>
-    public static string RedisUserName { get; set; }
+    public static string? RedisUserName { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the redis user password
     /// </summary>
-    public static string RedisUserPassword { get; set; }
+    public static string? RedisUserPassword { get; set; }
 
     /// <summary>
     /// Converts the template to mapped object using the specified template

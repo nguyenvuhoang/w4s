@@ -74,27 +74,27 @@ public class ServiceInfo
     /// Gets or sets the value of the service code
     /// </summary>
     [Key]
-    public string service_code { get; set; } = string.Empty;
+    public string? service_code { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the service name
     /// </summary>
-    public string service_name { get; set; } = string.Empty;
+    public string? service_name { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the service grpc url
     /// </summary>
-    public string service_grpc_url { get; set; } = string.Empty;
+    public string? service_grpc_url { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the service status
     /// </summary>
-    public string service_status { get; set; } = string.Empty;
+    public string service_status { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the service grpc active
     /// </summary>
-    public string service_grpc_active { get; set; } = "active";
+    public string? service_grpc_active { get; set; } = "active";
 
     /// <summary>
     /// Gets or sets the value of the service grpc timeout seconds
@@ -114,8 +114,8 @@ public class ServiceInfo
     /// <summary>
     /// Gets or sets the value of the broker virtual host
     /// </summary>
-    public string broker_virtual_host { get; set; } = string.Empty;
-    private string _brokerHostname = string.Empty;
+    public string? broker_virtual_host { get; set; }
+    private string _brokerHostname;
 
     /// <summary>
     /// Gets or sets the value of the broker hostname
@@ -129,22 +129,22 @@ public class ServiceInfo
     /// <summary>
     /// Gets or sets the value of the broker user name
     /// </summary>
-    public string broker_user_name { get; set; } = string.Empty;
+    public string? broker_user_name { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the broker user password
     /// </summary>
-    public string broker_user_password { get; set; } = string.Empty;
+    public string? broker_user_password { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the broker queue name
     /// </summary>
-    public string broker_queue_name { get; set; } = string.Empty;
+    public string? broker_queue_name { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the event queue name
     /// </summary>
-    public string event_queue_name { get; set; } = string.Empty;
+    public string? event_queue_name { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the broker port
@@ -154,7 +154,7 @@ public class ServiceInfo
     /// <summary>
     /// Gets or sets the value of the o24openapi grpc url
     /// </summary>
-    public string o24openapi_grpc_url { get; set; } = string.Empty;
+    public string? o24openapi_grpc_url { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the o24openapi server time
@@ -211,12 +211,12 @@ public class ServiceInfo
     /// <summary>
     /// Gets or sets the value of the log write grpc log
     /// </summary>
-    public string log_write_grpc_log { get; set; } = "N";
+    public string? log_write_grpc_log { get; set; } = "N";
 
     /// <summary>
     /// Gets or sets the value of the redis server name
     /// </summary>
-    public string redis_server_name { get; set; } = "";
+    public string? redis_server_name { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the redis server port

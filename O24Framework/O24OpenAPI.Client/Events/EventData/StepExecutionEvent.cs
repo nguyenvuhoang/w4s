@@ -4,5 +4,5 @@ namespace O24OpenAPI.Client.Events.EventData;
 
 public class StepExecutionEvent
 {
-    public WFScheme WFScheme { get; set; }
+    public WFScheme? WFScheme { get; set; }
 }

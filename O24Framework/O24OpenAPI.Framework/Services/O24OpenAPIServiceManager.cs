@@ -133,7 +133,10 @@ public class O24OpenAPIServiceManager(
     {
         try
         {
-            if (workflow.request.request_header.is_compensated != "Y")
+            if (
+                workflow.request.request_header.is_compensated != "Y"
+                && mapping.IsAutoReverse != true
+            )
             {
                 if (mapping.IsModuleExecute == true)
                 {

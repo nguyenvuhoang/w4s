@@ -8,5 +8,5 @@ public class GenericEventData<TNeptuneEventData>
     /// <summary>
     /// Gets or sets the value of the data
     /// </summary>
-    public TNeptuneEventData data { get; set; }
+    public TNeptuneEventData? data { get; set; }
 }

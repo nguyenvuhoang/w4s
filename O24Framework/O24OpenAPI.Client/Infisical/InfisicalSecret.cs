@@ -8,10 +8,10 @@ public class InfisicalSecret
     /// <summary>
     /// Gets or sets the value of the secret key
     /// </summary>
-    public string secretKey { get; set; }
+    public string? secretKey { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the secret value
     /// </summary>
-    public string secretValue { get; set; }
+    public string? secretValue { get; set; }
 }

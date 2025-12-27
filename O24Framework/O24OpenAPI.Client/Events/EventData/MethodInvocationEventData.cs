@@ -23,5 +23,5 @@ public class MethodInvocationEventData
     /// <summary>
     /// Gets or sets the value of the text data
     /// </summary>
-    public object[] text_data { get; set; }
+    public object[]? text_data { get; set; }
 }

@@ -34,6 +34,9 @@ public class O24OpenAPIServiceBuilder : O24OpenAPIEntityBuilder<O24OpenAPIServic
             .NotNullable()
             .WithColumn(nameof(O24OpenAPIService.IsModuleExecute))
             .AsBoolean()
-            .NotNullable();
+            .NotNullable()
+            .WithColumn(nameof(O24OpenAPIService.IsAutoReverse))
+            .AsBoolean()
+            .Nullable();
     }
 }

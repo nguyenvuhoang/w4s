@@ -77,17 +77,17 @@ public class ElasticSearchManager<T> : IDisposable
         /// <summary>
         /// Gets or sets the value of the value
         /// </summary>
-        public object Value { get; set; }
+        public object? Value { get; set; }
 
         /// <summary>
         /// Gets or sets the value of the value as string
         /// </summary>
-        public string ValueAsString { get; set; }
+        public string? ValueAsString { get; set; }
 
         /// <summary>
         /// Gets or sets the value of the meta
         /// </summary>
-        public object Meta { get; set; }
+        public object? Meta { get; set; }
     }
 
     /// <summary>

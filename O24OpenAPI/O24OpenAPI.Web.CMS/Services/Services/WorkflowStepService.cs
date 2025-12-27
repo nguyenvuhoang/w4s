@@ -12,6 +12,8 @@ public class WorkflowStepService(IRepository<WorkflowStep> workflowStepRepo)
 
     public async Task<IPagedList<WorkflowStep>> AdvancedSearch(WorkflowStepSearchModel model)
     {
+        await _workflowStepService.DeleteByWorkflowIdAsync(wfDef.WorkflowId);
+
         var query = _workflowStepRepo.Table;
         if (!string.IsNullOrEmpty(model.WFId))
         {

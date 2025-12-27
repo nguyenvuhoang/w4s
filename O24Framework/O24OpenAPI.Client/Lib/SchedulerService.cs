@@ -8,7 +8,7 @@ internal class SchedulerService
     /// <summary>
     /// The instance
     /// </summary>
-    private static SchedulerService _instance;
+    private static SchedulerService? _instance;
 
     /// <summary>
     /// The timer

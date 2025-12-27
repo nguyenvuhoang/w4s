@@ -1,6 +1,6 @@
-using System.Dynamic;
-using LinKit.Core.Abstractions;
+﻿using LinKit.Core.Abstractions;
 using Newtonsoft.Json.Linq;
+using System.Dynamic;
 
 namespace O24OpenAPI.Framework.Services.Mapping;
 
@@ -58,7 +58,7 @@ public partial class DataMappingService : IDataMappingService
     {
         try
         {
-            foreach (var property in target)
+            foreach (KeyValuePair<string, JToken> property in target)
             {
                 if (property.Key == "condition" || property.Value == null)
                 {
@@ -83,7 +83,8 @@ public partial class DataMappingService : IDataMappingService
 
                 if (!string.IsNullOrEmpty(configMapping))
                 {
-                    target[property.Key] = JToken.FromObject(await Map(source, configMapping));
+                    object value = await Map(source, configMapping);
+                    target[property.Key] = value is not null ? JToken.FromObject(value) : JValue.CreateNull();
                     continue;
                 }
 
@@ -125,10 +126,10 @@ public partial class DataMappingService : IDataMappingService
         Func<string, Task<object>> func = null
     )
     {
-        var result = new Dictionary<string, object>();
+        Dictionary<string, object> result = [];
         try
         {
-            foreach (var property in target)
+            foreach (KeyValuePair<string, JToken> property in target)
             {
                 if (property.Key == "condition" || property.Value == null)
                 {
@@ -155,7 +156,7 @@ public partial class DataMappingService : IDataMappingService
                 {
                     try
                     {
-                        var x = await Map(source, configMapping);
+                        object x = await Map(source, configMapping);
                         result[property.Key] = x;
                         continue;
                     }
@@ -214,15 +215,15 @@ public partial class DataMappingService : IDataMappingService
             return null;
         }
 
-        var lastIndexOfFunc = configMapping.IndexOf('(');
+        int lastIndexOfFunc = configMapping.IndexOf('(');
         if (lastIndexOfFunc >= 0)
         {
             string function = configMapping[..lastIndexOfFunc].Trim();
             string jsonPath = ExtractJsonPath(configMapping);
 
-            if (_handlers.TryGetValue(function, out var handler))
+            if (_handlers.TryGetValue(function, out Delegate handler))
             {
-                var context = new MappingContext(source, jsonPath);
+                MappingContext context = new(source, jsonPath);
 
                 if (handler is Func<MappingContext, object> syncHandler)
                 {
@@ -249,7 +250,7 @@ public partial class DataMappingService : IDataMappingService
     /// <returns>The target</returns>
     private async Task<JArray> MapArrayDataAsync(JObject source, JArray target)
     {
-        var tasks = target.Select(
+        IEnumerable<Task> tasks = target.Select(
             async (item, i) =>
             {
                 target[i] = item switch
@@ -271,16 +272,19 @@ public partial class DataMappingService : IDataMappingService
     /// <typeparam name="T">The </typeparam>
     /// <param name="context">The context</param>
     /// <returns>The object</returns>
-    private static object GetValue<T>(MappingContext context)
+    private static T GetValue<T>(MappingContext context)
     {
-        if (
-            context.DataSource.TryGetValue(context.JsonPath, out JToken token)
-            && token.Type != JTokenType.Null
-        )
+        // false = không ném exception khi không tìm thấy
+        JToken token = context.DataSource.SelectToken(context.JsonPath, false);
+
+        if (token != null &&
+            token.Type != JTokenType.Null &&
+            token.Type != JTokenType.Undefined)
         {
             return token.ToObject<T>();
         }
-        return default(T);
+
+        return default;
     }
 
     /// <summary>
@@ -308,7 +312,7 @@ public partial class DataMappingService : IDataMappingService
     /// <returns>The object</returns>
     private static object GetDateTimeFromUnix(MappingContext context)
     {
-        var token = context.DataSource.SelectToken(context.JsonPath);
+        JToken token = context.DataSource.SelectToken(context.JsonPath);
         return token != null && long.TryParse(token.ToString(), out long unixTimestamp)
             ? DateTimeOffset.FromUnixTimeSeconds(unixTimestamp).DateTime
             : DateTime.MinValue;
@@ -321,7 +325,7 @@ public partial class DataMappingService : IDataMappingService
     /// <returns>The object</returns>
     private static object GetUnixFromDateTime(MappingContext context)
     {
-        var token = context.DataSource.SelectToken(context.JsonPath);
+        JToken token = context.DataSource.SelectToken(context.JsonPath);
         return token != null && DateTime.TryParse(token.ToString(), out DateTime dateTime)
             ? new DateTimeOffset(dateTime).ToUnixTimeSeconds()
             : 0;
@@ -334,7 +338,7 @@ public partial class DataMappingService : IDataMappingService
     /// <returns>The object</returns>
     private static object GetDateTimeLocalFromUnix(MappingContext context)
     {
-        var token = context.DataSource.SelectToken(context.JsonPath);
+        JToken token = context.DataSource.SelectToken(context.JsonPath);
         return token != null && long.TryParse(token.ToString(), out long unixTimestamp)
             ? DateTimeOffset.FromUnixTimeSeconds(unixTimestamp).UtcDateTime.ToLocalTime()
             : DateTime.MinValue;
@@ -347,7 +351,7 @@ public partial class DataMappingService : IDataMappingService
     /// <returns>The object</returns>
     private static object GetUnixLocalFromDateTime(MappingContext context)
     {
-        var token = context.DataSource.SelectToken(context.JsonPath);
+        JToken token = context.DataSource.SelectToken(context.JsonPath);
         return token != null && DateTime.TryParse(token.ToString(), out DateTime localDateTime)
             ? new DateTimeOffset(localDateTime.ToUniversalTime()).ToUnixTimeSeconds()
             : 0;

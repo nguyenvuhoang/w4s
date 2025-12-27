@@ -1,6 +1,4 @@
-﻿using System.Text;
-using System.Text.Json.Serialization;
-using LinKit.Core.Abstractions;
+﻿using LinKit.Core.Abstractions;
 using LinKit.Json.Runtime;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Net.Http.Headers;
@@ -26,6 +24,8 @@ using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using O24OpenAPI.Logging.Helpers;
+using System.Text;
+using System.Text.Json.Serialization;
 
 namespace O24OpenAPI.CMS.API.Application.Features.Requests;
 
@@ -562,15 +562,19 @@ public class RequestHandlerV1(
                     context.InfoApp.GetApp(),
                     learnApiId
                 );
-                JObject mappedRequest = BuildContentWorkflowRequest(requestModel);
+                JObject mappedRequest = [];
                 if (learnApi.LearnApiMapping.HasValue())
                 {
                     mappedRequest = await dataMappingService.MapDataAsync(
                         JObject.FromObject(requestModel),
-                        mappedRequest
+                        JObject.Parse(learnApi.LearnApiMapping)
                     );
                 }
-                if (learnApi.URI.StartsWith("$"))
+                else
+                {
+                    mappedRequest = BuildContentWorkflowRequest(requestModel);
+                }
+                if (learnApi.URI.StartsWith('$'))
                 {
                     string uri = learnApi.URI;
                     int firstKey = uri.IndexOf('$');

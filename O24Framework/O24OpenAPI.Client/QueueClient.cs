@@ -173,12 +173,12 @@ public class QueueClient : MyConsole
     /// <summary>
     /// Gets or sets the value of the   command semaphore
     /// </summary>
-    private static SemaphoreSlim __CommandSemaphore { get; set; }
+    private static SemaphoreSlim? __CommandSemaphore { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the   event semaphore
     /// </summary>
-    private static SemaphoreSlim __EventSemaphore { get; set; }
+    private static SemaphoreSlim? __EventSemaphore { get; set; }
 
     /// <summary>
     /// Gets the value of the instance id

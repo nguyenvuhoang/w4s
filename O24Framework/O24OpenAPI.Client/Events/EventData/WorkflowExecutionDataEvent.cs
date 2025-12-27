@@ -10,15 +10,15 @@ public class WorkflowExecutionDataEvent
     /// <summary>
     /// Gets or sets the value of the execution
     /// </summary>
-    public WorkflowExecutionInfor execution { get; set; }
+    public WorkflowExecutionInfor? execution { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the execution steps
     /// </summary>
-    public List<WorkflowStepInfor> execution_steps { get; set; }
+    public List<WorkflowStepInfor>? execution_steps { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the error message
     /// </summary>
-    public string error_message { get; set; }
+    public string? error_message { get; set; }
 }
