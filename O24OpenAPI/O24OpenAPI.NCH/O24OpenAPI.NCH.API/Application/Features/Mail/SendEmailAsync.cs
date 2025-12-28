@@ -1,0 +1,292 @@
+﻿using System.Net.Mail;
+using System.Text.Json;
+using System.Windows.Input;
+using LinKit.Core.Cqrs;
+using MailKit.Security;
+using MimeKit;
+using O24OpenAPI.Framework;
+using O24OpenAPI.Framework.Exceptions;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Models;
+using O24OpenAPI.NCH.API.Application.Utils;
+using O24OpenAPI.NCH.Config;
+using O24OpenAPI.NCH.Constant;
+using O24OpenAPI.NCH.Domain.AggregatesModel.MailAggregate;
+using O24OpenAPI.NCH.Models.Request;
+using SmtpClient = MailKit.Net.Smtp.SmtpClient;
+
+namespace O24OpenAPI.NCH.API.Application.Features.Mail
+{
+    public class SendEmailCommand : BaseTransactionModel, ICommand<bool>
+    {
+        /// <summary>
+        /// TemplateId
+        /// </summary>
+        ///
+        public string TemplateId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Sender
+        /// </summary>
+        ///
+        public string ConfigId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Receiver
+        /// </summary>
+        public string Receiver { get; set; } = string.Empty;
+
+        /// <summary>
+        /// DataTemplate
+        /// </summary>
+        ///
+        public Dictionary<string, object> DataTemplate { get; set; } = [];
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        public List<string> AttachmentBase64Strings { get; set; } = [];
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        public List<string> AttachmentFilenames { get; set; } = [];
+
+        // /// <summary>
+        // ///
+        // /// </summary>
+        // [IgnoreDataMember]
+        // [System.Text.Json.Serialization.JsonIgnore]
+        public List<Models.Request.MimeEntity> MimeEntities { get; set; } = [];
+
+        /// <summary>
+        /// IncludeLogo
+        /// </summary>
+        public bool IncludeLogo { get; set; } = false;
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <typeparam name="int"></typeparam>
+        /// <returns></returns>
+        public List<int> FileIds { get; set; } = new List<int>();
+    }
+
+    [CqrsHandler]
+    public class SendEmailHandle(
+        IMailConfigRepository mailConfigRepository,
+        IMailTemplateRepository mailTemplateRepository,
+        WebApiSettings webApiSettings,
+        O24NCHSetting o24NCHSetting,
+        IEmailSendOutRepository emailSendOutRepository
+    ) : ICommandHandler<SendEmailCommand, bool>
+    {
+        public async Task<bool> HandleAsync(
+            SendEmailCommand request,
+            CancellationToken cancellationToken = default
+        )
+        {
+            EmailSendOut emailLog = new()
+            {
+                ConfigId = request.ConfigId,
+                TemplateId = request.TemplateId,
+                Receiver = !string.IsNullOrWhiteSpace(request.Receiver)
+                    ? request.Receiver
+                    : (
+                        request.DataTemplate != null
+                        && request.DataTemplate.TryGetValue("email", out var emailVal)
+                            ? emailVal?.ToString()
+                            : null
+                    ),
+                Status = MailSendOutStatus.PENDING,
+                CreatedAt = DateTime.UtcNow,
+            };
+            try
+            {
+                var getMailConfig = await mailConfigRepository.GetByConfigId(request.ConfigId);
+                var getMailTemplate = await mailTemplateRepository.GetByTemplateId(
+                    request.TemplateId
+                );
+
+                if (getMailConfig == null)
+                {
+                    throw await O24Exception.CreateAsync(
+                        O24NCHResourceCode.Validation.MailConfigNotExist,
+                        request.Language
+                    );
+                }
+
+                if (getMailTemplate == null)
+                {
+                    throw await O24Exception.CreateAsync(
+                        O24NCHResourceCode.Validation.MailTemplateNotExist,
+                        request.Language
+                    );
+                }
+
+                var email = new MimeMessage { Sender = MailboxAddress.Parse(getMailConfig.Sender) };
+
+                if (string.IsNullOrWhiteSpace(emailLog.Receiver))
+                {
+                    throw await O24Exception.CreateAsync(
+                        O24NCHResourceCode.Validation.MailReceiverNotFound,
+                        request.Language
+                    );
+                }
+
+                foreach (
+                    var address in emailLog.Receiver.Split(
+                        separator,
+                        StringSplitOptions.RemoveEmptyEntries
+                    )
+                )
+                {
+                    email.To.Add(MailboxAddress.Parse(address));
+                }
+
+                email.Subject = Utility.ReplaceData(getMailTemplate.Subject, request.DataTemplate);
+                emailLog.Subject = email.Subject;
+                var builder = new BodyBuilder();
+
+                // Handle attachments
+                if (
+                    request.AttachmentBase64Strings != null
+                    && request.AttachmentBase64Strings.Count > 0
+                )
+                {
+                    for (int i = 0; i < request.AttachmentBase64Strings.Count; i++)
+                    {
+                        var base64 = request.AttachmentBase64Strings[i];
+                        var filename = request.AttachmentFilenames[i];
+                        try
+                        {
+                            var bytes = Convert.FromBase64String(base64);
+                            builder.Attachments.Add(filename, bytes);
+                        }
+                        catch
+                        {
+                            // Ignore invalid attachment
+                            continue;
+                        }
+                    }
+                    emailLog.Attachments = JsonSerializer.Serialize(request.AttachmentFilenames);
+                }
+
+                // Linked resources (images or inline files)
+                if (request.MimeEntities != null)
+                {
+                    foreach (var entity in request.MimeEntities)
+                    {
+                        try
+                        {
+                            builder.LinkedResources.Add(
+                                Utility.ConvertBase64ToMimeEntity(
+                                    entity.Base64,
+                                    entity.ContentType,
+                                    entity.ContentId
+                                )
+                            );
+                        }
+                        catch
+                        {
+                            // Ignore invalid base64 images
+                            continue;
+                        }
+                    }
+                }
+
+                // Add logo if required
+                if (request.IncludeLogo)
+                {
+                    try
+                    {
+                        var footer = new MimePart("image", "png")
+                        {
+                            ContentId = "logo_footer",
+                            Content = new MimeContent(
+                                new MemoryStream(
+                                    Convert.FromBase64String(webApiSettings.LogoBankFooter)
+                                )
+                            ),
+                        };
+                        var header = new MimePart("image", "png")
+                        {
+                            ContentId = "logo_header",
+                            Content = new MimeContent(
+                                new MemoryStream(
+                                    Convert.FromBase64String(webApiSettings.LogoBankHeader)
+                                )
+                            ),
+                        };
+
+                        var iconphone = new MimePart("image", "png")
+                        {
+                            ContentId = "iconphone",
+                            Content = new MimeContent(
+                                new MemoryStream(Convert.FromBase64String(o24NCHSetting.IconPhone))
+                            ),
+                        };
+
+                        var iconwebsite = new MimePart("image", "png")
+                        {
+                            ContentId = "iconwebsite",
+                            Content = new MimeContent(
+                                new MemoryStream(
+                                    Convert.FromBase64String(o24NCHSetting.IconWebsite)
+                                )
+                            ),
+                        };
+
+                        builder.LinkedResources.Add(footer);
+                        builder.LinkedResources.Add(header);
+                        builder.LinkedResources.Add(iconphone);
+                        builder.LinkedResources.Add(iconwebsite);
+                    }
+                    catch
+                    {
+                        // Ignore invalid logos
+                    }
+                }
+
+                builder.HtmlBody = Utility.ReplaceData(getMailTemplate.Body, request.DataTemplate);
+                email.Body = builder.ToMessageBody();
+                emailLog.Body = builder.HtmlBody;
+                // SMTP send
+                using var smtp = new SmtpClient();
+                await smtp.ConnectAsync(
+                    getMailConfig.Host,
+                    getMailConfig.Port,
+                    getMailConfig.EnableTLS
+                        ? SecureSocketOptions.StartTls
+                        : SecureSocketOptions.StartTlsWhenAvailable
+                );
+                await smtp.AuthenticateAsync(getMailConfig.Sender, getMailConfig.Password);
+                await smtp.SendAsync(email);
+                await smtp.DisconnectAsync(true);
+                emailLog.Status = MailSendOutStatus.SUCCESS;
+                emailLog.SentAt = DateTime.UtcNow;
+                await emailSendOutRepository.Create(emailLog);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await ex.LogErrorAsync();
+                emailLog.Status = MailSendOutStatus.FAILED;
+                emailLog.ErrorMessage = ex.Message;
+                emailLog.SentAt = DateTime.UtcNow;
+
+                try
+                {
+                    await emailSendOutRepository.Create(emailLog);
+                }
+                catch { }
+                return false;
+            }
+        }
+
+        private static readonly string[] separator = [";"];
+    }
+}
