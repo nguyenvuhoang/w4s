@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using O24OpenAPI.Client.Workflow;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Framework.Models;
-using O24OpenAPI.WFO.API.Application.Features.Worklfows;
+using O24OpenAPI.WFO.API.Application.Features.Workflows;
 using O24OpenAPI.WFO.Domain.AggregateModels.WorkflowAggregate;
 using System.Reflection;
 using WorkflowInput = O24OpenAPI.WFO.API.Application.Models.WorkflowInput;

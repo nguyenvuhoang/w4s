@@ -10,7 +10,7 @@ using O24OpenAPI.WFO.API.Application.Models;
 using O24OpenAPI.WFO.Domain.AggregateModels.WorkflowAggregate;
 using System.Diagnostics;
 
-namespace O24OpenAPI.WFO.API.Application.Features.Worklfows
+namespace O24OpenAPI.WFO.API.Application.Features.Workflows
 {
     public interface ISearchWorkflowHandler
     {

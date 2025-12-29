@@ -12,7 +12,10 @@ public class WorkflowDefRepository(
     IStaticCacheManager staticCacheManager
 ) : EntityRepository<WorkflowDef>(dataProvider, staticCacheManager), IWorkflowDefRepository
 {
-    public async Task<WorkflowDef?> GetByWorkflowIdAndChannelIdAsync(string workflowId, string channelId)
+    public async Task<WorkflowDef?> GetByWorkflowIdAndChannelIdAsync(
+        string workflowId,
+        string channelId
+    )
     {
         return await Table.FirstOrDefaultAsync(x =>
             x.WorkflowId == workflowId && x.ChannelId == channelId

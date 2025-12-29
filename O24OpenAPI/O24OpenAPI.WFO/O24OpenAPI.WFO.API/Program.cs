@@ -34,7 +34,7 @@ builder.Services.AddGrpc(options =>
 {
     options.Interceptors.Add<GrpcLoggingInterceptor>();
 });
-builder.Services.AddpplicationServices().AddWFOInfrastructureServices();
+builder.Services.AddApplicationServices().AddWFOInfrastructureServices();
 WebApplication app = builder.Build();
 app.UseHttpsRedirection();
 app.UseAuthorization();
@@ -47,5 +47,6 @@ app.UseWFOInfrastructure();
 app.ShowStartupBanner();
 app.MapControllers();
 app.MapGrpcService<WFOGrpcService>();
+app.MapGeneratedEndpoints();
 
 await app.RunAsync();

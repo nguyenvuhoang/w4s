@@ -28,5 +28,8 @@ public class MappingConfiguration : IMappingConfigurator
             .ForMember(d => d.p1_request, o => o.MapFrom(s => s.p1_request.ToJson(null, null)))
             .ForMember(d => d.p2_content, o => o.MapFrom(s => s.p2_content.ToJson(null, null)))
             .ForMember(d => d.p2_request, o => o.MapFrom(s => s.p2_request.ToJson(null, null)));
+
+        builder.CreateMap<WorkflowStep, WorkflowStep>().ForMember(d => d.Id, o => o.Ignore());
+        builder.CreateMap<WorkflowDef, WorkflowDef>().ForMember(d => d.Id, o => o.Ignore());
     }
 }

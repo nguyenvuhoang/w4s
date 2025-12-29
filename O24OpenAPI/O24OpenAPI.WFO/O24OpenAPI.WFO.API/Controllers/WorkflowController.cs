@@ -3,7 +3,7 @@ using O24OpenAPI.Client.Workflow;
 using O24OpenAPI.Framework.Controllers;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.WFO.API.Application.Features.WorkflowExecutions;
-using O24OpenAPI.WFO.API.Application.Features.Worklfows;
+using O24OpenAPI.WFO.API.Application.Features.Workflows;
 using WorkflowInput = O24OpenAPI.WFO.API.Application.Models.WorkflowInput;
 
 namespace O24OpenAPI.WFO.API.Controllers;

@@ -1,25 +1,23 @@
-﻿using LinKit.Core.Abstractions;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using O24OpenAPI.Client.Workflow;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.WFO.API.Application.Models;
 using O24OpenAPI.WFO.Domain.AggregateModels.WorkflowAggregate;
 using System.Diagnostics;
 
-namespace O24OpenAPI.WFO.API.Application.Features.Worklfows;
+namespace O24OpenAPI.WFO.API.Application.Features.Workflows;
 
-public interface IUpdateWorkflowHandler
+public interface ICreateWorkflowHandler
 {
-    Task<WorkflowResponse> UpdateWorkflow(WorkflowInput input);
+    Task<WorkflowResponse> CreateWorkflow(WorkflowInput input);
 }
 
-[RegisterService(Lifetime.Scoped)]
-public class UpdateWorkflowHandler(
+public class CreateWorkflowHandler(
     IWorkflowDefRepository workflowDefRepository,
     IWorkflowStepRepository workflowStepRepository
-) : IUpdateWorkflowHandler
+) : ICreateWorkflowHandler
 {
-    public async Task<WorkflowResponse> UpdateWorkflow(WorkflowInput input)
+    public async Task<WorkflowResponse> CreateWorkflow(WorkflowInput input)
     {
         Stopwatch stopwatch = new();
         stopwatch.Start();
@@ -42,14 +40,16 @@ public class UpdateWorkflowHandler(
             WorkflowDef wfDef =
                 JsonConvert.DeserializeObject<WorkflowDef>(defObject.ToSerialize())
                 ?? throw new InvalidOperationException("Invalid workflow definition");
-            WorkflowDef exit =
-                await workflowDefRepository.GetByWorkflowIdAndChannelIdAsync(wfDef.WorkflowId, wfDef.ChannelId)
-                ?? throw new InvalidOperationException(
-                    $"Workflow [{wfDef.WorkflowId}] does not exit."
+            WorkflowDef exit = await workflowDefRepository.GetByWorkflowIdAndChannelIdAsync(
+                wfDef.WorkflowId,
+                wfDef.ChannelId
+            );
+            if (exit != null)
+            {
+                throw new InvalidOperationException(
+                    $"Workflow [{wfDef.WorkflowId}] already exits."
                 );
-
-            await workflowDefRepository.Delete(exit);
-            wfDef = await workflowDefRepository.InsertAsync(wfDef);
+            }
             List<WorkflowStep> wfSteps = JsonConvert.DeserializeObject<List<WorkflowStep>>(
                 stepsObject.ToSerialize()
             );
@@ -57,8 +57,7 @@ public class UpdateWorkflowHandler(
             {
                 throw new InvalidOperationException("Invalid workflow steps");
             }
-            await workflowStepRepository.DeleteByWorkflowIdAsync(wfDef.WorkflowId);
-
+            await workflowDefRepository.InsertAsync(wfDef);
             foreach (WorkflowStep step in wfSteps)
             {
                 step.WorkflowId = wfDef.WorkflowId;
