@@ -1,4 +1,6 @@
-﻿using LinKit.Core.Abstractions;
+﻿using System.Text;
+using System.Text.Json.Serialization;
+using LinKit.Core.Abstractions;
 using LinKit.Json.Runtime;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
@@ -23,8 +25,6 @@ using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using O24OpenAPI.Logging.Helpers;
-using System.Text;
-using System.Text.Json.Serialization;
 
 namespace O24OpenAPI.CMS.API.Application.Features.Requests;
 
@@ -565,7 +565,7 @@ public class RequestHandlerV1(
                 if (learnApi.LearnApiMapping.HasValue())
                 {
                     mappedRequest = await dataMappingService.MapDataAsync(
-                        JObject.FromObject(requestModel),
+                        JObject.FromObject(requestModel.Fields),
                         JObject.Parse(learnApi.LearnApiMapping)
                     );
                 }
