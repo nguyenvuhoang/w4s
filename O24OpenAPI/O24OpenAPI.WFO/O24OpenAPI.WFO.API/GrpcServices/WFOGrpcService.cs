@@ -70,7 +70,7 @@ public class WFOGrpcService : WFOGrpcServiceBase
                     AssemblyName = assemblyName,
                     GrpcTimeout = grpcTimeout,
                 };
-                await serviceInstanceRepository.InsertAsync(instance);
+                await serviceInstanceRepository.AddAsync(instance);
                 return "ok";
             }
         );

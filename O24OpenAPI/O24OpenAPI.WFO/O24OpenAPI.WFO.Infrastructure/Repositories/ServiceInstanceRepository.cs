@@ -1,4 +1,6 @@
-﻿using LinKit.Core.Abstractions;
+﻿using System.Net;
+using System.Text.RegularExpressions;
+using LinKit.Core.Abstractions;
 using LinqToDB;
 using O24OpenAPI.Client.Lib.Encryption;
 using O24OpenAPI.Contracts.Configuration.Client;
@@ -11,8 +13,6 @@ using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.WFO.Domain.AggregateModels.ServiceAggregate;
 using O24OpenAPI.WFO.Infrastructure.Configurations;
 using O24OpenAPI.WFO.Infrastructure.Services;
-using System.Net;
-using System.Text.RegularExpressions;
 
 namespace O24OpenAPI.WFO.Infrastructure.Repositories;
 
@@ -23,6 +23,30 @@ public class ServiceInstanceRepository(
     WFOSetting wfoSetting
 ) : EntityRepository<ServiceInstance>(dataProvider, staticCacheManager), IServiceInstanceRepository
 {
+    public async Task AddAsync(ServiceInstance serviceInstance)
+    {
+        try
+        {
+            var instance = await GetByServiceCodeAndGrpcUrlAsync(
+                serviceInstance.ServiceCode,
+                serviceInstance.GrpcUrl
+            );
+            if (instance != null)
+            {
+                instance.SetServiceInstance(serviceInstance);
+                await Update(instance);
+            }
+            else
+            {
+                await InsertAsync(serviceInstance);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
     public async Task<ServiceInfo> QueryServiceInfo(string pServiceCode, string pInstanceID)
     {
         ServiceInfo serviceInfo = new();
@@ -55,7 +79,10 @@ public class ServiceInstanceRepository(
         serviceInfo.broker_port = wfoServiceInfo.BrokerPort;
         serviceInfo.broker_user_name = wfoServiceInfo.BrokerUsername;
         serviceInfo.broker_user_password = wfoServiceInfo.BrokerPassword;
-        if (wfoSetting.MessageBrokerPasswordEncryptionMethod?.StartsWithOrdinalIgnoreCase("AES") == true)
+        if (
+            wfoSetting.MessageBrokerPasswordEncryptionMethod?.StartsWithOrdinalIgnoreCase("AES")
+            == true
+        )
         {
             serviceInfo.broker_user_password = O24OpenAPITextEncryptor.AESDecryptString(
                 serviceInfo.broker_user_password
@@ -142,7 +169,9 @@ public class ServiceInstanceRepository(
     {
         try
         {
-            IQueryable<ServiceInstance> query = Table.Where(x => x.ServiceHandleName == serviceHandleName);
+            IQueryable<ServiceInstance> query = Table.Where(x =>
+                x.ServiceHandleName == serviceHandleName
+            );
 
             string? currentHost = GetHostFromGrpcUrl(
                 Singleton<O24OpenAPIConfiguration>.Instance.YourGrpcURL
@@ -213,5 +242,15 @@ public class ServiceInstanceRepository(
     {
         Match match = Regex.Match(url, @"https?:\/\/([\d\.]+)");
         return match.Success ? match.Groups[1].Value : url;
+    }
+
+    private async Task<ServiceInstance?> GetByServiceCodeAndGrpcUrlAsync(
+        string serviceCode,
+        string grpcUrl
+    )
+    {
+        return await Table
+            .Where(x => x.ServiceCode == serviceCode && x.GrpcUrl == grpcUrl)
+            .FirstOrDefaultAsync();
     }
 }
