@@ -17,7 +17,27 @@ namespace O24OpenAPI.CTH.API.Application.Features.User;
 
 public class CreateUserCommand : BaseTransactionModel, ICommand<UserResponseModel>
 {
-    public CreateUserRequestModel Model { get; set; } = default!;
+    public string UserName { get; set; }
+    public string Password { get; set; }
+    public string LoginName { get; set; }
+    public string FirstName { get; set; }
+    public string MiddleName { get; set; }
+    public string LastName { get; set; }
+    public string Phone { get; set; }
+    public int Gender { get; set; }
+    public string Birthday { get; set; }
+    public string Address { get; set; }
+    public string Email { get; set; }
+    public string UserCreated { get; set; }
+    public string UserLevel { get; set; }
+    public int PolicyId { get; set; }
+    public List<string> UserGroup { get; set; }
+    public string ContractNumber { get; set; }
+    public string UserChannelId { get; set; }
+    public string RoleChannel { get; set; }
+    public string NotificationType { get; set; } = "MAIL";
+    public string ContractType { get; set; }
+    public string UserType { get; set; } = "0502";
 }
 
 [CqrsHandler]
@@ -35,12 +55,7 @@ public class CreateUserHandle(
         CancellationToken cancellationToken = default
     )
     {
-        return await CreateUserAsync(request.Model);
-    }
-
-    public async Task<UserResponseModel> CreateUserAsync(CreateUserRequestModel model)
-    {
-        var now = DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow;
         string userId = null;
         string userCode = null;
         bool isUserAccountCreated = false;
@@ -49,7 +64,7 @@ public class CreateUserHandle(
 
         try
         {
-            if (model.IsReverse)
+            if (request.IsReverse)
             {
                 await userInRoleRepository.DeleteByUserCodeAsync(userCode);
                 await userPasswordRepository.DeletePasswordByUserIdAsync(userId);
@@ -58,74 +73,74 @@ public class CreateUserHandle(
             }
 
             // 1. Check username existence
-            var isUserExisting = await userAccountRepository.IsExist(model.UserName);
+            bool isUserExisting = await userAccountRepository.IsExist(request.UserName);
             if (isUserExisting)
             {
                 throw await O24Exception.CreateAsync(
                     O24CTHResourceCode.Validation.UsernameIsExisting,
-                    model.Language,
-                    [model.UserName]
+                    request.Language,
+                    [request.UserName]
                 );
             }
 
             // 2. Generate ID and hash password
             userId = Guid.NewGuid().ToString();
             userCode = userId;
-            string password = model.Password ?? PasswordUtils.GenerateRandomPassword(8);
+            string password = request.Password ?? PasswordUtils.GenerateRandomPassword(8);
             string salt = PasswordUtils.GenerateRandomSalt();
             string hashPassword = O9Encrypt.sha_sha256(password, userCode);
 
-            var userchannel = string.IsNullOrEmpty(model.ContractType)
+            string userchannel = string.IsNullOrEmpty(request.ContractType)
                 ? "BO"
-                : (model.ContractType == "IND" ? "MB" : "AM");
+                : (request.ContractType == "IND" ? "MB" : "AM");
 
-            var listofRoleUser = await userRightChannelRepository.GetListRoleIdByChannelAsync(
+            List<int> listofRoleUser = await userRightChannelRepository.GetListRoleIdByChannelAsync(
                 userchannel
             );
-            var roleArrayString =
+            string roleArrayString =
                 listofRoleUser != null && listofRoleUser.Count != 0
                     ? $"[{string.Join(",", listofRoleUser)}]"
                     : "[1]";
             // 3. Create UserAccount
-            var userAccount = new UserAccount
+            UserAccount userAccount = new()
             {
                 ChannelId = userchannel,
                 UserId = userId,
-                UserName = model.UserName,
+                UserName = request.UserName,
                 UserCode = userCode,
-                LoginName = model.UserName,
+                LoginName = request.UserName,
                 RoleChannel = roleArrayString,
                 Status = Common.ACTIVE,
-                UserCreated = model.CurrentUserCode,
+                UserCreated = request.CurrentUserCode,
                 IsSuperAdmin = false,
-                BranchID = !string.IsNullOrWhiteSpace(model.CurrentBranchCode)
-                    ? model.CurrentBranchCode
+                BranchID = !string.IsNullOrWhiteSpace(request.CurrentBranchCode)
+                    ? request.CurrentBranchCode
                     : "0",
-                FirstName = model.FirstName,
-                MiddleName = model.MiddleName,
-                LastName = model.LastName,
-                Email = model.Email,
-                Gender = model.Gender,
-                Address = model.Address,
-                Phone = model.Phone,
-                Birthday = DateTime.TryParse(model.Birthday, out var birthday)
+                FirstName = request.FirstName,
+                MiddleName = request.MiddleName,
+                LastName = request.LastName,
+                Email = request.Email,
+                Gender = request.Gender,
+                Address = request.Address,
+                Phone = request.Phone,
+                Birthday = DateTime.TryParse(request.Birthday, out DateTime birthday)
                     ? birthday
                     : null,
-                PolicyID = model.PolicyId,
-                UserLevel = int.Parse(model.UserLevel),
+                PolicyID = request.PolicyId,
+                UserLevel = int.Parse(request.UserLevel),
                 CreatedOnUtc = now,
                 IsShow = Constant.Code.ShowStatus.YES,
-                ContractNumber = model.ContractNumber,
+                ContractNumber = request.ContractNumber,
                 IsFirstLogin = true,
-                NotificationType = !string.IsNullOrWhiteSpace(model.NotificationType)
-                    ? model.NotificationType
+                NotificationType = !string.IsNullOrWhiteSpace(request.NotificationType)
+                    ? request.NotificationType
                     : "MAIL",
             };
             await userAccountRepository.AddAsync(userAccount);
             isUserAccountCreated = true;
 
             // 4. Create UserPassword
-            var userPassword = new UserPassword
+            UserPassword userPassword = new()
             {
                 ChannelId = userchannel,
                 UserId = userId,
@@ -137,9 +152,9 @@ public class CreateUserHandle(
             isUserPasswordCreated = true;
 
             // 5. Create UserInRole
-            var listUserRole = await userRoleRepository.GetByRoleTypeAsync(model.UserType);
+            List<int> listUserRole = await userRoleRepository.GetByRoleTypeAsync(request.UserType);
 
-            var userInRoles = listUserRole
+            List<UserInRole> userInRoles = listUserRole
                 .Select(
                     (roleId, index) =>
                         new UserInRole
@@ -158,28 +173,28 @@ public class CreateUserHandle(
                 isUserInRolesCreated = true;
             }
 
-            var nameParts = new[] { model.FirstName, model.MiddleName, model.LastName };
-            var fullname = string.Join(
+            string[] nameParts = new[] { request.FirstName, request.MiddleName, request.LastName };
+            string fullname = string.Join(
                 " ",
                 nameParts.Where(part => !string.IsNullOrWhiteSpace(part))
             );
 
             // 6. Build response
-            var response = new UserResponseModel
+            UserResponseModel response = new()
             {
                 DataTemplate = new
                 {
                     userCode,
-                    model.UserName,
-                    model.Email,
+                    request.UserName,
+                    request.Email,
                     fullname,
-                    model.Phone,
+                    request.Phone,
                     password,
                 },
                 MimeEntities = [],
             };
 
-            var qrImageBytes = Utils.StringExtensions.GenerateQRCodeBytes(password);
+            byte[] qrImageBytes = Utils.StringExtensions.GenerateQRCodeBytes(password);
             response.MimeEntities.Add(
                 new DTSMimeEntityModel
                 {
@@ -223,7 +238,7 @@ public class CreateUserHandle(
 
             throw await O24Exception.CreateAsync(
                 ResourceCode.Common.ServerError,
-                model.Language,
+                request.Language,
                 [ex.Message]
             );
         }

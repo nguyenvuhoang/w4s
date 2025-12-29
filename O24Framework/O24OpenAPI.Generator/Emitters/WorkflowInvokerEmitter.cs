@@ -40,14 +40,14 @@ internal static class WorkflowInvokerEmitter
         {
             sb.AppendLine("            {");
 
-            foreach (var step in steps)
+            foreach (WorkflowStepInfo step in steps)
             {
                 sb.AppendLine(
                     $@"
                 [""{step.StepCode}""] = static async (scheme, mediator, token) =>
                 {{
                     var command =
-                        await scheme.ToModel<{step.InputType}>();
+                        await scheme.ToModel<{step.InputType}>() ?? new {step.InputType}();
 
                     return await mediator.SendAsync(command, token);
                 }},

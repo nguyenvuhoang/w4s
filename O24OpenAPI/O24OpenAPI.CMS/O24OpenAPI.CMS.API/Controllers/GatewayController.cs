@@ -131,9 +131,10 @@ public partial class GatewayController(
         }
     }
 
+    [HttpGet]
     public virtual async Task<IActionResult> ClearCache()
     {
-        await EngineContext.Current.Resolve<IStaticCacheManager>().Clear();
+        await EngineContext.Current.Resolve<IStaticCacheManager>().ClearAll();
         return Ok("Successful!");
     }
 }
