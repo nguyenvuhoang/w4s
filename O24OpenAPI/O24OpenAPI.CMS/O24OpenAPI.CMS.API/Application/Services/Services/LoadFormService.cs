@@ -10,19 +10,24 @@ using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 
 namespace O24OpenAPI.CMS.API.Application.Services.Services;
 
+
 public class LoadFormService : ILoadFormService
 {
     private readonly IFormService _formService = EngineContext.Current.Resolve<IFormService>();
-    private readonly JWebUIObjectContextModel _context =
-        EngineContext.Current.Resolve<JWebUIObjectContextModel>();
+    private readonly JWebUIObjectContextModel _context = EngineContext.Current.Resolve<JWebUIObjectContextModel>();
+    private readonly ICTHGrpcClientService _cthGrpcService = EngineContext.Current.Resolve<ICTHGrpcClientService>();
+    private readonly IFormFieldDefinitionService _formFieldDefinitionService = EngineContext.Current.Resolve<IFormFieldDefinitionService>();
 
-    private readonly ICTHGrpcClientService _cthGrpcService =
-        EngineContext.Current.Resolve<ICTHGrpcClientService>();
-    private readonly IFormFieldDefinitionService _formFieldDefinitionService =
-        EngineContext.Current.Resolve<IFormFieldDefinitionService>();
-
+    private readonly WorkContext? workflowContext = EngineContext.Current.Resolve<WorkContext>();
     public async Task<JToken> LoadFormAndRoleTask(FormModelRequest model)
     {
+        if (model.FormId == null)
+            return new JObject
+            {
+                ["success"] = false,
+                ["error"] = "FormId is required"
+            };
+
         string formId = model.FormId;
 
         var configForm =
@@ -46,10 +51,17 @@ public class LoadFormService : ILoadFormService
 
             _context.Bo.AddPackFo("form_design_detail", configForm);
 
-            return "true".ToObjectSuccess();
         }
 
-        return "false".ToObjectSuccess();
+        return new JObject
+        {
+            ["success"] = true,
+            ["data"] = new JObject
+            {
+                ["loadRoleTask"] = JToken.FromObject(roleTask),
+                ["form_design_detail"] = JToken.FromObject(configForm)
+            }
+        };
     }
 
     public async Task<Dictionary<string, object>> BuildRoleTaskWithListRole(
@@ -59,7 +71,7 @@ public class LoadFormService : ILoadFormService
     )
     {
         var rolesOfUser = await _cthGrpcService.GetListRoleByUserCodeAsync(
-            _context.InfoUser.UserSession.UserCode
+            workflowContext.UserContext.UserCode
         );
         var listRoleId = rolesOfUser.Select(s => s.RoleId).ToList();
         Dictionary<string, object> roleTask = [];

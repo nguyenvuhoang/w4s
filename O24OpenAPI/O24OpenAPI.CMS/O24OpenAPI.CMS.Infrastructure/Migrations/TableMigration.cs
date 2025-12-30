@@ -9,7 +9,7 @@ using O24OpenAPI.Data.Migrations;
 namespace O24OpenAPI.CMS.Infrastructure.Migrations;
 
 [O24OpenAPIMigration(
-    "2025/12/24 21:19:07:0000000",
+    "2025/12/30 21:19:07:0000000",
     "4. Init table CMS Form",
     MigrationProcessType.Installation
 )]
@@ -165,5 +165,15 @@ public class TableMigration : AutoReversingMigration
                 .WithOptions().NonClustered();
         }
 
+        if (!Schema.Table(nameof(FormFieldDefinition)).Exists())
+        {
+            Create.TableFor<FormFieldDefinition>();
+
+            Create.Index("UQ_FormFieldDefinition_FormId_FieldName")
+                .OnTable(nameof(FormFieldDefinition))
+                .OnColumn(nameof(FormFieldDefinition.FormId)).Ascending()
+                .OnColumn(nameof(FormFieldDefinition.FieldName)).Ascending()
+                .WithOptions().Unique();
+        }
     }
 }

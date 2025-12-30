@@ -1,7 +1,7 @@
 ﻿using LinqToDB;
 using Newtonsoft.Json;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces;
-using O24OpenAPI.CMS.Domain.AggregateModels;
+using O24OpenAPI.CMS.Domain.AggregateModels.PORTAL;
 
 namespace O24OpenAPI.CMS.API.Application.Services.Services;
 
