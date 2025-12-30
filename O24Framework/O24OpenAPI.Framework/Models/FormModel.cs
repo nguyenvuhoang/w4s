@@ -1,6 +1,6 @@
-using System.Text.Json;
 using Newtonsoft.Json;
 using O24OpenAPI.Client.Events.EventData;
+using System.Text.Json;
 
 namespace O24OpenAPI.Framework.Models;
 
