@@ -1,0 +1,63 @@
+﻿@using Stimulsoft.Report.Mvc;
+@using Stimulsoft.Report.Web;
+@using Stimulsoft.System.Web.UI.WebControls;
+
+@{
+    ViewBag.Title = "Dashboard";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head runat="server">
+    <title></title>
+    <meta http-equiv="Access-Control-Allow-Origin" content="*" />
+    <style>
+    body
+    {
+    margin: unset !important;
+    }
+</style>
+</head>
+<body>
+    @Html.StiNetCoreViewer("StiMvcViewer1", (StiNetCoreViewerOptions)ViewBag.ViewerOptions)
+    <script type="text/javascript">
+        jsStiMvcViewer1.onready = function () {
+            var viewFullButton = jsStiMvcViewer1.SmallButton("viewFullButton", "Pop-out", "emptyImage");
+            viewFullButton.image.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAQAAABKfvVzAAAAYUlEQVQ4y9WSuxHAIAxD3xRe10uyBCzhFIbLpZMuTSJaPSx/4FdK6vFsxK4iKZgOEAyKpQJtH8QOJttPL4a9EcvOa3u6v9dG5DBFkU72Xs3SWz3rn+pk7hNLFxCR8pHP6AIgmVv5TxvgbAAAAABJRU5ErkJggg==";
+            viewFullButton.action = function () {;
+                var params = [
+                    'height='+window.screen.height,
+                    'width='+window.screen.width,
+                    'fullscreen=yes','resizable=yes','scrollbars=yes','toolbar=yes','menubar=yes','location=yes',
+                    'top=0','left=0'
+                ].join(',');
+                let id_random='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                    return v.toString(16);
+                })
+                var win = window.open("", id_random, params);
+                let styleCssSystem="body{margin:unset !important}.iframe_report_fullscreen{height: -webkit-fill-available;height: inherit;}iframe{border: unset !important;width: 100%;height: 100%;}"
+                // Thực hiện xuất chứng từ
+                if (win && win.document) {
+                    win.document.write("<html><head><style>");
+                    win.document.write(styleCssSystem);
+                    win.document.write(`</style>`);
+                    win.document.write(`</head><body>`);
+                    win.document.write('<div id="iframe_report_fullscreen" class="iframe_report_fullscreen">');
+                    win.document.write(`<iframe  title="iframe_report_fullscreen" src=${document.location.href}></iframe>`);
+                    win.document.write("</div>");
+                    win.document.write("</body></html>");
+                    win.document.close();
+                    win.focus();
+                    win.moveTo(0,0);
+                }
+            }
+            var toolbarTable = jsStiMvcViewer1.controls.toolbar.firstChild.firstChild;
+            var buttonsTable = toolbarTable.rows[0].firstChild.firstChild;
+            var customButtonCell = buttonsTable.rows[0].insertCell(0);
+            customButtonCell.appendChild(viewFullButton);
+        }
+    </script>
+</body>
+</html>
