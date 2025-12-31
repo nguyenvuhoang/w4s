@@ -43,6 +43,7 @@ public static class WorkflowStep
             "WF_STEP_CTH_VERIFY_SMARTOTP_PINCODE";
         public const string WF_STEP_CTH_VERIFY_USER = "WF_STEP_CTH_VERIFY_USER";
         public const string WF_STEP_UMG_REFRESH_TOKEN = "WF_STEP_UMG_REFRESH_TOKEN";
+        public const string WF_STEP_CTH_UPDATE_USER_AVATAR = "WF_STEP_CTH_UPDATE_USER_AVATAR";
     }
 
     public static class CMS { }
