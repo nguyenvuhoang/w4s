@@ -12,7 +12,51 @@ namespace O24OpenAPI.CTH.API.Application.Features.User;
 
 public class UpdateUserCommand : BaseTransactionModel, ICommand<UpdateUserResponseModel>
 {
-    public UpdateUserRequestModel Model { get; set; } = default!;
+    public int Id { get; set; }
+    public string UserName { get; set; }
+    public string FirstName { get; set; } = string.Empty;
+    public string MiddleName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public string Phone { get; set; }
+    public int? Gender { get; set; }
+    public string Address { get; set; }
+    public string Email { get; set; }
+    public new string Status { get; set; } = "A";
+
+    public List<string> ChangedFields { get; set; } = [];
+
+    public static UpdateUserRequestModel FromUpdatedEntity(
+        UserAccount updated,
+        UserAccount original
+    )
+    {
+        var result = new UpdateUserRequestModel();
+        var entityProps = typeof(UserAccount).GetProperties();
+        var modelProps = typeof(UpdateUserRequestModel).GetProperties().ToDictionary(p => p.Name);
+
+        foreach (var prop in entityProps)
+        {
+            if (!modelProps.ContainsKey(prop.Name))
+            {
+                continue;
+            }
+
+            var newValue = prop.GetValue(updated);
+            var oldValue = prop.GetValue(original);
+
+            if (
+                (oldValue == null && newValue != null)
+                || (oldValue != null && !oldValue.Equals(newValue))
+            )
+            {
+                result.ChangedFields.Add(prop.Name);
+            }
+
+            modelProps[prop.Name].SetValue(result, newValue);
+        }
+
+        return result;
+    }
 }
 
 [CqrsHandler]
@@ -25,21 +69,16 @@ public class UpdateUserHandle(IUserAccountRepository userAccountRepository)
         CancellationToken cancellationToken = default
     )
     {
-        return await UpdateUserAsync(request.Model);
-    }
-
-    public async Task<UpdateUserResponseModel> UpdateUserAsync(UpdateUserRequestModel model)
-    {
         var entity =
-            await userAccountRepository.GetById(model.Id)
+            await userAccountRepository.GetById(request.Id)
             ?? throw await O24Exception.CreateAsync(
                 ResourceCode.Common.NotExists,
-                model.Language
+                request.Language
             );
 
         var originalEntity = entity.Clone();
 
-        model.ToEntityNullable(entity);
+        request.ToEntityNullable(entity);
 
         entity.UpdatedOnUtc = DateTime.UtcNow;
 

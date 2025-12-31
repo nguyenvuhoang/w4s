@@ -1,5 +1,5 @@
-﻿using O24OpenAPI.Framework.Models;
-using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
+﻿using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
+using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Models;
 
