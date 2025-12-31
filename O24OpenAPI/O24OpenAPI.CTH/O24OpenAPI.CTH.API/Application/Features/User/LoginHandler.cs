@@ -319,6 +319,29 @@ public class LoginHandler(
             Device = (request.DeviceId + request.Modelname) ?? "",
         };
         await userSessionRepository.Insert(userSession);
+
+        await userDeviceRepository.EnsureUserDeviceAsync(
+           userCode: userAccount.UserCode,
+           loginName: request.LoginName,
+           deviceId: (request.DeviceId + request.Modelname) ?? "",
+           deviceType: request.DeviceType,
+           userAgent: request.UserAgent,
+           ipAddress: request.IpAddress,
+           channelId: request.ChannelId,
+           pushId: request.PushId,
+           osVersion: request.OsVersion,
+           appVersion: request.AppVersion,
+           deviceName: request.DeviceName,
+           brand: request.Brand,
+           isEmulator: request.IsEmulator,
+           isRooted: request.IsRootedOrJailbroken,
+           language: request.Language,
+           isResetDevice: request.IsResetDevice,
+           network: request.Network,
+           memory: request.Memory
+       );
+
+
         userAccount.LastLoginTime = DateTime.Now;
         userAccount.UUID = $"{Guid.NewGuid()}";
         userAccount.Failnumber = 0;

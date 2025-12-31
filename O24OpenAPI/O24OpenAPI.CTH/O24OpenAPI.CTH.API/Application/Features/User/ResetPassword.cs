@@ -81,8 +81,6 @@ public class ResetPasswordHandle(
             userAccount.Status = Common.ACTIVE;
             userAccount.Failnumber = 0;
             userAccount.IsFirstLogin = true;
-            await userAccountRepository.UpdateAsync(userAccount);
-            await RevokeByLoginName(userAccount.LoginName);
 
             if (userAccount.UserCode == model.CurrentUserCode)
             {
@@ -102,6 +100,8 @@ public class ResetPasswordHandle(
                 };
                 await PublishEventUserLogout(userPublishEvent);
             }
+            await userAccountRepository.UpdateAsync(userAccount);
+            await RevokeByLoginName(userAccount.LoginName);
 
             var payload = BuildResetPasswordNotification(
                 usercode,
