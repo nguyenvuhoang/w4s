@@ -40,7 +40,7 @@ public class FormModel : BaseO24OpenAPIModel
     ///  Master data
     /// </summary>
     [JsonProperty("master_data")]
-    public BoRequestModel MasterData { get; set; } = new BoRequestModel();
+    public RequestModel MasterData { get; set; } = new RequestModel();
 
 
 }

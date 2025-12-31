@@ -53,7 +53,7 @@ public partial class FormService(IRepository<Form> FormRepository) : IFormServic
                 Info = JsonConvert.DeserializeObject<InfoForm>(s.Info),
                 MasterData = string.IsNullOrEmpty(s.MasterData)
                     ? null
-                    : JsonConvert.DeserializeObject<BoRequestModel>(s.MasterData),
+                    : JsonConvert.DeserializeObject<RequestModel>(s.MasterData),
             })
             .FirstOrDefaultAsync();
 
