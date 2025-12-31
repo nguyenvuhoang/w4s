@@ -1,20 +1,11 @@
-﻿using System.Globalization;
-using System.Security.Cryptography;
-using FirebaseAdmin.Messaging;
+﻿using FirebaseAdmin.Messaging;
 using LinKit.Core.Cqrs;
 using Newtonsoft.Json;
-using O24OpenAPI.Framework.Attributes;
-using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
-using O24OpenAPI.NCH.API.Application.Utils;
-using O24OpenAPI.NCH.Config;
 using O24OpenAPI.NCH.Constant;
 using O24OpenAPI.NCH.Domain.AggregatesModel.NotificationAggregate;
-using O24OpenAPI.NCH.Domain.AggregatesModel.OtpAggregate;
-using O24OpenAPI.NCH.Domain.AggregatesModel.SmsAggregate;
-using O24OpenAPI.NCH.Infrastructure;
 
 namespace O24OpenAPI.NCH.API.Application.Features.Sms;
 

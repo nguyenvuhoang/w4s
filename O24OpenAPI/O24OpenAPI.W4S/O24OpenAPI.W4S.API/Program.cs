@@ -1,27 +1,37 @@
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.W4S.Infrastructure;
 using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Infrastructure.Extensions;
+using O24OpenAPI.W4S.API.Application;
+using O24OpenAPI.W4S.Infrastructure;
 
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddInfrastructureServices(builder);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+builder.Services.ConfigureApplicationServices(builder);
+builder.Services.AddApplicationServices();
+builder.Services.AddInfrastructureServices();
+builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddHttpClient();
+if (!builder.Environment.IsDevelopment())
+{
+    builder.ConfigureWebHost();
+}
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
-
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.MapControllers();
 
-using var scope = app.Services.CreateScope();
+using IServiceScope scope = app.Services.CreateScope();
 AsyncScope.Scope = scope;
 
 await app.ConfigureInfrastructure();
+await app.StartEngine();
 app.ShowStartupBanner();
 
 app.Run();

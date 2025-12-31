@@ -2,12 +2,13 @@
 using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.Migrations;
+using O24OpenAPI.Framework.Domain;
 using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
 namespace O24OpenAPI.W4S.Infrastructure.Migrations;
 
 [O24OpenAPIMigration(
-    "2025/01/01 06:01:00:0000000",
+    "2025/12/31 06:01:00:0000000",
     "6. Create SchemeMigration (Business Table)",
     MigrationProcessType.Installation
 )]
@@ -155,6 +156,19 @@ public class EntityMigration : AutoReversingMigration
             Create.Index("IDX_TransactionHistory_WorkDate")
                   .OnTable(nameof(WalletTransaction))
                   .OnColumn(nameof(WalletTransaction.TransactionWorkDate)).Descending().WithOptions().NonClustered();
+        }
+
+        if (!Schema.Table(nameof(C_CODELIST)).Exists())
+        {
+            Create.TableFor<C_CODELIST>();
+            Create
+                .UniqueConstraint("UC_C_CODELIST_CodeId_CodeName_CodeGroup")
+                .OnTable(nameof(C_CODELIST))
+                .Columns(
+                    nameof(C_CODELIST.CodeId),
+                    nameof(C_CODELIST.CodeName),
+                    nameof(C_CODELIST.CodeGroup)
+                );
         }
     }
 }

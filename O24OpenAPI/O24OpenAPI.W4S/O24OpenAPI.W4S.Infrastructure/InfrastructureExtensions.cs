@@ -7,17 +7,13 @@ namespace O24OpenAPI.W4S.Infrastructure;
 
 public static class InfrastructureExtensions
 {
-    public static IServiceCollection AddInfrastructureServices(
-        this IServiceCollection services,
-        WebApplicationBuilder builder
-    )
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
-        services.ConfigureApplicationServices(builder);
-        builder.ConfigureWebHost();
         services.AddGrpc(options =>
         {
             options.Interceptors.Add<GrpcLoggingInterceptor>();
         });
+        services.AddLinKitDependency();
         return services;
     }
 
