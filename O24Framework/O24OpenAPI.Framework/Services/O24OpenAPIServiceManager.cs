@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Linh.CodeEngine.Core;
 using LinKit.Core.Abstractions;
 using LinKit.Core.Cqrs;
@@ -22,6 +21,7 @@ using O24OpenAPI.Framework.Repositories;
 using O24OpenAPI.Framework.Services.Configuration;
 using O24OpenAPI.Framework.Services.Logging;
 using O24OpenAPI.Framework.Services.Queue;
+using System.Text.Json;
 
 namespace O24OpenAPI.Framework.Services;
 
@@ -149,8 +149,8 @@ public class O24OpenAPIServiceManager(
                 }
                 try
                 {
-                    IWorkflowStepInvoker stepInvoker =
-                        EngineContext.Current.Resolve<IWorkflowStepInvoker>(mapping.MediatorKey);
+                    var stepInvoker = EngineContext.Current.Resolve<IWorkflowStepInvoker>(mapping.MediatorKey) ?? throw new InvalidOperationException($"IWorkflowStepInvoker resolved null. Key='{mapping.MediatorKey}'");
+
                     Task<WFScheme> scheme = BaseQueue.Invoke<BaseTransactionModel>(
                         workflow,
                         async () =>
@@ -166,6 +166,14 @@ public class O24OpenAPIServiceManager(
                     return await scheme;
                 }
                 catch (KeyNotFoundException)
+                {
+                    return await workflow.InvokeAsync(mapping.FullClassName, mapping.MethodName);
+                }
+                catch (InvalidOperationException)
+                {
+                    return await workflow.InvokeAsync(mapping.FullClassName, mapping.MethodName);
+                }
+                catch (ArgumentException)
                 {
                     return await workflow.InvokeAsync(mapping.FullClassName, mapping.MethodName);
                 }
