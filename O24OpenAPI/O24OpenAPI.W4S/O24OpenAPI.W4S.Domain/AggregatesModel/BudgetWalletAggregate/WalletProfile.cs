@@ -12,7 +12,7 @@ public partial class WalletProfile : BaseEntity
     /// <summary>
     /// Owner of the wallet
     /// </summary>
-    public Guid UserId { get; private set; }
+    public string UserId { get; private set; } = string.Empty;
 
     /// <summary>
     /// Wallet display name
@@ -40,7 +40,7 @@ public partial class WalletProfile : BaseEntity
 
     public WalletProfile(
         Guid walletId,
-        Guid userId,
+        string userId,
         string walletName,
         string walletType,
         string defaultCurrency

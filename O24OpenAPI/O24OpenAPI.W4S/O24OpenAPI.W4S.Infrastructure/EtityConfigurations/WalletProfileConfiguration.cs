@@ -9,19 +9,13 @@ public class WalletProfileConfiguration : O24OpenAPIEntityBuilder<WalletProfile>
     public override void MapEntity(CreateTableExpressionBuilder table)
     {
         table
-            // ===== BaseEntity =====
-            .WithColumn(nameof(WalletProfile.Id))
-                .AsGuid()
-                .PrimaryKey()
-                .NotNullable()
-
             // ===== Business Fields =====
             .WithColumn(nameof(WalletProfile.WalletId))
                 .AsGuid()
                 .NotNullable()
 
             .WithColumn(nameof(WalletProfile.UserId))
-                .AsGuid()
+                .AsString(50)
                 .NotNullable()
 
             .WithColumn(nameof(WalletProfile.WalletName))

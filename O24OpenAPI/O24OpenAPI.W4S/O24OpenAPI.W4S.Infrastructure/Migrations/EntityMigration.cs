@@ -8,7 +8,7 @@ using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 namespace O24OpenAPI.W4S.Infrastructure.Migrations;
 
 [O24OpenAPIMigration(
-    "2025/12/31 06:01:00:0000000",
+    "2025/12/31 21:15:00:0000000",
     "6. Create SchemeMigration (Business Table)",
     MigrationProcessType.Installation
 )]
@@ -170,5 +170,6 @@ public class EntityMigration : AutoReversingMigration
                     nameof(C_CODELIST.CodeGroup)
                 );
         }
+
     }
 }
