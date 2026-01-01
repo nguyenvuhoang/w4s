@@ -107,11 +107,13 @@ public class CreateWalletHandle(IWalletProfileRepository walletProfileRepository
     }
 
 
+
     /// <summary>
     /// Validate request
     /// </summary>
     /// <param name="r"></param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <param name="language"></param>
+    /// <returns></returns>
     private async static Task ValidateRequest(CreateWalletCommand r, string language)
     {
         if (string.IsNullOrWhiteSpace(r.LoginName))
@@ -132,7 +134,7 @@ public class CreateWalletHandle(IWalletProfileRepository walletProfileRepository
             throw await O24Exception.CreateAsync(
                 ResourceCode.Validation.RequiredField,
                 language,
-                "FullName"
+                "LastName"
             );
     }
 
