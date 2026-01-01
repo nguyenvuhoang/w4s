@@ -134,8 +134,8 @@ public class O24OpenAPIServiceManager(
         try
         {
             if (
-                workflow.request.request_header.is_compensated != "Y"
-                && mapping.IsAutoReverse != true
+                workflow.request.request_header.is_compensated != "Y" ||
+                (workflow.request.request_header.is_compensated == "Y" && mapping.IsAutoReverse != true)
             )
             {
                 if (mapping.IsModuleExecute == true)
@@ -190,10 +190,14 @@ public class O24OpenAPIServiceManager(
                     entityAudits,
                     workflow.request.request_header.execution_id
                 );
-                await dataProvider.ExecuteNonQuery(revertSql);
+
+                if (!string.IsNullOrWhiteSpace(revertSql))
+                {
+                    await dataProvider.ExecuteNonQuery(revertSql);
+                    _ = entityAuditRepository.BulkDelete(entityAudits);
+                }
                 workflow.response.status = WFScheme.RESPONSE.EnumResponseStatus.SUCCESS;
                 workflow.response.data = JsonSerializer.Serialize(new { });
-                _ = entityAuditRepository.BulkDelete(entityAudits);
                 return workflow;
             }
         }

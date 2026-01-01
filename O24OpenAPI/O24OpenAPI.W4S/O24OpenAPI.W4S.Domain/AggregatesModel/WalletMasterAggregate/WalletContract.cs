@@ -1,8 +1,10 @@
 ﻿using O24OpenAPI.Core;
+using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.W4S.Domain.AggregatesModel.WalletMasterAggregate
 {
+    [Auditable]
     public partial class WalletContract : BaseEntity
     {
         // ===== Identity =====
