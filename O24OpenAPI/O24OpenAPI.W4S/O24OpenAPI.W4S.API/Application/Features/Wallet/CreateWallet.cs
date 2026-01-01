@@ -51,7 +51,8 @@ public class CreateWalletHandle(IWalletProfileRepository walletProfileRepository
     {
         try
         {
-            await ValidateRequest(request, request.Language);
+            await ValidateRequest(request, walletContractRepository);
+
             var contractNumber = await ResolveContractNumberAsync(request, cancellationToken);
             var contract = WalletContract.Create(
                 contractNumber: contractNumber,
@@ -114,27 +115,37 @@ public class CreateWalletHandle(IWalletProfileRepository walletProfileRepository
     /// <param name="r"></param>
     /// <param name="language"></param>
     /// <returns></returns>
-    private async static Task ValidateRequest(CreateWalletCommand r, string language)
+    private async static Task ValidateRequest(CreateWalletCommand r, IWalletContractRepository walletContractRepository)
     {
         if (string.IsNullOrWhiteSpace(r.Phone))
             throw await O24Exception.CreateAsync(
                 ResourceCode.Validation.RequiredField,
-                language,
+                r.Language,
                 "Phone"
             );
 
         if (string.IsNullOrWhiteSpace(r.FirstName) && string.IsNullOrWhiteSpace(r.LastName))
             throw await O24Exception.CreateAsync(
                 ResourceCode.Validation.RequiredField,
-                language,
+                r.Language,
                 "LastName"
             );
         if (string.IsNullOrWhiteSpace(r.FirstName) && string.IsNullOrWhiteSpace(r.FirstName))
             throw await O24Exception.CreateAsync(
                 ResourceCode.Validation.RequiredField,
-                language,
+                r.Language,
                 "FirstName"
             );
+
+        var walletContract = await walletContractRepository.GetByPhoneAsync(r.Phone);
+        if (walletContract != null)
+        {
+            throw await O24Exception.CreateAsync(
+                O24W4SResourceCode.Validation.ContractPhoneExists,
+                r.Language,
+                [r.Phone]
+            );
+        }
     }
 
     /// <summary>

@@ -8,6 +8,7 @@
             public const string WalletContractAlreadyExists = "validation.walletcontract.alreadyexists";
             public const string WalletContractInvalidStatus = "validation.walletcontract.invalidstatus";
             public const string WalletContractCannotBeClosed = "validation.walletcontract.cannotbeclosed";
+            public const string ContractPhoneExists = "validation.contract.phone.exists";
         }
     }
 }

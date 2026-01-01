@@ -16,5 +16,12 @@ namespace O24OpenAPI.W4S.Domain.AggregatesModel.WalletMasterAggregate
         /// <param name="contractNumber"></param>
         /// <returns></returns>
         Task<WalletContract> GetByContractNumberAsync(string contractNumber);
+        /// <summary>
+        /// Get by phone asynchronous.
+        /// </summary>
+        /// <param name="Phone"></param>
+        /// <returns></returns>
+
+        Task<WalletContract> GetByPhoneAsync(string Phone);
     }
 }

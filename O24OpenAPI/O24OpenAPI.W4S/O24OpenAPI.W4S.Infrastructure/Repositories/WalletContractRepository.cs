@@ -24,5 +24,12 @@ namespace O24OpenAPI.W4S.Infrastructure.Repositories
                 .FirstOrDefaultAsync();
             return contract;
         }
+
+        public async Task<WalletContract> GetByPhoneAsync(string Phone)
+        {
+            var contract = await Table.Where(x => x.Phone == Phone)
+                .FirstOrDefaultAsync();
+            return contract;
+        }
     }
 }
