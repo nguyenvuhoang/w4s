@@ -46,6 +46,11 @@ public static class WorkflowStep
         public const string WF_STEP_CTH_UPDATE_USER_AVATAR = "WF_STEP_CTH_UPDATE_USER_AVATAR";
     }
 
+    public static class NCH
+    {
+        public const string WF_STEP_CTH_SEND_NOTIFICATION = "WF_STEP_CTH_SEND_NOTIFICATION";
+    }
+
     public static class CMS { }
 
     public static class W4S

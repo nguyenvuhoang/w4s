@@ -6,4 +6,5 @@ public interface ISMSProviderRepository : IRepository<SMSProvider>
 {
     Task<SMSProvider?> GetByCodeAsync(string providerCode);
     Task<IReadOnlyList<SMSProvider>> GetActiveAsync();
+    Task<SMSProvider> GetProviderByPhoneNumber(string phoneNumber);
 }
