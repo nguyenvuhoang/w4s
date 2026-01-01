@@ -15,7 +15,7 @@ namespace O24OpenAPI.Framework.Migrations;
 /// </summary>
 /// <seealso cref="AutoReversingMigration"/>
 [O24OpenAPIMigration(
-    "2020/01/01 01:00:00:0000000",
+    "2020/01/01 01:01:00:0000000",
     "1.Create system tables framework",
     MigrationProcessType.Installation
 )]
