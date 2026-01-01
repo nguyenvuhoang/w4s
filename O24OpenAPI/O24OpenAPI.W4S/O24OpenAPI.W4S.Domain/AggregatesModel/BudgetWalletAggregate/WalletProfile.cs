@@ -8,11 +8,15 @@ public partial class WalletProfile : BaseEntity
     /// Unique wallet identifier
     /// </summary>
     public Guid WalletId { get; private set; }
+    /// <summary>
+    /// Contract owner identifier
+    /// </summary>
+    public string ContractNumber { get; set; }
 
     /// <summary>
     /// Owner of the wallet
     /// </summary>
-    public string UserId { get; private set; } = string.Empty;
+    public string UserCode { get; private set; } = string.Empty;
 
     /// <summary>
     /// Wallet display name
@@ -34,30 +38,26 @@ public partial class WalletProfile : BaseEntity
     /// </summary>
     public char Status { get; private set; }
 
-    #region Constructor
-
     public WalletProfile() { }
 
     public WalletProfile(
         Guid walletId,
-        string userId,
+        string contractNumber,
+        string userCode,
         string walletName,
         string walletType,
         string defaultCurrency
     )
     {
         WalletId = walletId;
-        UserId = userId;
+        ContractNumber = contractNumber;
+        UserCode = userCode;
         WalletName = walletName;
         WalletType = walletType;
         DefaultCurrency = defaultCurrency;
 
         Status = 'A';
     }
-
-    #endregion
-
-    #region Domain Behaviors
 
     public void ChangeName(string walletName)
     {
@@ -74,5 +74,26 @@ public partial class WalletProfile : BaseEntity
         DefaultCurrency = currency;
     }
 
-    #endregion
+    public static WalletProfile Create(
+        Guid walletId,
+        string contractNumber,
+        string userCode,
+        string walletName,
+        string walletType,
+        string defaultCurrency
+
+    )
+    {
+        return new WalletProfile
+        {
+            WalletId = walletId,
+            ContractNumber = contractNumber,
+            UserCode = userCode,
+            WalletName = walletName,
+            WalletType = walletType,
+            DefaultCurrency = defaultCurrency,
+            Status = 'A'
+        };
+    }
+
 }
