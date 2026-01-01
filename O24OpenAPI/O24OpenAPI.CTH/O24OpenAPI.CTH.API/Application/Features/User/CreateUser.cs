@@ -154,7 +154,7 @@ public class CreateUserHandle(
             // 5. Create UserInRole
             List<int> listUserRole = await userRoleRepository.GetByRoleTypeAsync(request.UserType);
 
-            List<UserInRole> userInRoles = listUserRole
+            List<UserInRole> userInRoles = [.. listUserRole
                 .Select(
                     (roleId, index) =>
                         new UserInRole
@@ -164,8 +164,7 @@ public class CreateUserHandle(
                             CreatedOnUtc = now,
                             RoleId = roleId,
                         }
-                )
-                .ToList();
+                )];
 
             if (userInRoles.Count > 0)
             {
@@ -173,7 +172,7 @@ public class CreateUserHandle(
                 isUserInRolesCreated = true;
             }
 
-            string[] nameParts = new[] { request.FirstName, request.MiddleName, request.LastName };
+            string[] nameParts = [request.FirstName, request.MiddleName, request.LastName];
             string fullname = string.Join(
                 " ",
                 nameParts.Where(part => !string.IsNullOrWhiteSpace(part))
