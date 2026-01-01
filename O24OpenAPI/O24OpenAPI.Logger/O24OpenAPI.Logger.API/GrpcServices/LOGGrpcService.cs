@@ -1,0 +1,64 @@
+﻿using Grpc.Core;
+using LinKit.Json.Runtime;
+using O24OpenAPI.Core.Infrastructure;
+using O24OpenAPI.Grpc.Common;
+using O24OpenAPI.Grpc.LOG;
+using O24OpenAPI.GrpcContracts.GrpcServerServices;
+using O24OpenAPI.Logger.Domain.AggregateModels.ServiceLogAggregate;
+using static O24OpenAPI.Grpc.LOG.LOGGrpcService;
+
+namespace O24OpenAPI.Logger.API.GrpcServices;
+
+/// <summary>
+///
+/// </summary>
+public class LOGGrpcService : LOGGrpcServiceBase
+{
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    public override async Task<GrpcResponse> Test(TestRequest request, ServerCallContext context)
+    {
+        return await GrpcExecutor.ExecuteAsync(
+            context,
+            async () =>
+            {
+                // Simulate some processing
+                await Task.Delay(100);
+                return new GrpcResponse
+                {
+                    Code = GrpcResponseCode.Success,
+                    Message = "Test successful",
+                    Data = $"Hello {request.Message}",
+                };
+            }
+        );
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    public override async Task<GrpcResponse> SubmitLog(
+        GrpcRequest request,
+        ServerCallContext context
+    )
+    {
+        return await GrpcExecutor.ExecuteAsync(
+            context,
+            async () =>
+            {
+                string data = request.Data;
+                IApplicationLogRepository applicationLogRepository = EngineContext.Current.Resolve<IApplicationLogRepository>();
+                ApplicationLog applicationLog = data.FromJson<ApplicationLog>();
+                await applicationLogRepository.InsertAsync(applicationLog);
+                return new GrpcResponse { Code = GrpcResponseCode.Success, Data = "ok" };
+            }
+        );
+    }
+}

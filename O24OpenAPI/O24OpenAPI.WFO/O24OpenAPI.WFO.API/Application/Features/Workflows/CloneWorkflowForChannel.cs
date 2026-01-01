@@ -23,7 +23,7 @@ public class CloneWorkflowForChannelCommandHandler(
         CancellationToken cancellationToken = default
     )
     {
-        var workflowDef = await workflowRepository.GetByWorkflowIdAndChannelIdAsync(
+        WorkflowDef workflowDef = await workflowRepository.GetByWorkflowIdAndChannelIdAsync(
             request.WorkflowId,
             request.CurrentChannelId
         );
@@ -33,17 +33,17 @@ public class CloneWorkflowForChannelCommandHandler(
                 $"Workflow definition not found for WorkflowId: {request.WorkflowId}, ChannelId: {request.CurrentChannelId}"
             );
         }
-        var wfSteps = await workflowAggregateRepository.GetByWorkflowIdAsync(request.WorkflowId);
-        var newWorkflowDef = workflowDef.ToWorkflowDef();
+        List<WorkflowStep> wfSteps = await workflowAggregateRepository.GetByWorkflowIdAsync(request.WorkflowId);
+        WorkflowDef newWorkflowDef = workflowDef.ToWorkflowDef();
         newWorkflowDef.WorkflowId = workflowDef.WorkflowId.Replace(
             workflowDef.ChannelId,
             request.ChannelId
         );
         newWorkflowDef.ChannelId = request.ChannelId;
         await workflowRepository.InsertAsync(newWorkflowDef);
-        foreach (var step in wfSteps)
+        foreach (WorkflowStep step in wfSteps)
         {
-            var newStep = step.ToWorkflowStep();
+            WorkflowStep newStep = step.ToWorkflowStep();
             newStep.WorkflowId = newWorkflowDef.WorkflowId;
             await workflowAggregateRepository.InsertAsync(newStep);
         }

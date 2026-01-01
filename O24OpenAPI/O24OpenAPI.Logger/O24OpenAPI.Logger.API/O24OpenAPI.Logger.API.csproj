@@ -43,7 +43,6 @@
     <PackageReference Include="LinKit.Core" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.1" />
-    <PackageReference Include="Riok.Mapperly" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="App_Data\appsettings.json">
@@ -54,14 +53,18 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Core\O24OpenAPI.Core.csproj" />
-    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Data\O24OpenAPI.Data.csproj" />
-    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Client\O24OpenAPI.Client.csproj" />
-    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Framework\O24OpenAPI.Framework.csproj" />
     <Content Include="NT.pfx" CopyToPublishDirectory="Always" />
+    <Content Include="__jits_com_vn.pfx" CopyToPublishDirectory="Always" />
     <Content Include="App_Data\CreateDatabase.sql" CopyToPublishDirectory="Always" />
+    <Content Include="App_Data\EnableCDC.sql" CopyToPublishDirectory="Always" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="StaticConfig\" />
+    <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Framework\O24OpenAPI.Framework.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.Logger.Domain\O24OpenAPI.Logger.Domain.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.Logger.Infrastructure\O24OpenAPI.Logger.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="Migrations\DataMigrations\" />
   </ItemGroup>
 </Project>
