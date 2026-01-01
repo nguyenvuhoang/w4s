@@ -1,15 +1,22 @@
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.DWH.API.Application;
 using O24OpenAPI.DWH.Infrastructure;
+using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Infrastructure.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplicationServices();
+builder.Services.ConfigureApplicationServices(builder);
 builder.Services.AddInfrastructureServices();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddHttpClient();
+
+if (!builder.Environment.IsDevelopment())
+{
+    builder.ConfigureWebHost();
+}
 
 WebApplication app = builder.Build();
 
@@ -27,6 +34,7 @@ using IServiceScope scope = app.Services.CreateScope();
 AsyncScope.Scope = scope;
 
 await app.ConfigureInfrastructure();
+await app.StartEngine();
 app.ShowStartupBanner();
 
 app.Run();
