@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Linh.CodeEngine.Core;
 using LinKit.Core.Abstractions;
 using LinKit.Core.Cqrs;
@@ -21,7 +22,7 @@ using O24OpenAPI.Framework.Repositories;
 using O24OpenAPI.Framework.Services.Configuration;
 using O24OpenAPI.Framework.Services.Logging;
 using O24OpenAPI.Framework.Services.Queue;
-using System.Text.Json;
+using O24OpenAPI.Logging.Helpers;
 
 namespace O24OpenAPI.Framework.Services;
 
@@ -134,8 +135,11 @@ public class O24OpenAPIServiceManager(
         try
         {
             if (
-                workflow.request.request_header.is_compensated != "Y" ||
-                (workflow.request.request_header.is_compensated == "Y" && mapping.IsAutoReverse != true)
+                workflow.request.request_header.is_compensated != "Y"
+                || (
+                    workflow.request.request_header.is_compensated == "Y"
+                    && mapping.IsAutoReverse != true
+                )
             )
             {
                 if (mapping.IsModuleExecute == true)
@@ -149,7 +153,11 @@ public class O24OpenAPIServiceManager(
                 }
                 try
                 {
-                    var stepInvoker = EngineContext.Current.Resolve<IWorkflowStepInvoker>(mapping.MediatorKey) ?? throw new InvalidOperationException($"IWorkflowStepInvoker resolved null. Key='{mapping.MediatorKey}'");
+                    var stepInvoker =
+                        EngineContext.Current.Resolve<IWorkflowStepInvoker>(mapping.MediatorKey)
+                        ?? throw new InvalidOperationException(
+                            $"IWorkflowStepInvoker resolved null. Key='{mapping.MediatorKey}'"
+                        );
 
                     Task<WFScheme> scheme = BaseQueue.Invoke<BaseTransactionModel>(
                         workflow,
@@ -165,16 +173,12 @@ public class O24OpenAPIServiceManager(
                     );
                     return await scheme;
                 }
-                catch (KeyNotFoundException)
+                catch (Exception ex)
                 {
-                    return await workflow.InvokeAsync(mapping.FullClassName, mapping.MethodName);
-                }
-                catch (InvalidOperationException)
-                {
-                    return await workflow.InvokeAsync(mapping.FullClassName, mapping.MethodName);
-                }
-                catch (ArgumentException)
-                {
+                    BusinessLogHelper.Error(
+                        ex,
+                        $"Error invoking workflow step invoker for step code '{mapping.StepCode}'."
+                    );
                     return await workflow.InvokeAsync(mapping.FullClassName, mapping.MethodName);
                 }
                 throw new O24OpenAPIException(
@@ -203,6 +207,7 @@ public class O24OpenAPIServiceManager(
         }
         catch (Exception ex)
         {
+            BusinessLogHelper.Error(ex, "Error in ExecuteAsync");
             return await ErrorWorkflow(workflow, ex);
         }
     }
