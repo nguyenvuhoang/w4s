@@ -138,7 +138,7 @@ public class O24OpenAPIServiceManager(
                 workflow.request.request_header.is_compensated != "Y"
                 || (
                     workflow.request.request_header.is_compensated == "Y"
-                    && mapping.IsAutoReverse != true
+                    && mapping.CheckAutoReverse() != true
                 )
             )
             {

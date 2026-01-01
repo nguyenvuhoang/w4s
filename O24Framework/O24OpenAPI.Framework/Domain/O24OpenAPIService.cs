@@ -11,5 +11,10 @@ public partial class O24OpenAPIService : BaseEntity
     public bool ShouldAwait { get; set; } = false;
     public bool IsInquiry { get; set; } = false;
     public bool IsModuleExecute { get; set; } = false;
-    public bool IsAutoReverse { get; set; } = true;
+    public bool? IsAutoReverse { get; set; } = true;
+
+    public bool CheckAutoReverse()
+    {
+        return IsAutoReverse ?? true;
+    }
 }
