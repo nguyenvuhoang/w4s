@@ -6,13 +6,14 @@ using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User;
 
 public class IsPhoneNumberExistingCommand : BaseTransactionModel, ICommand<bool>
 {
-    public UserAccountPhoneModel Model { get; set; } = default!;
+    public string PhoneNumber { get; set; }
 }
 
 [CqrsHandler]
@@ -25,7 +26,8 @@ public class IsPhoneNumberExistingHandle(IUserAccountRepository userAccountRepos
         CancellationToken cancellationToken = default
     )
     {
-        return await IsPhoneNumberExistingAsync(request.Model);
+        var model = request.ToModel<UserAccountPhoneModel>();
+        return await IsPhoneNumberExistingAsync(model);
     }
 
     public async Task<bool> IsPhoneNumberExistingAsync(UserAccountPhoneModel model)

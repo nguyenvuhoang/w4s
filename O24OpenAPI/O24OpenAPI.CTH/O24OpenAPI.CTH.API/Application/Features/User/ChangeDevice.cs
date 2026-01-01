@@ -8,6 +8,7 @@ using O24OpenAPI.Framework;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Framework.Services;
 
@@ -15,7 +16,23 @@ namespace O24OpenAPI.CTH.API.Application.Features.User;
 
 public class ChangeDeviceCommand : BaseTransactionModel, ICommand<AuthResponseModel>
 {
-    public UserAccountChangeDeviceModel Model { get; set; } = default!;
+    public string UserCode { get; set; }
+    public string Phone { get; set; }
+    public DateTime DOB { get; set; }
+    public string LicenseType { get; set; }
+    public string LicenseId { get; set; }
+    public string DeviceId { get; set; } = string.Empty;
+    public string DeviceType { get; set; } = string.Empty;
+    public string IpAddress { get; set; } = string.Empty;
+    public string Modelname { get; set; } = string.Empty;
+    public string UserAgent { get; set; } = string.Empty;
+    public string PushId { get; set; } = string.Empty;
+    public string OsVersion { get; set; } = string.Empty;
+    public string AppVersion { get; set; } = string.Empty;
+    public string DeviceName { get; set; } = string.Empty;
+    public string Brand { get; set; } = string.Empty;
+    public bool IsEmulator { get; set; } = false;
+    public bool IsRootedOrJailbroken { get; set; } = false;
 }
 
 [CqrsHandler]
@@ -34,7 +51,8 @@ public class ChangeDeviceHandle(
         CancellationToken cancellationToken = default
     )
     {
-        return await ChangeDeviceAsync(request.Model);
+        var model = request.ToModel<UserAccountChangeDeviceModel>();
+        return await ChangeDeviceAsync(model);
     }
 
     public async Task<AuthResponseModel> ChangeDeviceAsync(UserAccountChangeDeviceModel model)
@@ -120,9 +138,7 @@ public class ChangeDeviceHandle(
     )
     {
         var currentTime = DateTime.UtcNow;
-        var expireTime = currentTime.AddDays(
-            Convert.ToDouble(webApiSettings.TokenLifetimeDays)
-        );
+        var expireTime = currentTime.AddDays(Convert.ToDouble(webApiSettings.TokenLifetimeDays));
 
         var token = jwtTokenService.GetNewJwtToken(
             new O24OpenAPI.Core.Domain.Users.User

@@ -6,13 +6,14 @@ using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User;
 
 public class DeleteUserCommand : BaseTransactionModel, ICommand<bool>
 {
-    public DeleteUserModel Model { get; set; } = default!;
+    public int Id { get; set; }
 }
 
 [CqrsHandler]
@@ -28,14 +29,13 @@ public class DeleteUserHandle(
         CancellationToken cancellationToken = default
     )
     {
-        return await DeleteUserById(request.Model);
+        var model = request.ToModel<DeleteUserModel>();
+        return await DeleteUserById(model);
     }
 
     public async Task<bool> DeleteUserById(DeleteUserModel model)
     {
-        var entity = await userAccountRepository.Table.FirstOrDefaultAsync(x =>
-            x.Id == model.Id
-        );
+        var entity = await userAccountRepository.Table.FirstOrDefaultAsync(x => x.Id == model.Id);
 
         if (entity != null)
         {

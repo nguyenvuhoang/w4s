@@ -5,13 +5,16 @@ using O24OpenAPI.Core;
 using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User;
 
 public class CheckUserHasEmailCommand : BaseTransactionModel, ICommand<string>
 {
-    public DefaultModel Model { get; set; } = default!;
+    public string UserCode { get; set; }
+    public string UserName { get; set; } = string.Empty;
+    public string DeviceId { get; set; }
 }
 
 [CqrsHandler]
@@ -24,7 +27,8 @@ public class CheckUserHasEmailHandle(IUserAccountRepository userAccountRepositor
         CancellationToken cancellationToken = default
     )
     {
-        return await CheckUserHasEmail(request.Model);
+        var model = request.ToModel<DefaultModel>();
+        return await CheckUserHasEmail(model);
     }
 
     public async Task<string> CheckUserHasEmail(DefaultModel model)

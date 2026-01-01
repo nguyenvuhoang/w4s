@@ -3,11 +3,13 @@ using LinqToDB;
 using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.Core.Constants;
 using O24OpenAPI.CTH.API.Application.Constants;
+using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.API.Application.Models.User;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Framework.Utils;
 
@@ -15,7 +17,7 @@ namespace O24OpenAPI.CTH.API.Application.Features.User;
 
 public class GetUserByPhoneNumberCommand : BaseTransactionModel, ICommand<UserInfoModel>
 {
-    public UserWithPhoneNumber Model { get; set; } = default!;
+    public string PhoneNumber { get; set; }
 }
 
 [CqrsHandler]
@@ -30,7 +32,8 @@ public class GetUserByPhoneNumberHandle(
         CancellationToken cancellationToken = default
     )
     {
-        return await GetUserByPhoneNumberASync(request.Model);
+        var model = request.ToModel<UserWithPhoneNumber>();
+        return await GetUserByPhoneNumberASync(model);
     }
 
     public async Task<UserInfoModel> GetUserByPhoneNumberASync(UserWithPhoneNumber model)

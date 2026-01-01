@@ -1,16 +1,20 @@
 ﻿using LinKit.Core.Cqrs;
 using LinqToDB;
 using O24OpenAPI.APIContracts.Constants;
+using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.API.Application.Models.Roles;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User;
 
 public class UpdateUserRoleCommand : BaseTransactionModel, ICommand<bool>
 {
-    public UpdateUserRoleModel Model { get; set; } = default!;
+    public int RoleId { get; set; }
+    public List<string> ListOfUser { get; set; } = [];
+    public bool IsAssign { get; set; }
 }
 
 [CqrsHandler]
@@ -23,7 +27,8 @@ public class UpdateUserRoleHandle(IUserInRoleRepository userInRoleRepository)
         CancellationToken cancellationToken = default
     )
     {
-        return await UpdateUserRoleASync(request.Model);
+        var model = request.ToModel<UpdateUserRoleModel>();
+        return await UpdateUserRoleASync(model);
     }
 
     public async Task<bool> UpdateUserRoleASync(UpdateUserRoleModel model)
@@ -62,9 +67,7 @@ public class UpdateUserRoleHandle(IUserInRoleRepository userInRoleRepository)
         {
             // Bulk delete users from role
             var toDelete = await userInRoleRepository
-                .Table.Where(u =>
-                    model.ListOfUser.Contains(u.UserCode) && u.RoleId == model.RoleId
-                )
+                .Table.Where(u => model.ListOfUser.Contains(u.UserCode) && u.RoleId == model.RoleId)
                 .ToListAsync();
 
             if (toDelete.Count != 0)

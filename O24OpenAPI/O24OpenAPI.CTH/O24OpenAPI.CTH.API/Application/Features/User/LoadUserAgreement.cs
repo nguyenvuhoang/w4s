@@ -4,13 +4,14 @@ using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User;
 
 public class LoadUserAgreementCommand : BaseTransactionModel, ICommand<UserAgreement>
 {
-    public LoadUserAgreementRequestModel Model { get; set; } = default!;
+    public new string TransactionCode { get; set; }
 }
 
 [CqrsHandler]
@@ -23,7 +24,8 @@ public class LoadUserAgreementHandle(IUserAgreementRepository userAgreementRepos
         CancellationToken cancellationToken = default
     )
     {
-        return await LoadUserAgreementAsync(request.Model);
+        var model = request.ToModel<LoadUserAgreementRequestModel>();
+        return await LoadUserAgreementAsync(model);
     }
 
     public async Task<UserAgreement> LoadUserAgreementAsync(LoadUserAgreementRequestModel model)

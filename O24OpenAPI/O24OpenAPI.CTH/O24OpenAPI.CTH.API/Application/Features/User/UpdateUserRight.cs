@@ -1,6 +1,7 @@
 ﻿using LinKit.Core.Cqrs;
 using LinqToDB;
 using O24OpenAPI.APIContracts.Constants;
+using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.API.Application.Models.Roles;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
@@ -11,7 +12,35 @@ namespace O24OpenAPI.CTH.API.Application.Features.User;
 
 public class UpdateUserRightCommand : BaseTransactionModel, ICommand<bool>
 {
-    public UserRightUpdateModel Model { get; set; } = default!;
+    /// <summary>
+    /// Gets or sets the value of the role id
+    /// </summary>
+    public int RoleId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the value of the channel id
+    /// </summary>
+    public string ChannelId { get; set; }
+
+    /// <summary>
+    /// /// Gets or sets the value of the invoke
+    /// </summary>
+    public bool Invoke { get; set; }
+
+    /// <summary>
+    /// /// Gets or sets the value of the approve
+    /// </summary>
+    public bool Approve { get; set; }
+
+    /// <summary>
+    /// /// Gets or sets the value of the CommandId
+    /// </summary>
+    public string CommandId { get; set; }
+
+    /// <summary>
+    /// /// Gets or sets the value of the CommandIdDetail
+    /// </summary>
+    public string CommandIdDetail { get; set; } = "A";
 }
 
 [CqrsHandler]
@@ -27,10 +56,11 @@ public class UpdateUserRightHandle(
         CancellationToken cancellationToken = default
     )
     {
-        if (request.Model == null)
+        var model = request.ToModel<UserRightUpdateModel>();
+        if (model == null)
             return false;
 
-        return await UpdateUserRightAsync(request.Model);
+        return await UpdateUserRightAsync(model);
     }
 
     public async Task<bool> UpdateUserRightAsync(UserRightUpdateModel model)

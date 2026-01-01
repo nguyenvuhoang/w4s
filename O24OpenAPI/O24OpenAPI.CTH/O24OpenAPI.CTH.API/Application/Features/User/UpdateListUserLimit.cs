@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using LinKit.Core.Cqrs;
 using O24OpenAPI.CTH.API.Application.Models.Userlimit;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
@@ -9,7 +10,35 @@ public class UpdateListUserLimitCommnad
     : BaseTransactionModel,
         ICommand<List<UserLimitUpdateResponseModel>>
 {
-    public List<UserLimitUpdateResponseModel> ListUserLimit { get; set; }
+    /// <summary>
+    /// roleid
+    /// </summary>
+    [JsonPropertyName("role_id")]
+    public int RoleId { get; set; }
+
+    /// <summary>
+    /// cmdid
+    /// </summary>
+    [JsonPropertyName("command_id")]
+    public string CommandId { get; set; }
+
+    /// <summary>
+    /// ccrid
+    /// </summary>
+    [JsonPropertyName("currency_code")]
+    public string CurrencyCode { get; set; }
+
+    /// <summary>
+    /// ulimit
+    /// </summary>
+    [JsonPropertyName("u_limit")]
+    public decimal? ULimit { get; set; }
+
+    /// <summary>
+    /// limittype
+    /// </summary>
+    [JsonPropertyName("limit_type")]
+    public string LimitType { get; set; }
 }
 
 public class UpdateListUserLimitHandler(IUserLimitRepository userLimitRepository)
@@ -20,48 +49,46 @@ public class UpdateListUserLimitHandler(IUserLimitRepository userLimitRepository
         CancellationToken cancellationToken = default
     )
     {
-        UserLimit checkUserLimit;
         var respone = new List<UserLimitUpdateResponseModel>();
 
-        foreach (var item in request.ListUserLimit)
-        {
-            checkUserLimit = await userLimitRepository.GetUserLimitToUpdate(
-                item.RoleId,
-                item.CommandId,
-                item.CurrencyCode,
-                item.LimitType
-            );
+        var checkUserLimit = await userLimitRepository.GetUserLimitToUpdate(
+            request.RoleId,
+            request.CommandId,
+            request.CurrencyCode,
+            request.LimitType
+        );
 
-            if (checkUserLimit != null)
-            {
-                checkUserLimit.ULimit = item.ULimit;
-                await userLimitRepository.Update(checkUserLimit);
-            }
-            else
-            {
-                checkUserLimit = new UserLimit()
-                {
-                    RoleId = item.RoleId,
-                    CommandId = item.CommandId,
-                    CurrencyCode = item.CurrencyCode,
-                    ULimit = item.ULimit,
-                    CvTable = string.Empty,
-                    LimitType = item.LimitType,
-                    Margin = 0,
-                };
-                await userLimitRepository.InsertAsync(checkUserLimit);
-            }
-            respone.Add(
-                new UserLimitUpdateResponseModel()
-                {
-                    RoleId = checkUserLimit.RoleId,
-                    CommandId = checkUserLimit.CommandId,
-                    CurrencyCode = checkUserLimit.CurrencyCode,
-                    ULimit = checkUserLimit.ULimit,
-                    LimitType = checkUserLimit.LimitType,
-                }
-            );
+        if (checkUserLimit != null)
+        {
+            checkUserLimit.ULimit = request.ULimit;
+            await userLimitRepository.Update(checkUserLimit);
         }
+        else
+        {
+            checkUserLimit = new UserLimit()
+            {
+                RoleId = request.RoleId,
+                CommandId = request.CommandId,
+                CurrencyCode = request.CurrencyCode,
+                ULimit = request.ULimit,
+                CvTable = string.Empty,
+                LimitType = request.LimitType,
+                Margin = 0,
+            };
+            await userLimitRepository.InsertAsync(checkUserLimit);
+        }
+
+        respone.Add(
+            new UserLimitUpdateResponseModel()
+            {
+                RoleId = checkUserLimit.RoleId,
+                CommandId = checkUserLimit.CommandId,
+                CurrencyCode = checkUserLimit.CurrencyCode,
+                ULimit = checkUserLimit.ULimit,
+                LimitType = checkUserLimit.LimitType,
+            }
+        );
+
         return respone;
     }
 }

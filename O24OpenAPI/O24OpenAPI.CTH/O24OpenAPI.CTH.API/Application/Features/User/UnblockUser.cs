@@ -5,13 +5,14 @@ using O24OpenAPI.CTH.API.Application.Constants;
 using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User;
 
 public class UnblockUserCommand : BaseTransactionModel, ICommand<bool>
 {
-    public UnblockUserModel Model { get; set; } = default!;
+    public string UserName { get; set; }
 }
 
 [CqrsHandler]
@@ -24,7 +25,8 @@ public class UnblockUserHandle(IUserAccountRepository userAccountRepository)
         CancellationToken cancellationToken = default
     )
     {
-        return await UnBlockUserAsync(request.Model);
+        var model = request.ToModel<UnblockUserModel>();
+        return await UnBlockUserAsync(model);
     }
 
     public async Task<bool> UnBlockUserAsync(UnblockUserModel model)

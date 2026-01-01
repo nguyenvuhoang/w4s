@@ -15,6 +15,7 @@ using O24OpenAPI.CTH.API.Application.Utils;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Framework.Utils.O9;
 using O24OpenAPI.Logging.Helpers;
@@ -24,7 +25,9 @@ namespace O24OpenAPI.CTH.API.Application.Features.User;
 
 public class ResetPasswordCommand : BaseTransactionModel, ICommand<ResetPasswordResponseModel>
 {
-    public ResetPasswordRequestModel Model { get; set; } = default!;
+    public string UserCode { get; set; }
+    public string PhoneNumber { get; set; }
+    public string DeviceId { get; set; }
 }
 
 [CqrsHandler]
@@ -42,7 +45,8 @@ public class ResetPasswordHandle(
         CancellationToken cancellationToken = default
     )
     {
-        return await ResetPasswordAsync(request.Model);
+        var model = request.ToModel<ResetPasswordRequestModel>();
+        return await ResetPasswordAsync(model);
     }
 
     public async Task<ResetPasswordResponseModel> ResetPasswordAsync(
@@ -175,10 +179,7 @@ public class ResetPasswordHandle(
             userAccount.MiddleName,
             userAccount.LastName,
         };
-        var fullname = string.Join(
-            " ",
-            nameParts.Where(part => !string.IsNullOrWhiteSpace(part))
-        );
+        var fullname = string.Join(" ", nameParts.Where(part => !string.IsNullOrWhiteSpace(part)));
 
         var qrImageBytes = GenerateQRCodeBytes(newPassword);
         var mimeEntities = new List<DTSMimeEntityModel>

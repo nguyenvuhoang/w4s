@@ -5,13 +5,15 @@ using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User;
 
 public class TransitionUserStatusCommand : BaseTransactionModel, ICommand<bool>
 {
-    public TransitionUserStatusModel Model { get; set; } = default!;
+    public string ContractNumber { get; set; }
+    public new string Status { get; set; }
 }
 
 [CqrsHandler]
@@ -24,7 +26,8 @@ public class TransitionUserStatusHandle(IUserAccountRepository userAccountReposi
         CancellationToken cancellationToken = default
     )
     {
-        return await TransitionUserStatusAsync(request.Model);
+        var model = request.ToModel<TransitionUserStatusModel>();
+        return await TransitionUserStatusAsync(model);
     }
 
     public async Task<bool> TransitionUserStatusAsync(TransitionUserStatusModel model)

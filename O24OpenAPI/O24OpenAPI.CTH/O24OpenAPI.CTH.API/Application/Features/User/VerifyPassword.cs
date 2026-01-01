@@ -6,13 +6,15 @@ using O24OpenAPI.CTH.API.Application.Utils;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User;
 
 public class VerifyPasswordCommand : BaseTransactionModel, ICommand<bool>
 {
-    public VerifyPasswordModel Model { get; set; } = default!;
+    public string Password { get; set; }
+    public string UserCode { get; set; }
 }
 
 [CqrsHandler]
@@ -25,7 +27,8 @@ public class VerifyPasswordHandle(IUserPasswordRepository userPasswordRepository
         CancellationToken cancellationToken = default
     )
     {
-        return await VerifyPasswordAsync(request.Model);
+        var model = request.ToModel<VerifyPasswordModel>();
+        return await VerifyPasswordAsync(model);
     }
 
     public async Task<bool> VerifyPasswordAsync(VerifyPasswordModel model)
