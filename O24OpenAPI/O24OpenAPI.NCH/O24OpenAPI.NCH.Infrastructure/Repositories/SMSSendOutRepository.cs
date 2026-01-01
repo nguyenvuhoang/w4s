@@ -13,7 +13,7 @@ public class SMSSendOutRepository(
     public Task<IReadOnlyList<SMSSendOut>> GetPendingAsync(int take) =>
         throw new NotImplementedException();
 
-    public static SMSSendOut CreateSendOut(
+    public SMSSendOut CreateSendOut(
         string providerName,
         string phoneNumber,
         string messageContent,
