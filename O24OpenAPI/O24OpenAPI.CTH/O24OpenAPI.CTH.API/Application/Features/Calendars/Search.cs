@@ -9,51 +9,54 @@ using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.Calendars;
 
-public class SearchCommand
+public class CalendarSearchCommand
     : BaseTransactionModel,
         ICommand<PagedListModel<Calendar, CalendarSearchResponseModel>>
 {
-    public CalendarSearchModel Model { get; set; } = default!;
+    public CalendarSearchCommand()
+    {
+        this.PageIndex = 0;
+        this.PageSize = int.MaxValue;
+    }
+
+    public int PageIndex { get; set; }
+    public int PageSize { get; set; }
+    public int? Year { get; set; }
+    public int? Month { get; set; }
 }
 
 [CqrsHandler]
 public class SearchHandle(ICalendarRepository calendarRepository)
-    : ICommandHandler<SearchCommand, PagedListModel<Calendar, CalendarSearchResponseModel>>
+    : ICommandHandler<CalendarSearchCommand, PagedListModel<Calendar, CalendarSearchResponseModel>>
 {
     [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_RETRIEVE_CALENDAR)]
     public async Task<PagedListModel<Calendar, CalendarSearchResponseModel>> HandleAsync(
-        SearchCommand request,
+        CalendarSearchCommand request,
         CancellationToken cancellationToken = default
     )
     {
-        var calendars = await Search(request.Model);
-        return calendars.ToPagedListModel<Calendar, CalendarSearchResponseModel>();
-    }
-
-    public virtual async Task<IPagedList<Calendar>> Search(CalendarSearchModel model)
-    {
-        model.PageSize = model.PageSize == 0 ? int.MaxValue : model.PageSize;
+        request.PageSize = request.PageSize == 0 ? int.MaxValue : request.PageSize;
         var calendars = await calendarRepository.GetAllPaged(
             query =>
             {
-                if (model.Year != null)
+                if (request.Year != null)
                 {
                     query = query.Where(a =>
-                        a.SqnDate.Year.ToString().Contains(model.Year.ToString())
+                        a.SqnDate.Year.ToString().Contains(request.Year.ToString())
                     );
                 }
-                if (model.Month != null)
+                if (request.Month != null)
                 {
                     query = query.Where(a =>
-                        a.SqnDate.Month.ToString().Contains(model.Month.ToString())
+                        a.SqnDate.Month.ToString().Contains(request.Month.ToString())
                     );
                 }
                 query = query.OrderBy(a => a.Id);
                 return query;
             },
-            model.PageIndex,
-            model.PageSize
+            request.PageIndex,
+            request.PageSize
         );
-        return calendars;
+        return calendars.ToPagedListModel<Calendar, CalendarSearchResponseModel>();
     }
 }
