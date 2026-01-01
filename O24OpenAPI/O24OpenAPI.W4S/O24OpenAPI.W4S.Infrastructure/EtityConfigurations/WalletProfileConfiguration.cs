@@ -14,6 +14,10 @@ public class WalletProfileConfiguration : O24OpenAPIEntityBuilder<WalletProfile>
                 .AsGuid()
                 .NotNullable()
 
+            .WithColumn(nameof(WalletProfile.ContractNumber))
+            .AsString(100)
+                .NotNullable()
+
             .WithColumn(nameof(WalletProfile.UserCode))
                 .AsString(50)
                 .NotNullable()

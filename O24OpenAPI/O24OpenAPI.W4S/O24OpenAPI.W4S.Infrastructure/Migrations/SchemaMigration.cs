@@ -14,7 +14,7 @@ namespace O24OpenAPI.W4S.Infrastructure.Migrations;
 /// </summary>
 /// <seealso cref="AutoReversingMigration"/>
 [O24OpenAPIMigration(
-    "2025/12/31 23:23:00:0000000",
+    "2025/01/01 21:23:00:0000000",
     "Table For WalletProfile",
     MigrationProcessType.Installation
 )]

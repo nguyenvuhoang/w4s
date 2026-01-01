@@ -60,7 +60,7 @@ public class CreateWalletHandle(IWalletProfileRepository walletProfileRepository
                 userType: WalletUserTypeHelper.Parse(request.UserType),
                 userLevel: WalletUserLevelHelper.Parse(request.UserLevel),
                 policyCode: $"POL{request.PolicyId}",
-                customerCode: $"CUST{request.LoginName}",
+                customerCode: $"CUST{request.Phone}",
                 fullName: $"{request.FirstName} {request.LastName}".Trim(),
                 phone: request.Phone,
                 email: request.Email,
@@ -80,7 +80,7 @@ public class CreateWalletHandle(IWalletProfileRepository walletProfileRepository
             var profile = WalletProfile.Create(
                 walletId: walletid,
                 contractNumber: contract.ContractNumber,
-                userCode: request.LoginName,
+                userCode: request.Phone,
                 walletName: $"{request.FirstName} ${request.MiddleName} {request.LastName}".Trim(),
                 walletType: Code.WalletType.TWDR,
                 defaultCurrency: w4SSetting.BaseCurrency
@@ -116,13 +116,6 @@ public class CreateWalletHandle(IWalletProfileRepository walletProfileRepository
     /// <returns></returns>
     private async static Task ValidateRequest(CreateWalletCommand r, string language)
     {
-        if (string.IsNullOrWhiteSpace(r.LoginName))
-            throw await O24Exception.CreateAsync(
-                ResourceCode.Validation.RequiredField,
-                language,
-                "LoginName"
-            );
-
         if (string.IsNullOrWhiteSpace(r.Phone))
             throw await O24Exception.CreateAsync(
                 ResourceCode.Validation.RequiredField,
@@ -135,6 +128,12 @@ public class CreateWalletHandle(IWalletProfileRepository walletProfileRepository
                 ResourceCode.Validation.RequiredField,
                 language,
                 "LastName"
+            );
+        if (string.IsNullOrWhiteSpace(r.FirstName) && string.IsNullOrWhiteSpace(r.FirstName))
+            throw await O24Exception.CreateAsync(
+                ResourceCode.Validation.RequiredField,
+                language,
+                "FirstName"
             );
     }
 
