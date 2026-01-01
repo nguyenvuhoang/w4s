@@ -12,19 +12,8 @@ namespace O24OpenAPI.CTH.API.Application.Features.User;
 
 public class VerifyUserAsyncCommand : BaseTransactionModel, ICommand<VerifyUserResponseModel>
 {
-    /// <summary>
-    /// Gets or sets the value of the LoginName
-    /// </summary>
     public string Username { get; set; }
-
-    /// <summary>
-    /// Gets or sets the value of the oldpassword
-    /// </summary>
     public string Email { get; set; }
-
-    /// <summary>
-    /// Get or sets the value of the newpassword
-    /// </summary>
     public string PhoneNumber { get; set; } = string.Empty;
 }
 
