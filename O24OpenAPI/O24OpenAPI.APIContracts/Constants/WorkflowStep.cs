@@ -48,5 +48,8 @@ public static class WorkflowStep
 
     public static class CMS { }
 
-    public static class W4S { }
+    public static class W4S
+    {
+        public const string WF_STEP_W4S_CREATE_WALLET = "WF_STEP_W4S_CREATE_WALLET";
+    }
 }
