@@ -2,16 +2,6 @@
   "BackgroundJobConfig": {
     "BackgroundJobs": [
       {
-        "Name": "SubmitLoanAlertJob",
-        "AssemblyName": "O24OpenAPI.NCH",
-        "RunOnStart": true,
-        "ScheduleType": "Daily",
-        "TimeOfDay": "08:30:00",
-        "MaxParallel": 1,
-        "CorrelationId": "SubmitLoanAlertJob",
-        "IsActive": true
-      },
-      {
         "Name": "ScanUserNotificationJob",
         "AssemblyName": "O24OpenAPI.NCH",
         "RunOnStart": true,
