@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using O24OpenAPI.NCH.Models.Request.Telegram;
+using O24OpenAPI.NCH.API.Application.Models.Request.Telegram;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace O24OpenAPI.NCH.Controllers;
+namespace O24OpenAPI.NCH.API.Controllers;
 
 [ProducesResponseType(typeof(string), 401)]
 [ApiController]
@@ -58,7 +58,11 @@ public partial class TelegramChannelController : ControllerBase
     [HttpPost]
     public async Task<string> SetWebHook([FromBody] string webhookUrl)
     {
-        await _telegramBotClient.SetWebhook(webhookUrl, allowedUpdates: [], secretToken: "O24TELEGRAMBOT");
+        await _telegramBotClient.SetWebhook(
+            webhookUrl,
+            allowedUpdates: [],
+            secretToken: "O24TELEGRAMBOT"
+        );
         return $"Webhook set to {webhookUrl}";
     }
 

@@ -1,7 +1,8 @@
 ﻿using O24OpenAPI.Framework.Models;
+using O24OpenAPI.NCH.API.Application.Models;
 using O24OpenAPI.NCH.Domain.AggregatesModel.SmsAggregate;
 
-namespace O24OpenAPI.NCH.Models.Request;
+namespace O24OpenAPI.NCH.API.Application.Models.Request;
 
 public class SMSProviderUpdateModel : BaseTransactionModel
 {

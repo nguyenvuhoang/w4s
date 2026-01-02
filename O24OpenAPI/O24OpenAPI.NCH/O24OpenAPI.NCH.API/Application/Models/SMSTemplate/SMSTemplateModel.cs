@@ -1,6 +1,6 @@
 using O24OpenAPI.Framework.Models;
 
-namespace O24OpenAPI.NCH.Models.SMSTemplate;
+namespace O24OpenAPI.NCH.API.Application.Models.SMSTemplate;
 
 /// <summary>
 /// The templatetransfermodel class

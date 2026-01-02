@@ -5,8 +5,8 @@ using O24OpenAPI.Framework;
 using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
+using O24OpenAPI.NCH.API.Application.Constants;
 using O24OpenAPI.NCH.Config;
-using O24OpenAPI.NCH.Constant;
 using O24OpenAPI.NCH.Domain.AggregatesModel.MailAggregate;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 

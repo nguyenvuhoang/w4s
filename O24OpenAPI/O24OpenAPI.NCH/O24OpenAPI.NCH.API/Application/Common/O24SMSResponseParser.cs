@@ -1,8 +1,8 @@
-﻿using O24OpenAPI.Framework.Extensions;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Xml;
+using O24OpenAPI.Framework.Extensions;
 
-namespace O24OpenAPI.NCH.Common;
+namespace O24OpenAPI.NCH.API.Application.Common;
 
 public class O24SMSResponseParser
 {

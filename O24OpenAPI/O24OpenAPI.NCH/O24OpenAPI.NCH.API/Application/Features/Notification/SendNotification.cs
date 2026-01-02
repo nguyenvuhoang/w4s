@@ -1,4 +1,8 @@
-﻿using LinKit.Core.Cqrs;
+﻿using System.Diagnostics;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+using LinKit.Core.Cqrs;
 using LinqToDB;
 using MailKit.Net.Smtp;
 using MailKit.Security;
@@ -11,21 +15,16 @@ using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
+using O24OpenAPI.NCH.API.Application.Common;
 using O24OpenAPI.NCH.API.Application.Models.Request;
+using O24OpenAPI.NCH.API.Application.Models.Request.Mail;
+using O24OpenAPI.NCH.API.Application.Models.Request.Telegram;
+using O24OpenAPI.NCH.API.Application.Models.Response;
 using O24OpenAPI.NCH.API.Application.Utils;
-using O24OpenAPI.NCH.Common;
 using O24OpenAPI.NCH.Config;
 using O24OpenAPI.NCH.Domain.AggregatesModel.MailAggregate;
 using O24OpenAPI.NCH.Domain.AggregatesModel.SmsAggregate;
 using O24OpenAPI.NCH.Domain.Constants;
-using O24OpenAPI.NCH.Models.Request;
-using O24OpenAPI.NCH.Models.Request.Mail;
-using O24OpenAPI.NCH.Models.Request.Telegram;
-using O24OpenAPI.NCH.Models.Response;
-using System.Diagnostics;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
 
 namespace O24OpenAPI.NCH.API.Application.Features.Notification;
 
@@ -126,7 +125,7 @@ public class SendNotificationHandler(
             text = model.Message,
             parse_mode = "Markdown",
         };
-        var content = new StringContent(
+        StringContent content = new(
             JsonSerializer.Serialize(payload),
             Encoding.UTF8,
             "application/json"
@@ -325,7 +324,7 @@ public class SendNotificationHandler(
             isResend
         );
 
-        var stopwatch = Stopwatch.StartNew();
+        Stopwatch stopwatch = Stopwatch.StartNew();
 
         try
         {
@@ -336,7 +335,7 @@ public class SendNotificationHandler(
                         "SOAP_CONTENT_TYPE"
                     )
                 )?.Trim() ?? "application/soap+xml; charset=utf-8";
-            using var content = new StringContent(soapXml, Encoding.UTF8);
+            using StringContent content = new(soapXml, Encoding.UTF8);
             content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
             string requestHeader = await sMSProviderConfigRepository.AddDynamicSoapHeaders(
                 content,
@@ -357,7 +356,7 @@ public class SendNotificationHandler(
             List<SMSMappingResponse> allMappings = await sMSMappingRespository.Table.ToListAsync(
                 cancellationToken
             );
-            var successMap = allMappings
+            Dictionary<string, HashSet<string>> successMap = allMappings
                 .Where(x => x.IsSuccess)
                 .GroupBy(x => x.ProviderName.ToUpper())
                 .ToDictionary(g => g.Key, g => g.Select(x => x.ResponseCode).ToHashSet());
@@ -415,7 +414,7 @@ public class SendNotificationHandler(
 
     private static string BuildFullHttpRequest(string url, string method, HttpContent content)
     {
-        var requestLog = new StringBuilder();
+        StringBuilder requestLog = new();
 
         requestLog.AppendLine($"{method} {url} HTTP/1.1");
 
@@ -508,7 +507,7 @@ public class SendNotificationHandler(
                 );
             }
 
-            var email = new MimeMessage { Sender = MailboxAddress.Parse(getMailConfig.Sender) };
+            MimeMessage email = new() { Sender = MailboxAddress.Parse(getMailConfig.Sender) };
 
             if (string.IsNullOrWhiteSpace(emailLog.Receiver))
             {
@@ -530,7 +529,7 @@ public class SendNotificationHandler(
 
             email.Subject = Utility.ReplaceData(getMailTemplate.Subject, model.DataTemplate);
             emailLog.Subject = email.Subject;
-            var builder = new BodyBuilder();
+            BodyBuilder builder = new();
 
             // Handle attachments
             if (model.AttachmentBase64Strings != null && model.AttachmentBase64Strings.Count > 0)
@@ -581,7 +580,7 @@ public class SendNotificationHandler(
             {
                 try
                 {
-                    var footer = new MimePart("image", "png")
+                    MimePart footer = new("image", "png")
                     {
                         ContentId = "logo_footer",
                         Content = new MimeContent(
@@ -590,7 +589,7 @@ public class SendNotificationHandler(
                             )
                         ),
                     };
-                    var header = new MimePart("image", "png")
+                    MimePart header = new("image", "png")
                     {
                         ContentId = "logo_header",
                         Content = new MimeContent(
@@ -600,7 +599,7 @@ public class SendNotificationHandler(
                         ),
                     };
 
-                    var iconphone = new MimePart("image", "png")
+                    MimePart iconphone = new("image", "png")
                     {
                         ContentId = "iconphone",
                         Content = new MimeContent(
@@ -608,7 +607,7 @@ public class SendNotificationHandler(
                         ),
                     };
 
-                    var iconwebsite = new MimePart("image", "png")
+                    MimePart iconwebsite = new("image", "png")
                     {
                         ContentId = "iconwebsite",
                         Content = new MimeContent(
@@ -631,7 +630,7 @@ public class SendNotificationHandler(
             email.Body = builder.ToMessageBody();
             emailLog.Body = builder.HtmlBody;
             // SMTP send
-            using var smtp = new SmtpClient();
+            using SmtpClient smtp = new();
             await smtp.ConnectAsync(
                 getMailConfig.Host,
                 getMailConfig.Port,

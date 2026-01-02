@@ -1,4 +1,4 @@
-﻿namespace O24OpenAPI.NCH.Models.Response;
+﻿namespace O24OpenAPI.NCH.API.Application.Models.Response;
 
 public class GenerateOTPResponseModel
 {

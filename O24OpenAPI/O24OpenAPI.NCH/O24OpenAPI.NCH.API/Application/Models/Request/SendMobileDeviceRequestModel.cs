@@ -1,4 +1,4 @@
-﻿namespace O24OpenAPI.NCH.Models.Request;
+﻿namespace O24OpenAPI.NCH.API.Application.Models.Request;
 
 using O24OpenAPI.Framework.Models;
 

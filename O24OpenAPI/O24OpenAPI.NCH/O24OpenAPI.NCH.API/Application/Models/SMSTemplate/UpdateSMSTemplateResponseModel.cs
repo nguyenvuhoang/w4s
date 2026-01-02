@@ -2,7 +2,7 @@
 using O24OpenAPI.Framework.Models;
 using SmsDomain = O24OpenAPI.NCH.Domain.AggregatesModel.SmsAggregate;
 
-namespace O24OpenAPI.NCH.Models.SMSTemplate;
+namespace O24OpenAPI.NCH.API.Application.Models.SMSTemplate;
 
 public class UpdateSMSTemplateResponseModel : BaseO24OpenAPIModel
 {

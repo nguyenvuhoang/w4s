@@ -4,7 +4,7 @@ using O24OpenAPI.Framework.Controllers;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Framework.Services.Queue;
 
-namespace O24OpenAPI.NCH.Controllers;
+namespace O24OpenAPI.NCH.API.Controllers;
 
 public partial class MailChannelController : BaseController
 {

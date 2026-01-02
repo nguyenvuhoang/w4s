@@ -1,4 +1,4 @@
-﻿namespace O24OpenAPI.NCH.Models.Request.Mail;
+﻿namespace O24OpenAPI.NCH.API.Application.Models.Request.Mail;
 
 public class TestMailRequestModel : MailConfigSearchModel
 {

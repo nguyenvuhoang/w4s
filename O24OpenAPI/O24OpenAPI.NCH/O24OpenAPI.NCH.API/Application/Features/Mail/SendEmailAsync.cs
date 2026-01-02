@@ -1,16 +1,16 @@
-﻿using LinKit.Core.Cqrs;
+﻿using System.Text.Json;
+using LinKit.Core.Cqrs;
 using MailKit.Security;
 using MimeKit;
 using O24OpenAPI.Framework;
 using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
+using O24OpenAPI.NCH.API.Application.Constants;
 using O24OpenAPI.NCH.API.Application.Models.Request;
 using O24OpenAPI.NCH.API.Application.Utils;
 using O24OpenAPI.NCH.Config;
-using O24OpenAPI.NCH.Constant;
 using O24OpenAPI.NCH.Domain.AggregatesModel.MailAggregate;
-using System.Text.Json;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
 namespace O24OpenAPI.NCH.API.Application.Features.Mail;
@@ -187,9 +187,7 @@ public class SendEmailHandle(
                     {
                         ContentId = "iconwebsite",
                         Content = new MimeContent(
-                            new MemoryStream(
-                                Convert.FromBase64String(o24NCHSetting.IconWebsite)
-                            )
+                            new MemoryStream(Convert.FromBase64String(o24NCHSetting.IconWebsite))
                         ),
                     };
 

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace O24OpenAPI.NCH.Models;
+namespace O24OpenAPI.NCH.API.Application.Models;
 
 public class SMSProviderConfigModel
 {
@@ -15,6 +15,7 @@ public class SMSProviderConfigModel
 
     [JsonPropertyName("isactive")]
     public bool IsActive { get; set; }
+
     [JsonPropertyName("action")]
     public string Action { get; set; }
 }

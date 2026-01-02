@@ -1,7 +1,8 @@
 ﻿using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.NCH.Domain.AggregatesModel.SmsAggregate;
-namespace O24OpenAPI.NCH.Models.Response;
+
+namespace O24OpenAPI.NCH.API.Application.Models.Response;
 
 public class UpdateSMSProviderResponseModel : BaseO24OpenAPIModel
 {

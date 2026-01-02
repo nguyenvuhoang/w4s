@@ -1,4 +1,4 @@
-﻿namespace O24OpenAPI.NCH.Constant;
+﻿namespace O24OpenAPI.NCH.API.Application.Constants;
 
 public static class MailSendOutStatus
 {

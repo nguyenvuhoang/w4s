@@ -6,7 +6,7 @@ using O24OpenAPI.Framework.Models;
 using O24OpenAPI.NCH.API.Application.Utils;
 using O24OpenAPI.NCH.Domain.AggregatesModel.NotificationAggregate;
 
-namespace O24OpenAPI.NCH.Models.Response;
+namespace O24OpenAPI.NCH.API.Application.Models.Response;
 
 public class NotificationSearchResponse : BaseO24OpenAPIModel
 {

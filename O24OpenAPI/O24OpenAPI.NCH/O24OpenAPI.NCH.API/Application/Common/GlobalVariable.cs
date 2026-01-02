@@ -1,4 +1,4 @@
-﻿namespace O24OpenAPI.O24NCH.Common;
+﻿namespace O24OpenAPI.NCH.API.Application.Common;
 
 public class GlobalVariable
 {

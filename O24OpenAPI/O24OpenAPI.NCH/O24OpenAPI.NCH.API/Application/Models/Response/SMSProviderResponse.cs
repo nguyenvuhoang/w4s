@@ -1,6 +1,6 @@
 ﻿using O24OpenAPI.Core.Abstractions;
 
-namespace O24OpenAPI.NCH.Models.Response;
+namespace O24OpenAPI.NCH.API.Application.Models.Response;
 
 public class SMSProviderResponse : BaseO24OpenAPIModel
 {

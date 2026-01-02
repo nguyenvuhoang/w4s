@@ -1,4 +1,4 @@
-﻿namespace O24OpenAPI.NCH.Constant;
+﻿namespace O24OpenAPI.NCH.API.Application.Constants;
 
 public partial class O24NCHResourceCode
 {
@@ -14,6 +14,7 @@ public partial class O24NCHResourceCode
         public const string MailReceiverNotFound = "validation.mailreceiver.is.notfound";
         public const string SMSProviderIsExisting = "validation.smsprovider.is.existing";
     }
+
     public partial class Error
     {
         public const string SendEmailFailed = "error.sendemail.failed";
@@ -21,5 +22,4 @@ public partial class O24NCHResourceCode
         public const string GenerateOTPFailed = "error.generateotp.failed";
         public const string VerifyOTPFailed = "error.verifyotp.failed";
     }
-
 }

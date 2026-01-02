@@ -1,11 +1,12 @@
 ﻿using Newtonsoft.Json;
 
-namespace O24OpenAPI.NCH.Models.Request.Telegram;
+namespace O24OpenAPI.NCH.API.Application.Models.Request.Telegram;
 
 public class TelegramSendModel : NotificationRequestModel
 {
     [JsonProperty("chat_id")]
     public string ChatId { get; set; }
+
     [JsonProperty("message")]
     public new string Message { get; set; }
 }

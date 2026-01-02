@@ -1,6 +1,6 @@
 ﻿using O24OpenAPI.Framework.Models;
 
-namespace O24OpenAPI.NCH.Models.Request.SMSGateway;
+namespace O24OpenAPI.NCH.API.Application.Models.Request.SMSGateway;
 
 public class SMSGatewayRequestModel : BaseTransactionModel
 {

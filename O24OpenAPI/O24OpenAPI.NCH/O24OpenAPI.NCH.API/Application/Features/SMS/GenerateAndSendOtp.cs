@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
-using O24OpenAPI.NCH.Constant;
+using O24OpenAPI.NCH.API.Application.Constants;
 using O24OpenAPI.NCH.Domain.AggregatesModel.NotificationAggregate;
 
 namespace O24OpenAPI.NCH.API.Application.Features.Sms;
@@ -71,8 +71,7 @@ public class GenerateAndSendOtpHandle(
                 request.SenderData?.ToDictionary(
                     k => k.Key,
                     dv => dv.Value?.ToString() ?? string.Empty
-                )
-                ?? [];
+                ) ?? [];
 
             var senderTitle = ReplaceTokens(rawTitle, senderDict);
             var senderBody = ReplaceTokens(rawBody, senderDict);

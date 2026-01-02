@@ -1,6 +1,6 @@
 ﻿using O24OpenAPI.Framework.Models;
 
-namespace O24OpenAPI.NCH.Models.Request.Mail;
+namespace O24OpenAPI.NCH.API.Application.Models.Request.Mail;
 
 public partial class MailConfigSearchModel : BaseTransactionModel
 {

@@ -1,6 +1,6 @@
 ﻿using O24OpenAPI.Framework.Models;
 
-namespace O24OpenAPI.NCH.Models.Request;
+namespace O24OpenAPI.NCH.API.Application.Models.Request;
 
 public class LTCModel : BaseTransactionModel
 {

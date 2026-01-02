@@ -1,4 +1,4 @@
-﻿namespace O24OpenAPI.NCH.Constant;
+﻿namespace O24OpenAPI.NCH.API.Application.Constants;
 
 public static class SMSSendOutStatus
 {
@@ -6,6 +6,7 @@ public static class SMSSendOutStatus
     public const string SUCCESS = "SUCCESS";
     public const string FAILED = "FAILED";
 }
+
 public static class OTP_REQUESTS_STATUS
 {
     public const string PENDING = "PENDING";
