@@ -16,6 +16,19 @@
 		<BuildUser Condition="'$(BuildUser)' == ''">$(USER)</BuildUser>
 		<PublishTrimmed>false</PublishTrimmed>
 	</PropertyGroup>
+  <Target Name="SetGitVersion" BeforeTargets="BeforeBuild">
+    <Exec
+      Command="git rev-list --count HEAD &gt; githeight.txt"
+      WorkingDirectory="$(MSBuildProjectDirectory)"
+    />
+    <ReadLinesFromFile File="githeight.txt">
+      <Output TaskParameter="Lines" PropertyName="GitHeight" />
+    </ReadLinesFromFile>
+    <PropertyGroup>
+      <Version>$(VersionMajor).$(VersionMinor).$(GitHeight)</Version>
+      <FileVersion>$(VersionMajor).$(VersionMinor).$(GitHeight).0</FileVersion>
+    </PropertyGroup>
+  </Target>
   <ItemGroup>
     <PackageReference Include="FirebaseAdmin" Version="3.4.0" />
     <PackageReference Include="MailKit" Version="4.14.1" />

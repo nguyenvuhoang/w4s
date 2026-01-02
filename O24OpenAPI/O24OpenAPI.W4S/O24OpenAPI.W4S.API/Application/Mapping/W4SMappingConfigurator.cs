@@ -1,0 +1,14 @@
+﻿using LinKit.Core.Mapping;
+using O24OpenAPI.W4S.API.Application.Models.Wallet;
+using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
+
+namespace O24OpenAPI.W4S.API.Application.Mapping;
+
+[MapperContext]
+public class W4SMappingConfigurator : IMappingConfigurator
+{
+    public void Configure(IMapperConfigurationBuilder builder)
+    {
+        builder.CreateMap<WalletCategory, WalletCategoryResponseModel>();
+    }
+}
