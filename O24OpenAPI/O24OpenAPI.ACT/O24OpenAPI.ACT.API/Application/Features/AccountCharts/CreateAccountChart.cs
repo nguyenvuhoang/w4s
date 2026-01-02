@@ -1,4 +1,5 @@
-﻿using LinKit.Core.Cqrs;
+﻿using System.Text.Json;
+using LinKit.Core.Cqrs;
 using LinqToDB;
 using O24OpenAPI.ACT.API.Application.Models;
 using O24OpenAPI.ACT.Config;
@@ -6,15 +7,18 @@ using O24OpenAPI.ACT.Domain;
 using O24OpenAPI.ACT.Domain.AggregatesModel.AccountAggregate;
 using O24OpenAPI.ACT.Domain.AggregatesModel.CommonAggregate;
 using O24OpenAPI.ACT.Domain.AggregatesModel.RulesAggregate;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.Core;
 using O24OpenAPI.Data.Extensions;
+using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
-using System.Text.Json;
 
 namespace O24OpenAPI.ACT.API.Application.Features.AccountCharts;
 
-public class CreateAccountChartCommand : BaseTransactionModel, ICommand<AccountChartCRUDReponseModel>
+public class CreateAccountChartCommand
+    : BaseTransactionModel,
+        ICommand<AccountChartCRUDReponseModel>
 {
     /// <summary>
     /// AccountNumber
@@ -133,6 +137,7 @@ public class CreateAccountChartCommand : BaseTransactionModel, ICommand<AccountC
     public string referenceId { get; set; }
 }
 
+[CqrsHandler]
 public class CreateHandle(
     IAccountChartRepository accountChartRepository,
     ICurrencyRepository currencyRepository,
@@ -140,6 +145,7 @@ public class CreateHandle(
     AccountingSettings accountingSettings
 ) : ICommandHandler<CreateAccountChartCommand, AccountChartCRUDReponseModel>
 {
+    [WorkflowStep(WorkflowStep.ACT.WF_STEP_ACT_CREATE_ACCOUNTCHART)]
     public async Task<AccountChartCRUDReponseModel> HandleAsync(
         CreateAccountChartCommand request,
         CancellationToken cancellationToken = default

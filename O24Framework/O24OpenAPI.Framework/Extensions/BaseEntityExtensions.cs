@@ -10,6 +10,10 @@ namespace O24OpenAPI.Framework.Extensions;
 
 public static class BaseEntityExtensions
 {
+    //public static async Task<T> Insert<T>(T entity)
+    //{
+    //    var repo = EngineContext.Current
+    //}
     public static string GetMasterStringField(this BaseEntity entity, string propertyName)
     {
         if (entity == null || string.IsNullOrWhiteSpace(propertyName))

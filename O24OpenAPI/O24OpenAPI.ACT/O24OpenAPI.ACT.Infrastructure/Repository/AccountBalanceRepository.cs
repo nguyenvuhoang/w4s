@@ -7,6 +7,7 @@ using O24OpenAPI.ACT.Domain.AggregatesModel.AccountAggregate;
 using O24OpenAPI.ACT.Domain;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Data;
+using O24OpenAPI.Data.Extensions;
 
 namespace O24OpenAPI.ACT.Infrastructure.Repositories;
 
@@ -17,4 +18,19 @@ public class AccountBalanceRepository(
 {
     public Task<AccountBalance?> GetByAccountNumberAsync(string accountNumber)
         => Table.FirstOrDefaultAsync(x => x.AccountNumber == accountNumber);
+
+    public virtual async Task<AccountBalance> GetByAccountNumber(string accountNumber)
+    {
+        
+        var accountBalance = await 
+            Table.Where(c => c.AccountNumber == accountNumber)
+            .FirstOrDefaultAsync();
+        if (accountBalance is null)
+        {
+            accountBalance = new AccountBalance { AccountNumber = accountNumber };
+            await accountBalance.Insert();
+        }
+        return accountBalance;
+
+    }
 }
