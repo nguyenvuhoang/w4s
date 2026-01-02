@@ -40,8 +40,11 @@ public class CreateWalletCommand : BaseTransactionModel, ICommand<CreateWalletRe
 }
 
 [CqrsHandler]
-public class CreateWalletHandle(IWalletProfileRepository walletProfileRepository, IWalletContractRepository walletContractRepository, W4SSetting w4SSetting)
-    : ICommandHandler<CreateWalletCommand, CreateWalletResponseModel>
+public class CreateWalletHandle(
+    IWalletProfileRepository walletProfileRepository,
+    IWalletContractRepository walletContractRepository,
+    W4SSetting w4SSetting
+) : ICommandHandler<CreateWalletCommand, CreateWalletResponseModel>
 {
     [WorkflowStep(WorkflowStep.W4S.WF_STEP_W4S_CREATE_WALLET)]
     public async Task<CreateWalletResponseModel> HandleAsync(
@@ -53,7 +56,7 @@ public class CreateWalletHandle(IWalletProfileRepository walletProfileRepository
         {
             await ValidateRequest(request, walletContractRepository);
 
-            var contractNumber = await ResolveContractNumberAsync(request, cancellationToken);
+            string contractNumber = await ResolveContractNumberAsync(request, cancellationToken);
             var contract = WalletContract.Create(
                 contractNumber: contractNumber,
                 contractType: WalletContractTypeHelper.Parse(request.ContractType),
@@ -73,7 +76,10 @@ public class CreateWalletHandle(IWalletProfileRepository walletProfileRepository
             }
             catch (Exception ex) when (DbExceptionHelper.IsUniqueConstraintViolation(ex))
             {
-                contract.ContractNumber = await ResolveContractNumberAsync(request, cancellationToken);
+                contract.ContractNumber = await ResolveContractNumberAsync(
+                    request,
+                    cancellationToken
+                );
                 await walletContractRepository.InsertAsync(contract);
             }
 
@@ -93,21 +99,15 @@ public class CreateWalletHandle(IWalletProfileRepository walletProfileRepository
             {
                 WalletId = profile.WalletId,
                 ContractNumber = contract.ContractNumber,
-                UserCode = profile.UserCode
+                UserCode = profile.UserCode,
             };
         }
         catch (Exception ex)
         {
             await ex.LogErrorAsync();
-            throw await O24Exception.CreateAsync(
-                ResourceCode.Common.SystemError,
-                request.Language,
-                [ex.Message]
-            );
+            throw;
         }
     }
-
-
 
     /// <summary>
     /// Validate request
@@ -115,7 +115,10 @@ public class CreateWalletHandle(IWalletProfileRepository walletProfileRepository
     /// <param name="r"></param>
     /// <param name="language"></param>
     /// <returns></returns>
-    private async static Task ValidateRequest(CreateWalletCommand r, IWalletContractRepository walletContractRepository)
+    private async static Task ValidateRequest(
+        CreateWalletCommand r,
+        IWalletContractRepository walletContractRepository
+    )
     {
         if (string.IsNullOrWhiteSpace(r.Phone))
             throw await O24Exception.CreateAsync(
@@ -154,19 +157,24 @@ public class CreateWalletHandle(IWalletProfileRepository walletProfileRepository
     /// <param name="request"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-
-    private async Task<string> ResolveContractNumberAsync(CreateWalletCommand request, CancellationToken ct)
+    private async Task<string> ResolveContractNumberAsync(
+        CreateWalletCommand request,
+        CancellationToken ct
+    )
     {
         if (!string.IsNullOrWhiteSpace(request.ContractNumber))
         {
-            var cn = request.ContractNumber.Trim();
-            var exists = await walletContractRepository.ExistsByContractNumberAsync(cn);
+            string cn = request.ContractNumber.Trim();
+            bool exists = await walletContractRepository.ExistsByContractNumberAsync(cn);
             if (exists)
                 return cn;
             return cn;
         }
 
-        var contractNumber = WalletContractNumberGenerator.Generate(WalletContractKind.Personal, nodeId: 1);
+        string contractNumber = WalletContractNumberGenerator.Generate(
+            WalletContractKind.Personal,
+            nodeId: 1
+        );
         return contractNumber;
     }
 }

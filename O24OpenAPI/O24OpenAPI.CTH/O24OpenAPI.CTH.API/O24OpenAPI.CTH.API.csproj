@@ -11,7 +11,6 @@
     <Content Include="__jits_com_vn.pfx">
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
-    <Content Remove="App_Data\appsettings.json" />
     <Content Remove="App_Data\appsettings.Development.json" />
   </ItemGroup>
   <ItemGroup>
@@ -22,11 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Framework\O24OpenAPI.Framework.csproj" />
-    <ProjectReference
-      Include="..\..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj"
-      OutputItemType="Analyzer"
-      ReferenceOutputAssembly="false"
-    />
+    <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\O24OpenAPI.CTH.Domain\O24OpenAPI.CTH.Domain.csproj" />
     <ProjectReference Include="..\O24OpenAPI.CTH.Infrastructure\O24OpenAPI.CTH.Infrastructure.csproj" />
   </ItemGroup>
