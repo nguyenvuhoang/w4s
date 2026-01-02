@@ -1,4 +1,5 @@
-﻿using LinKit.Core.Cqrs;
+﻿using FirebaseAdmin.Messaging;
+using LinKit.Core.Cqrs;
 using Newtonsoft.Json;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.NCH.Domain.AggregatesModel.NotificationAggregate;
@@ -11,6 +12,21 @@ public class FirebaseSendNotificationCommand : ICommand
     public string Tittle { get; set; }
     public string Body { get; set; }
     public Dictionary<string, string> Data { get; set; }
+
+    public FirebaseSendNotificationCommand() { }
+
+    public FirebaseSendNotificationCommand(
+        string token,
+        string tittle,
+        string body,
+        Dictionary<string, string> data = null
+    )
+    {
+        Token = token;
+        Tittle = tittle;
+        Body = body;
+        Data = data;
+    }
 }
 
 public class FirebaseSendNotificationHandler(
@@ -32,7 +48,7 @@ public class FirebaseSendNotificationHandler(
         data["title"] = tittle;
         data["body"] = body;
 
-        var log = new PushNotificationLog
+        PushNotificationLog log = new()
         {
             Token = token,
             Title = tittle,
@@ -44,7 +60,7 @@ public class FirebaseSendNotificationHandler(
 
         try
         {
-            var message = new FirebaseAdmin.Messaging.Message()
+            Message message = new()
             {
                 Token = token,
                 Data = data,
