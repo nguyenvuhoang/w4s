@@ -16,4 +16,5 @@ public class NotificationRequestModel : BaseTransactionModel
     public List<MimeEntity> MimeEntities { get; set; } = [];
     public List<int> FileIds { get; set; } = [];
     public string Message { get; set; } = string.Empty;
+    public string TemplateId { get; set; } = string.Empty;
 }

@@ -1,6 +1,4 @@
-﻿using System.Text;
-using System.Text.RegularExpressions;
-using FirebaseAdmin;
+﻿using FirebaseAdmin;
 using LinqToDB;
 using Newtonsoft.Json;
 using O24OpenAPI.Core;
@@ -19,6 +17,8 @@ using O24OpenAPI.O24NCH.Models.Request.Telegram;
 using O24OpenAPI.O24NCH.Models.Response;
 using O24OpenAPI.O24NCH.Services.Interfaces;
 using O24OpenAPI.O24NCH.Utils;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace O24OpenAPI.O24NCH.Services.Services;
 
@@ -470,7 +470,7 @@ public partial class NotificationService : INotificationService
     {
         return new SendMailRequestModel
         {
-            TemplateId = $"{model.ChannelId}_MAIL_RESET_PASSWORD",
+            TemplateId = $"{model.ChannelId}_{model.TemplateId}",
             ConfigId = "main_mail",
             Receiver = model.Email,
             DataTemplate = model.DataTemplate ?? [],
