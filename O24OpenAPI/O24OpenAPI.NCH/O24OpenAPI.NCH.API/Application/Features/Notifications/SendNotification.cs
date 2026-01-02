@@ -43,6 +43,7 @@ public class SendNotificationCommand : BaseTransactionModel, ICommand<bool>
     public List<O24MimeEntity> MimeEntities { get; set; } = [];
     public List<int> FileIds { get; set; } = [];
     public string Message { get; set; } = string.Empty;
+    public string TemplateId { get; set; } = string.Empty;
 }
 
 public class SMSRequestModel : SendNotificationCommand { }
@@ -456,7 +457,7 @@ public class SendNotificationHandler(
     {
         return new SendMailRequestModel
         {
-            TemplateId = $"{request.ChannelId}_MAIL_RESET_PASSWORD",
+            TemplateId = $"{request.ChannelId}_{request.TemplateId}",
             ConfigId = "main_mail",
             Receiver = request.Email,
             DataTemplate = request.DataTemplate ?? [],

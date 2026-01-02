@@ -1,7 +1,7 @@
-using System.Linq.Expressions;
 using LinqToDB;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Domain;
+using System.Linq.Expressions;
 
 namespace O24OpenAPI.Data.System.Linq;
 
@@ -25,22 +25,6 @@ public static class AsyncIQueryableExtensions
         return AsyncExtensions.AllAsync<TSource>(source, predicate);
     }
 
-    /// <summary>
-    /// Anies the source
-    /// </summary>
-    /// <typeparam name="TSource">The source</typeparam>
-    /// <param name="source">The source</param>
-    /// <param name="predicate">The predicate</param>
-    /// <returns>A task containing the bool</returns>
-    public static Task<bool> AnyAsync<TSource>(
-        this IQueryable<TSource> source,
-        Expression<Func<TSource, bool>> predicate = null
-    )
-    {
-        return predicate == null
-            ? AsyncExtensions.AnyAsync<TSource>(source)
-            : source.AnyAsync<TSource>(predicate);
-    }
 
     /// <summary>
     /// Firsts the or default using the specified source
