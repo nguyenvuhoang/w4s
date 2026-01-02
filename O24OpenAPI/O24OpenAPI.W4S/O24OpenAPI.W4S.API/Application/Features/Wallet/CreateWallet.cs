@@ -43,6 +43,8 @@ public class CreateWalletCommand : BaseTransactionModel, ICommand<CreateWalletRe
 public class CreateWalletHandle(
     IWalletProfileRepository walletProfileRepository,
     IWalletContractRepository walletContractRepository,
+    IWalletCategoryDefaultRepository walletCategoryDefaultRepository,
+    IWalletCategoryRepository walletCategoryRepository,
     W4SSetting w4SSetting
 ) : ICommandHandler<CreateWalletCommand, CreateWalletResponseModel>
 {
@@ -94,6 +96,8 @@ public class CreateWalletHandle(
             );
 
             await walletProfileRepository.InsertAsync(profile);
+
+            await CloneDefaultCategoriesToWalletAsync(profile.WalletId, request.Language);
 
             return new CreateWalletResponseModel
             {
@@ -177,4 +181,54 @@ public class CreateWalletHandle(
         );
         return contractNumber;
     }
+
+    /// <summary>
+    /// Clone default categories to wallet
+    /// </summary>
+    /// <param name="walletId"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    private async Task CloneDefaultCategoriesToWalletAsync(
+        Guid walletId,
+        string language
+    )
+    {
+        var defaults = await walletCategoryDefaultRepository.GetActiveAsync(
+            language: language
+        );
+
+        if (defaults is null || defaults.Count == 0)
+            return;
+
+        string walletIdStr = walletId.ToString();
+
+        var toInsert = new List<WalletCategory>(defaults.Count);
+
+        foreach (var d in defaults.OrderBy(x => x.SortOrder))
+        {
+            // CategoryId bên WalletCategory = CategoryCode bên Default
+            var categoryId = d.CategoryCode;
+
+            // Skip if already exists (avoid duplicate insert)
+            bool exists = await walletCategoryRepository.ExistsAsync(walletIdStr, categoryId);
+            if (exists) continue;
+
+            var entity = WalletCategory.Create(
+                categoryId: categoryId,
+                walletId: walletIdStr,
+                parentCategoryId: d.ParentCategoryCode ?? string.Empty,
+                categoryGroup: d.CategoryGroup,
+                categoryType: d.CategoryType,
+                categoryName: d.CategoryName,
+                icon: d.Icon,
+                color: d.Color
+            );
+
+            toInsert.Add(entity);
+        }
+
+        if (toInsert.Count > 0)
+            await walletCategoryRepository.BulkInsertAsync(toInsert);
+    }
+
 }
