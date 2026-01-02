@@ -191,6 +191,7 @@ public class CreateUserHandle(
                     password,
                 },
                 MimeEntities = [],
+                NotificationType = userAccount.NotificationType,
             };
 
             byte[] qrImageBytes = Utils.StringExtensions.GenerateQRCodeBytes(password);
