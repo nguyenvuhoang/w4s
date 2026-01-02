@@ -85,5 +85,6 @@ public static class WorkflowStep
     public static class W4S
     {
         public const string WF_STEP_W4S_CREATE_WALLET = "WF_STEP_W4S_CREATE_WALLET";
+        public const string WF_STEP_W4S_RETRIEVE_WALLET_CATEGORY = "WF_STEP_W4S_RETRIEVE_WALLET_CATEGORY";
     }
 }

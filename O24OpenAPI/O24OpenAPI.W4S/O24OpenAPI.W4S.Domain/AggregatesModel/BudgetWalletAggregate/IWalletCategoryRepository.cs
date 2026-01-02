@@ -17,4 +17,5 @@ public interface IWalletCategoryRepository : IRepository<WalletCategory>
     /// <param name="items"></param>
     /// <returns></returns>
     Task BulkInsertAsync(IList<WalletCategory> items);
+
 }

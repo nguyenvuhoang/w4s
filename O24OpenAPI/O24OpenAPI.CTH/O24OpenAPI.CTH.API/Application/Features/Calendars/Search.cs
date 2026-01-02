@@ -1,6 +1,5 @@
 ﻿using LinKit.Core.Cqrs;
 using O24OpenAPI.APIContracts.Constants;
-using O24OpenAPI.Core;
 using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.Domain.AggregatesModel.CalendarAggregate;
 using O24OpenAPI.Framework.Attributes;

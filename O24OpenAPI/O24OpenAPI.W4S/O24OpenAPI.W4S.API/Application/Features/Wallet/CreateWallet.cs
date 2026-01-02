@@ -226,6 +226,7 @@ public class CreateWalletHandle(
 
         if (toInsert.Count > 0)
             await walletCategoryRepository.BulkInsertAsync(toInsert);
+
     }
 
 }
