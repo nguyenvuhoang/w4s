@@ -7,7 +7,7 @@ public class UserResponseModel
 {
     public object DataTemplate { get; set; }
     public List<DTSMimeEntityModel> MimeEntities { get; set; } = [];
-    public string NotificationType { get; set; }
+    public string NotificationType { get; set; } = "MAIL";
 }
 public class MimeEntity
 {
