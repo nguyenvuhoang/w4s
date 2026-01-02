@@ -15,8 +15,13 @@ public class SMSMappingMigration : BaseMigration
 {
     public override void Up()
     {
-        var pathSMSMappingResponseData = "Migrations/DataJson/SMSMappingResponse/SMSMappingResponseData.json";
-        var listSMSMappingResponseData = FileUtils.ReadJson<SMSMappingResponse>(pathSMSMappingResponseData).GetAwaiter().GetResult();
-        SeedListData(listSMSMappingResponseData, NCHConditionField.SMSMappingResponseCondition).Wait();
+        var pathSMSMappingResponseData =
+            "Migrations/DataJson/SMSMappingResponse/SMSMappingResponseData.json";
+        var listSMSMappingResponseData = FileUtils
+            .ReadJson<SMSMappingResponse>(pathSMSMappingResponseData)
+            .GetAwaiter()
+            .GetResult();
+        SeedListData(listSMSMappingResponseData, NCHConditionField.SMSMappingResponseCondition)
+            .Wait();
     }
 }

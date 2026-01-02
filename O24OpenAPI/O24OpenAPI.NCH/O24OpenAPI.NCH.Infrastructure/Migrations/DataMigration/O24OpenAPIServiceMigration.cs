@@ -18,7 +18,8 @@ public class O24OpenAPIServiceMigration : BaseMigration
 {
     public override void Up()
     {
-        var path = "Migrations/DataJson/O24OpenAPIService_NCH_GET_UNREAD_COUNT/O24OpenAPIServiceData.json";
+        var path =
+            "Migrations/DataJson/O24OpenAPIService_NCH_GET_UNREAD_COUNT/O24OpenAPIServiceData.json";
         var list = FileUtils.ReadJson<O24OpenAPIService>(path).GetAwaiter().GetResult();
         SeedListData(list, DataConditionField.O24OpenAPIServiceCondition).Wait();
     }
