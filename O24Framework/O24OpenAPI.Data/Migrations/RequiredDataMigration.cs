@@ -246,7 +246,7 @@ public class RequiredDataMigration(IO24OpenAPIDataProvider dataProvider) : BaseM
                     {
                         Language = "en",
                         ResourceName = "system.error",
-                        ResourceValue = "System error occurred",
+                        ResourceValue = "System error occurred {0}",
                     },
                     new LocaleStringResource()
                     {

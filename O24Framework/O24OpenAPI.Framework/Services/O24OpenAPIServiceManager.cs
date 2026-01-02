@@ -104,7 +104,7 @@ public class O24OpenAPIServiceManager(
             string fullClassName = mapping.FullClassName;
             string methodName = mapping.MethodName;
             BaseTransactionModel baseTranModel = await workflow.ToModel<BaseTransactionModel>();
-            var json = JsonSerializer.Serialize(baseTranModel);
+            string json = JsonSerializer.Serialize(baseTranModel);
             Dictionary<string, object> dictionary = JsonSerializer.Deserialize<
                 Dictionary<string, object>
             >(json);
@@ -144,7 +144,7 @@ public class O24OpenAPIServiceManager(
             {
                 if (mapping.IsModuleExecute == true)
                 {
-                    var executionResult = await DynamicCodeEngine.ExecuteAsync(
+                    object executionResult = await DynamicCodeEngine.ExecuteAsync(
                         moduleName: mapping.FullClassName,
                         methodName: mapping.MethodName,
                         parameters: [workflow]
@@ -173,7 +173,7 @@ public class O24OpenAPIServiceManager(
                     );
                     return await scheme;
                 }
-                catch (Exception ex)
+                catch (KeyNotFoundException ex)
                 {
                     BusinessLogHelper.Error(
                         ex,
@@ -190,7 +190,7 @@ public class O24OpenAPIServiceManager(
                 var entityAudits = await entityAuditRepository.GetByExecutionIdAsync(
                     workflow.request.request_header.execution_id
                 );
-                var revertSql = await EntityAuditReverter.GenerateRevertSqlBlock(
+                string revertSql = await EntityAuditReverter.GenerateRevertSqlBlock(
                     entityAudits,
                     workflow.request.request_header.execution_id
                 );
