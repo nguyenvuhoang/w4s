@@ -1,5 +1,7 @@
 using LinKit.Core.Cqrs;
 using LinqToDB;
+using O24OpenAPI.APIContracts.Constants;
+using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.NCH.API.Application.Constants;
@@ -22,12 +24,13 @@ public class VerifyOtpHandle(
     IOTPRequestRepository oTPRequestRepository
 ) : ICommandHandler<VerifyOtpCommand, bool>
 {
+    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_SMS_VERIFY_OTP)]
     public async Task<bool> HandleAsync(
         VerifyOtpCommand request,
         CancellationToken cancellationToken = default
     )
     {
-        var encryptedOtp = Utils.Utility.EncryptOTP(request.OTP);
+        string encryptedOtp = Utils.Utility.EncryptOTP(request.OTP);
 
         if (string.IsNullOrEmpty(request.VerifyOTPCode))
         {
@@ -42,7 +45,7 @@ public class VerifyOtpHandle(
             .Table.Where(x =>
                 x.IsActive
                 && x.PhoneNumber == request.PhoneNumber
-                && (int)x.Platform == (int)ReviewPlatform.Any
+                && x.Platform == (int)ReviewPlatform.Any
                 && (x.StartAt == null || x.StartAt <= DateTime.UtcNow)
                 && (x.EndAt == null || x.EndAt >= DateTime.UtcNow)
             )

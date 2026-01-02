@@ -1,245 +1,176 @@
-﻿using FirebaseAdmin.Messaging;
-using LinKit.Core.Cqrs;
-using Newtonsoft.Json;
+﻿using LinKit.Core.Cqrs;
+using LinqToDB;
+using O24OpenAPI.APIContracts.Constants;
+using O24OpenAPI.Core;
+using O24OpenAPI.Framework.Attributes;
+using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
-using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.NCH.API.Application.Constants;
-using O24OpenAPI.NCH.Domain.AggregatesModel.NotificationAggregate;
+using O24OpenAPI.NCH.API.Application.Features.SMS.Services;
+using O24OpenAPI.NCH.API.Application.Models.Response;
+using O24OpenAPI.NCH.Domain.AggregatesModel.OtpAggregate;
+using O24OpenAPI.NCH.Domain.AggregatesModel.SmsAggregate;
+using O24OpenAPI.NCH.Infrastructure.Configurations;
+using System.Globalization;
+using System.Security.Cryptography;
 
 namespace O24OpenAPI.NCH.API.Application.Features.Sms;
 
-public class GenerateAndSendOtpCommand : BaseTransactionModel, ICommand<bool>
+public class GenerateAndSendOtpCommand : BaseTransactionModel, ICommand<GenerateOTPResponseModel>
 {
-    public Dictionary<string, object> ReceiverData { get; set; } = [];
-    public Dictionary<string, object> SenderData { get; set; }
-    public string AppType { get; set; }
-    public string NotificationType { get; set; }
-    public string UserCode { get; set; }
-    public string ReceiverCode { get; set; } = string.Empty;
-    public string Title { get; set; }
-    public string Body { get; set; }
-    public string TemplateID { get; set; }
-    public string Redirect { get; set; }
-    public string SenderPushId { get; set; }
-    public string NotificationCategory { get; set; } = "GENERAL";
+    public string UserCode { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; }
+    public string Purpose { get; set; }
+    public string Account { get; set; } = string.Empty;
+    public decimal? Amount { get; set; }
+    public string Currency { get; set; } = string.Empty;
 }
 
 [CqrsHandler]
 public class GenerateAndSendOtpHandle(
-    INotificationTemplateRepository notificationTemplateRepository,
-    ICTHGrpcClientService cTHGrpcClientService,
-    INotificationRepository notificationRepository,
-    FirebaseMessaging firebaseMessaging,
-    IPushNotificationLogRepository pushNotificationLogRepository
-) : ICommandHandler<GenerateAndSendOtpCommand, bool>
+    IOTPRequestRepository otpRequestRepository,
+    ISMSTemplateRepository sMSTemplateRepository,
+    SMSSetting sMSSetting,
+    ISMSProviderService smsProviderService
+) : ICommandHandler<GenerateAndSendOtpCommand, GenerateOTPResponseModel>
 {
-    public async Task<bool> HandleAsync(
+    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_SMS_GENERATE_OTP)]
+    public async Task<GenerateOTPResponseModel> HandleAsync(
         GenerateAndSendOtpCommand request,
         CancellationToken cancellationToken = default
     )
     {
         try
         {
-            int receiverLogId = -1;
+            DateTime now = DateTime.UtcNow;
 
-            var template = await notificationTemplateRepository.GetByTemplateIdAsync(
-                request.TemplateID
-            );
-            if (template == null)
+            string transactionId = string.IsNullOrWhiteSpace(request.RefId)
+                ? Guid.NewGuid().ToString("N")
+                : request.RefId;
+
+            string userCode = request.UserCode ?? request.CurrentUserCode;
+
+            OTP_REQUESTS existingOtp = await otpRequestRepository
+                .Table.Where(o =>
+                    o.PhoneNumber == request.PhoneNumber
+                    && o.Purpose == request.Purpose
+                    && // rất quan trọng: lock theo mục đích
+                    !o.IsUsed
+                    && o.ExpiresAt > now
+                    && (
+                        o.Status == OTP_REQUESTS_STATUS.PENDING
+                        || o.Status == OTP_REQUESTS_STATUS.SENT
+                    )
+                ) // FAILED không block
+                .OrderByDescending(o => o.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            if (existingOtp != null)
             {
-                Console.WriteLine("⚠️ Template not found: " + request.TemplateID);
-                return false;
-            }
-
-            var titleDict =
-                JsonConvert.DeserializeObject<Dictionary<string, string>>(template.Title ?? "{}")
-                ?? [];
-            var bodyDict =
-                JsonConvert.DeserializeObject<Dictionary<string, string>>(template.Body ?? "{}")
-                ?? [];
-
-            string lang = string.IsNullOrWhiteSpace(request.Language) ? "en" : request.Language;
-            string rawTitle = titleDict.TryGetValue(lang, out string valuetTitle)
-                ? valuetTitle
-                : titleDict.GetValueOrDefault("en") ?? "";
-            string rawBody = bodyDict.TryGetValue(lang, out string valueBody)
-                ? valueBody
-                : bodyDict.GetValueOrDefault("en") ?? "";
-
-            var senderDict =
-                request.SenderData?.ToDictionary(
-                    k => k.Key,
-                    dv => dv.Value?.ToString() ?? string.Empty
-                ) ?? [];
-
-            var senderTitle = ReplaceTokens(rawTitle, senderDict);
-            var senderBody = ReplaceTokens(rawBody, senderDict);
-
-            var senderToken =
-                request.SenderPushId
-                ?? await cTHGrpcClientService.GetUserPushIdAsync(request.UserCode);
-            if (string.IsNullOrWhiteSpace(senderToken))
-            {
-                Console.WriteLine("⚠️ Sender token not found for user: " + request.UserCode);
-                return false;
-            }
-
-            await SendNotificationAsync(senderToken, senderTitle, senderBody);
-
-            var senderLogId = await notificationRepository.LogInformation(
-                request.UserCode,
-                request.AppCode ?? "MB",
-                Code.NotificationTypeCode.FIREBASE,
-                template.TemplateID,
-                request.Redirect,
-                JsonConvert.SerializeObject(senderDict),
-                notificationCategory: request.NotificationCategory
-            );
-
-            if (senderLogId <= 0)
-            {
-                Console.WriteLine("⚠️ Sender log failed: " + request.UserCode);
-                return false;
-            }
-
-            if (!string.IsNullOrWhiteSpace(request.ReceiverCode))
-            {
-                var receiverToken = await cTHGrpcClientService.GetUserPushIdAsync(
-                    request.ReceiverCode
+                throw await O24Exception.CreateAsync(
+                    O24NCHResourceCode.Validation.ExistOTP,
+                    request.Language,
+                    [userCode]
                 );
-                if (!string.IsNullOrWhiteSpace(receiverToken))
-                {
-                    var receiverDict =
-                        request.ReceiverData != null
-                            ? request.ReceiverData.ToDictionary(
-                                kv => kv.Key,
-                                kv => kv.Value?.ToString() ?? string.Empty
-                            )
-                            : [];
-
-                    var receiverTitle = ReplaceTokens(rawTitle, receiverDict);
-                    var receiverBody = ReplaceTokens(rawBody, receiverDict);
-
-                    await SendNotificationAsync(receiverToken, receiverTitle, receiverBody);
-
-                    receiverLogId = await notificationRepository.LogInformation(
-                        request.ReferenceCode ?? request.ReceiverCode,
-                        request.AppCode ?? "MB",
-                        Code.NotificationTypeCode.FIREBASE,
-                        template.TemplateID,
-                        request.Redirect,
-                        JsonConvert.SerializeObject(receiverDict),
-                        notificationCategory: request.NotificationCategory
-                    );
-
-                    if (receiverLogId <= 0)
-                    {
-                        Console.WriteLine("⚠️ Receiver log failed: " + request.ReceiverCode);
-                        return false;
-                    }
-                }
             }
 
-            return true;
-        }
-        catch (Exception ex)
-        {
-            await ex.LogErrorAsync(
-                "🔥 Exception in GenereateFirebaseNotificationAsync: " + ex.Message
-            );
-            return false;
-        }
-    }
+            int otpNumber = RandomNumberGenerator.GetInt32(100000, 1_000_000);
+            string otp = otpNumber.ToString(CultureInfo.InvariantCulture);
 
-    public async Task SendNotificationAsync(
-        string token,
-        string title,
-        string body,
-        Dictionary<string, string> data = null
-    )
-    {
-        data ??= [];
-        data["title"] = title;
-        data["body"] = body;
+            string encryptedOtp = Utils.Utility.EncryptOTP(otp);
 
-        var log = new PushNotificationLog
-        {
-            Token = token,
-            Title = title,
-            Body = body,
-            Data = JsonConvert.SerializeObject(data),
-            Status = "Pending",
-            CreatedAt = DateTime.UtcNow,
-        };
-
-        try
-        {
-            var message = new FirebaseAdmin.Messaging.Message()
+            OTP_REQUESTS otpRequest = new()
             {
-                Token = token,
-                Data = data,
-                Notification = new FirebaseAdmin.Messaging.Notification()
-                {
-                    Title = title,
-                    Body = body,
-                },
-                Android = new FirebaseAdmin.Messaging.AndroidConfig
-                {
-                    Priority = FirebaseAdmin.Messaging.Priority.High,
-                    Notification = new FirebaseAdmin.Messaging.AndroidNotification
-                    {
-                        Sound = "emi.wav",
-                        ChannelId = "emi_default_channel",
-                    },
-                },
-                Apns = new FirebaseAdmin.Messaging.ApnsConfig
-                {
-                    Aps = new FirebaseAdmin.Messaging.Aps
-                    {
-                        ContentAvailable = true,
-                        Sound = "emi.wav",
-                    },
-                },
+                UserCode = userCode,
+                PhoneNumber = request.PhoneNumber,
+                OtpCode = encryptedOtp,
+                Purpose = request.Purpose,
+                IsUsed = false,
+                CreatedAt = now,
+                ExpiresAt = now.AddMinutes(sMSSetting.TimeOTP),
+                TransactionId = transactionId,
+                Status = OTP_REQUESTS_STATUS.PENDING,
             };
 
-            log.RequestMessage = JsonConvert.SerializeObject(message);
-            var response = await firebaseMessaging.SendAsync(message);
-            log.ResponseId = response;
-            log.Status = "Sent";
-            log.SentAt = DateTime.UtcNow;
+            await otpRequestRepository.InsertAsync(otpRequest);
+
+            string message = await BuildSMSContentAsync(
+                request.Purpose,
+                new Dictionary<string, string>
+                {
+                    ["OTP"] = otp,
+                    ["EXPIRE"] = sMSSetting.TimeOTP.ToString(CultureInfo.InvariantCulture),
+                    ["PHONENUMBER"] = request.PhoneNumber,
+                    ["ACCOUNT"] = request.Account,
+                    ["AMOUNT"] = request.Amount.HasValue
+                        ? request.Amount.Value.ToString("N2", CultureInfo.InvariantCulture)
+                        : string.Empty,
+                    ["CURRENCY"] = request.Currency ?? string.Empty,
+                }
+            );
+
+            SendSOAPResponseModel sendResult = await smsProviderService.SendSMSAsync(
+                request.PhoneNumber,
+                message,
+                transactionId,
+                null,
+                transactionId
+            );
+
+            otpRequest.Status = sendResult.IsSuccess
+                ? OTP_REQUESTS_STATUS.SENT
+                : OTP_REQUESTS_STATUS.FAILED;
+
+            await otpRequestRepository.Update(otpRequest);
+
+            if (!sendResult.IsSuccess)
+            {
+                throw await O24Exception.CreateAsync(
+                    O24NCHResourceCode.Error.SendSMSFailed,
+                    request.Language,
+                    [sendResult.ErrorMessage]
+                );
+            }
+
+            return new GenerateOTPResponseModel { TransactionId = transactionId };
         }
-        catch (FirebaseAdmin.Messaging.FirebaseMessagingException ex)
+        catch (O24Exception)
         {
-            await ex.LogErrorAsync();
-            log.Status = "Failed";
-            log.ErrorMessage = $"[{ex.MessagingErrorCode}] {ex.Message} | ErrorCode={ex.ErrorCode}";
+            throw;
+        }
+        catch (O24OpenAPIException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
-            await ex.LogErrorAsync();
-            log.Status = "Failed";
-            log.ErrorMessage = ex.Message;
+            _ = ex.LogErrorAsync(ex, "Failed to generate or send OTP");
+            return null;
         }
-
-        await pushNotificationLogRepository.InsertAsync(log);
     }
 
-    private static string ReplaceTokens(string template, object data)
+    private async Task<string> BuildSMSContentAsync(
+        string templateCode,
+        Dictionary<string, string> values
+    )
     {
-        if (data is string s)
+        SMSTemplate template = await sMSTemplateRepository.Table.FirstOrDefaultAsync(t =>
+            t.TemplateCode == templateCode && t.IsActive
+        );
+
+        if (template == null)
         {
-            data = JsonConvert.DeserializeObject<Dictionary<string, object>>(s);
+            return string.Empty;
         }
 
-        var dict =
-            JsonConvert.DeserializeObject<Dictionary<string, object>>(
-                JsonConvert.SerializeObject(data)
-            ) ?? [];
-        foreach (var kv in dict)
+        string content = template.MessageContent;
+
+        foreach (KeyValuePair<string, string> item in values)
         {
-            template = template.Replace($"{{{kv.Key}}}", kv.Value?.ToString() ?? "");
+            content = content.Replace($"{{{item.Key}}}", item.Value);
         }
-        return template;
+
+        return content;
     }
 }

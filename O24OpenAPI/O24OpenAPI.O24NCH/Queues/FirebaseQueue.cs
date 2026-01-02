@@ -21,12 +21,12 @@ public class FirebaseQueue : BaseQueue
     /// <returns></returns>
     public async Task<WFScheme> GenereateFirebaseNotification(WFScheme wfScheme)
     {
-        var model = await wfScheme.ToModel<FirebaseNotificationRequestModel>();
+        FirebaseNotificationRequestModel model = await wfScheme.ToModel<FirebaseNotificationRequestModel>();
         return await Invoke<FirebaseNotificationRequestModel>(
             wfScheme,
             async () =>
             {
-                var response = await _firebaseService.GenereateFirebaseNotificationAsync(model);
+                bool response = await _firebaseService.GenereateFirebaseNotificationAsync(model);
                 return response;
             }
         );

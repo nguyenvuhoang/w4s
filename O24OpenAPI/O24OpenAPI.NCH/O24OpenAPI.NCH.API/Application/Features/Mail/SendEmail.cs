@@ -1,7 +1,9 @@
 ﻿using LinKit.Core.Cqrs;
 using MailKit.Security;
 using MimeKit;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.Framework;
+using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
@@ -39,6 +41,7 @@ public class SendEmailHandler(
 {
     private static readonly string[] separator = [";"];
 
+    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_SEND_EMAIL_ASYNC)]
     public async Task<bool> HandleAsync(
         SendEmailCommand request,
         CancellationToken cancellationToken = default

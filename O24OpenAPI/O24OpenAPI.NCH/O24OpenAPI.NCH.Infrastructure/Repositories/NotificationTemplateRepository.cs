@@ -14,11 +14,21 @@ public class NotificationTemplateRepository(
     : EntityRepository<NotificationTemplate>(dataProvider, staticCacheManager),
         INotificationTemplateRepository
 {
-    public Task<NotificationTemplate?> GetByCodeAsync(string code) =>
-        throw new NotImplementedException();
-
-    public async Task<NotificationTemplate> GetByTemplateIdAsync(string templateId)
+    public async Task<NotificationTemplate?> GetByTemplateIdAsync(string templateId)
     {
         return await Table.FirstOrDefaultAsync(x => x.TemplateID == templateId);
+    }
+
+    public async Task<IReadOnlyList<NotificationTemplate>> GetByTemplateIdsAsync(
+        IEnumerable<string> templateIds
+    )
+    {
+        List<string> ids = templateIds?.Distinct().ToList() ?? [];
+        if (ids.Count == 0)
+        {
+            return [];
+        }
+
+        return await Table.Where(x => ids.Contains(x.TemplateID)).ToListAsync();
     }
 }

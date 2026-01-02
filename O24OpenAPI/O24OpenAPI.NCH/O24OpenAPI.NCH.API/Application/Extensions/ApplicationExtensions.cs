@@ -10,6 +10,7 @@ internal static class ApplicationExtensions
         services.AddKeyedSingleton<IWorkflowStepInvoker, Workflow.Generated.WorkflowStepInvoker>(
             serviceKey: "nch"
         );
+        services.AddLinKitDependency();
         return services;
     }
 }

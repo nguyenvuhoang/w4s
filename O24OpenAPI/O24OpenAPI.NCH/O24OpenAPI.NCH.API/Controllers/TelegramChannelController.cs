@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using O24OpenAPI.NCH.API.Application.Models.Request.Telegram;
+using O24OpenAPI.NCH.API.Application.Features.Notification;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -50,8 +50,8 @@ public partial class TelegramChannelController : ControllerBase
             return BadRequest("userCode is required.");
         }
 
-        var botUsername = "kcmteam_bot";
-        var url = $"https://t.me/{botUsername}?start={userCode}";
+        string botUsername = "kcmteam_bot";
+        string url = $"https://t.me/{botUsername}?start={userCode}";
         return Ok(new { url });
     }
 
