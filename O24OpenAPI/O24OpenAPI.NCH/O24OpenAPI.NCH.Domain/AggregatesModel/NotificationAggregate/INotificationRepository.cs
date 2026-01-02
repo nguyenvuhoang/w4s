@@ -17,4 +17,5 @@ public interface INotificationRepository : IRepository<Notification>
         string title = "",
         string imageUrl = ""
     );
+    Task<int> GetUnreadCount(string userCode, string appType);
 }
