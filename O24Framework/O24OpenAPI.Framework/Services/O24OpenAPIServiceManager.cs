@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Linh.CodeEngine.Core;
 using LinKit.Core.Abstractions;
 using LinKit.Core.Cqrs;
@@ -23,6 +22,7 @@ using O24OpenAPI.Framework.Services.Configuration;
 using O24OpenAPI.Framework.Services.Logging;
 using O24OpenAPI.Framework.Services.Queue;
 using O24OpenAPI.Logging.Helpers;
+using System.Text.Json;
 
 namespace O24OpenAPI.Framework.Services;
 
@@ -173,7 +173,16 @@ public class O24OpenAPIServiceManager(
                     );
                     return await scheme;
                 }
+
                 catch (KeyNotFoundException ex)
+                {
+                    BusinessLogHelper.Error(
+                        ex,
+                        $"Error invoking workflow step invoker for step code '{mapping.StepCode}'."
+                    );
+                    return await workflow.InvokeAsync(mapping.FullClassName, mapping.MethodName);
+                }
+                catch (InvalidOperationException ex)
                 {
                     BusinessLogHelper.Error(
                         ex,
