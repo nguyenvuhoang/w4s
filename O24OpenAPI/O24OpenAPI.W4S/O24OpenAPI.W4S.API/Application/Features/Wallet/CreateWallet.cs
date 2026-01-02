@@ -67,7 +67,7 @@ public class CreateWalletHandle(
                 userLevel: WalletUserLevelHelper.Parse(request.UserLevel),
                 policyCode: $"POL{request.PolicyId}",
                 customerCode: $"CUST{request.Phone}",
-                fullName: $"{request.FirstName} {request.LastName}".Trim(),
+                fullName: $"{request.FirstName} {request.MiddleName} {request.LastName}".Trim(),
                 phone: request.Phone,
                 email: request.Email,
                 channel: WalletChannel.MB
@@ -90,7 +90,7 @@ public class CreateWalletHandle(
                 walletId: walletid,
                 contractNumber: contract.ContractNumber,
                 userCode: request.Phone,
-                walletName: $"{request.FirstName} ${request.MiddleName} {request.LastName}".Trim(),
+                walletName: $"{request.FirstName} {request.MiddleName} {request.LastName}".Trim(),
                 walletType: Code.WalletType.TWDR,
                 defaultCurrency: w4SSetting.BaseCurrency
             );
