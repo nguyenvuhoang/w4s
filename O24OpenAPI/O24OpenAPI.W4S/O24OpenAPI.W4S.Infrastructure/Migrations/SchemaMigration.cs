@@ -14,7 +14,7 @@ namespace O24OpenAPI.W4S.Infrastructure.Migrations;
 /// </summary>
 /// <seealso cref="AutoReversingMigration"/>
 [O24OpenAPIMigration(
-    "2026/01/02 14:00:00:0000000",
+    "2026/01/02 14:10:00:0000000",
     "Table For WalletCategoryDefault",
     MigrationProcessType.Installation
 )]
@@ -97,13 +97,6 @@ public class SchemaMigration : AutoReversingMigration
         if (!Schema.Table(nameof(WalletCategoryDefault)).Exists())
         {
             Create.TableFor<WalletCategoryDefault>();
-
-            Create.Index("UQ_WalletCategoryDefault_CategoryCode")
-                .OnTable(nameof(WalletCategoryDefault))
-                .OnColumn(nameof(WalletCategoryDefault.CategoryCode))
-                .Ascending()
-                .WithOptions()
-                .Unique();
             Create.Index("IDX_WalletCategoryDefault_ParentCategoryCode")
                 .OnTable(nameof(WalletCategoryDefault))
                 .OnColumn(nameof(WalletCategoryDefault.ParentCategoryCode))

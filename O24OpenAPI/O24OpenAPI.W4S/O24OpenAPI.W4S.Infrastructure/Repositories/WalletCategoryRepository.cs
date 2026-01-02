@@ -1,6 +1,8 @@
 ﻿using LinKit.Core.Abstractions;
+using LinqToDB;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Data;
+using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
 namespace O24OpenAPI.W4S.Infrastructure.Repositories;
@@ -12,4 +14,20 @@ public class WalletCategoryRepository(
 )
     : EntityRepository<WalletCategory>(dataProvider, staticCacheManager),
         IWalletCategoryRepository
-{ }
+{
+    public async Task BulkInsertAsync(IList<WalletCategory> items)
+    {
+        await BulkInsert(items);
+    }
+
+    /// <summary>
+    /// Exists the specified wallet identifier and category identifier.
+    /// </summary>
+    /// <param name="walletId"></param>
+    /// <param name="categoryId"></param>
+    /// <returns></returns>
+    public async Task<bool> ExistsAsync(string walletId, string categoryId)
+    {
+        return await Table.AnyAsync(wc => wc.WalletId == walletId && wc.CategoryId == categoryId);
+    }
+}
