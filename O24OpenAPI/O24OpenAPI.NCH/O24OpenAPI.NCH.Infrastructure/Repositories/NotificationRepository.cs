@@ -1,4 +1,5 @@
 using LinKit.Core.Abstractions;
+using LinqToDB;
 using Newtonsoft.Json;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Data;
@@ -58,5 +59,12 @@ public class NotificationRepository(
             await ex.LogErrorAsync();
             return -1;
         }
+    }
+
+    public async Task<int> GetUnreadCount(string userCode, string appType)
+    {
+        return await Table
+            .Where(x => x.UserCode == userCode && x.AppType == appType && x.IsRead == false)
+            .CountAsync();
     }
 }
