@@ -49,6 +49,13 @@ public static class WorkflowStep
     public static class NCH
     {
         public const string WF_STEP_NCH_SEND_NOTIFICATION = "WF_STEP_NCH_SEND_NOTIFICATION";
+        public const string WF_STEP_NCH_PUSH_FIREBASE_NOTIFICATION =
+            "WF_STEP_NCH_PUSH_FIREBASE_NOTIFICATION";
+        public const string WF_STEP_NCH_SMS_GENERATE_OTP = "WF_STEP_NCH_SMS_GENERATE_OTP";
+        public const string WF_STEP_NCH_SMS_VERIFY_OTP = "WF_STEP_NCH_SMS_VERIFY_OTP";
+        public const string WF_STEP_NCH_SEND_EMAIL_ASYNC = "WF_STEP_NCH_SEND_EMAIL_ASYNC";
+        public const string WF_STEP_NCH_SEARCH_MAIL_CONFIG = "WF_STEP_NCH_SEARCH_MAIL_CONFIG";
+        public const string WF_STEP_NCH_UPDATE_MAIL_CONFIG = "WF_STEP_NCH_UPDATE_MAIL_CONFIG";
     }
 
     public static class CMS { }
