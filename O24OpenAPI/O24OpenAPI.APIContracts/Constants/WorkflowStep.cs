@@ -48,7 +48,7 @@ public static class WorkflowStep
 
     public static class NCH
     {
-        public const string WF_STEP_CTH_SEND_NOTIFICATION = "WF_STEP_CTH_SEND_NOTIFICATION";
+        public const string WF_STEP_NCH_SEND_NOTIFICATION = "WF_STEP_NCH_SEND_NOTIFICATION";
     }
 
     public static class CMS { }
