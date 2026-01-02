@@ -16,17 +16,18 @@ using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
+using O24OpenAPI.NCH.API.Application.Models.Request.Telegram;
 using O24OpenAPI.NCH.API.Application.Utils;
-using O24OpenAPI.NCH.Common;
+using O24OpenAPI.NCH.API.Application.Common;
 using O24OpenAPI.NCH.Config;
 using O24OpenAPI.NCH.Domain.AggregatesModel.MailAggregate;
 using O24OpenAPI.NCH.Domain.AggregatesModel.SmsAggregate;
 using O24OpenAPI.NCH.Domain.Constants;
 using O24OpenAPI.NCH.Infrastructure.Repositories;
-using O24OpenAPI.NCH.Models.Request;
-using O24OpenAPI.NCH.Models.Request.Mail;
-using O24OpenAPI.NCH.Models.Request.Telegram;
-using O24OpenAPI.NCH.Models.Response;
+using O24OpenAPI.NCH.API.Application.Models.Request;
+using O24OpenAPI.NCH.API.Application.Models.Response;
+using O24OpenAPI.NCH.API.Application.Models.Request.Mail;
+
 
 namespace O24OpenAPI.NCH.API.Application.Features.Notification
 {
@@ -41,7 +42,7 @@ namespace O24OpenAPI.NCH.API.Application.Features.Notification
         public Dictionary<string, object> DataTemplate { get; set; } = [];
         public List<string> AttachmentBase64Strings { get; set; } = [];
         public List<string> AttachmentFilenames { get; set; } = [];
-        public List<Models.Request.MimeEntity> MimeEntities { get; set; } = [];
+        public List<MimeEntity> MimeEntities { get; set; } = [];
         public List<int> FileIds { get; set; } = [];
         public string Message { get; set; } = string.Empty;
     }
