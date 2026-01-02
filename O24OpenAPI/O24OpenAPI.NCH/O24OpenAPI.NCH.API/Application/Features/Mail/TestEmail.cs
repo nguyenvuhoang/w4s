@@ -17,37 +17,12 @@ public class TestEmailCommand : BaseTransactionModel, ICommand<bool>
     public string TemplateId { get; set; }
     public bool IncludeLogo { get; set; }
     public string ConfigId { get; set; }
-
-    /// <summary>
-    /// Host
-    /// </summary>
     public string Host { get; set; }
-
-    /// <summary>
-    /// Port
-    /// </summary>
     public int Port { get; set; }
-
-    /// <summary>
-    /// Sender
-    /// </summary>
     public string Sender { get; set; }
-
-    /// <summary>
-    /// Password
-    /// </summary>
     public string Password { get; set; }
-
-    /// <summary>
-    /// EnableTLS
-    /// </summary>
     public bool EnableTLS { get; set; }
-
-    /// <summary>
-    /// EmailTest
-    /// </summary>
     public string EmailTest { get; set; }
-
     public int PageIndex { get; set; } = 0;
     public int PageSize { get; set; } = int.MaxValue;
 }
@@ -78,7 +53,7 @@ public class TestEmailHandle(
 
             foreach (
                 string address in request.EmailTest.Split(
-                    separator,
+                    Separator,
                     StringSplitOptions.RemoveEmptyEntries
                 )
             )
@@ -164,6 +139,4 @@ public class TestEmailHandle(
             return false;
         }
     }
-
-    private static readonly string[] separator = [";"];
 }

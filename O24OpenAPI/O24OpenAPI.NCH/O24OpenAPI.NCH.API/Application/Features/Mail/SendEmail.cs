@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using LinKit.Core.Cqrs;
+﻿using LinKit.Core.Cqrs;
 using MailKit.Security;
 using MimeKit;
 using O24OpenAPI.Framework;
@@ -11,6 +10,7 @@ using O24OpenAPI.NCH.API.Application.Models.Request;
 using O24OpenAPI.NCH.API.Application.Utils;
 using O24OpenAPI.NCH.Config;
 using O24OpenAPI.NCH.Domain.AggregatesModel.MailAggregate;
+using System.Text.Json;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
 namespace O24OpenAPI.NCH.API.Application.Features.Mail;
@@ -29,7 +29,7 @@ public class SendEmailCommand : BaseTransactionModel, ICommand<bool>
 }
 
 [CqrsHandler]
-public class SendEmailHandle(
+public class SendEmailHandler(
     IMailConfigRepository mailConfigRepository,
     IMailTemplateRepository mailTemplateRepository,
     WebApiSettings webApiSettings,
@@ -37,6 +37,8 @@ public class SendEmailHandle(
     IEmailSendOutRepository emailSendOutRepository
 ) : ICommandHandler<SendEmailCommand, bool>
 {
+    private static readonly string[] separator = [";"];
+
     public async Task<bool> HandleAsync(
         SendEmailCommand request,
         CancellationToken cancellationToken = default
@@ -50,7 +52,7 @@ public class SendEmailHandle(
                 ? request.Receiver
                 : (
                     request.DataTemplate != null
-                    && request.DataTemplate.TryGetValue("email", out object? emailVal)
+                    && request.DataTemplate.TryGetValue("email", out object emailVal)
                         ? emailVal?.ToString()
                         : null
                 ),
@@ -59,8 +61,8 @@ public class SendEmailHandle(
         };
         try
         {
-            MailConfig? getMailConfig = await mailConfigRepository.GetByConfigId(request.ConfigId);
-            MailTemplate? getMailTemplate = await mailTemplateRepository.GetByTemplateId(
+            MailConfig getMailConfig = await mailConfigRepository.GetByConfigId(request.ConfigId);
+            MailTemplate getMailTemplate = await mailTemplateRepository.GetByTemplateId(
                 request.TemplateId
             );
 
@@ -238,6 +240,4 @@ public class SendEmailHandle(
             return false;
         }
     }
-
-    private static readonly string[] separator = [";"];
 }
