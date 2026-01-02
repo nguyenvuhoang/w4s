@@ -1,9 +1,9 @@
-//using System.Text;
-//using System.Text.Json;
 //using LinKit.Core.Cqrs;
 //using MimeKit;
 //using Newtonsoft.Json;
 //using O24OpenAPI.Framework.Models;
+//using System.Text;
+//using System.Text.Json;
 
 //namespace O24OpenAPI.NCH.API.Application.Features.Telegram;
 
@@ -41,8 +41,8 @@
 //            return false;
 //        }
 
-//        var _botToken = "8197855911:AAHId-nVPso_dkkBTsE5WHO-Ae0dp9HzMpE";
-//        var requestUrl = $"https://api.telegram.org/bot{_botToken}/sendMessage";
+//        string _botToken = "8197855911:AAHId-nVPso_dkkBTsE5WHO-Ae0dp9HzMpE";
+//        string requestUrl = $"https://api.telegram.org/bot{_botToken}/sendMessage";
 
 //        var payload = new
 //        {
