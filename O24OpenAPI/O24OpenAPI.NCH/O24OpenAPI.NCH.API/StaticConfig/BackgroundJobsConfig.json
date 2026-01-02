@@ -20,6 +20,14 @@
         "MaxParallel": 1,
         "CorrelationId": "ScanUserNotificationJob",
         "IsActive": true
+      },
+      {
+        "Name": "ClearEntityAuditJob",
+        "AssemblyName": "O24OpenAPI.Framework",
+        "IsActive": true,
+        "RunOnStart": true,
+        "ScheduleType": "Daily",
+        "TimeOfDay": "00:00:01"
       }
     ]
   }
