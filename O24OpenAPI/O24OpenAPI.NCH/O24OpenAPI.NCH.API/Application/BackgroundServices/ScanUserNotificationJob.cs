@@ -10,11 +10,14 @@ public class ScanUserNotificationJob : BackgroundJobCommand { }
 [CqrsHandler]
 public class ScanUserNotificationJobHandler : ICommandHandler<ScanUserNotificationJob>
 {
-    public async Task<Unit> Handle(ScanUserNotificationJob request, CancellationToken cancellationToken)
+    public async Task<Unit> HandleAsync(
+        ScanUserNotificationJob request,
+        CancellationToken cancellationToken = default
+    )
     {
         try
         {
-            var localTime = TimeZoneInfo.ConvertTimeFromUtc(
+            DateTime localTime = TimeZoneInfo.ConvertTimeFromUtc(
                 DateTime.UtcNow,
                 TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time")
             );
@@ -33,10 +36,5 @@ public class ScanUserNotificationJobHandler : ICommandHandler<ScanUserNotificati
         }
 
         return Unit.Value;
-    }
-
-    public Task<Unit> HandleAsync(ScanUserNotificationJob request, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
     }
 }

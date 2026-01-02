@@ -1,10 +1,10 @@
-﻿using System.Diagnostics;
-using System.Text;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Logging.Enums;
 using Serilog;
+using System.Diagnostics;
+using System.Text;
 
 namespace O24OpenAPI.Logging.Helpers;
 
@@ -17,11 +17,11 @@ public static class RabbitMqLogHelper
         IDictionary<string, object> headers
     )
     {
-        var correlationId = EngineContext.Current.Resolve<WorkContext>().ExecutionLogId;
+        string correlationId = EngineContext.Current.Resolve<WorkContext>().ExecutionLogId;
 
         using (LogContextHelper.Push(correlationId, serviceName))
         {
-            var payload = JsonConvert.SerializeObject(message, Formatting.Indented);
+            string payload = JsonConvert.SerializeObject(message, Formatting.Indented);
 
             Log.ForContext("LogType", LogType.RabbitMq)
                 .ForContext("Direction", LogDirection.Out)
@@ -30,7 +30,7 @@ public static class RabbitMqLogHelper
                 .ForContext("Headers", JsonConvert.SerializeObject(headers, Formatting.Indented))
                 .ForContext(
                     "Flow",
-                    headers.TryGetValue("Flow", out var flowValue) ? flowValue.ToString() : null
+                    headers.TryGetValue("Flow", out object? flowValue) ? flowValue.ToString() : null
                 )
                 .Information("RabbitMQ Publish Log");
         }
@@ -40,15 +40,15 @@ public static class RabbitMqLogHelper
         string serviceName,
         string source,
         byte[] body,
-        IDictionary<string, object> headers,
+        IDictionary<string, object>? headers,
         Func<Task> processAction
     )
     {
-        var correlationId = EngineContext.Current.Resolve<WorkContext>().ExecutionLogId;
+        string correlationId = EngineContext.Current.Resolve<WorkContext>().ExecutionLogId;
 
         using (LogContextHelper.Push(correlationId, serviceName))
         {
-            var stopwatch = Stopwatch.StartNew();
+            Stopwatch stopwatch = Stopwatch.StartNew();
             string payload = Encoding.UTF8.GetString(body);
             Exception? exception = null;
             try

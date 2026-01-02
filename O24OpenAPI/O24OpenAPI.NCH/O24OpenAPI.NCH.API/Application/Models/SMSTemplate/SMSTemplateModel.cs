@@ -10,7 +10,6 @@ public class SMSTemplateModel : BaseTransactionModel
 {
     public string TemplateCode { get; set; } = string.Empty;
     public string MessageContent { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
     public bool IsActive { get; set; } = true;
     public DateTime? CreatedOnUtc { get; set; }
     public DateTime? UpdatedOnUtc { get; set; }

@@ -1,12 +1,9 @@
 using LinKit.Core.Cqrs;
 using LinqToDB;
-using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Models;
-using O24OpenAPI.NCH.API.Application.Utils;
 using O24OpenAPI.NCH.Constant;
 using O24OpenAPI.NCH.Domain.AggregatesModel.OtpAggregate;
-using O24OpenAPI.NCH.Infrastructure.Repositories;
 
 namespace O24OpenAPI.NCH.API.Application.Features.Sms;
 

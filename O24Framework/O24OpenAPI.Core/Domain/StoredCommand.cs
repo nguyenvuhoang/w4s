@@ -25,14 +25,4 @@ public partial class StoredCommand : BaseEntity
     /// Gets or sets the value of the description
     /// </summary>
     public string? Description { get; set; }
-
-    /// <summary>
-    /// Gets or sets the value of the created on utc
-    /// </summary>
-    public DateTime? CreatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Gets or sets the value of the updated on utc
-    /// </summary>
-    public DateTime? UpdatedOnUtc { get; set; }
 }

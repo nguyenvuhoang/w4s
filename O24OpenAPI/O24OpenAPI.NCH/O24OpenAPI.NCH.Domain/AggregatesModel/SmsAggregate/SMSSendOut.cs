@@ -14,9 +14,9 @@ public partial class SMSSendOut : BaseEntity
     public string RequestHeader { get; set; } = string.Empty;
     public string RequestMessage { get; set; } = string.Empty;
     public string ResponseMessage { get; set; } = string.Empty;
-    public string SMSProviderId { get; set; }
-    public string ProviderMsgId { get; set; }
-    public string OtpRequestId { get; set; }
+    public string? SMSProviderId { get; set; }
+    public string? ProviderMsgId { get; set; }
+    public string? OtpRequestId { get; set; }
     public int? ElapsedMilliseconds { get; set; }
     public int RetryCount { get; set; } = 0;
     public bool IsResend { get; set; } = false;

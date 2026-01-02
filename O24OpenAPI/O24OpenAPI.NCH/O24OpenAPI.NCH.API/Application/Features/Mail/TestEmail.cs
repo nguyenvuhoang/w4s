@@ -2,15 +2,12 @@ using LinKit.Core.Cqrs;
 using MailKit.Security;
 using MimeKit;
 using O24OpenAPI.Framework;
-using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
-using O24OpenAPI.NCH.API.Application.Utils;
 using O24OpenAPI.NCH.Config;
 using O24OpenAPI.NCH.Constant;
 using O24OpenAPI.NCH.Domain.AggregatesModel.MailAggregate;
-using O24OpenAPI.NCH.Models.Request.Mail;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
 namespace O24OpenAPI.NCH.API.Application.Features.Mail;
@@ -71,16 +68,16 @@ public class TestEmailHandle(
     {
         try
         {
-            var getMailTemplate =
+            MailTemplate getMailTemplate =
                 await mailTemplateRepository.GetByTemplateId(request.TemplateId)
                 ?? throw await O24Exception.CreateAsync(
                     O24NCHResourceCode.Validation.MailTemplateNotExist,
                     request.Language
                 );
-            var email = new MimeMessage { Sender = MailboxAddress.Parse(request.Sender) };
+            MimeMessage email = new() { Sender = MailboxAddress.Parse(request.Sender) };
 
             foreach (
-                var address in request.EmailTest.Split(
+                string address in request.EmailTest.Split(
                     separator,
                     StringSplitOptions.RemoveEmptyEntries
                 )
@@ -91,14 +88,14 @@ public class TestEmailHandle(
 
             email.Subject = getMailTemplate.Subject;
 
-            var builder = new BodyBuilder();
+            BodyBuilder builder = new();
 
             // Add logo if required
             if (request.IncludeLogo)
             {
                 try
                 {
-                    var footer = new MimePart("image", "png")
+                    MimePart footer = new("image", "png")
                     {
                         ContentId = "logo_footer",
                         Content = new MimeContent(
@@ -107,7 +104,7 @@ public class TestEmailHandle(
                             )
                         ),
                     };
-                    var header = new MimePart("image", "png")
+                    MimePart header = new("image", "png")
                     {
                         ContentId = "logo_header",
                         Content = new MimeContent(
@@ -117,7 +114,7 @@ public class TestEmailHandle(
                         ),
                     };
 
-                    var iconphone = new MimePart("image", "png")
+                    MimePart iconphone = new("image", "png")
                     {
                         ContentId = "iconphone",
                         Content = new MimeContent(
@@ -125,7 +122,7 @@ public class TestEmailHandle(
                         ),
                     };
 
-                    var iconwebsite = new MimePart("image", "png")
+                    MimePart iconwebsite = new("image", "png")
                     {
                         ContentId = "iconwebsite",
                         Content = new MimeContent(
@@ -148,7 +145,7 @@ public class TestEmailHandle(
             email.Body = builder.ToMessageBody();
 
             // SMTP send
-            using var smtp = new SmtpClient();
+            using SmtpClient smtp = new();
             await smtp.ConnectAsync(
                 request.Host,
                 request.Port,

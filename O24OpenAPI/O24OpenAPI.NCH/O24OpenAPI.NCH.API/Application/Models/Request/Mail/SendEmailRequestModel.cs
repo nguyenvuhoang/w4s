@@ -1,4 +1,5 @@
 using O24OpenAPI.Framework.Models;
+using O24OpenAPI.NCH.API.Application.Models.Request;
 
 namespace O24OpenAPI.NCH.Models.Request.Mail;
 
@@ -53,7 +54,7 @@ public partial class SendMailRequestModel : BaseTransactionModel
     // /// </summary>
     // [IgnoreDataMember]
     // [System.Text.Json.Serialization.JsonIgnore]
-    public List<MimeEntity> MimeEntities { get; set; } = [];
+    public List<O24MimeEntity> MimeEntities { get; set; } = [];
 
     /// <summary>
     /// IncludeLogo

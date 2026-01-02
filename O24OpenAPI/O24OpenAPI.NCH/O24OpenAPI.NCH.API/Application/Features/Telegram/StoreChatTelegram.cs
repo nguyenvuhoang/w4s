@@ -1,9 +1,7 @@
 using LinKit.Core.Cqrs;
 using LinqToDB;
-using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.NCH.Domain.AggregatesModel.TelegramAggregate;
-using O24OpenAPI.NCH.Models.Request.Telegram;
 
 namespace O24OpenAPI.NCH.API.Application.Features.Telegram;
 

@@ -6,8 +6,8 @@ namespace O24OpenAPI.NCH.API.Application.Utils;
 
 public static class LTC
 {
-    private static byte[] key;
-    private static Aes aesAlg;
+    private static byte[]? key;
+    private static Aes? aesAlg;
 
     public static void SetKey(string privateKey)
     {

@@ -4,7 +4,7 @@ namespace O24OpenAPI.NCH.Domain.AggregatesModel.SmsAggregate;
 
 public partial class SMSProviderConfig : BaseEntity
 {
-    public string SMSProviderId { get; set; }
+    public string? SMSProviderId { get; set; }
     public string ConfigKey { get; set; } = string.Empty;
     public string ConfigValue { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;

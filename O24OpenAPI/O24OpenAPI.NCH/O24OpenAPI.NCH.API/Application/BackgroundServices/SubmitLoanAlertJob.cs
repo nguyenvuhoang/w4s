@@ -10,11 +10,14 @@ public class SubmitLoanAlertJob : BackgroundJobCommand { }
 [CqrsHandler]
 public class SubmitLoanAlertJobHandler : ICommandHandler<SubmitLoanAlertJob>
 {
-    public async Task<Unit> Handle(SubmitLoanAlertJob request, CancellationToken cancellationToken)
+    public async Task<Unit> HandleAsync(
+        SubmitLoanAlertJob request,
+        CancellationToken cancellationToken = default
+    )
     {
         try
         {
-            var localTime = TimeZoneInfo.ConvertTimeFromUtc(
+            DateTime localTime = TimeZoneInfo.ConvertTimeFromUtc(
                 DateTime.UtcNow,
                 TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time")
             );
@@ -31,10 +34,5 @@ public class SubmitLoanAlertJobHandler : ICommandHandler<SubmitLoanAlertJob>
         }
 
         return Unit.Value;
-    }
-
-    public Task<Unit> HandleAsync(SubmitLoanAlertJob request, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
     }
 }

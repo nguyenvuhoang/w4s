@@ -2,6 +2,7 @@ using Grpc.Core;
 using O24OpenAPI.Grpc.Common;
 using O24OpenAPI.Grpc.NCH;
 using O24OpenAPI.GrpcContracts.GrpcServerServices;
+using O24OpenAPI.NCH.API.Application.Models.Request;
 using System.Text.Json;
 using static O24OpenAPI.Grpc.NCH.NCHGrpcService;
 
@@ -24,7 +25,7 @@ public class NCHGrpcService : NCHGrpcServiceBase
                 // Parse để validate payload (tránh warning unused)
                 _ = JsonSerializer.Deserialize<Dictionary<string, object>>(request.Data);
                 _ = JsonSerializer.Deserialize<Dictionary<string, object>>(request.DataTemplate);
-                _ = JsonSerializer.Deserialize<List<O24OpenAPI.NCH.Models.Request.MimeEntity>>(request.MimeEntities);
+                _ = JsonSerializer.Deserialize<List<O24MimeEntity>>(request.MimeEntities);
 
                 await Task.CompletedTask;
                 return true;

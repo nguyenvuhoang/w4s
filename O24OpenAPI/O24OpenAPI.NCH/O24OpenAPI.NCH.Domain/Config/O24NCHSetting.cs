@@ -4,7 +4,7 @@ namespace O24OpenAPI.NCH.Config;
 
 public class O24NCHSetting : ISettings
 {
-    public string FirebaseConfigPath { get; set; }
+    public string? FirebaseConfigPath { get; set; }
     public double NotificationExpiredInSeconds { get; set; } = 120;
     public string IconPhone { get; set; } = string.Empty;
     public string IconWebsite { get; set; } = string.Empty;

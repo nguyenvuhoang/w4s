@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace O24OpenAPI.NCH.Models.Request;
+namespace O24OpenAPI.NCH.API.Application.Models.Request;
 
-public class MimeEntity
+public class O24MimeEntity
 {
     /// <summary>
     /// Gets or sets the value of the content type
@@ -15,6 +15,7 @@ public class MimeEntity
     /// </summary>
     [JsonPropertyName("base64")]
     public string Base64 { get; set; }
+
     /// <summary>
     /// Gets or sets the value of the content id
     /// </summary>

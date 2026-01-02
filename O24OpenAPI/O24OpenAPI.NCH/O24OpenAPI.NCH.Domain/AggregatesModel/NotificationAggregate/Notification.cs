@@ -6,11 +6,11 @@ public partial class Notification : BaseEntity
 {
     public string UserCode { get; set; } = null!;
     public string AppType { get; set; } = null!;
-    public string NotificationType { get; set; }
+    public string? NotificationType { get; set; }
     public string NotificationCategory { get; set; } = string.Empty;
-    public string DataValue { get; set; }
+    public string? DataValue { get; set; }
     public string TemplateID { get; set; } = null!;
-    public string Redirect { get; set; }
+    public string? Redirect { get; set; }
     public bool IsRead { get; set; }
     public bool IsPushed { get; set; }
     public DateTime DateTime { get; set; }

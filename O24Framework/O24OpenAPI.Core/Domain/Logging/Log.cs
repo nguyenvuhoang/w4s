@@ -42,11 +42,6 @@ public partial class Log : BaseEntity
     public string? ReferredUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the value of the created on utc
-    /// </summary>
-    public DateTime CreatedOnUtc { get; set; }
-
-    /// <summary>
     /// Gets or sets the value of the log level
     /// </summary>
     public LogLevel LogLevel

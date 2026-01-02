@@ -35,7 +35,7 @@ public static partial class JsonHelper
     /// <returns>The root</returns>
     public static object ConvertJsonElementToObject(JsonElement element)
     {
-        var stack = new Stack<(JsonElement, object)>();
+        Stack<(JsonElement, object)> stack = new();
         object root = element.ValueKind switch
         {
             JsonValueKind.Object => new Dictionary<string, object>(),
@@ -175,7 +175,7 @@ public static partial class JsonHelper
             return null;
         }
 
-        var jsonObject = new JsonObject();
+        JsonObject jsonObject = new();
         foreach (var kvp in dictionary)
         {
             jsonObject[kvp.Key] = ConvertToJsonNode(kvp.Value);
@@ -206,7 +206,7 @@ public static partial class JsonHelper
             case Dictionary<string, object> dict:
                 return DictionaryToJsonNode(dict);
             case IEnumerable<object> list:
-                var jsonArray = new JsonArray();
+                JsonArray jsonArray = new();
                 foreach (var item in list)
                 {
                     jsonArray.Add(ConvertToJsonNode(item));

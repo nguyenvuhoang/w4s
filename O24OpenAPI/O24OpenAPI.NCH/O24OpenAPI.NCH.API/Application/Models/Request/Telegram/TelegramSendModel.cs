@@ -7,5 +7,5 @@ public class TelegramSendModel : NotificationRequestModel
     [JsonProperty("chat_id")]
     public string ChatId { get; set; }
     [JsonProperty("message")]
-    public string Message { get; set; }
+    public new string Message { get; set; }
 }

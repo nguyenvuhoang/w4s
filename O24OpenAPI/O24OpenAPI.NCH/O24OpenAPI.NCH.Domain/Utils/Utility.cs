@@ -18,7 +18,7 @@ public class Utility
     }
 
 
-    public static string ReplaceData(string para, Dictionary<string, object> data)
+    public static string? ReplaceData(string para, Dictionary<string, object>? data)
     {
         if (para == null || data == null)
         {
@@ -31,10 +31,10 @@ public class Utility
         {
             if (match.Success && match.Groups.Count > 0)
             {
-                var text = match.Groups[1].Value;
+                string text = match.Groups[1].Value;
                 try
                 {
-                    var value = JObject.Parse(System.Text.Json.JsonSerializer.Serialize(data));
+                    JObject value = JObject.Parse(System.Text.Json.JsonSerializer.Serialize(data));
                     if (value.SelectToken(text) != null)
                     {
                         para = para.Replace(
@@ -67,8 +67,8 @@ public class Utility
        )
     {
         byte[] fileBytes = Convert.FromBase64String(base64String);
-        var memoryStream = new MemoryStream(fileBytes);
-        var mimePart = new MimePart(contentType)
+        MemoryStream memoryStream = new(fileBytes);
+        MimePart mimePart = new(contentType)
         {
             Content = new MimeContent(memoryStream),
             ContentDisposition = new ContentDisposition(ContentDisposition.Inline),

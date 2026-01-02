@@ -1,15 +1,9 @@
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using LinKit.Core.Cqrs;
 using MimeKit;
 using Newtonsoft.Json;
-using O24OpenAPI.Core.Extensions;
-using O24OpenAPI.Framework.Attributes;
-using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
-using O24OpenAPI.NCH.Models.Request.Telegram;
-using Telegram.Bot;
 
 namespace O24OpenAPI.NCH.API.Application.Features.Telegram;
 

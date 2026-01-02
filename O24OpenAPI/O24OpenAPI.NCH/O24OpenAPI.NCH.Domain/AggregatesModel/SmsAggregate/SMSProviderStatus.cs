@@ -7,7 +7,7 @@ public partial class SMSProviderStatus : BaseEntity
     /// <summary>
     /// Foreign key to SMSProvider
     /// </summary>
-    public string ProviderId { get; set; }
+    public string? ProviderId { get; set; }
 
     /// <summary>
     /// Time the health check was performed
@@ -32,20 +32,10 @@ public partial class SMSProviderStatus : BaseEntity
     /// <summary>
     /// Error message if the provider check failed
     /// </summary>
-    public string ErrorDetail { get; set; }
-
-    /// <summary>
-    /// CreatedOnUtc Date Time
-    /// </summary>
-    public DateTime CreatedOnUtc { get; set; }
-
-    /// <summary>
-    /// UpdateOnUtc Date Time
-    /// </summary>
-    public DateTime UpdatedOnUtc { get; set; }
+    public string? ErrorDetail { get; set; }
 
     /// <summary>
     /// Navigation property to SMSProvider (optional)
     /// </summary>
-    public virtual SMSProvider SMSProvider { get; set; }
+    public virtual SMSProvider? SMSProvider { get; set; }
 }

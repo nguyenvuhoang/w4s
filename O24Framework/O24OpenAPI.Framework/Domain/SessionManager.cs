@@ -32,9 +32,4 @@ public partial class SessionManager : BaseEntity
     /// Gets or sets the value of the revoke reason
     /// </summary>
     public string RevokeReason { get; set; }
-
-    /// <summary>
-    /// Gets or sets the value of the created on utc
-    /// </summary>
-    public DateTime CreatedOnUtc { get; set; } = DateTime.UtcNow;
 }

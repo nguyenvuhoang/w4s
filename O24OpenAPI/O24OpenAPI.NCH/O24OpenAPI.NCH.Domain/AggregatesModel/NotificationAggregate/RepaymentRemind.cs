@@ -10,12 +10,12 @@ public partial class RepaymentRemind : BaseEntity
     /// <summary>
     /// Gets or sets the AccountNumber
     /// </summary>
-    public string AccountNumber { get; set; }
+    public string? AccountNumber { get; set; }
 
     /// <summary>
     /// Get or sets the CustomerName
     /// </summary>
-    public string CustomerName { get; set; }
+    public string? CustomerName { get; set; }
 
     /// <summary>
     /// Gets or sets the DueDate
@@ -30,7 +30,7 @@ public partial class RepaymentRemind : BaseEntity
     /// <summary>
     /// Gets or sets the MessageType
     /// </summary>
-    public string MessageType { get; set; }
+    public string? MessageType { get; set; }
 
     /// <summary>
     /// Gets or sets the LastSentOn
@@ -40,7 +40,7 @@ public partial class RepaymentRemind : BaseEntity
     /// <summary>
     /// Gets or sets the Status
     /// </summary>
-    public string Status { get; set; }
+    public string? Status { get; set; }
 
     public string ErrorMessage { get; set; } = string.Empty;
 

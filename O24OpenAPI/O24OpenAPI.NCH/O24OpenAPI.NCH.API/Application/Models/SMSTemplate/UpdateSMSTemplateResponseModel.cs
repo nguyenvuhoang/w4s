@@ -1,6 +1,5 @@
 ﻿using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Framework.Models;
-using O24OpenAPI.NCH.Domain.AggregatesModel.SmsAggregate;
 using SmsDomain = O24OpenAPI.NCH.Domain.AggregatesModel.SmsAggregate;
 
 namespace O24OpenAPI.NCH.Models.SMSTemplate;

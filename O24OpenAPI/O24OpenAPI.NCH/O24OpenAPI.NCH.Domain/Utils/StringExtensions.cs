@@ -12,7 +12,7 @@ namespace O24OpenAPI.NCH.API.Application.Utils;
 /// </summary>
 public static partial class StringExtensions
 {
-    private static string _defaultLanguage;
+    private static string? _defaultLanguage;
 
     private static bool LooksLikeIndexedFormat(string s) => CharacterRegex().IsMatch(s ?? "");
 

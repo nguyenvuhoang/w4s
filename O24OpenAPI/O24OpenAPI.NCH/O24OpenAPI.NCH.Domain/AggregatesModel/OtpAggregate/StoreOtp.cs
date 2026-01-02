@@ -5,8 +5,8 @@ namespace O24OpenAPI.NCH.Domain.AggregatesModel.OtpAggregate;
 
 public partial class StoreOtp : BaseEntity
 {
-    public string PhoneNumber { get; set; }
-    public string OtpHash { get; set; }
+    public string? PhoneNumber { get; set; }
+    public string? OtpHash { get; set; }
     public string OtpSalt { get; set; } = string.Empty;
     public ReviewPlatform Platform { get; set; } = ReviewPlatform.Any;
 
@@ -17,6 +17,4 @@ public partial class StoreOtp : BaseEntity
     public int? MaxUses { get; set; }
     public int UsedCount { get; set; } = 0;
     public string Note { get; set; } = string.Empty;
-    public DateTime CreatedOnUtc { get; set; } = DateTime.UtcNow;
-    public DateTime? UpdatedOnUtc { get; set; }
 }
