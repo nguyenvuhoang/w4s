@@ -97,7 +97,7 @@ public class CreateWalletHandle(
 
             await walletProfileRepository.InsertAsync(profile);
 
-            await CloneDefaultCategoriesToWalletAsync(profile.WalletId, request.Language);
+            await CloneDefaultCategoriesToWalletAsync(profile.WalletId);
 
             return new CreateWalletResponseModel
             {
@@ -189,13 +189,10 @@ public class CreateWalletHandle(
     /// <param name="ct"></param>
     /// <returns></returns>
     private async Task CloneDefaultCategoriesToWalletAsync(
-        Guid walletId,
-        string language
+        Guid walletId
     )
     {
-        var defaults = await walletCategoryDefaultRepository.GetActiveAsync(
-            language: language
-        );
+        var defaults = await walletCategoryDefaultRepository.GetActiveAsync();
 
         if (defaults is null || defaults.Count == 0)
             return;

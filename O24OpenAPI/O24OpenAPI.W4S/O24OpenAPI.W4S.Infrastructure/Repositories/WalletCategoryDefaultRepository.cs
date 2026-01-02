@@ -14,15 +14,9 @@ public class WalletCategoryDefaultRepository(
     : EntityRepository<WalletCategoryDefault>(dataProvider, staticCacheManager),
         IWalletCategoryDefaultRepository
 {
-    public async Task<IList<WalletCategoryDefault>> GetActiveAsync(string language = null)
+    public async Task<IList<WalletCategoryDefault>> GetActiveAsync()
     {
         var query = Table.Where(wcd => wcd.IsActive);
-
-        if (!string.IsNullOrWhiteSpace(language))
-        {
-            query = query.Where(wcd => wcd.Language == language);
-        }
-
         return await query.ToListAsync();
     }
 
