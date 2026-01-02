@@ -1,7 +1,7 @@
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
-using O24OpenAPI.NCH.API.Application;
+using O24OpenAPI.NCH.API.Application.Extensions;
 using O24OpenAPI.NCH.Infrastructure.Extensions;
 using Telegram.Bot.AspNetCore;
 
