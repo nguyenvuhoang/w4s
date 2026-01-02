@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -26,6 +26,12 @@
 	</ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Framework\O24OpenAPI.Framework.csproj" />
+    <ProjectReference
+      Include="..\..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj"
+      OutputItemType="Analyzer"
+      ReferenceOutputAssembly="false"
+    />
     <ProjectReference Include="..\O24OpenAPI.NCH.Domain\O24OpenAPI.NCH.Domain.csproj" />
     <ProjectReference Include="..\O24OpenAPI.NCH.Infrastructure\O24OpenAPI.NCH.Infrastructure.csproj" />
   </ItemGroup>
