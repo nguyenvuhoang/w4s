@@ -14,8 +14,8 @@ namespace O24OpenAPI.W4S.Infrastructure.Migrations;
 /// </summary>
 /// <seealso cref="AutoReversingMigration"/>
 [O24OpenAPIMigration(
-    "2025/01/01 21:23:00:0000000",
-    "Table For WalletProfile",
+    "2026/01/02 14:00:00:0000000",
+    "Table For WalletCategoryDefault",
     MigrationProcessType.Installation
 )]
 [Environment(EnvironmentType.All)]
@@ -91,6 +91,35 @@ public class SchemaMigration : AutoReversingMigration
                 .OnTable(nameof(WalletContract))
                 .OnColumn(nameof(WalletContract.OpenDateUtc))
                 .Descending()
+                .WithOptions()
+                .NonClustered();
+        }
+        if (!Schema.Table(nameof(WalletCategoryDefault)).Exists())
+        {
+            Create.TableFor<WalletCategoryDefault>();
+
+            Create.Index("UQ_WalletCategoryDefault_CategoryCode")
+                .OnTable(nameof(WalletCategoryDefault))
+                .OnColumn(nameof(WalletCategoryDefault.CategoryCode))
+                .Ascending()
+                .WithOptions()
+                .Unique();
+            Create.Index("IDX_WalletCategoryDefault_ParentCategoryCode")
+                .OnTable(nameof(WalletCategoryDefault))
+                .OnColumn(nameof(WalletCategoryDefault.ParentCategoryCode))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
+            Create.Index("IDX_WalletCategoryDefault_CategoryType")
+                .OnTable(nameof(WalletCategoryDefault))
+                .OnColumn(nameof(WalletCategoryDefault.CategoryType))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
+            Create.Index("IDX_WalletCategoryDefault_CategoryGroup")
+                .OnTable(nameof(WalletCategoryDefault))
+                .OnColumn(nameof(WalletCategoryDefault.CategoryGroup))
+                .Ascending()
                 .WithOptions()
                 .NonClustered();
         }
