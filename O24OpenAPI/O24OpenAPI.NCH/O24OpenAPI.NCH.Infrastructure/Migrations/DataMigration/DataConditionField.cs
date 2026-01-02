@@ -1,5 +1,4 @@
-﻿using O24OpenAPI.NCH.Domain;
-using O24OpenAPI.Framework.Domain;
+﻿using O24OpenAPI.Framework.Domain;
 using O24OpenAPI.NCH.Domain.AggregatesModel.MailAggregate;
 
 namespace O24OpenAPI.NCH.Migrations.DataMigration;

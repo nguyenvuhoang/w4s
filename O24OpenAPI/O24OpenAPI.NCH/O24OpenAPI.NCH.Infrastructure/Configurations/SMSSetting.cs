@@ -1,6 +1,6 @@
 using O24OpenAPI.Core.Configuration;
 
-namespace O24OpenAPI.NCH.Infrastructure;
+namespace O24OpenAPI.NCH.Infrastructure.Configurations;
 
 public class SMSSetting : ISettings
 {

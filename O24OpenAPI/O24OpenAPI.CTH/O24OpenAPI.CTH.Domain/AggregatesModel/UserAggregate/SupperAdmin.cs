@@ -11,17 +11,17 @@ public partial class SupperAdmin : BaseEntity
     /// <summary>
     /// Gets or sets the value of the user id
     /// </summary>
-    public string UserId { get; set; }
+    public string? UserId { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the user name
     /// /// </summary>
-    public string LoginName { get; set; }
+    public string? LoginName { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the password hash
     /// </summary>
-    public string PasswordHash { get; set; }
+    public string? PasswordHash { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the updated on utc

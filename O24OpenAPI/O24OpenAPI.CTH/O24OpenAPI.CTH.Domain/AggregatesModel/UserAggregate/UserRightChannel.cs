@@ -1,3 +1,4 @@
+using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
@@ -6,6 +7,7 @@ namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 /// The user right class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
+[Auditable]
 public partial class UserRightChannel : BaseEntity
 {
     /// <summary>
@@ -16,7 +18,7 @@ public partial class UserRightChannel : BaseEntity
     /// <summary>
     /// Gets or sets the value of the channel id
     /// </summary>
-    public string ChannelId { get; set; }
+    public string? ChannelId { get; set; }
 
     /// <summary>
     /// /// Gets or sets the value of the invoke

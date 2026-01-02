@@ -8,6 +8,6 @@ public partial class RoleType : BaseEntity
     public string RoleTypeName { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public int SortOrder { get; set; }
-    public string ServiceID { get; set; }
+    public string? ServiceID { get; set; }
     public bool IsActive { get; set; } = true;
 }

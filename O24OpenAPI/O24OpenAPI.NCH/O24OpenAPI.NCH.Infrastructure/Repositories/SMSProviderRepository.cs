@@ -1,11 +1,12 @@
+using LinKit.Core.Abstractions;
 using LinqToDB;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Data;
-using O24OpenAPI.NCH.API.Application.Utils;
 using O24OpenAPI.NCH.Domain.AggregatesModel.SmsAggregate;
 
 namespace O24OpenAPI.NCH.Infrastructure.Repositories;
 
+[RegisterService(Lifetime.Scoped)]
 public class SMSProviderRepository(
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
@@ -18,10 +19,10 @@ public class SMSProviderRepository(
 
     public async Task<SMSProvider> GetProviderByPhoneNumber(string phoneNumber)
     {
-        var providers = await Table.Where(p => p.IsActive).ToListAsync();
-        foreach (var provider in providers)
+        List<SMSProvider> providers = await Table.Where(p => p.IsActive).ToListAsync();
+        foreach (SMSProvider? provider in providers)
         {
-            var allowedPrefixes =
+            List<string> allowedPrefixes =
                 provider
                     .AllowedPrefix?.Split(
                         ',',

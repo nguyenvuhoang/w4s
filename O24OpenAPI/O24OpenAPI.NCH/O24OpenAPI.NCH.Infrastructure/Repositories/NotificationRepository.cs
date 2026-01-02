@@ -1,3 +1,4 @@
+using LinKit.Core.Abstractions;
 using Newtonsoft.Json;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Data;
@@ -6,6 +7,7 @@ using O24OpenAPI.NCH.Domain.AggregatesModel.NotificationAggregate;
 
 namespace O24OpenAPI.NCH.Infrastructure.Repositories;
 
+[RegisterService(Lifetime.Scoped)]
 public class NotificationRepository(
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
@@ -29,7 +31,7 @@ public class NotificationRepository(
     {
         try
         {
-            var entity = new Notification
+            Notification entity = new()
             {
                 UserCode = userCode,
                 AppType = appType,

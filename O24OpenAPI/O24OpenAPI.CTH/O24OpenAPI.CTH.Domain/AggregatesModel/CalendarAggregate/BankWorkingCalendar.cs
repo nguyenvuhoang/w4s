@@ -8,7 +8,7 @@ public partial class BankWorkingCalendar : BaseEntity
     public string BankCode { get; set; } = null!;
 
     /// <summary>Branch code (nullable = applies to whole bank).</summary>
-    public string BranchCode { get; set; }
+    public string? BranchCode { get; set; }
 
     /// <summary>The business date this row applies to (local date, no time).</summary>
     public DateTime WorkingDate { get; set; }
@@ -21,8 +21,8 @@ public partial class BankWorkingCalendar : BaseEntity
     public bool IsHoliday { get; set; }
 
     /// <summary>Holiday code and name if holiday.</summary>
-    public string HolidayCode { get; set; }
-    public string HolidayName { get; set; }
+    public string? HolidayCode { get; set; }
+    public string? HolidayName { get; set; }
 
     /// <summary>Business hours (local time, 24h).</summary>
     public TimeSpan OpenTime { get; set; }
@@ -43,7 +43,7 @@ public partial class BankWorkingCalendar : BaseEntity
     public string CalendarType { get; set; } = "Bank";
 
     /// <summary>Week mask, e.g. "Mon-Fri", "Mon-Sat".</summary>
-    public string WeekMask { get; set; }
+    public string? WeekMask { get; set; }
 
     /// <summary>Convenience pointers for previous/next working date.</summary>
     public DateTime PreviousWorkingDate { get; set; }
@@ -52,7 +52,7 @@ public partial class BankWorkingCalendar : BaseEntity
     /// <summary>Status: 1=Active, 0=Inactive (soft-switch rows).</summary>
     public bool Status { get; set; } = true;
 
-    public string Notes { get; set; }
+    public string? Notes { get; set; }
 
     public DateTime CreatedOnUtc { get; set; }
     public DateTime UpdatedOnUtc { get; set; }

@@ -8,9 +8,9 @@ namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 /// <seealso cref="BaseEntity"/>
 public partial class Authenticate : BaseEntity
 {
-    public string Token { get; set; }
+    public string? Token { get; set; }
 
-    public string RefreshToken { get; set; }
+    public string? RefreshToken { get; set; }
 
     public DateTime ExpiredIn { get; set; }
 

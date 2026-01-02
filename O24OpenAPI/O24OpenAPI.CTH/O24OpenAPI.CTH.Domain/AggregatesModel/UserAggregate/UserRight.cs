@@ -1,14 +1,12 @@
 ﻿using Newtonsoft.Json;
+using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 
+[Auditable]
 public partial class UserRight : BaseEntity
 {
-    /// <summary>
-    /// User right domain constructor
-    /// </summary>
-    public UserRight() { }
 
     /// <summary>
     /// roleid
@@ -20,13 +18,13 @@ public partial class UserRight : BaseEntity
     /// cmdid
     /// </summary>
     [JsonProperty("commandid")]
-    public string CommandId { get; set; }
+    public string? CommandId { get; set; }
 
     /// <summary>
     /// cmdiddt
     /// </summary>
     [JsonProperty("commandiddetail")]
-    public string CommandIdDetail { get; set; }
+    public string? CommandIdDetail { get; set; }
 
     /// <summary>
     /// invoke

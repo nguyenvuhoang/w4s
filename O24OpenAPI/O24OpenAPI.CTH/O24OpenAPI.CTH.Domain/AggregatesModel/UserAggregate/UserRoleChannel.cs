@@ -1,3 +1,4 @@
+using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
@@ -6,6 +7,7 @@ namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 /// The user role class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
+[Auditable]
 public partial class UserRoleChannel : BaseEntity
 {
     /// <summary>
@@ -16,22 +18,22 @@ public partial class UserRoleChannel : BaseEntity
     /// <summary>
     /// Gets or sets the value of the role name
     /// </summary>
-    public string RoleName { get; set; }
+    public string? RoleName { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the role description
     /// </summary>
-    public string RoleDescription { get; set; }
+    public string? RoleDescription { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the user created
     /// </summary>
-    public string UserCreated { get; set; }
+    public string? UserCreated { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the user modified
     /// </summary>
-    public string UserModified { get; set; }
+    public string? UserModified { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the status

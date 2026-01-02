@@ -1,5 +1,4 @@
 ﻿using O24OpenAPI.Core.Domain;
-using O24OpenAPI.NCH.Domain;
 using O24OpenAPI.Framework.Domain;
 using O24OpenAPI.NCH.Domain.AggregatesModel.SmsAggregate;
 using O24OpenAPI.NCH.Domain.AggregatesModel.MailAggregate;

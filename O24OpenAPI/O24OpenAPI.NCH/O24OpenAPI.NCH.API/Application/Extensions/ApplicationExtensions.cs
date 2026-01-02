@@ -1,14 +1,14 @@
-﻿using O24OpenAPI.Framework.Abstractions;
+using O24OpenAPI.Framework.Abstractions;
 
-namespace O24OpenAPI.CTH.API.Application;
+namespace O24OpenAPI.NCH.API.Application.Extensions;
 
 internal static class ApplicationExtensions
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddLinKitCqrs("cth");
+        services.AddLinKitCqrs("nch");
         services.AddKeyedSingleton<IWorkflowStepInvoker, Workflow.Generated.WorkflowStepInvoker>(
-            serviceKey: "cth"
+            serviceKey: "nch"
         );
         return services;
     }

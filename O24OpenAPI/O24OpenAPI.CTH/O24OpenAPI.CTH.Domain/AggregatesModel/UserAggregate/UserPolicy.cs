@@ -1,12 +1,14 @@
-﻿using O24OpenAPI.Core.Domain;
+﻿using O24OpenAPI.Core.Attributes;
+using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 
+[Auditable]
 public partial class UserPolicy : BaseEntity
 {
     public int PolicyCode { get; set; }
     public string ServiceID { get; set; } = string.Empty;
-    public string Descr { get; set; }
+    public string? Descr { get; set; }
     public bool? IsDefault { get; set; }
     public DateTime EfFrom { get; set; }
     public DateTime? EfTo { get; set; }
@@ -23,11 +25,11 @@ public partial class UserPolicy : BaseEntity
     public string LginTo { get; set; } = string.Empty;
     public string LlkOutThrs { get; set; } = string.Empty;
     public string ResetLkOut { get; set; } = string.Empty;
-    public string UserCreate { get; set; }
+    public string? UserCreate { get; set; }
     public DateTime? DateCreate { get; set; }
-    public string UserModify { get; set; }
+    public string? UserModify { get; set; }
     public DateTime? DateModify { get; set; }
-    public string ContractID { get; set; }
+    public string? ContractID { get; set; }
     public bool? IsBankEdit { get; set; } = false;
     public bool? IsCorpEdit { get; set; } = false;
     public int? BaseOnPolicy { get; set; } = 0;

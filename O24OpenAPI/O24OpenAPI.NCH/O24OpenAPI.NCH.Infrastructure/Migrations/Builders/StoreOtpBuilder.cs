@@ -1,6 +1,5 @@
 ﻿using FluentMigrator.Builders.Create.Table;
 using O24OpenAPI.Data.Mapping.Builders;
-using O24OpenAPI.NCH.Domain;
 using O24OpenAPI.NCH.Domain.AggregatesModel.OtpAggregate;
 
 namespace O24OpenAPI.NCH.Migrations.Builders;

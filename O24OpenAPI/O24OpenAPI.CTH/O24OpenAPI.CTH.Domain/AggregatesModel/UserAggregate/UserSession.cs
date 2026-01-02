@@ -1,3 +1,4 @@
+using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
@@ -6,27 +7,28 @@ namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 /// The user session class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
+[Auditable]
 public partial class UserSession : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the user id
     /// </summary>
-    public string UserId { get; set; }
+    public string? UserId { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the login name
     /// </summary>
-    public string LoginName { get; set; }
+    public string? LoginName { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the token
     /// </summary>
-    public string Token { get; set; }
+    public string? Token { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the refresh token
     /// </summary>
-    public string RefreshToken { get; set; }
+    public string? RefreshToken { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the refresh token expiration time
@@ -36,26 +38,26 @@ public partial class UserSession : BaseEntity
     /// <summary>
     /// Gets or sets the value of the reference
     /// </summary>
-    public string Reference { get; set; }
+    public string? Reference { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the channel roles
     /// </summary>
-    public string ChannelRoles { get; set; }
+    public string? ChannelRoles { get; set; }
 
-    public string BranchCode { get; set; }
-    public string UserCode { get; set; }
-    public string UserName { get; set; }
+    public string? BranchCode { get; set; }
+    public string? UserCode { get; set; }
+    public string? UserName { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the ip address
     /// </summary>
-    public string IpAddress { get; set; }
+    public string? IpAddress { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the device
     /// </summary>
-    public string Device { get; set; }
+    public string? Device { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the expires at
@@ -70,19 +72,9 @@ public partial class UserSession : BaseEntity
     /// <summary>
     /// Gets or sets the value of the channel id
     /// </summary>
-    public string ChannelId { get; set; }
+    public string? ChannelId { get; set; }
 
-    public string SignatureKey { get; set; }
-
-    /// <summary>
-    /// Gets or sets the value of the updated on utc
-    /// </summary>
-    public DateTime? UpdatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Gets or sets the value of the created on utc
-    /// </summary>
-    public DateTime? CreatedOnUtc { get; set; }
+    public string? SignatureKey { get; set; }
 
     /// <summary>
     /// Ises the valid

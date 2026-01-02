@@ -5,7 +5,6 @@ using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Data;
 using O24OpenAPI.Data.Attributes;
 using O24OpenAPI.Data.Migrations;
-using O24OpenAPI.NCH.Domain;
 using O24OpenAPI.NCH.Domain.AggregatesModel.NotificationAggregate;
 
 /// <summary>

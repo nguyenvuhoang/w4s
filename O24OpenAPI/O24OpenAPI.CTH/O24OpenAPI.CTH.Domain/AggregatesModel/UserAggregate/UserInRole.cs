@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
+using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 
+[Auditable]
 public partial class UserInRole : BaseEntity
 {
     /// <summary>
@@ -15,13 +17,13 @@ public partial class UserInRole : BaseEntity
     /// user_code
     /// </summary>
     [JsonProperty("user_code")]
-    public string UserCode { get; set; }
+    public string? UserCode { get; set; }
 
     /// <summary>
     /// Last update date
     /// </summary>
     [JsonProperty("is_main")]
-    public string IsMain { get; set; }
+    public string? IsMain { get; set; }
 
     /// <summary>
     /// Last update date

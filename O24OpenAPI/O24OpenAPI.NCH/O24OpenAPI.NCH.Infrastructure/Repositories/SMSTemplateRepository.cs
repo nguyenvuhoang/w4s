@@ -1,10 +1,12 @@
-﻿using LinqToDB;
+﻿using LinKit.Core.Abstractions;
+using LinqToDB;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Data;
 using O24OpenAPI.NCH.Domain.AggregatesModel.SmsAggregate;
 
 namespace O24OpenAPI.NCH.Infrastructure.Repositories;
 
+[RegisterService(Lifetime.Scoped)]
 public class SMSTemplateRepository(
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
@@ -18,7 +20,7 @@ public class SMSTemplateRepository(
         string message = ""
     )
     {
-        var template = await Table.FirstOrDefaultAsync(t =>
+        SMSTemplate? template = await Table.FirstOrDefaultAsync(t =>
             t.TemplateCode == templateCode && t.IsActive
         );
 
@@ -29,7 +31,7 @@ public class SMSTemplateRepository(
 
         string content = template.MessageContent;
 
-        foreach (var kvp in values)
+        foreach (KeyValuePair<string, object> kvp in values)
         {
             content = content.Replace($"{{{kvp.Key}}}", kvp.Value?.ToString());
         }

@@ -10,7 +10,7 @@ public partial class Channel : BaseEntity
 {
     public string ChannelId { get; set; } = default!;
     public string ChannelName { get; set; } = default!;
-    public string Description { get; set; }
+    public string? Description { get; set; }
     public int SortOrder { get; set; }
     public bool Status { get; set; } = true;
 

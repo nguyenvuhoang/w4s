@@ -2,7 +2,6 @@ using FluentMigrator;
 using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.Migrations;
-using O24OpenAPI.NCH.Domain;
 using O24OpenAPI.NCH.Domain.AggregatesModel.NotificationAggregate;
 
 namespace O24OpenAPI.NCH.Migrations;
