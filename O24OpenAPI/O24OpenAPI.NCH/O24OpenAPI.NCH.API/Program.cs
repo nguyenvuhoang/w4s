@@ -3,7 +3,7 @@ using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
 using Telegram.Bot.AspNetCore;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMemoryCache();
 
@@ -16,11 +16,14 @@ builder.Services.ConfigureTelegramBotMvc();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.AddBackgroundJobs("StaticConfig/BackgroundJobsConfig.json");
-builder.ConfigureWebHost();
-var app = builder.Build();
+if (!builder.Environment.IsDevelopment())
+{
+    builder.ConfigureWebHost();
+}
+WebApplication app = builder.Build();
 app.UseHttpsRedirection();
 app.UseAuthorization();
-using var scope = app.Services.CreateScope();
+using IServiceScope scope = app.Services.CreateScope();
 AsyncScope.Scope = scope;
 app.ConfigureRequestPipeline();
 

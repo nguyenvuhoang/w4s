@@ -21,8 +21,6 @@
 		<Content Include="__jits_com_vn.pfx">
 			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
 		</Content>
-		<Content Remove="App_Data\appsettings.json" />
-		<Content Remove="App_Data\appsettings.Development.json" />
 	</ItemGroup>
 
   <ItemGroup>
