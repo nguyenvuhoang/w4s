@@ -27,7 +27,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
-namespace O24OpenAPI.NCH.API.Application.Features.Notification;
+namespace O24OpenAPI.NCH.API.Application.Features.Notifications;
 
 public class SendNotificationCommand : BaseTransactionModel, ICommand<bool>
 {

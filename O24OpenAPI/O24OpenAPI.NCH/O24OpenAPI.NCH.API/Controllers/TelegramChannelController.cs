@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using O24OpenAPI.NCH.API.Application.Features.Notification;
+using O24OpenAPI.NCH.API.Application.Features.Notifications;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
