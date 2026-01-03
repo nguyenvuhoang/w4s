@@ -1,14 +1,12 @@
 ﻿using LinKit.Core.Cqrs;
 using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.CTH.API.Application.Constants;
-using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
-using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 
-namespace O24OpenAPI.CTH.API.Application.Features.User;
+namespace O24OpenAPI.CTH.API.Application.Features.Auth;
 
 public class IsLoginCommand : BaseTransactionModel, ICommand<bool>
 {
@@ -27,18 +25,12 @@ public class IsLoginHandle(IUserAccountRepository userAccountRepository)
         CancellationToken cancellationToken = default
     )
     {
-        var model = request.ToModel<DefaultModel>();
-        return await IsLoginAsync(model);
-    }
-
-    public async Task<bool> IsLoginAsync(DefaultModel model)
-    {
-        var userAccount =
-            await userAccountRepository.GetByUserCodeAsync(model.UserCode)
+        UserAccount userAccount =
+            await userAccountRepository.GetByUserCodeAsync(request.UserCode)
             ?? throw await O24Exception.CreateAsync(
                 O24CTHResourceCode.Validation.UsernameIsNotExist,
-                model.Language,
-                [model.UserCode]
+                request.Language,
+                [request.UserCode]
             );
 
         return userAccount.IsLogin ?? false;

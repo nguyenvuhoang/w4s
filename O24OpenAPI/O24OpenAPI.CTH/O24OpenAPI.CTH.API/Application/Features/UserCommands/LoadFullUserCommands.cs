@@ -24,7 +24,7 @@ public class LoadFullUserCommandsQueryHandler(IUserCommandRepository _userComman
                 .Table.OrderBy(x => x.ApplicationCode)
                 .ThenBy(x => x.CommandId)
                 .ThenBy(x => x.DisplayOrder)
-                .ToListAsync();
+                .ToListAsync(token: cancellationToken);
 
             List<CTHUserCommandModel> listUserCommand = listUserCommandDomain
                 .Select(x => new CTHUserCommandModel

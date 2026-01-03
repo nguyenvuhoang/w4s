@@ -1,3 +1,1 @@
-﻿using O24OpenAPI.Framework.Models;
-
-namespace O24OpenAPI.CTH.API.Application.Models;
+﻿namespace O24OpenAPI.CTH.API.Application.Models;

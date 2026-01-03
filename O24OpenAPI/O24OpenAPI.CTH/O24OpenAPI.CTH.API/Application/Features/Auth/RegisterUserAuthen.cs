@@ -9,7 +9,7 @@ using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
 
-namespace O24OpenAPI.CTH.API.Application.Features.User;
+namespace O24OpenAPI.CTH.API.Application.Features.Auth;
 
 public class RegisterUserAuthenAsyncCommand : BaseTransactionModel, ICommand<bool>
 {
@@ -32,7 +32,7 @@ public class RegisterUserAuthenAsyncHandle(IUserAuthenRepository userAuthenRepos
     {
         try
         {
-            var exists = await userAuthenRepository.GetByUserCodeAsync(request.UserCode);
+            UserAuthen exists = await userAuthenRepository.GetByUserCodeAsync(request.UserCode);
 
             if (exists != null && exists.IsActive == true)
             {
@@ -49,7 +49,7 @@ public class RegisterUserAuthenAsyncHandle(IUserAuthenRepository userAuthenRepos
                 string encryptedSmartOTP = OtpCryptoUtil.EncryptSmartOTP(keyString, otpCodeString);
                 if (exists != null && exists.IsActive == false)
                 {
-                    var userAuthen = exists;
+                    UserAuthen userAuthen = exists;
                     userAuthen.Key = keyString;
                     userAuthen.SmartOTP = encryptedSmartOTP;
                     userAuthen.UpdatedOnUtc = DateTime.UtcNow;
@@ -58,7 +58,7 @@ public class RegisterUserAuthenAsyncHandle(IUserAuthenRepository userAuthenRepos
                 }
                 else
                 {
-                    var userAuthen = new UserAuthen
+                    UserAuthen userAuthen = new()
                     {
                         ChannelId = ChannelId.MobileBanking,
                         AuthenType = request.AuthenType,

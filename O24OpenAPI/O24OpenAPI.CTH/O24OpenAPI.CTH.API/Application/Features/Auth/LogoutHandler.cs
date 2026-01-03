@@ -2,17 +2,15 @@
 using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.Core.Constants;
 using O24OpenAPI.CTH.API.Application.Constants;
-using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Extensions;
-using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 
-namespace O24OpenAPI.CTH.API.Application.Features.User;
+namespace O24OpenAPI.CTH.API.Application.Features.Auth;
 
-public class LogoutO24OpenAPICommand : BaseTransactionModel, ICommand<bool>
+public class LogoutHandleCommand : BaseTransactionModel, ICommand<bool>
 {
     /// <summary>
     /// Gets or sets the value of the login name
@@ -76,31 +74,25 @@ public class LogoutO24OpenAPICommand : BaseTransactionModel, ICommand<bool>
 }
 
 [CqrsHandler]
-public class LogoutO24OpenAPIHandle(IUserAccountRepository userAccountRepository)
-    : ICommandHandler<LogoutO24OpenAPICommand, bool>
+public class LogoutHandler(IUserAccountRepository userAccountRepository)
+    : ICommandHandler<LogoutHandleCommand, bool>
 {
     [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_LOGOUT)]
     public async Task<bool> HandleAsync(
-        LogoutO24OpenAPICommand request,
+        LogoutHandleCommand request,
         CancellationToken cancellationToken = default
     )
     {
-        var model = request.ToModel<LogoutO24OpenAPIRequestModel>();
-        return await LogoutAsync(model);
-    }
-
-    public async Task<bool> LogoutAsync(LogoutO24OpenAPIRequestModel model)
-    {
         try
         {
-            var loginName = model.LoginName;
-            var channelid = model.ChannelId;
+            string loginName = request.LoginName;
+            string channelid = request.ChannelId;
 
             var userAccount =
                 await userAccountRepository.GetByLoginNameandChannelAsync(loginName, channelid)
                 ?? throw await O24Exception.CreateAsync(
                     O24CTHResourceCode.Validation.UsernameIsNotExist,
-                    model.Language,
+                    request.Language,
                     [loginName]
                 );
 
@@ -111,7 +103,7 @@ public class LogoutO24OpenAPIHandle(IUserAccountRepository userAccountRepository
         catch (Exception ex)
         {
             await ex.LogErrorAsync();
-            throw await O24Exception.CreateAsync(ResourceCode.Common.ServerError, model.Language);
+            throw await O24Exception.CreateAsync(ResourceCode.Common.ServerError, request.Language);
         }
     }
 }

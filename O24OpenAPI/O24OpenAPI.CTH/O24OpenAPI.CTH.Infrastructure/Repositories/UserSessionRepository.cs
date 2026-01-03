@@ -47,32 +47,32 @@ public class UserSessionRepository(
         return await Table.Where(s => s.RefreshToken == hashedRefreshToken).FirstOrDefaultAsync();
     }
 
-    public async Task Insert(UserSession userSession)
+    public async Task AddAsync(UserSession userSession)
     {
         //ArgumentNullException.ThrowIfNull(userSession);
         await InsertAsync(userSession);
         // var sessionModel = userSession.ToModel<UserSessionModel>();
-        await _staticCacheManager.Set(CachingKey.SessionKey(userSession.Token), userSession);
+        await _staticCacheManager.Set(CachingKey.SessionKey(userSession.Token!), userSession);
     }
 
     public async Task RevokeByLoginName(string loginName)
     {
-        var sessions = await Table
+        List<UserSession> sessions = await Table
             .Where(x => x.LoginName == loginName && !x.IsRevoked)
             .ToListAsync();
 
-        foreach (var session in sessions)
+        foreach (UserSession? session in sessions)
         {
             session.IsRevoked = true;
             session.ExpiresAt = DateTime.UtcNow;
             await Update(session);
-            await _staticCacheManager.Remove(new CacheKey(session.Token));
+            await _staticCacheManager.Remove(CachingKey.SessionKey(session.Token));
         }
     }
 
     public async Task<UserSession?> GetByRefreshToken(string token)
     {
-        var hashed = token.Hash();
+        string hashed = token.Hash();
         return await Table.Where(s => s.RefreshToken == hashed).FirstOrDefaultAsync();
     }
 
@@ -85,13 +85,13 @@ public class UserSessionRepository(
 
     public async Task<UserSession?> GetByToken(string token, bool activeOnly = true)
     {
-        var cacheKey = new CacheKey(token);
-        var session = await _staticCacheManager.Get<UserSession>(cacheKey);
+        CacheKey cacheKey = CachingKey.SessionKey(token);
+        UserSession? session = await _staticCacheManager.Get<UserSession>(cacheKey);
 
         if (session == null || session.Id == 0)
         {
-            var hashedToken = token.Hash();
-            var query = Table.Where(s => s.Token == hashedToken);
+            string hashedToken = token.Hash();
+            IQueryable<UserSession> query = Table.Where(s => s.Token == hashedToken);
 
             if (activeOnly)
             {
@@ -107,5 +107,16 @@ public class UserSessionRepository(
         }
 
         return session;
+    }
+
+    public async Task UpdateSignatureKey(string token, string signatureKey)
+    {
+        UserSession? session = await GetByToken(token);
+        if (session != null)
+        {
+            session.SignatureKey = signatureKey;
+            await Update(session);
+            await _staticCacheManager.Remove(CachingKey.SessionKey(token));
+        }
     }
 }

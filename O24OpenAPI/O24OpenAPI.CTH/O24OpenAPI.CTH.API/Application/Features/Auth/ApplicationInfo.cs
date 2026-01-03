@@ -10,7 +10,7 @@ using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Models;
 
-namespace O24OpenAPI.CTH.API.Application.Features.Application;
+namespace O24OpenAPI.CTH.API.Application.Features.Auth;
 
 public class ApplicationInfoCommand
     : BaseTransactionModel,

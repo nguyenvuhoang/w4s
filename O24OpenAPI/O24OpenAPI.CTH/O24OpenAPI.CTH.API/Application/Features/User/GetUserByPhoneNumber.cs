@@ -3,13 +3,11 @@ using LinqToDB;
 using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.Core.Constants;
 using O24OpenAPI.CTH.API.Application.Constants;
-using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.API.Application.Models.User;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Extensions;
-using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Framework.Utils;
 
@@ -32,33 +30,27 @@ public class GetUserByPhoneNumberHandle(
         CancellationToken cancellationToken = default
     )
     {
-        var model = request.ToModel<UserWithPhoneNumber>();
-        return await GetUserByPhoneNumberASync(model);
-    }
-
-    public async Task<UserInfoModel> GetUserByPhoneNumberASync(UserWithPhoneNumber model)
-    {
         try
         {
             ConsoleUtil.WriteInfo(
-                $"[GetUserByPhoneNumberASync] Start processing for phone number: {model.PhoneNumber}"
+                $"[GetUserByPhoneNumberASync] Start processing for phone number: {request.PhoneNumber}"
             );
-            var user =
+            UserAccount user =
                 await userAccountRepository
                     .Table.Where(s =>
-                        s.Phone == model.PhoneNumber
+                        s.Phone == request.PhoneNumber
                         && s.Status != Common.DELETED
                         && s.ChannelId == Code.Channel.MB
                     )
-                    .FirstOrDefaultAsync()
+                    .FirstOrDefaultAsync(token: cancellationToken)
                 ?? throw await O24Exception.CreateAsync(
                     O24CTHResourceCode.Validation.PhoneNumberIsExisting,
-                    model.Language,
-                    [model.PhoneNumber]
+                    request.Language,
+                    [request.PhoneNumber]
                 );
 
-            var userDevice = await userDeviceRepository.GetByUserCodeAsync(user.UserCode);
-            var userInfo = new UserInfoModel
+            Domain.AggregatesModel.UserAggregate.UserDevice userDevice = await userDeviceRepository.GetByUserCodeAsync(user.UserCode);
+            UserInfoModel userInfo = new()
             {
                 UserId = user.UserId,
                 UserCode = user.UserCode,
@@ -81,7 +73,7 @@ public class GetUserByPhoneNumberHandle(
             await ex.LogErrorAsync();
             throw await O24Exception.CreateAsync(
                 ResourceCode.Common.SystemError,
-                model.Language,
+                request.Language,
                 ex
             );
         }

@@ -8,11 +8,9 @@ using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Models;
 
-namespace O24OpenAPI.CTH.API.Application.Features.User;
+namespace O24OpenAPI.CTH.API.Application.Features.Auth;
 
-public class VerifySmartOTPCodeAsyncCommand
-    : BaseTransactionModel,
-        ICommand<VerifySmartOTPResponseModel>
+public class VerifySmartOTPCodeCommand : BaseTransactionModel, ICommand<VerifySmartOTPResponseModel>
 {
     public string AuthenType { get; set; }
     public string PhoneNumber { get; set; }
@@ -21,16 +19,16 @@ public class VerifySmartOTPCodeAsyncCommand
 }
 
 [CqrsHandler]
-public class VerifySmartOTPCodeAsyncHandle(IUserAuthenRepository userAuthenRepository)
-    : ICommandHandler<VerifySmartOTPCodeAsyncCommand, VerifySmartOTPResponseModel>
+public class VerifySmartOTPCodeHandler(IUserAuthenRepository userAuthenRepository)
+    : ICommandHandler<VerifySmartOTPCodeCommand, VerifySmartOTPResponseModel>
 {
     [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_VERIFY_SMARTOTP_PINCODE)]
     public async Task<VerifySmartOTPResponseModel> HandleAsync(
-        VerifySmartOTPCodeAsyncCommand request,
+        VerifySmartOTPCodeCommand request,
         CancellationToken cancellationToken = default
     )
     {
-        var userAuthen =
+        UserAuthen userAuthen =
             await userAuthenRepository.GetByUserAuthenInfoAsync(
                 request.UserCode,
                 request.AuthenType,
@@ -41,9 +39,9 @@ public class VerifySmartOTPCodeAsyncHandle(IUserAuthenRepository userAuthenRepos
                 request.Language
             );
 
-        var otpCodeString = request.SmartOTPCode;
+        string otpCodeString = request.SmartOTPCode;
 
-        var (_, decryptedOtp) =
+        (string _, string decryptedOtp) =
             OtpCryptoUtil.DecryptSmartOTP(userAuthen.Key, userAuthen.SmartOTP)
             ?? throw await O24Exception.CreateAsync(
                 O24CTHResourceCode.Operation.UnableDecryptSmartOTP,

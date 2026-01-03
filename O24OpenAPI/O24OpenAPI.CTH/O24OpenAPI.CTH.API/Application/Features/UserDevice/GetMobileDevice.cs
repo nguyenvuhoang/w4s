@@ -39,7 +39,7 @@ public class GetMobileDeviceQueryHandler(
                 UserDevice = d.DeviceId,
             };
 
-        var result = await q.ToListAsync();
+        var result = await q.ToListAsync(token: cancellationToken);
 
         Console.WriteLine($"Count Mobile Device = {result.Count}");
 

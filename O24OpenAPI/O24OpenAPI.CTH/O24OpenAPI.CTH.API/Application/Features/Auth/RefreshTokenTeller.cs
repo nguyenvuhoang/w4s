@@ -13,7 +13,7 @@ using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Framework.Services;
 
-namespace O24OpenAPI.CTH.API.Application.Features.User;
+namespace O24OpenAPI.CTH.API.Application.Features.Auth;
 
 public class RefreshTokenTellerCommand : BaseTransactionModel, ICommand<AuthResponseModel>
 {
@@ -29,13 +29,13 @@ public class RefreshTokenTellerHandle(
     IStaticCacheManager staticCacheManager
 ) : ICommandHandler<RefreshTokenTellerCommand, AuthResponseModel>
 {
-    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_UMG_REFRESH_TOKEN)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_UMG_REFRESH_TOKEN)]
     public async Task<AuthResponseModel> HandleAsync(
         RefreshTokenTellerCommand request,
         CancellationToken cancellationToken = default
     )
     {
-        var userSessions =
+        UserSession userSessions =
             await userSessionRepository.GetByRefreshToken(request.OldRefreshToken)
             ?? throw await O24Exception.CreateAsync(
                 O24CTHResourceCode.Operation.InvalidSessionRefresh,
@@ -43,12 +43,14 @@ public class RefreshTokenTellerHandle(
                 request.CurrentUserCode
             );
 
-        var currentTime = DateTime.UtcNow;
-        var expireTime = currentTime.AddDays(Convert.ToDouble(webApiSettings.TokenLifetimeDays));
+        DateTime currentTime = DateTime.UtcNow;
+        DateTime expireTime = currentTime.AddDays(
+            Convert.ToDouble(webApiSettings.TokenLifetimeDays)
+        );
 
-        var token = request.CoreToken;
+        string token = request.CoreToken;
 
-        var refreshToken = request.RefreshToken;
+        string refreshToken = request.RefreshToken;
 
         if (string.IsNullOrEmpty(refreshToken))
         {
@@ -57,7 +59,7 @@ public class RefreshTokenTellerHandle(
 
         await Revoke(request.Token);
 
-        var userSession = new UserSession
+        UserSession userSession = new()
         {
             Token = token.Hash(),
             UserId = userSessions.UserId,
@@ -74,14 +76,14 @@ public class RefreshTokenTellerHandle(
             UserName = userSessions.UserName,
         };
 
-        await userSessionRepository.Insert(userSession);
+        await userSessionRepository.AddAsync(userSession);
 
         return new AuthResponseModel { Token = token, RefreshToken = refreshToken };
     }
 
     public virtual async Task Revoke(string token)
     {
-        var userSession =
+        UserSession userSession =
             await GetByToken(token) ?? throw new O24OpenAPIException("Invalid session.");
 
         userSession.Revoke();
@@ -92,13 +94,15 @@ public class RefreshTokenTellerHandle(
 
     public virtual async Task<UserSession> GetByToken(string token, bool activeOnly = true)
     {
-        var cacheKey = new CacheKey(token);
-        var session = await staticCacheManager.Get<UserSession>(cacheKey);
+        CacheKey cacheKey = new(token);
+        UserSession session = await staticCacheManager.Get<UserSession>(cacheKey);
 
         if (session == null || session.Id == 0)
         {
-            var hashedToken = token.Hash();
-            var query = userSessionRepository.Table.Where(s => s.Token == hashedToken);
+            string hashedToken = token.Hash();
+            IQueryable<UserSession> query = userSessionRepository.Table.Where(s =>
+                s.Token == hashedToken
+            );
 
             if (activeOnly)
             {

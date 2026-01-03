@@ -31,7 +31,7 @@ public class LoadMenuByChannelHandle(IUserCommandRepository userCommandRepositor
                 s.ApplicationCode == request.ChannelId && s.CommandType == "M" && s.Enabled
             )
             .Select(s => new UserCommandResponseModel(s))
-            .ToListAsync();
+            .ToListAsync(token: cancellationToken);
 
         return [.. commandMenus.OrderBy(x => x.DisplayOrder)];
     }

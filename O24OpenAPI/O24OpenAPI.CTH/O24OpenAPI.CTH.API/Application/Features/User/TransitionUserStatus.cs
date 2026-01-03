@@ -1,11 +1,9 @@
 ﻿using LinKit.Core.Cqrs;
 using LinqToDB;
 using O24OpenAPI.APIContracts.Constants;
-using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Extensions;
-using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User;
@@ -26,19 +24,14 @@ public class TransitionUserStatusHandle(IUserAccountRepository userAccountReposi
         CancellationToken cancellationToken = default
     )
     {
-        var model = request.ToModel<TransitionUserStatusModel>();
-        return await TransitionUserStatusAsync(model);
-    }
-
-    public async Task<bool> TransitionUserStatusAsync(TransitionUserStatusModel model)
-    {
-        if (model == null || string.IsNullOrWhiteSpace(model.ContractNumber))
+        if (request == null || string.IsNullOrWhiteSpace(request.ContractNumber))
         {
             return false;
         }
 
-        var entity = await userAccountRepository.Table.FirstOrDefaultAsync(x =>
-            x.ContractNumber == model.ContractNumber
+        UserAccount entity = await userAccountRepository.Table.FirstOrDefaultAsync(
+            x => x.ContractNumber == request.ContractNumber,
+            token: cancellationToken
         );
 
         if (entity == null)
@@ -46,17 +39,17 @@ public class TransitionUserStatusHandle(IUserAccountRepository userAccountReposi
             return false;
         }
 
-        var previousStatus = entity.Status;
+        string previousStatus = entity.Status;
 
         try
         {
-            entity.Status = model.Status;
+            entity.Status = request.Status;
             await userAccountRepository.Update(entity);
             return true;
         }
         catch (Exception ex)
         {
-            if (model.IsReverse)
+            if (request.IsReverse)
             {
                 entity.Status = previousStatus;
                 await userAccountRepository.Update(entity);

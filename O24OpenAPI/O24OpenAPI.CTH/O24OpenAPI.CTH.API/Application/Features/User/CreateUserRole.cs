@@ -2,7 +2,6 @@
 using LinqToDB;
 using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.CTH.API.Application.Constants;
-using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.API.Application.Models.Roles;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;

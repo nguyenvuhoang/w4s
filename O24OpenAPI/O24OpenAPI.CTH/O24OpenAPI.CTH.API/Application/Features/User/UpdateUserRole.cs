@@ -1,11 +1,8 @@
 ﻿using LinKit.Core.Cqrs;
 using LinqToDB;
 using O24OpenAPI.APIContracts.Constants;
-using O24OpenAPI.CTH.API.Application.Models;
-using O24OpenAPI.CTH.API.Application.Models.Roles;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
-using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User;
@@ -18,29 +15,23 @@ public class UpdateUserRoleCommand : BaseTransactionModel, ICommand<bool>
 }
 
 [CqrsHandler]
-public class UpdateUserRoleHandle(IUserInRoleRepository userInRoleRepository)
+public class UpdateUserRoleHandler(IUserInRoleRepository userInRoleRepository)
     : ICommandHandler<UpdateUserRoleCommand, bool>
 {
-    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_CERATE_USER)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_UPDATE_USER_ROLE_ASSIGNMENT)]
     public async Task<bool> HandleAsync(
         UpdateUserRoleCommand request,
         CancellationToken cancellationToken = default
     )
     {
-        var model = request.ToModel<UpdateUserRoleModel>();
-        return await UpdateUserRoleASync(model);
-    }
-
-    public async Task<bool> UpdateUserRoleASync(UpdateUserRoleModel model)
-    {
-        if (model.IsAssign)
+        if (request.IsAssign)
         {
-            List<UserInRole> toInsert = new();
+            List<UserInRole> toInsert = [];
 
-            foreach (var userCode in model.ListOfUser)
+            foreach (string userCode in request.ListOfUser)
             {
-                var exists = await userInRoleRepository
-                    .Table.Where(u => u.UserCode == userCode && u.RoleId == model.RoleId)
+                UserInRole exists = await userInRoleRepository
+                    .Table.Where(u => u.UserCode == userCode && u.RoleId == request.RoleId)
                     .FirstOrDefaultAsync();
 
                 if (exists == null)
@@ -49,7 +40,7 @@ public class UpdateUserRoleHandle(IUserInRoleRepository userInRoleRepository)
                         new UserInRole
                         {
                             UserCode = userCode,
-                            RoleId = model.RoleId,
+                            RoleId = request.RoleId,
                             IsMain = "Y",
                             CreatedOnUtc = DateTime.UtcNow,
                             UpdatedOnUtc = DateTime.UtcNow,
@@ -66,8 +57,10 @@ public class UpdateUserRoleHandle(IUserInRoleRepository userInRoleRepository)
         else
         {
             // Bulk delete users from role
-            var toDelete = await userInRoleRepository
-                .Table.Where(u => model.ListOfUser.Contains(u.UserCode) && u.RoleId == model.RoleId)
+            List<UserInRole> toDelete = await userInRoleRepository
+                .Table.Where(u =>
+                    request.ListOfUser.Contains(u.UserCode) && u.RoleId == request.RoleId
+                )
                 .ToListAsync();
 
             if (toDelete.Count != 0)

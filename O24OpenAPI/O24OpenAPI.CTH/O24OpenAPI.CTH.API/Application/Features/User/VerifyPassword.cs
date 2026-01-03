@@ -1,12 +1,10 @@
 ﻿using LinKit.Core.Cqrs;
 using LinqToDB;
 using O24OpenAPI.APIContracts.Constants;
-using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.API.Application.Utils;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Extensions;
-using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User;
@@ -27,14 +25,8 @@ public class VerifyPasswordHandle(IUserPasswordRepository userPasswordRepository
         CancellationToken cancellationToken = default
     )
     {
-        var model = request.ToModel<VerifyPasswordModel>();
-        return await VerifyPasswordAsync(model);
-    }
-
-    public async Task<bool> VerifyPasswordAsync(VerifyPasswordModel model)
-    {
-        var userInfo = await userPasswordRepository
-            .Table.Where(s => s.ChannelId == model.ChannelId && s.UserId == model.UserCode)
+        UserPassword userInfo = await userPasswordRepository
+            .Table.Where(s => s.ChannelId == request.ChannelId && s.UserId == request.UserCode)
             .FirstOrDefaultAsync();
         if (userInfo == null)
         {
@@ -45,8 +37,8 @@ public class VerifyPasswordHandle(IUserPasswordRepository userPasswordRepository
         try
         {
             isPasswordValid = PasswordUtils.VerifyPassword(
-                usercode: model.UserCode,
-                password: model.Password,
+                usercode: request.UserCode,
+                password: request.Password,
                 storedHash: userInfo.Password,
                 storedSalt: userInfo.Salt
             );

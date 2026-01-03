@@ -71,7 +71,7 @@ public class GetUserCommandInfoFromParentIdHandler(
                 GroupMenuId = userCommand.GroupMenuId,
                 GroupMenuListAuthorizeForm = userCommand.GroupMenuListAuthorizeForm,
             }
-        ).OrderBy(s => s.RoleId).ThenBy(s => s.ParentId).ThenBy(s => s.CommandId).ToListAsync();
+        ).OrderBy(s => s.RoleId).ThenBy(s => s.ParentId).ThenBy(s => s.CommandId).ToListAsync(token: cancellationToken);
 
         return listLeftJoin;
     }

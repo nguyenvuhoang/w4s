@@ -6,7 +6,7 @@ using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Models;
 
-namespace O24OpenAPI.CTH.API.Application.Features.User;
+namespace O24OpenAPI.CTH.API.Application.Features.Auth;
 
 public class DeactivateSmartOTPAsyncCommand : BaseTransactionModel, ICommand<bool>
 {
@@ -18,7 +18,7 @@ public class DeactivateSmartOTPAsyncCommand : BaseTransactionModel, ICommand<boo
 }
 
 [CqrsHandler]
-public class DeactivateSmartOTPAsyncHandle(IUserAuthenRepository userAuthenRepository)
+public class DeactivateSmartOTPAsyncHandler(IUserAuthenRepository userAuthenRepository)
     : ICommandHandler<DeactivateSmartOTPAsyncCommand, bool>
 {
     [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_DEACTIVE_USER_AUTHEN)]
@@ -27,7 +27,7 @@ public class DeactivateSmartOTPAsyncHandle(IUserAuthenRepository userAuthenRepos
         CancellationToken cancellationToken = default
     )
     {
-        var existingAuthen = await userAuthenRepository.GetByUserCodeAsync(request.UserCode);
+        UserAuthen existingAuthen = await userAuthenRepository.GetByUserCodeAsync(request.UserCode);
 
         if (existingAuthen == null || existingAuthen.IsActive != true)
         {

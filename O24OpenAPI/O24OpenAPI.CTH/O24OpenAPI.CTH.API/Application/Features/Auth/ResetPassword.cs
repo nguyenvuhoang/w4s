@@ -20,9 +20,9 @@ using O24OpenAPI.Framework.Utils.O9;
 using O24OpenAPI.Logging.Helpers;
 using QRCoder;
 
-namespace O24OpenAPI.CTH.API.Application.Features.User;
+namespace O24OpenAPI.CTH.API.Application.Features.Auth;
 
-public class ResetPasswordAsyncCommand : BaseTransactionModel, ICommand<ResetPasswordResponseModel>
+public class ResetPasswordCommand : BaseTransactionModel, ICommand<ResetPasswordResponseModel>
 {
     public string UserCode { get; set; }
     public string PhoneNumber { get; set; }
@@ -30,25 +30,25 @@ public class ResetPasswordAsyncCommand : BaseTransactionModel, ICommand<ResetPas
 }
 
 [CqrsHandler]
-public class ResetPasswordAsyncHandle(
+public class ResetPasswordHandle(
     IUserAccountRepository userAccountRepository,
     IUserPasswordRepository userPasswordRepository,
     IUserSessionRepository userSessionRepository,
     IStaticCacheManager staticCacheManager,
     IUserDeviceRepository userDeviceRepository
-) : ICommandHandler<ResetPasswordAsyncCommand, ResetPasswordResponseModel>
+) : ICommandHandler<ResetPasswordCommand, ResetPasswordResponseModel>
 {
-    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_RESET_PASSWORD)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_USER_RESET_PASSWORD)]
     public async Task<ResetPasswordResponseModel> HandleAsync(
-        ResetPasswordAsyncCommand request,
+        ResetPasswordCommand request,
         CancellationToken cancellationToken = default
     )
     {
         try
         {
-            var usercode = request.UserCode;
+            string usercode = request.UserCode;
 
-            var userAccount =
+            UserAccount userAccount =
                 await userAccountRepository.GetByUserCodeAsync(usercode)
                 ?? throw await O24Exception.CreateAsync(
                     O24CTHResourceCode.Validation.UsernameIsNotExist,
@@ -56,7 +56,7 @@ public class ResetPasswordAsyncHandle(
                     [usercode]
                 );
 
-            var userAccountPassword =
+            UserPassword userAccountPassword =
                 await userPasswordRepository.GetByUserCodeAsync(usercode)
                 ?? throw await O24Exception.CreateAsync(
                     O24CTHResourceCode.Validation.PasswordDonotSetting,
@@ -76,12 +76,10 @@ public class ResetPasswordAsyncHandle(
             userAccount.Status = Common.ACTIVE;
             userAccount.Failnumber = 0;
             userAccount.IsFirstLogin = true;
-            await userAccountRepository.UpdateAsync(userAccount);
-            await RevokeByLoginName(userAccount.LoginName);
 
             if (userAccount.UserCode == request.CurrentUserCode)
             {
-                var userDevice =
+                Domain.AggregatesModel.UserAggregate.UserDevice userDevice =
                     await userDeviceRepository.GetByUserCodeAsync(userAccount.UserCode)
                     ?? throw await O24Exception.CreateAsync(
                         O24CTHResourceCode.Validation.UserDeviceNotExist,
@@ -89,7 +87,7 @@ public class ResetPasswordAsyncHandle(
                         [userAccount.UserCode]
                     );
 
-                var userPublishEvent = new DefaultModel
+                DefaultModel userPublishEvent = new()
                 {
                     UserCode = userAccount.UserCode,
                     UserName = userAccount.UserName,
@@ -97,8 +95,10 @@ public class ResetPasswordAsyncHandle(
                 };
                 await PublishEventUserLogout(userPublishEvent);
             }
+            await userAccountRepository.UpdateAsync(userAccount);
+            await RevokeByLoginName(userAccount.LoginName);
 
-            var payload = BuildResetPasswordNotification(
+            ResetPasswordResponseModel payload = BuildResetPasswordNotification(
                 usercode,
                 request.PhoneNumber,
                 userAccount,
@@ -123,11 +123,11 @@ public class ResetPasswordAsyncHandle(
 
     public async Task RevokeByLoginName(string loginName)
     {
-        var sessions = await userSessionRepository
+        List<UserSession> sessions = await userSessionRepository
             .Table.Where(x => x.LoginName == loginName && !x.IsRevoked)
             .ToListAsync();
 
-        foreach (var session in sessions)
+        foreach (UserSession session in sessions)
         {
             session.IsRevoked = true;
             session.ExpiresAt = DateTime.UtcNow;
@@ -138,8 +138,8 @@ public class ResetPasswordAsyncHandle(
 
     public static async Task PublishEventUserLogout(DefaultModel userLogoutEvent)
     {
-        var eventBus = EngineContext.Current.Resolve<IEventBus>();
-        var @event = new UserLogoutEvent
+        IEventBus eventBus = EngineContext.Current.Resolve<IEventBus>();
+        UserLogoutEvent @event = new()
         {
             UserCode = userLogoutEvent.UserCode,
             UserName = userLogoutEvent.UserName,
@@ -151,7 +151,7 @@ public class ResetPasswordAsyncHandle(
             @event.UserName,
             @event.DeviceId
         );
-        var cancellationToken = new CancellationToken();
+        CancellationToken cancellationToken = new();
         await eventBus.PublishAsync(@event, cancellationToken);
     }
 
@@ -162,27 +162,25 @@ public class ResetPasswordAsyncHandle(
         string newPassword
     )
     {
-        var smsData = new Dictionary<string, object> { { "0", newPassword } };
+        Dictionary<string, object> smsData = new() { { "0", newPassword } };
 
-        var nameParts = new[]
-        {
-            userAccount.FirstName,
-            userAccount.MiddleName,
-            userAccount.LastName,
-        };
-        var fullname = string.Join(" ", nameParts.Where(part => !string.IsNullOrWhiteSpace(part)));
+        string[] nameParts = [userAccount.FirstName, userAccount.MiddleName, userAccount.LastName];
+        string fullname = string.Join(
+            " ",
+            nameParts.Where(part => !string.IsNullOrWhiteSpace(part))
+        );
 
-        var qrImageBytes = GenerateQRCodeBytes(newPassword);
-        var mimeEntities = new List<DTSMimeEntityModel>
-        {
+        byte[] qrImageBytes = GenerateQRCodeBytes(newPassword);
+        List<DTSMimeEntityModel> mimeEntities =
+        [
             new()
             {
                 ContentType = "image/png",
                 ContentId = "qr",
                 Base64 = Convert.ToBase64String(qrImageBytes),
             },
-        };
-        var emailDataTemplate = new Dictionary<string, object>
+        ];
+        Dictionary<string, object> emailDataTemplate = new()
         {
             { "usercode", usercode },
             { "fullname", fullname },
@@ -211,9 +209,9 @@ public class ResetPasswordAsyncHandle(
             throw new ArgumentException("Content cannot be null or empty.", nameof(content));
         }
 
-        using var qrGenerator = new QRCodeGenerator();
-        var qrData = qrGenerator.CreateQrCode(content, QRCodeGenerator.ECCLevel.Q);
-        var qrCode = new PngByteQRCode(qrData);
+        using QRCodeGenerator qrGenerator = new();
+        QRCodeData qrData = qrGenerator.CreateQrCode(content, QRCodeGenerator.ECCLevel.Q);
+        PngByteQRCode qrCode = new(qrData);
         return qrCode.GetGraphic(20);
     }
 }

@@ -180,7 +180,7 @@ public class ChangeDeviceHandle(
             Device = context.DeviceId + context.Modelname ?? "",
         };
 
-        await userSessionRepository.Insert(session);
+        await userSessionRepository.AddAsync(session);
         return new AuthResponseModel { Token = token, RefreshToken = refreshToken };
     }
 }

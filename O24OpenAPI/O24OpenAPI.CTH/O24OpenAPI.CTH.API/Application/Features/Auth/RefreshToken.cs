@@ -12,7 +12,7 @@ using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Framework.Services;
 
-namespace O24OpenAPI.CTH.API.Application.Features.User;
+namespace O24OpenAPI.CTH.API.Application.Features.Auth;
 
 public class RefreshTokenAsyncCommand : BaseTransactionModel, ICommand<AuthResponseModel>
 {
@@ -35,7 +35,7 @@ public class RefreshTokenAsyncHandle(
         CancellationToken cancellationToken = default
     )
     {
-        var userSessions =
+        UserSession userSessions =
             await userSessionRepository.GetByRefreshToken(request.RefreshToken)
             ?? throw await O24Exception.CreateAsync(
                 O24CTHResourceCode.Operation.InvalidSessionRefresh,
@@ -43,9 +43,9 @@ public class RefreshTokenAsyncHandle(
                 request.CurrentUserCode
             );
 
-        var loginName = userSessions.LoginName;
+        string loginName = userSessions.LoginName;
 
-        var validateSessionModel = await CheckValidSingleSession(loginName, request.Language);
+        ValidateSessionModel validateSessionModel = await CheckValidSingleSession(loginName, request.Language);
         if (!validateSessionModel.IsValid)
         {
             throw await O24Exception.CreateWithNextActionAsync(
@@ -56,9 +56,9 @@ public class RefreshTokenAsyncHandle(
             );
         }
 
-        var userAccount = await userAccountRepository.GetByLoginNameAsync(loginName);
-        var currentTime = DateTime.UtcNow;
-        var expireTime = currentTime.AddDays(Convert.ToDouble(webApiSettings.TokenLifetimeDays));
+        UserAccount userAccount = await userAccountRepository.GetByLoginNameAsync(loginName);
+        DateTime currentTime = DateTime.UtcNow;
+        DateTime expireTime = currentTime.AddDays(Convert.ToDouble(webApiSettings.TokenLifetimeDays));
 
         if (userAccount.Status != Common.ACTIVE)
         {
@@ -69,8 +69,8 @@ public class RefreshTokenAsyncHandle(
             );
         }
 
-        var token = jwtTokenService.GetNewJwtToken(
-            new O24OpenAPI.Core.Domain.Users.User
+        string token = jwtTokenService.GetNewJwtToken(
+            new Core.Domain.Users.User
             {
                 Id = userAccount.Id,
                 Username = userAccount.UserName,
@@ -82,7 +82,7 @@ public class RefreshTokenAsyncHandle(
             ((DateTimeOffset)expireTime).ToUnixTimeSeconds()
         );
 
-        var refreshToken = JwtTokenService.GenerateRefreshToken();
+        string refreshToken = JwtTokenService.GenerateRefreshToken();
 
         await RevokeByLoginName(loginName);
 
@@ -103,7 +103,7 @@ public class RefreshTokenAsyncHandle(
             UserName = userAccount.UserName,
         };
 
-        await userSessionRepository.Insert(userSession);
+        await userSessionRepository.AddAsync(userSession);
 
         userAccount.LastLoginTime = DateTime.Now;
         userAccount.UUID = Guid.NewGuid().ToString();
@@ -115,12 +115,12 @@ public class RefreshTokenAsyncHandle(
         return new AuthResponseModel { Token = token, RefreshToken = refreshToken };
     }
 
-    public async Task<ValidateSessionModel> CheckValidSingleSession(
+    private async Task<ValidateSessionModel> CheckValidSingleSession(
         string loginName,
         string language = "en"
     )
     {
-        var session =
+        UserSession session =
             await userSessionRepository.GetActiveByLoginName(loginName)
             ?? throw await O24Exception.CreateAsync(
                 O24CTHResourceCode.Operation.InvalidSessionStatus,
@@ -136,13 +136,13 @@ public class RefreshTokenAsyncHandle(
         return sessionModel;
     }
 
-    public async Task RevokeByLoginName(string loginName)
+    private async Task RevokeByLoginName(string loginName)
     {
-        var sessions = await userSessionRepository
+        List<UserSession> sessions = await userSessionRepository
             .Table.Where(x => x.LoginName == loginName && !x.IsRevoked)
             .ToListAsync();
 
-        foreach (var session in sessions)
+        foreach (UserSession session in sessions)
         {
             session.IsRevoked = true;
             session.ExpiresAt = DateTime.UtcNow;

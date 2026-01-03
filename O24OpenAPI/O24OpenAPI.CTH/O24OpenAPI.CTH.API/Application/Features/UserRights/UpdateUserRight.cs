@@ -11,11 +11,7 @@ namespace O24OpenAPI.CTH.API.Application.Features.UserRights;
 
 public class UpdateUserRightCommand : BaseTransactionModel, ICommand<bool>
 {
-    public int RoleId { get; set; }
-    public bool Invoke { get; set; }
-    public bool Approve { get; set; }
-    public string CommandId { get; set; }
-    public string CommandIdDetail { get; set; } = "A";
+    public List<UserRightModel> ListUserRight { get; set; }
 }
 
 [CqrsHandler]
@@ -25,41 +21,32 @@ public class UpdateUserRightHandle(
     IUserRoleRepository userRoleRepository
 ) : ICommandHandler<UpdateUserRightCommand, bool>
 {
-    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_BO_GET_USER_BY_ROLE)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_UPDATE_RIGHT)]
     public async Task<bool> HandleAsync(
         UpdateUserRightCommand request,
         CancellationToken cancellationToken = default
     )
     {
-        var model = request.ToModel<UserRightUpdateModel>();
-        if (model == null)
-            return false;
-
-        return await UpdateUserRightAsync(model);
-    }
-
-    public async Task<bool> UpdateUserRightAsync(UserRightUpdateModel model)
-    {
-        foreach (var item in model.ListUserRight)
+        foreach (UserRightModel item in request.ListUserRight)
         {
-            var getInfoFromCommandId =
-                await GetInfoFromCommandId(model.ChannelId, item.CommandId) ?? [];
+            List<UserCommandResponseModel> getInfoFromCommandId =
+                await GetInfoFromCommandId(request.ChannelId, item.CommandId) ?? [];
 
             if (getInfoFromCommandId.Count > 0)
             {
-                var getCommand = getInfoFromCommandId
+                UserCommandResponseModel getCommand = getInfoFromCommandId
                     .Where(s => s.CommandId == item.CommandId)
                     .FirstOrDefault();
                 if (getCommand != null)
                 {
-                    var parentRight = await userRightRepository.GetByRoleIdAndCommandIdAsync(
+                    UserRight parentRight = await userRightRepository.GetByRoleIdAndCommandIdAsync(
                         item.RoleId,
                         getCommand.ParentId
                     );
 
                     if (parentRight == null)
                     {
-                        var newUserRight = new UserRight
+                        UserRight newUserRight = new()
                         {
                             RoleId = item.RoleId,
                             CommandId = getCommand.ParentId,
@@ -74,7 +61,7 @@ public class UpdateUserRightHandle(
                 }
             }
 
-            var entity = await userRightRepository.GetByRoleIdAndCommandIdAsync(
+            UserRight entity = await userRightRepository.GetByRoleIdAndCommandIdAsync(
                 item.RoleId,
                 item.CommandId
             );
@@ -97,7 +84,7 @@ public class UpdateUserRightHandle(
         string commandId
     )
     {
-        var listLeftJoin = await (
+        List<UserCommandResponseModel> listLeftJoin = await (
             from userCommand in userCommandRepository.Table
             join userRight in userRightRepository.Table
                 on userCommand.CommandId equals userRight.CommandId

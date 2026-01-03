@@ -4,7 +4,6 @@ using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.Core;
 using O24OpenAPI.CTH.API.Application.Constants;
 using O24OpenAPI.CTH.API.Application.Models;
-using O24OpenAPI.CTH.API.Application.Models.Roles;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.Framework.Attributes;
@@ -21,56 +20,41 @@ public class GetUserByRoleIdCommand
     public int RoleId { get; set; }
     public int PageIndex { get; set; } = 1;
     public int PageSize { get; set; } = 20;
-    public string? Language { get; set; }
 }
 
 [CqrsHandler]
 public class GetUserByRoleIdHandle(
     IUserAccountRepository userAccountRepository,
     IUserInRoleRepository userInRoleRepository
-)
-    : ICommandHandler<
-        GetUserByRoleIdCommand,
-        PagedListModel<UserAccount, UserAccountResponseModel>
-    >
+) : ICommandHandler<GetUserByRoleIdCommand, PagedListModel<UserAccount, UserAccountResponseModel>>
 {
-    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_BO_GET_USER_BY_ROLE)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_GET_USER_BY_ROLE)]
     public async Task<PagedListModel<UserAccount, UserAccountResponseModel>> HandleAsync(
         GetUserByRoleIdCommand request,
         CancellationToken cancellationToken = default
     )
     {
-        var model = new ModelWithRoleId
-        {
-            RoleId = request.RoleId,
-            PageIndex = request.PageIndex,
-            PageSize = request.PageSize,
-            Language = request.Language,
-        };
-
-        var response = await GetUserByRoleIdASync(model);
-        return response.ToPagedListModel<UserAccount, UserAccountResponseModel>();
-    }
-
-    public async Task<IPagedList<UserAccount>> GetUserByRoleIdASync(ModelWithRoleId model)
-    {
-        var userList = await userInRoleRepository.GetUserInRolesByRoleIdAsync(model.RoleId);
+        List<UserInRole> userList = await userInRoleRepository.GetUserInRolesByRoleIdAsync(
+            request.RoleId
+        );
         if (userList == null || userList.Count == 0)
         {
             throw await O24Exception.CreateAsync(
                 O24CTHResourceCode.Validation.UserNotFoundByRoleId,
-                model.Language,
-                [model.RoleId.ToString()]
+                request.Language,
+                [request.RoleId.ToString()]
             );
         }
 
-        var userCodes = userList.Select(u => u.UserCode).ToList();
+        List<string> userCodes = userList.Select(u => u.UserCode).ToList();
 
-        var users = await userAccountRepository
+        List<UserAccount> users = await userAccountRepository
             .Table.Where(s => userCodes.Contains(s.UserCode))
             .ToListAsync();
 
-        var pageList = await users.AsQueryable().ToPagedList(model.PageIndex, model.PageSize);
-        return pageList;
+        IPagedList<UserAccount> pageList = await users
+            .AsQueryable()
+            .ToPagedList(request.PageIndex, request.PageSize);
+        return pageList.ToPagedListModel<UserAccount, UserAccountResponseModel>();
     }
 }

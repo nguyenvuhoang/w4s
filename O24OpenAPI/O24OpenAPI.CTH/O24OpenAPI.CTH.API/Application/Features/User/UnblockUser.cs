@@ -2,10 +2,8 @@
 using LinqToDB;
 using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.CTH.API.Application.Constants;
-using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
-using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User;
@@ -25,14 +23,8 @@ public class UnblockUserHandle(IUserAccountRepository userAccountRepository)
         CancellationToken cancellationToken = default
     )
     {
-        var model = request.ToModel<UnblockUserModel>();
-        return await UnBlockUserAsync(model);
-    }
-
-    public async Task<bool> UnBlockUserAsync(UnblockUserModel model)
-    {
-        var entity = await userAccountRepository.Table.FirstOrDefaultAsync(x =>
-            x.UserName == model.UserName
+        UserAccount entity = await userAccountRepository.Table.FirstOrDefaultAsync(x =>
+            x.UserName == request.UserName
         );
 
         if (entity != null)

@@ -16,7 +16,7 @@ using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Framework.Services;
 
-namespace O24OpenAPI.CTH.API.Application.Features.User;
+namespace O24OpenAPI.CTH.API.Application.Features.Auth;
 
 public class LoginCommand : BaseTransactionModel, ICommand<AuthResponseModel>
 {
@@ -113,7 +113,7 @@ public class LoginHandler(
         if (string.IsNullOrEmpty(token))
         {
             token = jwtTokenService.GetNewJwtToken(
-                new O24OpenAPI.Core.Domain.Users.User
+                new Core.Domain.Users.User
                 {
                     Id = int.Parse(model.UserId),
                     Username = model.LoginName,
@@ -155,7 +155,7 @@ public class LoginHandler(
             UserName = model.UserName,
         };
 
-        await userSessionRepository.Insert(userSession);
+        await userSessionRepository.AddAsync(userSession);
 
         return new AuthResponseModel
         {
@@ -202,7 +202,7 @@ public class LoginHandler(
         );
 
         string token = jwtTokenService.GetNewJwtToken(
-            new O24OpenAPI.Core.Domain.Users.User
+            new Core.Domain.Users.User
             {
                 Id = userAccount.Id,
                 Username = userAccount.UserName,
@@ -242,7 +242,7 @@ public class LoginHandler(
             UserName = userAccount.UserName,
             Device = (model.DeviceId + model.Modelname) ?? "",
         };
-        await userSessionRepository.Insert(userSession);
+        await userSessionRepository.AddAsync(userSession);
 
         userAccount.LastLoginTime = DateTime.Now;
         userAccount.UUID = $"{Guid.NewGuid()}";
@@ -285,7 +285,7 @@ public class LoginHandler(
         );
 
         string token = jwtTokenService.GetNewJwtToken(
-            new O24OpenAPI.Core.Domain.Users.User
+            new Core.Domain.Users.User
             {
                 Id = userAccount.Id,
                 LoginName = userAccount.LoginName,
@@ -318,7 +318,7 @@ public class LoginHandler(
             UserName = userAccount.UserName,
             Device = (request.DeviceId + request.Modelname) ?? "",
         };
-        await userSessionRepository.Insert(userSession);
+        await userSessionRepository.AddAsync(userSession);
 
         await userDeviceRepository.EnsureUserDeviceAsync(
            userCode: userAccount.UserCode,

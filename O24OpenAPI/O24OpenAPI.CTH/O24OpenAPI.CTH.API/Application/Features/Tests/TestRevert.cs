@@ -28,7 +28,7 @@ public class TestRevertCommandHandler(IRepository<Test> repository)
         //Test test = new() { Name = request.Name, Amount = request.Amount };
 
         //await repository.InsertAsync(test);
-        Test test = await repository.Table.Where(s => s.Name == request.Name).FirstOrDefaultAsync();
+        Test test = await repository.Table.Where(s => s.Name == request.Name).FirstOrDefaultAsync(token: cancellationToken);
         await repository.Delete(test);
 
         return true;

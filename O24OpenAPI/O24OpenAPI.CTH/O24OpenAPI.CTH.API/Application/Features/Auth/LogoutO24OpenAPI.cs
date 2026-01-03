@@ -8,9 +8,9 @@ using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
 
-namespace O24OpenAPI.CTH.API.Application.Features.User;
+namespace O24OpenAPI.CTH.API.Application.Features.Auth;
 
-public class LogoutHandleCommand : BaseTransactionModel, ICommand<bool>
+public class LogoutO24OpenAPICommand : BaseTransactionModel, ICommand<bool>
 {
     /// <summary>
     /// Gets or sets the value of the login name
@@ -74,19 +74,19 @@ public class LogoutHandleCommand : BaseTransactionModel, ICommand<bool>
 }
 
 [CqrsHandler]
-public class LogoutHandle(IUserAccountRepository userAccountRepository)
-    : ICommandHandler<LogoutHandleCommand, bool>
+public class LogoutO24OpenAPIHandle(IUserAccountRepository userAccountRepository)
+    : ICommandHandler<LogoutO24OpenAPICommand, bool>
 {
     [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_LOGOUT)]
     public async Task<bool> HandleAsync(
-        LogoutHandleCommand request,
+        LogoutO24OpenAPICommand request,
         CancellationToken cancellationToken = default
     )
     {
         try
         {
-            var loginName = request.LoginName;
-            var channelid = request.ChannelId;
+            string loginName = request.LoginName;
+            string channelid = request.ChannelId;
 
             var userAccount =
                 await userAccountRepository.GetByLoginNameandChannelAsync(loginName, channelid)

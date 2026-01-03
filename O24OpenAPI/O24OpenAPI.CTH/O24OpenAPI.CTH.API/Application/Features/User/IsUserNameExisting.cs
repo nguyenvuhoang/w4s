@@ -2,11 +2,9 @@
 using LinqToDB;
 using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.CTH.API.Application.Constants;
-using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
-using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User;
@@ -28,22 +26,17 @@ public class IsUserNameExistingHandle(IUserAccountRepository userAccountReposito
         CancellationToken cancellationToken = default
     )
     {
-        var model = request.ToModel<DefaultModel>();
-        return await IsUserNameExistingAsync(model);
-    }
-
-    public async Task<bool> IsUserNameExistingAsync(DefaultModel model)
-    {
-        var existingUserName = await userAccountRepository.Table.FirstOrDefaultAsync(c =>
-            c.UserName == model.UserName.Trim() && c.UserCode == model.UserCode.Trim()
+        UserAccount existingUserName = await userAccountRepository.Table.FirstOrDefaultAsync(
+            c => c.UserName == request.UserName.Trim() && c.UserCode == request.UserCode.Trim(),
+            cancellationToken
         );
 
         if (existingUserName != null)
         {
             throw await O24Exception.CreateAsync(
                 O24CTHResourceCode.Validation.UsernameIsNotExist,
-                model.Language,
-                [model.UserName]
+                request.Language,
+                [request.UserName]
             );
         }
         return true;

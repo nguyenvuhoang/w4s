@@ -1,9 +1,7 @@
 ﻿using LinKit.Core.Cqrs;
 using O24OpenAPI.APIContracts.Constants;
-using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
-using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Application.Features.User;
@@ -24,29 +22,25 @@ public class SyncUserInfoHandle(IUserAccountRepository userAccountRepository)
         CancellationToken cancellationToken = default
     )
     {
-        var model = request.ToModel<SyncUserInfoModel>();
-        return await SyncUserInfoAsync(model);
-    }
-
-    public async Task<bool> SyncUserInfoAsync(SyncUserInfoModel model)
-    {
-        if (model == null)
+        if (request == null)
         {
             return false;
         }
 
-        if (string.IsNullOrWhiteSpace(model.ContractNumber))
+        if (string.IsNullOrWhiteSpace(request.ContractNumber))
         {
             return false;
         }
 
-        var user = await userAccountRepository.GetUserByContractNumber(model.ContractNumber.Trim());
+        UserAccount user = await userAccountRepository.GetUserByContractNumber(
+            request.ContractNumber.Trim()
+        );
         if (user == null)
         {
             return false;
         }
 
-        var newPhone = NormalizePhone(model.PhoneNumber);
+        var newPhone = NormalizePhone(request.PhoneNumber);
         if (string.IsNullOrWhiteSpace(newPhone))
         {
             return false;
@@ -59,7 +53,7 @@ public class SyncUserInfoHandle(IUserAccountRepository userAccountRepository)
 
         user.Phone = newPhone;
         user.UpdatedOnUtc = DateTime.UtcNow;
-        user.UserModified = model.CurrentUserCode ?? "SYSTEM";
+        user.UserModified = request.CurrentUserCode ?? "SYSTEM";
 
         await userAccountRepository.Update(user);
         return true;

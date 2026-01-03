@@ -10,7 +10,7 @@ using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Framework.Utils.O9;
 
-namespace O24OpenAPI.CTH.API.Application.Features.User;
+namespace O24OpenAPI.CTH.API.Application.Features.Auth;
 
 public class ChangeOwnerPasswordAsyncCommand : BaseTransactionModel, ICommand<bool>
 {

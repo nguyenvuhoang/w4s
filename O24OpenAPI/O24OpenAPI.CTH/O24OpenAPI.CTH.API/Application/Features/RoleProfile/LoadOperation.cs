@@ -8,7 +8,7 @@ using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Models;
 
-namespace O24OpenAPI.CTH.API.Application.Features.User;
+namespace O24OpenAPI.CTH.API.Application.Features.RoleProfile;
 
 public class LoadOperationCommand : BaseTransactionModel, ICommand<JObject>
 {
@@ -16,7 +16,7 @@ public class LoadOperationCommand : BaseTransactionModel, ICommand<JObject>
 }
 
 [CqrsHandler]
-public class LoadOperationHandle(
+public class LoadOperationHandler(
     IUserCommandRepository userCommandRepository,
     IUserRoleRepository userRoleRepository,
     IUserRightRepository userRightRepository
@@ -28,7 +28,7 @@ public class LoadOperationHandle(
         CancellationToken cancellationToken = default
     )
     {
-        var model = new UserCommandRequestModel
+        UserCommandRequestModel model = new()
         {
             CommandId = request.CommandId,
             ChannelId = request.ChannelId,
@@ -37,38 +37,36 @@ public class LoadOperationHandle(
         return LoadRoleOperationAsync(model);
     }
 
-    public async Task<JObject> LoadRoleOperationAsync(UserCommandRequestModel model)
+    private async Task<JObject> LoadRoleOperationAsync(UserCommandRequestModel model)
     {
-        var result = new JObject();
+        JObject result = [];
 
         if (string.IsNullOrEmpty(model.CommandId) || string.IsNullOrEmpty(model.ChannelId))
         {
-            result["error"] =
-                $"Missing CommandId {model.CommandId} or ChannelId {model.ChannelId}";
+            result["error"] = $"Missing CommandId {model.CommandId} or ChannelId {model.ChannelId}";
             return result;
         }
 
-        var command_id = model.CommandId;
-        var app = model.ChannelId;
+        string command_id = model.CommandId;
+        string app = model.ChannelId;
 
-        var getOperationData = await GetUserCommandInfoFromParentId(app, command_id);
-        var getCommandsFromCommand =
+        List<CommandIdInfoModel> getOperationData = await GetUserCommandInfoFromParentId(
+            app,
+            command_id
+        );
+        List<CommandIdInfoModel> getCommandsFromCommand =
             await GetUserCommandInfoFromCommandId(app, command_id) ?? [];
 
         getCommandsFromCommand.AddRange(getOperationData ?? []);
         getCommandsFromCommand = [.. getCommandsFromCommand.OrderBy(x => x.RoleId)];
 
-        var operationHeader = getCommandsFromCommand
+        List<OperationHeaderModel> operationHeader = getCommandsFromCommand
             .Where(s => s.ParentId == command_id && s.CommandType == "C")
-            .Select(s => new OperationHeaderModel
-            {
-                cmdid = s.CommandId,
-                caption = s.CommandName,
-            })
+            .Select(s => new OperationHeaderModel { cmdid = s.CommandId, caption = s.CommandName })
             .DistinctBy(p => p.cmdid)
             .ToList();
 
-        var operationBody = getCommandsFromCommand
+        List<CommandIdInfoModel> operationBody = getCommandsFromCommand
             .Where(s => s.CommandId == command_id || s.CommandType == "C")
             .ToList();
 
@@ -78,12 +76,12 @@ public class LoadOperationHandle(
         return result;
     }
 
-    public virtual async Task<List<CommandIdInfoModel>> GetUserCommandInfoFromParentId(
+    private async Task<List<CommandIdInfoModel>> GetUserCommandInfoFromParentId(
         string applicationCode,
         string parentId
     )
     {
-        var listLeftJoin = await (
+        List<CommandIdInfoModel> listLeftJoin = await (
             from userCommand in userCommandRepository.Table.Where(s =>
                 s.ApplicationCode == applicationCode && s.ParentId == parentId && s.Enabled
             )
@@ -134,12 +132,12 @@ public class LoadOperationHandle(
         return listLeftJoin;
     }
 
-    public virtual async Task<List<CommandIdInfoModel>> GetUserCommandInfoFromCommandId(
+    private async Task<List<CommandIdInfoModel>> GetUserCommandInfoFromCommandId(
         string applicationCode,
         string commandId
     )
     {
-        var listLeftJoin = await (
+        List<CommandIdInfoModel> listLeftJoin = await (
             from userCommand in userCommandRepository.Table.Where(s =>
                 s.ApplicationCode == applicationCode && s.CommandId == commandId && s.Enabled
             )
