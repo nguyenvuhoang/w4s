@@ -25,7 +25,9 @@ public class AccountChartRepository(
 
     public virtual bool IsAccountNumberExist(string acno)
     {
-        AccountChart? accountchart = Table.Where(c => c.AccountNumber.Equals(acno)).FirstOrDefault();
+        AccountChart? accountchart = Table
+            .Where(c => c.AccountNumber.Equals(acno))
+            .FirstOrDefault();
         return accountchart != null;
     }
 }

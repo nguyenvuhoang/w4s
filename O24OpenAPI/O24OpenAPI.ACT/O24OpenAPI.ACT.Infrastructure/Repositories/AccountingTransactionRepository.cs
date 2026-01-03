@@ -2,6 +2,7 @@
 // Generated to match CTH/NCH repository pattern.
 // </auto-generated>
 
+using LinKit.Core.Abstractions;
 using LinqToDB;
 using O24OpenAPI.ACT.Domain.AggregatesModel.TransactionAggregate;
 using O24OpenAPI.Core.Caching;
@@ -9,6 +10,7 @@ using O24OpenAPI.Data;
 
 namespace O24OpenAPI.ACT.Infrastructure.Repositories;
 
+[RegisterService(Lifetime.Scoped)]
 public class AccountingTransactionRepository(
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
