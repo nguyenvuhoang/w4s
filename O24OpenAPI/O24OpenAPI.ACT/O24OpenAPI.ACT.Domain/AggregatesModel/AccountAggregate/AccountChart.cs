@@ -1,3 +1,4 @@
+using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.ACT.Domain.AggregatesModel.AccountAggregate;
@@ -5,6 +6,7 @@ namespace O24OpenAPI.ACT.Domain.AggregatesModel.AccountAggregate;
 /// <summary>
 /// AccountChart
 /// </summary>
+[Auditable]
 public partial class AccountChart : BaseEntity
 {
     /// <summary>
@@ -111,14 +113,4 @@ public partial class AccountChart : BaseEntity
     /// ReferencesNumber
     /// </summary>
     public string? ReferencesNumber { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    public DateTime? CreatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    public DateTime? UpdatedOnUtc { get; set; }
 }

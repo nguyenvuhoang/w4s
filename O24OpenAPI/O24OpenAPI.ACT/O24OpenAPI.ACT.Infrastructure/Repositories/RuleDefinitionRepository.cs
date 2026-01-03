@@ -12,6 +12,6 @@ public class RuleDefinitionRepository(
     IStaticCacheManager staticCacheManager
 ) : EntityRepository<RuleDefinition>(dataProvider, staticCacheManager), IRuleDefinitionRepository
 {
-    public Task<RuleDefinition?> GetByCodeAsync(string code) =>
-        Table.FirstOrDefaultAsync(x => x.RuleName == code);
+    public async Task<RuleDefinition?> GetByCodeAsync(string code) =>
+        await Table.FirstOrDefaultAsync(x => x.RuleName == code);
 }

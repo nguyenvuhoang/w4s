@@ -1,3 +1,5 @@
+using O24OpenAPI.ACT.API.Application.Extensions;
+using O24OpenAPI.ACT.Infrastructure.Extensions;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
@@ -15,12 +17,13 @@ builder.Services.ConfigureApplicationServices(builder);
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
+
 //builder.AddBackgroundJobs("StaticConfig/BackgroundJobsConfig.json");
 if (!builder.Environment.IsDevelopment())
 {
     builder.ConfigureWebHost();
 }
-
+builder.Services.AddACTInfrastructureService().AddACTApplicationServices();
 WebApplication app = builder.Build();
 app.UseHttpsRedirection();
 app.UseAuthorization();

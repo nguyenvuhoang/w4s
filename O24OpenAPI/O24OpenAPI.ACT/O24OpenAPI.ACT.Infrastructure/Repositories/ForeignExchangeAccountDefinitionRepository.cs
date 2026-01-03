@@ -14,6 +14,8 @@ public class ForeignExchangeAccountDefinitionRepository(
     : EntityRepository<ForeignExchangeAccountDefinition>(dataProvider, staticCacheManager),
         IForeignExchangeAccountDefinitionRepository
 {
-    public Task<ForeignExchangeAccountDefinition?> GetByCodeAsync(string fxCode) =>
-        Table.FirstOrDefaultAsync(x => x.AccountCurrency == fxCode || x.ClearingCurrency == fxCode);
+    public async Task<ForeignExchangeAccountDefinition?> GetByCodeAsync(string fxCode) =>
+        await Table.FirstOrDefaultAsync(x =>
+            x.AccountCurrency == fxCode || x.ClearingCurrency == fxCode
+        );
 }

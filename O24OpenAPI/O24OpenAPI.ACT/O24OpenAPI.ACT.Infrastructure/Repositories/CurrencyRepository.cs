@@ -12,8 +12,8 @@ public class CurrencyRepository(
     IStaticCacheManager staticCacheManager
 ) : EntityRepository<Currency>(dataProvider, staticCacheManager), ICurrencyRepository
 {
-    public Task<Currency?> GetByCodeAsync(string currencyCode) =>
-        Table.FirstOrDefaultAsync(x =>
+    public async Task<Currency?> GetByCodeAsync(string currencyCode) =>
+        await Table.FirstOrDefaultAsync(x =>
             x.CurrencyId == currencyCode || x.ShortCurrencyId == currencyCode
         );
 }

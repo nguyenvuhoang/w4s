@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.ACT.Domain.AggregatesModel.AccountAggregate;
@@ -6,6 +7,7 @@ namespace O24OpenAPI.ACT.Domain.AggregatesModel.AccountAggregate;
 /// <summary>
 /// Account Balance
 /// </summary>
+[Auditable]
 public partial class AccountBalance : BaseEntity
 {
     /// <summary>

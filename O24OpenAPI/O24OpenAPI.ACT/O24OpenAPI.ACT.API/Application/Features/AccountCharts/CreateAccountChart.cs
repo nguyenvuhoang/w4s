@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using LinKit.Core.Cqrs;
+﻿using LinKit.Core.Cqrs;
 using LinqToDB;
 using O24OpenAPI.ACT.API.Application.Models;
 using O24OpenAPI.ACT.Config;
@@ -12,6 +11,7 @@ using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 using O24OpenAPI.Framework.Models;
+using System.Text.Json;
 
 namespace O24OpenAPI.ACT.API.Application.Features.AccountCharts;
 
@@ -20,51 +20,26 @@ public class CreateAccountChartCommand
         ICommand<AccountChartCRUDReponseModel>
 {
     public string AccountNumber { get; set; }
-
     public string CurrencyCode { get; set; }
-
     public string BranchCode { get; set; }
-
     public string ParentAccountId { get; set; }
-
     public int AccountLevel { get; set; }
-
     public bool IsAccountLeave { get; set; }
-
     public string BalanceSide { get; set; }
-
     public string ReverseBalance { get; set; }
-
     public string PostingSide { get; set; }
-
     public string AccountName { get; set; }
-
     public string ShortAccountName { get; set; }
-
     public string MultiValueName { get; set; }
-
     public string AccountClassification { get; set; }
-
     public string AccountCategories { get; set; }
-
     public string AccountGroup { get; set; }
-
     public string DirectPosting { get; set; }
-
     public string IsVisible { get; set; }
-
     public string IsMultiCurrency { get; set; }
-
     public string JobProcessOption { get; set; }
-
     public string RefAccountNumber { get; set; }
-
     public string ReferencesNumber { get; set; }
-
-    public DateTime? CreatedOnUtc { get; set; }
-
-    public DateTime? UpdatedOnUtc { get; set; }
-    public string referenceId { get; set; }
 }
 
 [CqrsHandler]
@@ -82,7 +57,7 @@ public class CreateHandle(
     )
     {
         AccountChart chart = request.ToAccountChart();
-        if (accountChartRepository.IsAccountNumberExist(chart.AccountNumber))
+        if (await accountChartRepository.IsAccountNumberExist(chart.AccountNumber))
         {
             throw new O24OpenAPIException("Bank Account Number " + chart.AccountNumber);
         }
@@ -137,7 +112,7 @@ public class CreateHandle(
 
     public async Task<GetCurrencyResponse> GetCurrency(string currencyId)
     {
-        Currency? currency = await currencyRepository
+        Currency currency = await currencyRepository
             .Table.Where(c => c.CurrencyId.Equals(currencyId) && c.StatusOfCurrency.Equals("A"))
             .FirstOrDefaultAsync();
         if (currency == null)

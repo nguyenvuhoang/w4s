@@ -1,5 +1,4 @@
 using LinKit.Core.Abstractions;
-using LinqToDB;
 using O24OpenAPI.ACT.Domain.AggregatesModel.RulesAggregate;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Data;

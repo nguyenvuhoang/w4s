@@ -9,5 +9,5 @@ public interface IAccountChartRepository : IRepository<AccountChart>
         string branchCode,
         string currencyCode
     );
-    bool IsAccountNumberExist(string acno);
+    Task<bool> IsAccountNumberExist(string acno);
 }

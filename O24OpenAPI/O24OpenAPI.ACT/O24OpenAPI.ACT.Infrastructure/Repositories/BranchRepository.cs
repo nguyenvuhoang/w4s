@@ -12,6 +12,6 @@ public class BranchRepository(
     IStaticCacheManager staticCacheManager
 ) : EntityRepository<Branch>(dataProvider, staticCacheManager), IBranchRepository
 {
-    public Task<Branch?> GetByCodeAsync(string branchCode) =>
-        Table.FirstOrDefaultAsync(x => x.BranchCode == branchCode);
+    public async Task<Branch?> GetByCodeAsync(string branchCode) =>
+        await Table.FirstOrDefaultAsync(x => x.BranchCode == branchCode);
 }

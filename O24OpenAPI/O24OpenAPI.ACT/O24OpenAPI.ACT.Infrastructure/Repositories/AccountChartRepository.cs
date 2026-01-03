@@ -23,11 +23,11 @@ public class AccountChartRepository(
             .Where(x => x.BranchCode == branchCode && x.CurrencyCode == currencyCode)
             .ToListAsync();
 
-    public virtual bool IsAccountNumberExist(string acno)
+    public virtual async Task<bool> IsAccountNumberExist(string acno)
     {
-        AccountChart? accountchart = Table
-            .Where(c => c.AccountNumber.Equals(acno))
-            .FirstOrDefault();
-        return accountchart != null;
+        AccountChart? accountChart = await Table
+            .Where(c => c.AccountNumber == acno)
+            .FirstOrDefaultAsync();
+        return accountChart != null;
     }
 }

@@ -9,7 +9,7 @@ using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.ACT.API.Application.Features.AccountCharts
 {
-    public class DeleteAccountChartCommand : BaseTransactionModel, ICommand
+    public class DeleteAccountChartCommand : BaseTransactionModel, ICommand<bool>
     {
         public string AccountNumber { get; set; }
 
@@ -63,10 +63,10 @@ namespace O24OpenAPI.ACT.API.Application.Features.AccountCharts
     public class DeleteAccountHandle(
         IAccountBalanceRepository accountBalanceRepository,
         ILocalizationService localizationService
-    ) : ICommandHandler<DeleteAccountChartCommand>
+    ) : ICommandHandler<DeleteAccountChartCommand, bool>
     {
         [WorkflowStep(WorkflowStepCode.ACT.WF_STEP_ACT_DELETE_ACCOUNTCHART)]
-        public async Task<Unit> HandleAsync(
+        public async Task<bool> HandleAsync(
             DeleteAccountChartCommand request,
             CancellationToken cancellationToken = default
         )
@@ -115,7 +115,7 @@ namespace O24OpenAPI.ACT.API.Application.Features.AccountCharts
                 await accBalance.Delete();
             }
             await chart.Delete();
-            return Unit.Value;
+            return true;
         }
     }
 }
