@@ -73,7 +73,7 @@ public class SendNotificationHandler(
 {
     private readonly HttpClient _httpClient = new();
 
-    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_SEND_NOTIFICATION)]
+    [WorkflowStep(WorkflowStepCode.NCH.WF_STEP_NCH_SEND_NOTIFICATION)]
     public async Task<bool> HandleAsync(
         SendNotificationCommand request,
         CancellationToken cancellationToken = default

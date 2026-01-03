@@ -38,7 +38,7 @@ public class ResetPasswordAsyncHandle(
     IUserDeviceRepository userDeviceRepository
 ) : ICommandHandler<ResetPasswordAsyncCommand, ResetPasswordResponseModel>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_RESET_PASSWORD)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_RESET_PASSWORD)]
     public async Task<ResetPasswordResponseModel> HandleAsync(
         ResetPasswordAsyncCommand request,
         CancellationToken cancellationToken = default

@@ -20,7 +20,7 @@ public class LoadMenuByChannelCommand
 public class LoadMenuByChannelHandle(IUserCommandRepository userCommandRepository)
     : ICommandHandler<LoadMenuByChannelCommand, List<UserCommandResponseModel>>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_LOAD_MENU)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_LOAD_MENU)]
     public async Task<List<UserCommandResponseModel>> HandleAsync(
         LoadMenuByChannelCommand request,
         CancellationToken cancellationToken = default

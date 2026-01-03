@@ -85,7 +85,7 @@ public class LoginHandler(
     IUserRightChannelRepository userRightChannelRepository
 ) : ICommandHandler<LoginCommand, AuthResponseModel>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_LOGIN)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_LOGIN)]
     public async Task<AuthResponseModel> HandleAsync(
         LoginCommand request,
         CancellationToken cancellationToken = default

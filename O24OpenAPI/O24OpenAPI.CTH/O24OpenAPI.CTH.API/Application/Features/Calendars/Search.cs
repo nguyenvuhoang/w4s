@@ -28,7 +28,7 @@ public class CalendarSearchCommand
 public class SearchHandle(ICalendarRepository calendarRepository)
     : ICommandHandler<CalendarSearchCommand, PagedListModel<Calendar, CalendarSearchResponseModel>>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_RETRIEVE_CALENDAR)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_RETRIEVE_CALENDAR)]
     public async Task<PagedListModel<Calendar, CalendarSearchResponseModel>> HandleAsync(
         CalendarSearchCommand request,
         CancellationToken cancellationToken = default

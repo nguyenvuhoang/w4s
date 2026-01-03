@@ -34,7 +34,7 @@ public class GetUserByRoleIdHandle(
         PagedListModel<UserAccount, UserAccountResponseModel>
     >
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_BO_GET_USER_BY_ROLE)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_BO_GET_USER_BY_ROLE)]
     public async Task<PagedListModel<UserAccount, UserAccountResponseModel>> HandleAsync(
         GetUserByRoleIdCommand request,
         CancellationToken cancellationToken = default

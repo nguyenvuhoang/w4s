@@ -51,7 +51,7 @@ public class AdvanceSearchNotificationHandler(
     INotificationTemplateRepository notificationTemplateRepository
 ) : ICommandHandler<AdvanceSearchNotificationCommand, NotificationSearchResponseModel>
 {
-    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_GET_NOTIFICATIONS)]
+    [WorkflowStep(WorkflowStepCode.NCH.WF_STEP_NCH_GET_NOTIFICATIONS)]
     public async Task<NotificationSearchResponseModel> HandleAsync(
         AdvanceSearchNotificationCommand request,
         CancellationToken cancellationToken = default

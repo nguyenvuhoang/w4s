@@ -24,7 +24,7 @@ public class VerifySmartOTPCodeAsyncCommand
 public class VerifySmartOTPCodeAsyncHandle(IUserAuthenRepository userAuthenRepository)
     : ICommandHandler<VerifySmartOTPCodeAsyncCommand, VerifySmartOTPResponseModel>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_VERIFY_SMARTOTP_PINCODE)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_VERIFY_SMARTOTP_PINCODE)]
     public async Task<VerifySmartOTPResponseModel> HandleAsync(
         VerifySmartOTPCodeAsyncCommand request,
         CancellationToken cancellationToken = default

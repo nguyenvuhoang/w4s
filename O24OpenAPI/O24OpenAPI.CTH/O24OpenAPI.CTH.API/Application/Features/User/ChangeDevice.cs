@@ -45,7 +45,7 @@ public class ChangeDeviceHandle(
     IUserSessionRepository userSessionRepository
 ) : ICommandHandler<ChangeDeviceCommand, AuthResponseModel>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_CHANGE_DEVICE)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_CHANGE_DEVICE)]
     public async Task<AuthResponseModel> HandleAsync(
         ChangeDeviceCommand request,
         CancellationToken cancellationToken = default

@@ -79,7 +79,7 @@ public class LogoutO24OpenAPICommand : BaseTransactionModel, ICommand<bool>
 public class LogoutO24OpenAPIHandle(IUserAccountRepository userAccountRepository)
     : ICommandHandler<LogoutO24OpenAPICommand, bool>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_LOGOUT)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_LOGOUT)]
     public async Task<bool> HandleAsync(
         LogoutO24OpenAPICommand request,
         CancellationToken cancellationToken = default

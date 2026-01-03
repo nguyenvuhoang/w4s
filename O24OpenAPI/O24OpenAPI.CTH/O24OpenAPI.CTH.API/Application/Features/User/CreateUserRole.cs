@@ -26,7 +26,7 @@ public class CreateUserRoleHandle(
     IUserRightRepository userRightRepository
 ) : ICommandHandler<CreateUserRoleCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_CREATE_ROLE)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_CREATE_ROLE)]
     public async Task<bool> HandleAsync(
         CreateUserRoleCommand request,
         CancellationToken cancellationToken = default

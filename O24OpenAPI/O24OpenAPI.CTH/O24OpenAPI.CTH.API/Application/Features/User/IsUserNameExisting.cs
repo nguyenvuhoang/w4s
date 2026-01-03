@@ -22,7 +22,7 @@ public class IsUserNameExistingCommand : BaseTransactionModel, ICommand<bool>
 public class IsUserNameExistingHandle(IUserAccountRepository userAccountRepository)
     : ICommandHandler<IsUserNameExistingCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_VALIDATE_USER)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_VALIDATE_USER)]
     public async Task<bool> HandleAsync(
         IsUserNameExistingCommand request,
         CancellationToken cancellationToken = default

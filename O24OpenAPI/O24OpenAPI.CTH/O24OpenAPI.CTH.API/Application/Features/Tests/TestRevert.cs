@@ -19,7 +19,7 @@ public class TestRevertCommand : BaseTransactionModel, ICommand<bool>
 public class TestRevertCommandHandler(IRepository<Test> repository)
     : ICommandHandler<TestRevertCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_TEST_REVERT)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_TEST_REVERT)]
     public async Task<bool> HandleAsync(
         TestRevertCommand request,
         CancellationToken cancellationToken = default

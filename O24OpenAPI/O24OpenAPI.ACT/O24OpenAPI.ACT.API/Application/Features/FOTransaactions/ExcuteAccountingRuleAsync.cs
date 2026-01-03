@@ -36,7 +36,7 @@ namespace O24OpenAPI.ACT.API.Application.Features.FOTransaactions
         IEntryjounalDataService entryjounalDataService
     ) : ICommandHandler<ExcuteAccountingRuleAsyncCommand, EntryPostingReponse>
     {
-        [WorkflowStep(WorkflowStep.ACT.WF_STEP_ACT_EXECUTE_POSTING)]
+        [WorkflowStep(WorkflowStepCode.ACT.WF_STEP_ACT_EXECUTE_POSTING)]
         public async Task<EntryPostingReponse> HandleAsync(
             ExcuteAccountingRuleAsyncCommand request,
             CancellationToken cancellationToken = default

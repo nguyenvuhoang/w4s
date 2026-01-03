@@ -21,7 +21,7 @@ public class UpdateUserRoleCommand : BaseTransactionModel, ICommand<bool>
 public class UpdateUserRoleHandle(IUserInRoleRepository userInRoleRepository)
     : ICommandHandler<UpdateUserRoleCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_CERATE_USER)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_CERATE_USER)]
     public async Task<bool> HandleAsync(
         UpdateUserRoleCommand request,
         CancellationToken cancellationToken = default

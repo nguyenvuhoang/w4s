@@ -60,7 +60,7 @@ public class ApplicationInfoHandler(
     IUserBannerRepository userBannerRepository
 ) : ICommandHandler<ApplicationInfoCommand, ApplicationInfoResponseModel>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_APP_INFO)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_APP_INFO)]
     public async Task<ApplicationInfoResponseModel> HandleAsync(
         ApplicationInfoCommand command,
         CancellationToken cancellationToken

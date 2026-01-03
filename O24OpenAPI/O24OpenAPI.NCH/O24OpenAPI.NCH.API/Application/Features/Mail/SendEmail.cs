@@ -41,7 +41,7 @@ public class SendEmailHandler(
 {
     private static readonly string[] separator = [";"];
 
-    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_SEND_EMAIL_ASYNC)]
+    [WorkflowStep(WorkflowStepCode.NCH.WF_STEP_NCH_SEND_EMAIL_ASYNC)]
     public async Task<bool> HandleAsync(
         SendEmailCommand request,
         CancellationToken cancellationToken = default

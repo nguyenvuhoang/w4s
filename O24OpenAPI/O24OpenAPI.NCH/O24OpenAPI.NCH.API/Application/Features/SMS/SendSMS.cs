@@ -39,7 +39,7 @@ public class SendSMSHandler(
     ISMSProviderService sMSProviderService
 ) : ICommandHandler<SendSMSComand, SMSGatewayResponseModel>
 {
-    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_SEND_SMS)]
+    [WorkflowStep(WorkflowStepCode.NCH.WF_STEP_NCH_SEND_SMS)]
     public async Task<SMSGatewayResponseModel> HandleAsync(
         SendSMSComand request,
         CancellationToken cancellationToken = default

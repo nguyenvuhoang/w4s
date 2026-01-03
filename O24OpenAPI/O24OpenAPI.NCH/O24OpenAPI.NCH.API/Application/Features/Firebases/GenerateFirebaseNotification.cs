@@ -24,7 +24,7 @@ public class GenerateFirebaseNotificationHandler(
     INotificationRepository notificationRepository
 ) : ICommandHandler<FirebaseNotificationRequestModel, bool>
 {
-    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_PUSH_FIREBASE_NOTIFICATION)]
+    [WorkflowStep(WorkflowStepCode.NCH.WF_STEP_NCH_PUSH_FIREBASE_NOTIFICATION)]
     public async Task<bool> HandleAsync(
         FirebaseNotificationRequestModel request,
         CancellationToken cancellationToken = default

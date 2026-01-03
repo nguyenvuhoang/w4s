@@ -35,7 +35,7 @@ public class GenerateAndSendOtpHandle(
     ISMSProviderService smsProviderService
 ) : ICommandHandler<GenerateAndSendOtpCommand, GenerateOTPResponseModel>
 {
-    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_SMS_GENERATE_OTP)]
+    [WorkflowStep(WorkflowStepCode.NCH.WF_STEP_NCH_SMS_GENERATE_OTP)]
     public async Task<GenerateOTPResponseModel> HandleAsync(
         GenerateAndSendOtpCommand request,
         CancellationToken cancellationToken = default

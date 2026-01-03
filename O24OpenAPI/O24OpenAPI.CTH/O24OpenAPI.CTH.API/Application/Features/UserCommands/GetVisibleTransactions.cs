@@ -19,7 +19,7 @@ public class GetVisibleTransactionsCommand
 public class GetVisibleTransactionsHandle(IUserCommandRepository userCommandRepository)
     : ICommandHandler<GetVisibleTransactionsCommand, List<VisibleTransactionResponse>>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_GET_VISIBLE_TRANS)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_GET_VISIBLE_TRANS)]
     public async Task<List<VisibleTransactionResponse>> HandleAsync(
         GetVisibleTransactionsCommand request,
         CancellationToken cancellationToken = default

@@ -21,7 +21,7 @@ public class CheckUserHasEmailCommand : BaseTransactionModel, ICommand<string>
 public class CheckUserHasEmailHandle(IUserAccountRepository userAccountRepository)
     : ICommandHandler<CheckUserHasEmailCommand, string>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_CHECK_EMAIL)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_CHECK_EMAIL)]
     public async Task<string> HandleAsync(
         CheckUserHasEmailCommand request,
         CancellationToken cancellationToken = default

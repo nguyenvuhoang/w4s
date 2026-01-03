@@ -49,7 +49,7 @@ public class CreateUserHandle(
     IUserRoleRepository userRoleRepository
 ) : ICommandHandler<CreateUserCommand, UserResponseModel>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_CREATE_USER)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_CREATE_USER)]
     public async Task<UserResponseModel> HandleAsync(
         CreateUserCommand request,
         CancellationToken cancellationToken = default

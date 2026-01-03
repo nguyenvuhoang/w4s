@@ -33,7 +33,7 @@ public class GenerateContentAndSendSMSCommandHandler(
     ISMSProviderService sMSProviderService
 ) : ICommandHandler<GenerateContentAndSendSMSCommand, GenerateSMSContentResponseModel>
 {
-    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_SEND_SMS_ASYNC)]
+    [WorkflowStep(WorkflowStepCode.NCH.WF_STEP_NCH_SEND_SMS_ASYNC)]
     public async Task<GenerateSMSContentResponseModel> HandleAsync(
         GenerateContentAndSendSMSCommand request,
         CancellationToken cancellationToken

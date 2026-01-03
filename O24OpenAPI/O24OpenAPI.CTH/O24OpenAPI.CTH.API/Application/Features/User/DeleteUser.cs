@@ -23,7 +23,7 @@ public class DeleteUserHandle(
     IUserPasswordRepository userPasswordRepository
 ) : ICommandHandler<DeleteUserCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_DELETE_USER)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_DELETE_USER)]
     public async Task<bool> HandleAsync(
         DeleteUserCommand request,
         CancellationToken cancellationToken = default

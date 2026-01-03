@@ -16,7 +16,7 @@ public class UpdateSMSProviderCommand
 public class UpdateSMSProviderHandler(ISMSProviderService sMSProviderService)
     : ICommandHandler<UpdateSMSProviderCommand, UpdateSMSProviderResponseModel>
 {
-    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_UPDATE_SMSPROVIDER)]
+    [WorkflowStep(WorkflowStepCode.NCH.WF_STEP_NCH_UPDATE_SMSPROVIDER)]
     public async Task<UpdateSMSProviderResponseModel> HandleAsync(
         UpdateSMSProviderCommand request,
         CancellationToken cancellationToken = default

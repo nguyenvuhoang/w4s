@@ -40,7 +40,7 @@ public class ChangePasswordByO24UserHandle(
     IUserAccountRepository userAccountRepository
 ) : ICommandHandler<ChangePasswordByO24UserCommand, JToken>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_CHANGE_PASSWORD)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_CHANGE_PASSWORD)]
     public async Task<JToken> HandleAsync(
         ChangePasswordByO24UserCommand request,
         CancellationToken cancellationToken = default

@@ -19,7 +19,7 @@ public class InsertSMSTemplateCommand : BaseTransactionModel, ICommand<bool>
 public class InsertSMSTemplateHandler(ISMSTemplateRepository sMSTemplateRepository)
     : ICommandHandler<InsertSMSTemplateCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_INSERT_SMS_TEMPLATE)]
+    [WorkflowStep(WorkflowStepCode.NCH.WF_STEP_NCH_INSERT_SMS_TEMPLATE)]
     public async Task<bool> HandleAsync(
         InsertSMSTemplateCommand request,
         CancellationToken cancellationToken = default

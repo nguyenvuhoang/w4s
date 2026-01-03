@@ -21,7 +21,7 @@ public class IsLoginCommand : BaseTransactionModel, ICommand<bool>
 public class IsLoginHandle(IUserAccountRepository userAccountRepository)
     : ICommandHandler<IsLoginCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_GET_USER_STATUS_LOGIN)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_GET_USER_STATUS_LOGIN)]
     public async Task<bool> HandleAsync(
         IsLoginCommand request,
         CancellationToken cancellationToken = default

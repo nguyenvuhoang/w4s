@@ -18,7 +18,7 @@ public class LoadUserAgreementCommand : BaseTransactionModel, ICommand<UserAgree
 public class LoadUserAgreementHandle(IUserAgreementRepository userAgreementRepository)
     : ICommandHandler<LoadUserAgreementCommand, UserAgreement>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_LOAD_USERAGREEMENT)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_LOAD_USERAGREEMENT)]
     public async Task<UserAgreement> HandleAsync(
         LoadUserAgreementCommand request,
         CancellationToken cancellationToken = default

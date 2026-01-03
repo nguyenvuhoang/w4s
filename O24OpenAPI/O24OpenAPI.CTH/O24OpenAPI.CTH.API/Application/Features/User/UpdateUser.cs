@@ -63,7 +63,7 @@ public class UpdateUserCommand : BaseTransactionModel, ICommand<UpdateUserRespon
 public class UpdateUserHandle(IUserAccountRepository userAccountRepository)
     : ICommandHandler<UpdateUserCommand, UpdateUserResponseModel>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_UPDATE_USER)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_UPDATE_USER)]
     public async Task<UpdateUserResponseModel> HandleAsync(
         UpdateUserCommand request,
         CancellationToken cancellationToken = default

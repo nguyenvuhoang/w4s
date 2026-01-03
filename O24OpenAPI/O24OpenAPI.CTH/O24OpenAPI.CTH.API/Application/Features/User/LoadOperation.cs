@@ -22,7 +22,7 @@ public class LoadOperationHandle(
     IUserRightRepository userRightRepository
 ) : ICommandHandler<LoadOperationCommand, JObject>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_LOAD_OPERATION)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_LOAD_OPERATION)]
     public Task<JObject> HandleAsync(
         LoadOperationCommand request,
         CancellationToken cancellationToken = default

@@ -19,7 +19,7 @@ public class UnblockUserCommand : BaseTransactionModel, ICommand<bool>
 public class UnblockUserHandle(IUserAccountRepository userAccountRepository)
     : ICommandHandler<UnblockUserCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_UNBLOCK_USER)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_UNBLOCK_USER)]
     public async Task<bool> HandleAsync(
         UnblockUserCommand request,
         CancellationToken cancellationToken = default

@@ -20,7 +20,7 @@ public class UpdateUserAvatarCommnad : BaseTransactionModel, ICommand<bool>
 public class UpdateUserAvatarHandler(IUserAvatarRepository userAvatarRepository)
     : ICommandHandler<UpdateUserAvatarCommnad, bool>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_UPDATE_USER_AVATAR)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_UPDATE_USER_AVATAR)]
     public async Task<bool> HandleAsync(
         UpdateUserAvatarCommnad request,
         CancellationToken cancellationToken = default

@@ -20,7 +20,7 @@ public class IsPhoneNumberExistingCommand : BaseTransactionModel, ICommand<bool>
 public class IsPhoneNumberExistingHandle(IUserAccountRepository userAccountRepository)
     : ICommandHandler<IsPhoneNumberExistingCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_CHECK_USER_PHONE_NUMBER)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_CHECK_USER_PHONE_NUMBER)]
     public async Task<bool> HandleAsync(
         IsPhoneNumberExistingCommand request,
         CancellationToken cancellationToken = default

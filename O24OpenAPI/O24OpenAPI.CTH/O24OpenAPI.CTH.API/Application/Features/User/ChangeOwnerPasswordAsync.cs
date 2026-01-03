@@ -25,7 +25,7 @@ public class ChangeOwnerPasswordHandle(
     IUserSessionRepository userSessionRepository
 ) : ICommandHandler<ChangeOwnerPasswordAsyncCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_CHANGE_OWNER_PW)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_CHANGE_OWNER_PW)]
     public async Task<bool> HandleAsync(
         ChangeOwnerPasswordAsyncCommand request,
         CancellationToken cancellationToken = default

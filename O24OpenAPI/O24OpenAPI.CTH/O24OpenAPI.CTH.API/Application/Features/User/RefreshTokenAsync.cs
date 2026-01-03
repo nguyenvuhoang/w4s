@@ -29,7 +29,7 @@ public class RefreshTokenAsyncHandle(
     IStaticCacheManager staticCacheManager
 ) : ICommandHandler<RefreshTokenAsyncCommand, AuthResponseModel>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_REFRESH_TOKEN)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_REFRESH_TOKEN)]
     public async Task<AuthResponseModel> HandleAsync(
         RefreshTokenAsyncCommand request,
         CancellationToken cancellationToken = default

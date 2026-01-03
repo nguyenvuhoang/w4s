@@ -24,7 +24,7 @@ public class RegisterUserAuthenAsyncCommand : BaseTransactionModel, ICommand<boo
 public class RegisterUserAuthenAsyncHandle(IUserAuthenRepository userAuthenRepository)
     : ICommandHandler<RegisterUserAuthenAsyncCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_REGISTER_USER_AUTHEN)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_REGISTER_USER_AUTHEN)]
     public async Task<bool> HandleAsync(
         RegisterUserAuthenAsyncCommand request,
         CancellationToken cancellationToken = default

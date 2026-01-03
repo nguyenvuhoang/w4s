@@ -20,7 +20,7 @@ public class CreateUserNotificationHandler(
     IUserNotificationsRepository userNotificationsRepository
 ) : ICommandHandler<CreateUserNotificationCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_CREATE_USER_NOTIFICATIONS)]
+    [WorkflowStep(WorkflowStepCode.NCH.WF_STEP_NCH_CREATE_USER_NOTIFICATIONS)]
     public async Task<bool> HandleAsync(
         CreateUserNotificationCommand request,
         CancellationToken cancellationToken = default

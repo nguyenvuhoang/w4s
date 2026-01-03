@@ -18,7 +18,7 @@ public class SyncUserInfoCommand : BaseTransactionModel, ICommand<bool>
 public class SyncUserInfoHandle(IUserAccountRepository userAccountRepository)
     : ICommandHandler<SyncUserInfoCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_SYNC_USER_INFO)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_SYNC_USER_INFO)]
     public async Task<bool> HandleAsync(
         SyncUserInfoCommand request,
         CancellationToken cancellationToken = default

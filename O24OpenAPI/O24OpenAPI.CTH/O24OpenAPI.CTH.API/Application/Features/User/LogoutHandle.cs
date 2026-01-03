@@ -77,7 +77,7 @@ public class LogoutHandleCommand : BaseTransactionModel, ICommand<bool>
 public class LogoutHandle(IUserAccountRepository userAccountRepository)
     : ICommandHandler<LogoutHandleCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_LOGOUT)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_LOGOUT)]
     public async Task<bool> HandleAsync(
         LogoutHandleCommand request,
         CancellationToken cancellationToken = default

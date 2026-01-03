@@ -47,7 +47,7 @@ public partial class SendMobileDeviceHandler(
     INotificationRepository notificationRepository
 ) : ICommandHandler<SendMobileDeviceCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_DEVICE_SEND)]
+    [WorkflowStep(WorkflowStepCode.NCH.WF_STEP_NCH_DEVICE_SEND)]
     public async Task<bool> HandleAsync(
         SendMobileDeviceCommand request,
         CancellationToken cancellationToken = default

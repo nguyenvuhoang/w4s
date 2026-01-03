@@ -135,7 +135,7 @@ namespace O24OpenAPI.ACT.API.Application.Features.AccountCharts
         ILocalizationService localizationService
     ) : ICommandHandler<DeleteAccountChartCommand>
     {
-        [WorkflowStep(WorkflowStep.ACT.WF_STEP_ACT_DELETE_ACCOUNTCHART)]
+        [WorkflowStep(WorkflowStepCode.ACT.WF_STEP_ACT_DELETE_ACCOUNTCHART)]
         public async Task<Unit> HandleAsync(
             DeleteAccountChartCommand request,
             CancellationToken cancellationToken = default

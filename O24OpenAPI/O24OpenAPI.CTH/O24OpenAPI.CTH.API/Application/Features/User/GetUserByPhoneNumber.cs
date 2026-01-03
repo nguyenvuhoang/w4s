@@ -26,7 +26,7 @@ public class GetUserByPhoneNumberHandle(
     IUserDeviceRepository userDeviceRepository
 ) : ICommandHandler<GetUserByPhoneNumberCommand, UserInfoModel>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_GET_USER_BY_PHONE)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_GET_USER_BY_PHONE)]
     public async Task<UserInfoModel> HandleAsync(
         GetUserByPhoneNumberCommand request,
         CancellationToken cancellationToken = default

@@ -27,7 +27,7 @@ public class GetUnreadCountResponse
 public class GetUnreadCountHandler(INotificationRepository notificationRepository)
     : ICommandHandler<GetUnreadCountCommand, GetUnreadCountResponse>
 {
-    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_GET_UNREAD_COUNT)]
+    [WorkflowStep(WorkflowStepCode.NCH.WF_STEP_NCH_GET_UNREAD_COUNT)]
     public async Task<GetUnreadCountResponse> HandleAsync(
         GetUnreadCountCommand request,
         CancellationToken cancellationToken = default

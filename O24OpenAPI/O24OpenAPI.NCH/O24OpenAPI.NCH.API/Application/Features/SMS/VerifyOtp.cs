@@ -24,7 +24,7 @@ public class VerifyOtpHandle(
     IOTPRequestRepository oTPRequestRepository
 ) : ICommandHandler<VerifyOtpCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_SMS_VERIFY_OTP)]
+    [WorkflowStep(WorkflowStepCode.NCH.WF_STEP_NCH_SMS_VERIFY_OTP)]
     public async Task<bool> HandleAsync(
         VerifyOtpCommand request,
         CancellationToken cancellationToken = default

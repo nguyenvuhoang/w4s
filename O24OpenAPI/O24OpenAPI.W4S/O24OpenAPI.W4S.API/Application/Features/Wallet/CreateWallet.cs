@@ -48,7 +48,7 @@ public class CreateWalletHandle(
     W4SSetting w4SSetting
 ) : ICommandHandler<CreateWalletCommand, CreateWalletResponseModel>
 {
-    [WorkflowStep(WorkflowStep.W4S.WF_STEP_W4S_CREATE_WALLET)]
+    [WorkflowStep(WorkflowStepCode.W4S.WF_STEP_W4S_CREATE_WALLET)]
     public async Task<CreateWalletResponseModel> HandleAsync(
         CreateWalletCommand request,
         CancellationToken cancellationToken = default

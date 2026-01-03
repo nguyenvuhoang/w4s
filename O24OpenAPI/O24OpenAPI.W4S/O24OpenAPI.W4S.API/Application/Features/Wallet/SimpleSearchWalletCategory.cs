@@ -17,7 +17,7 @@ namespace O24OpenAPI.W4S.API.Application.Features.Wallet
         IWalletCategoryRepository walletCategoryRepository
     ) : ICommandHandler<SimpleSearchWalletCategoryCommand, PagedListModel<WalletCategory, WalletCategoryResponseModel>>
     {
-        [WorkflowStep(WorkflowStep.W4S.WF_STEP_W4S_RETRIEVE_WALLET_CATEGORY)]
+        [WorkflowStep(WorkflowStepCode.W4S.WF_STEP_W4S_RETRIEVE_WALLET_CATEGORY)]
         public async Task<PagedListModel<WalletCategory, WalletCategoryResponseModel>> HandleAsync(
             SimpleSearchWalletCategoryCommand request,
             CancellationToken cancellationToken = default

@@ -1,7 +1,8 @@
 namespace O24OpenAPI.APIContracts.Constants;
 
-public static class WorkflowStep
+public static class WorkflowStepCode
 {
+    #region CTH
     public static class CTH
     {
         public const string WF_STEP_BO_GET_USER_BY_ROLE = "WF_STEP_BO_GET_USER_BY_ROLE";
@@ -45,7 +46,9 @@ public static class WorkflowStep
         public const string WF_STEP_UMG_REFRESH_TOKEN = "WF_STEP_UMG_REFRESH_TOKEN";
         public const string WF_STEP_CTH_UPDATE_USER_AVATAR = "WF_STEP_CTH_UPDATE_USER_AVATAR";
     }
+    #endregion
 
+    #region NCH
     public static class NCH
     {
         public const string WF_STEP_NCH_SEND_NOTIFICATION = "WF_STEP_NCH_SEND_NOTIFICATION";
@@ -72,19 +75,27 @@ public static class WorkflowStep
         public const string WF_STEP_NCH_UPDATE_SMS_TEMPLATE = "WF_STEP_NCH_UPDATE_SMS_TEMPLATE";
         public const string WF_STEP_NCH_DEVICE_SEND = "WF_STEP_NCH_DEVICE_SEND";
     }
+    #endregion
 
+    #region ACT
     public static class ACT
     {
         public const string WF_STEP_ACT_CREATE_ACCOUNTCHART = "WF_STEP_ACT_CREATE_ACCOUNTCHART";
         public const string WF_STEP_ACT_DELETE_ACCOUNTCHART = "WF_STEP_ACT_DELETE_ACCOUNTCHART";
         public const string WF_STEP_ACT_EXECUTE_POSTING = "WF_STEP_ACT_EXECUTE_POSTING";
     }
+    #endregion
 
+    #region CMS
     public static class CMS { }
+    #endregion
 
+    #region W4S
     public static class W4S
     {
         public const string WF_STEP_W4S_CREATE_WALLET = "WF_STEP_W4S_CREATE_WALLET";
-        public const string WF_STEP_W4S_RETRIEVE_WALLET_CATEGORY = "WF_STEP_W4S_RETRIEVE_WALLET_CATEGORY";
+        public const string WF_STEP_W4S_RETRIEVE_WALLET_CATEGORY =
+            "WF_STEP_W4S_RETRIEVE_WALLET_CATEGORY";
     }
+    #endregion
 }

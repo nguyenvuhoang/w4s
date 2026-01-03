@@ -21,7 +21,7 @@ public class VerifyUserAsyncCommand : BaseTransactionModel, ICommand<VerifyUserR
 public class VerifyUserAsyncHandle(IUserAccountRepository userAccountRepository)
     : ICommandHandler<VerifyUserAsyncCommand, VerifyUserResponseModel>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_VERIFY_USER)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_VERIFY_USER)]
     public async Task<VerifyUserResponseModel> HandleAsync(
         VerifyUserAsyncCommand request,
         CancellationToken cancellationToken = default

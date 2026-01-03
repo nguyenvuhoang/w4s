@@ -16,7 +16,7 @@ public class UpdateUserBannerCommnad : BaseTransactionModel, ICommand<bool>
 public class UpdateUserBannerHandler(IUserBannerRepository userBannerRepository)
     : ICommandHandler<UpdateUserBannerCommnad, bool>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_UPDATE_USER_BANNER)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_UPDATE_USER_BANNER)]
     public async Task<bool> HandleAsync(
         UpdateUserBannerCommnad request,
         CancellationToken cancellationToken = default

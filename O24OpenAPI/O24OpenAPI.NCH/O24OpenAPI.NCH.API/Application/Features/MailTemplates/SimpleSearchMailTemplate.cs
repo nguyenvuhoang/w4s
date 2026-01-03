@@ -20,7 +20,7 @@ public class SimpleSearchMailTemplateHandler(IMailTemplateRepository mailTemplat
         PagedListModel<MailTemplate, MailTemplateResponse>
     >
 {
-    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_SEARCH_MAIL_TEMPLATE)]
+    [WorkflowStep(WorkflowStepCode.NCH.WF_STEP_NCH_SEARCH_MAIL_TEMPLATE)]
     public async Task<PagedListModel<MailTemplate, MailTemplateResponse>> HandleAsync(
         SimpleSearchMailTemplateCommand request,
         CancellationToken cancellationToken = default

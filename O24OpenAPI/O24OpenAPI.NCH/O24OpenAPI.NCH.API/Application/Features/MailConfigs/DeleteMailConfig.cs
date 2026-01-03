@@ -15,7 +15,7 @@ public class DeleteMailConfigCommand : BaseTransactionModel, ICommand<bool>
 public class DeleteMailConfigHandler(IMailConfigRepository mailConfigRepository)
     : ICommandHandler<DeleteMailConfigCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_DELETE_MAIL_CONFIG)]
+    [WorkflowStep(WorkflowStepCode.NCH.WF_STEP_NCH_DELETE_MAIL_CONFIG)]
     public async Task<bool> HandleAsync(
         DeleteMailConfigCommand request,
         CancellationToken cancellationToken = default

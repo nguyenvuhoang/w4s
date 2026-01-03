@@ -25,7 +25,7 @@ public class UpdateUserRightHandle(
     IUserRoleRepository userRoleRepository
 ) : ICommandHandler<UpdateUserRightCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_BO_GET_USER_BY_ROLE)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_BO_GET_USER_BY_ROLE)]
     public async Task<bool> HandleAsync(
         UpdateUserRightCommand request,
         CancellationToken cancellationToken = default

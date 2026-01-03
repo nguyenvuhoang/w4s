@@ -134,7 +134,7 @@ public class UpdateSMSTemplateResponseModel : BaseO24OpenAPIModel
 public class UpdateSMSTemplateHandler(ISMSTemplateRepository sMSTemplateRepository)
     : ICommandHandler<UpdateSMSTemplateCommand, UpdateSMSTemplateResponseModel>
 {
-    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_UPDATE_SMS_TEMPLATE)]
+    [WorkflowStep(WorkflowStepCode.NCH.WF_STEP_NCH_UPDATE_SMS_TEMPLATE)]
     public async Task<UpdateSMSTemplateResponseModel> HandleAsync(
         UpdateSMSTemplateCommand request,
         CancellationToken cancellationToken = default

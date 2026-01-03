@@ -15,7 +15,7 @@ public class GetByUserCodeCommand : BaseTransactionModel, ICommand<UserAccount>
 public class GetByUserCodeHandle(IUserAccountRepository userAccountRepository)
     : ICommandHandler<GetByUserCodeCommand, UserAccount>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_GET_USER)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_GET_USER)]
     public async Task<UserAccount> HandleAsync(
         GetByUserCodeCommand request,
         CancellationToken cancellationToken = default

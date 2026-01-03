@@ -18,7 +18,7 @@ public class SimpleSearchMailConfigHandler(IMailConfigRepository mailConfigRepos
 {
     private readonly IMailConfigRepository _mailConfigRepository = mailConfigRepository;
 
-    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_SEARCH_MAIL_CONFIG)]
+    [WorkflowStep(WorkflowStepCode.NCH.WF_STEP_NCH_SEARCH_MAIL_CONFIG)]
     public async Task<PagedListModel<MailConfig, MailConfigResponse>> HandleAsync(
         SimpleSearchMailConfigCommand request,
         CancellationToken cancellationToken = default

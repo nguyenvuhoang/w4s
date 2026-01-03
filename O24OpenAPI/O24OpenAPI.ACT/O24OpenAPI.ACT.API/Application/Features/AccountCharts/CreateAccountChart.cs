@@ -145,7 +145,7 @@ public class CreateHandle(
     AccountingSettings accountingSettings
 ) : ICommandHandler<CreateAccountChartCommand, AccountChartCRUDReponseModel>
 {
-    [WorkflowStep(WorkflowStep.ACT.WF_STEP_ACT_CREATE_ACCOUNTCHART)]
+    [WorkflowStep(WorkflowStepCode.ACT.WF_STEP_ACT_CREATE_ACCOUNTCHART)]
     public async Task<AccountChartCRUDReponseModel> HandleAsync(
         CreateAccountChartCommand request,
         CancellationToken cancellationToken = default

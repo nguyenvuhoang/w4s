@@ -20,7 +20,7 @@ public class TransitionUserStatusCommand : BaseTransactionModel, ICommand<bool>
 public class TransitionUserStatusHandle(IUserAccountRepository userAccountRepository)
     : ICommandHandler<TransitionUserStatusCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_TRANSITION_USER_STATUS)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_TRANSITION_USER_STATUS)]
     public async Task<bool> HandleAsync(
         TransitionUserStatusCommand request,
         CancellationToken cancellationToken = default

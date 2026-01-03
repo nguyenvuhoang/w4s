@@ -21,7 +21,7 @@ public class VerifyPasswordCommand : BaseTransactionModel, ICommand<bool>
 public class VerifyPasswordHandle(IUserPasswordRepository userPasswordRepository)
     : ICommandHandler<VerifyPasswordCommand, bool>
 {
-    [WorkflowStep(WorkflowStep.CTH.WF_STEP_CTH_VERIFY_PASSWORD)]
+    [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_VERIFY_PASSWORD)]
     public async Task<bool> HandleAsync(
         VerifyPasswordCommand request,
         CancellationToken cancellationToken = default

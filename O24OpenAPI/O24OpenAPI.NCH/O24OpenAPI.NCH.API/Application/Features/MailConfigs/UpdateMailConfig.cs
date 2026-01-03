@@ -56,7 +56,7 @@ public class UpdateMailConfigHandler(
     ILocalizationService localizationService
 ) : ICommandHandler<UpdateMailConfigCommand, UpdateMailConfigResponse>
 {
-    [WorkflowStep(WorkflowStep.NCH.WF_STEP_NCH_UPDATE_MAIL_CONFIG)]
+    [WorkflowStep(WorkflowStepCode.NCH.WF_STEP_NCH_UPDATE_MAIL_CONFIG)]
     public async Task<UpdateMailConfigResponse> HandleAsync(
         UpdateMailConfigCommand request,
         CancellationToken cancellationToken = default
