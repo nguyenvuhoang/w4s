@@ -51,25 +51,19 @@ public class ChangeDeviceHandle(
         CancellationToken cancellationToken = default
     )
     {
-        var model = request.ToModel<UserAccountChangeDeviceModel>();
-        return await ChangeDeviceAsync(model);
-    }
-
-    public async Task<AuthResponseModel> ChangeDeviceAsync(UserAccountChangeDeviceModel model)
-    {
         var userAccount =
-            await userAccountRepository.GetByUserCodeAsync(model.UserCode)
+            await userAccountRepository.GetByUserCodeAsync(request.UserCode)
             ?? throw await O24Exception.CreateAsync(
                 O24CTHResourceCode.Validation.UsernameIsExisting,
-                model.Language
+                request.Language
             );
 
-        if (userAccount.Phone != model.Phone)
+        if (userAccount.Phone != request.Phone)
         {
             throw await O24Exception.CreateAsync(
                 O24CTHResourceCode.Validation.PhoneNumberIsNotExisting,
-                model.Language,
-                [model.Phone]
+                request.Language,
+                [request.Phone]
             );
         }
 
@@ -77,7 +71,7 @@ public class ChangeDeviceHandle(
         {
             throw await O24Exception.CreateAsync(
                 O24CTHResourceCode.Validation.ContractNumberIsNotExisting,
-                model.Language,
+                request.Language,
                 [userAccount.Phone]
             );
         }
@@ -87,19 +81,19 @@ public class ChangeDeviceHandle(
             await userDeviceRepository.EnsureUserDeviceAsync(
                 userCode: userAccount.UserCode,
                 loginName: userAccount.LoginName,
-                deviceId: model.DeviceId + model.Modelname ?? "",
-                deviceType: model.DeviceType,
-                userAgent: model.UserAgent,
-                ipAddress: model.IpAddress,
-                channelId: model.ChannelId,
-                pushId: model.PushId,
-                osVersion: model.OsVersion,
-                appVersion: model.AppVersion,
-                deviceName: model.DeviceName,
-                brand: model.Brand,
-                isEmulator: model.IsEmulator,
-                isRooted: model.IsRootedOrJailbroken,
-                language: model.Language,
+                deviceId: request.DeviceId + request.Modelname ?? "",
+                deviceType: request.DeviceType,
+                userAgent: request.UserAgent,
+                ipAddress: request.IpAddress,
+                channelId: request.ChannelId,
+                pushId: request.PushId,
+                osVersion: request.OsVersion,
+                appVersion: request.AppVersion,
+                deviceName: request.DeviceName,
+                brand: request.Brand,
+                isEmulator: request.IsEmulator,
+                isRooted: request.IsRootedOrJailbroken,
+                language: request.Language,
                 isResetDevice: true
             );
         }
@@ -108,18 +102,18 @@ public class ChangeDeviceHandle(
             await ex.LogErrorAsync();
             throw await O24Exception.CreateAsync(
                 O24CTHResourceCode.Operation.ChangeDeviceError,
-                model.Language
+                request.Language
             );
         }
 
         var context = new LoginContextModel
         {
-            DeviceId = model.DeviceId,
-            Modelname = model.Modelname,
+            DeviceId = request.DeviceId,
+            Modelname = request.Modelname,
             RoleChannel = userAccount.RoleChannel,
-            IpAddress = model.IpAddress,
-            ChannelId = model.ChannelId,
-            Reference = model.DeviceId + model.Modelname ?? "",
+            IpAddress = request.IpAddress,
+            ChannelId = request.ChannelId,
+            Reference = request.DeviceId + request.Modelname ?? "",
         };
 
         userAccount.LastLoginTime = DateTime.Now;

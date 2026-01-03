@@ -31,24 +31,18 @@ public class CreateUserRoleHandle(
         CancellationToken cancellationToken = default
     )
     {
-        var model = request.ToModel<CreateUserRoleModel>();
-        return await CreateUserRoleAsync(model);
-    }
-
-    public async Task<bool> CreateUserRoleAsync(CreateUserRoleModel model)
-    {
         var roleId = await userRoleRepository.GetNextRoleIdAsync();
 
         var newUserRole = new UserRole
         {
             RoleId = roleId,
-            RoleName = model.RoleName,
-            RoleDescription = model.RoleDescription,
+            RoleName = request.RoleName,
+            RoleDescription = request.RoleDescription,
             UserType = Code.UserType.BO,
-            UserCreated = model.CurrentUserCode,
+            UserCreated = request.CurrentUserCode,
             DateCreated = DateTime.UtcNow,
             ServiceID = Code.UserType.BO,
-            RoleType = model.RoleType,
+            RoleType = request.RoleType,
             Status = Code.ShowStatus.ACTIVE,
             IsShow = Code.ShowStatus.YES,
             SortOrder = roleId,
@@ -61,7 +55,7 @@ public class CreateUserRoleHandle(
         }
 
         var parentCommandIds = await userCommandRepository.GetListCommandParentAsync(
-            model.ChannelId
+            request.ChannelId
         );
         if (parentCommandIds == null || parentCommandIds.Count == 0)
         {

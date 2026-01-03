@@ -27,14 +27,8 @@ public class CheckUserHasEmailHandle(IUserAccountRepository userAccountRepositor
         CancellationToken cancellationToken = default
     )
     {
-        var model = request.ToModel<DefaultModel>();
-        return await CheckUserHasEmail(model);
-    }
-
-    public async Task<string> CheckUserHasEmail(DefaultModel model)
-    {
         var user = await userAccountRepository
-            .Table.Where(s => s.UserCode == model.UserCode)
+            .Table.Where(s => s.UserCode == request.UserCode)
             .FirstOrDefaultAsync();
         return string.IsNullOrWhiteSpace(user?.Email)
             ? throw new O24OpenAPIException("This user does not have an email!")
