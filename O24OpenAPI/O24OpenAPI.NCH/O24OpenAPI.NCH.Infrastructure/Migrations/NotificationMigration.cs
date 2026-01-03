@@ -46,24 +46,24 @@ public class NotificationMigration : AutoReversingMigration
                 .Descending();
         }
 
-        if (!Schema.Table(nameof(UserNotifications)).Exists())
+        if (!Schema.Table(nameof(UserNotification)).Exists())
         {
-            Create.TableFor<UserNotifications>();
+            Create.TableFor<UserNotification>();
 
             Create
                 .Index("IX_UserNotifications_UserCode_NotificationID")
-                .OnTable(nameof(UserNotifications))
-                .OnColumn(nameof(UserNotifications.UserCode))
+                .OnTable(nameof(UserNotification))
+                .OnColumn(nameof(UserNotification.UserCode))
                 .Ascending()
-                .OnColumn(nameof(UserNotifications.NotificationID))
+                .OnColumn(nameof(UserNotification.NotificationID))
                 .Ascending();
 
             Create
                 .Index("IX_UserNotifications_UserCode_DateTime")
-                .OnTable(nameof(UserNotifications))
-                .OnColumn(nameof(UserNotifications.UserCode))
+                .OnTable(nameof(UserNotification))
+                .OnColumn(nameof(UserNotification.UserCode))
                 .Ascending()
-                .OnColumn(nameof(UserNotifications.DateTime))
+                .OnColumn(nameof(UserNotification.DateTime))
                 .Descending();
         }
 

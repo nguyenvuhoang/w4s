@@ -25,47 +25,47 @@ public class AlterUserNotifications : AutoReversingMigration
     public override void Up()
     {
         if (
-        Schema.Table(nameof(UserNotifications)).Exists()
+        Schema.Table(nameof(UserNotification)).Exists()
         && !Schema
-            .Table(nameof(UserNotifications))
-            .Column(nameof(UserNotifications.PushId))
+            .Table(nameof(UserNotification))
+            .Column(nameof(UserNotification.PushId))
             .Exists()
         )
         {
             Alter
-                .Table(nameof(UserNotifications))
-                .AddColumn(nameof(UserNotifications.PushId))
+                .Table(nameof(UserNotification))
+                .AddColumn(nameof(UserNotification.PushId))
                 .AsString(500)
                 .Nullable();
 
         }
 
         if (
-         Schema.Table(nameof(UserNotifications)).Exists()
+         Schema.Table(nameof(UserNotification)).Exists()
          && !Schema
-             .Table(nameof(UserNotifications))
-             .Column(nameof(UserNotifications.PhoneNumber))
+             .Table(nameof(UserNotification))
+             .Column(nameof(UserNotification.PhoneNumber))
              .Exists()
          )
         {
             Alter
-                .Table(nameof(UserNotifications))
-                .AddColumn(nameof(UserNotifications.PhoneNumber))
+                .Table(nameof(UserNotification))
+                .AddColumn(nameof(UserNotification.PhoneNumber))
                 .AsString(100)
                 .Nullable();
 
         }
         if (
-          Schema.Table(nameof(UserNotifications)).Exists()
+          Schema.Table(nameof(UserNotification)).Exists()
           && !Schema
-              .Table(nameof(UserNotifications))
-              .Column(nameof(UserNotifications.UserDevice))
+              .Table(nameof(UserNotification))
+              .Column(nameof(UserNotification.UserDevice))
               .Exists()
           )
         {
             Alter
-                .Table(nameof(UserNotifications))
-                .AddColumn(nameof(UserNotifications.UserDevice))
+                .Table(nameof(UserNotification))
+                .AddColumn(nameof(UserNotification.UserDevice))
                 .AsString(100)
                 .Nullable();
 

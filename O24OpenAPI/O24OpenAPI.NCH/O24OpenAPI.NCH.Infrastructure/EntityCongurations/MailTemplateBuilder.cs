@@ -2,7 +2,7 @@
 using O24OpenAPI.Data.Mapping.Builders;
 using O24OpenAPI.NCH.Domain.AggregatesModel.MailAggregate;
 
-namespace O24OpenAPI.NCH.Migrations.Builders;
+namespace O24OpenAPI.NCH.Infrastructure.EntityCongurations;
 
 public class MailTemplateBuilder : O24OpenAPIEntityBuilder<MailTemplate>
 {

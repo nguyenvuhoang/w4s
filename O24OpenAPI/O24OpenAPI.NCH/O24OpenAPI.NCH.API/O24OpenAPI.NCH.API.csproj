@@ -17,10 +17,7 @@
 		<PublishTrimmed>false</PublishTrimmed>
 	</PropertyGroup>
   <Target Name="SetGitVersion" BeforeTargets="BeforeBuild">
-    <Exec
-      Command="git rev-list --count HEAD &gt; githeight.txt"
-      WorkingDirectory="$(MSBuildProjectDirectory)"
-    />
+    <Exec Command="git rev-list --count HEAD &gt; githeight.txt" WorkingDirectory="$(MSBuildProjectDirectory)" />
     <ReadLinesFromFile File="githeight.txt">
       <Output TaskParameter="Lines" PropertyName="GitHeight" />
     </ReadLinesFromFile>

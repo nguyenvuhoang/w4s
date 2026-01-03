@@ -2,7 +2,7 @@
 using O24OpenAPI.Data.Mapping.Builders;
 using O24OpenAPI.NCH.Domain.AggregatesModel.SmsAggregate;
 
-namespace O24OpenAPI.NCH.Migrations.Builders;
+namespace O24OpenAPI.NCH.Infrastructure.EntityCongurations;
 
 public class SMSProviderStatusBuilder : O24OpenAPIEntityBuilder<SMSProviderStatus>
 {

@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.NCH.Domain.AggregatesModel.NotificationAggregate;
 
-public partial class UserNotifications : BaseEntity
+public partial class UserNotification : BaseEntity
 {
     public int NotificationID { get; set; }
     public string? UserCode { get; set; }

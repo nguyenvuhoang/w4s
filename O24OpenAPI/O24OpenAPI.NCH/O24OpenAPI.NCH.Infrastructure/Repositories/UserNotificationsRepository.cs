@@ -10,9 +10,9 @@ public class UserNotificationsRepository(
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
 )
-    : EntityRepository<UserNotifications>(dataProvider, staticCacheManager),
+    : EntityRepository<UserNotification>(dataProvider, staticCacheManager),
         IUserNotificationsRepository
 {
-    public Task<IReadOnlyList<UserNotifications>> GetByUserAsync(long userId) =>
+    public Task<IReadOnlyList<UserNotification>> GetByUserAsync(long userId) =>
         throw new NotImplementedException();
 }
