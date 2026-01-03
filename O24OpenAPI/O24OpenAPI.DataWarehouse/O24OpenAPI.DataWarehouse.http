@@ -1,6 +1,0 @@
-@O24OpenAPI.DataWarehouse_HostAddress = http://localhost:5215
-
-GET {{O24OpenAPI.DataWarehouse_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

@@ -1,6 +1,0 @@
-@O24OpenAPI.Web.Report_HostAddress = http://localhost:5299
-
-GET {{O24OpenAPI.Web.Report_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
