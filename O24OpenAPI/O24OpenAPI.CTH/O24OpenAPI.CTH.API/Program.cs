@@ -1,5 +1,5 @@
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.CTH.API.Application;
+using O24OpenAPI.CTH.API.Application.Extensions;
 using O24OpenAPI.CTH.API.Application.GrpcServices;
 using O24OpenAPI.CTH.Infrastructure;
 using O24OpenAPI.Framework.Extensions;

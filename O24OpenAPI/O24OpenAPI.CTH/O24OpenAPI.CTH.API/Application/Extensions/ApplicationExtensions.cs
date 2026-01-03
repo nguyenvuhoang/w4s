@@ -1,6 +1,6 @@
 ﻿using O24OpenAPI.Framework.Abstractions;
 
-namespace O24OpenAPI.CTH.API.Application;
+namespace O24OpenAPI.CTH.API.Application.Extensions;
 
 internal static class ApplicationExtensions
 {
