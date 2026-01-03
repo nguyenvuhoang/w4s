@@ -18,6 +18,14 @@
         "MaxParallel": 1,
         "CorrelationId": "SyncGLEntriesJob",
         "IsActive": true
+      },
+      {
+        "Name": "ClearEntityAuditJob",
+        "AssemblyName": "O24OpenAPI.Framework",
+        "IsActive": true,
+        "RunOnStart": true,
+        "ScheduleType": "Daily",
+        "TimeOfDay": "00:00:01"
       }
     ]
   }
