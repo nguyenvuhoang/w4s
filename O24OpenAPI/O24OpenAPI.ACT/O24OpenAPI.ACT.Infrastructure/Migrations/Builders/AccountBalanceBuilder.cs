@@ -1,6 +1,6 @@
 using FluentMigrator.Builders.Create.Table;
 using O24OpenAPI.Data.Mapping.Builders;
-using O24OpenAPI.ACT.Domain;
+using O24OpenAPI.ACT.Domain.AggregatesModel.AccountAggregate;
 
 namespace O24OpenAPI.ACT.Migrations.Builders;
 

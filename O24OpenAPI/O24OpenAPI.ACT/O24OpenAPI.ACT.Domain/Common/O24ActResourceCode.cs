@@ -1,4 +1,4 @@
-﻿namespace O24OpenAPI.ACT.Common;
+﻿namespace O24OpenAPI.ACT.Domain.Common;
 
 public partial class O24ActResourceCode
 {

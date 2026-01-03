@@ -13,25 +13,25 @@ public partial class AccountMapping : BaseEntity
     /// MappingId
     /// </summary>
     [JsonProperty("mapping_id")]
-    public string MappingId { get; set; }
+    public string? MappingId { get; set; }
 
     /// <summary>
     /// MappingTableName
     /// </summary>
     [JsonProperty("mapping_table_name")]
-    public string MappingTableName { get; set; }
+    public string? MappingTableName { get; set; }
 
     /// <summary>
     /// MappingType
     /// </summary>
     [JsonProperty("mapping_type")]
-    public string MappingType { get; set; }
+    public string? MappingType { get; set; }
 
     /// <summary>
     /// AccountName
     /// </summary>
     [JsonProperty("account_name")]
-    public string AccountName { get; set; }
+    public string? AccountName { get; set; }
 
     /// <summary>
     /// create

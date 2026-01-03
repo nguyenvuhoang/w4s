@@ -10,67 +10,67 @@ public partial class AccountingRuleDefinition : BaseEntity
     /// <summary>
     /// txcode
     /// </summary>
-    public string TransactionCode { get; set; }
+    public string? TransactionCode { get; set; }
 
     /// <summary>
     /// txcode
     /// </summary>
-    public string StepCode { get; set; }
+    public string? StepCode { get; set; }
 
     /// <summary>
     /// txcode
     /// </summary>
-    public string NodeData { get; set; }
+    public string? NodeData { get; set; }
 
     /// <summary>
     /// actype
     /// </summary>
-    public string AccountType { get; set; }
+    public string? AccountType { get; set; }
 
     /// <summary>
     /// acname
     /// </summary>
-    public string AccountName { get; set; }
+    public string? AccountName { get; set; }
 
     /// <summary>
     /// txcode
     /// </summary>
-    public string EntryCondition { get; set; }
+    public string? EntryCondition { get; set; }
 
     /// <summary>
     /// enparmcd
     /// </summary>
-    public string EntryParameterCode { get; set; }
+    public string? EntryParameterCode { get; set; }
 
     /// <summary>
     /// enparmval
     /// </summary>
-    public string EntryParameterValue { get; set; }
+    public string? EntryParameterValue { get; set; }
 
     /// <summary>
     /// dorc
     /// </summary>
-    public string DebitOrCredit { get; set; }
+    public string? DebitOrCredit { get; set; }
 
     /// <summary>
     /// valtype
     /// </summary>
-    public string ValueTypeOfAmount { get; set; }
+    public string? ValueTypeOfAmount { get; set; }
 
     /// <summary>
     /// valtag
     /// </summary>
-    public string TagOfField { get; set; }
+    public string? TagOfField { get; set; }
 
     /// <summary>
     /// mval
     /// </summary>
-    public string DirectValue { get; set; }
+    public string? DirectValue { get; set; }
 
     /// <summary>
     /// valname
     /// </summary>
-    public string ValueName { get; set; }
+    public string? ValueName { get; set; }
 
     /// <summary>
     /// acgrp
@@ -85,42 +85,42 @@ public partial class AccountingRuleDefinition : BaseEntity
     /// <summary>
     /// acctype
     /// </summary>
-    public string AccountingEntry { get; set; }
+    public string? AccountingEntry { get; set; }
 
     /// <summary>
     /// mdlcode
     /// </summary>
-    public string ModuleCode { get; set; }
+    public string? ModuleCode { get; set; }
 
     /// <summary>
     /// mdlkeyval
     /// </summary>
-    public string AccountMasterTag { get; set; }
+    public string? AccountMasterTag { get; set; }
 
     /// <summary>
     /// bamt
     /// </summary>
-    public string BaseAmount { get; set; }
+    public string? BaseAmount { get; set; }
 
     /// <summary>
     /// brw
     /// </summary>
-    public string WorkingBranch { get; set; }
+    public string? WorkingBranch { get; set; }
 
     /// <summary>
     /// brm
     /// </summary>
-    public string MasterBranch { get; set; }
+    public string? MasterBranch { get; set; }
 
     /// <summary>
     /// ccr
     /// </summary>
-    public string Currency { get; set; }
+    public string? Currency { get; set; }
 
     /// <summary>
     /// prn
     /// </summary>
-    public string Voucher { get; set; }
+    public string? Voucher { get; set; }
 
     /// <summary>
     /// iscompress
@@ -130,17 +130,17 @@ public partial class AccountingRuleDefinition : BaseEntity
     /// <summary>
     /// clrtype
     /// </summary>
-    public string ClearingType { get; set; }
+    public string? ClearingType { get; set; }
 
     /// <summary>
     /// fxclrtype
     /// </summary>
-    public string FXClearingType { get; set; }
+    public string? FXClearingType { get; set; }
 
     /// <summary>
     /// defacno
     /// </summary>
-    public string DefAccountNumber { get; set; }
+    public string? DefAccountNumber { get; set; }
 
     /// <summary>
     /// create

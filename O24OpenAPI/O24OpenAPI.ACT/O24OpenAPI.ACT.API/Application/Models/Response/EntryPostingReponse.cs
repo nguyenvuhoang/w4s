@@ -1,6 +1,6 @@
 ﻿using O24OpenAPI.Core.Abstractions;
-using O24OpenAPI.ACT.Common;
 using O24OpenAPI.ACT.API.Application.Models;
+using O24OpenAPI.ACT.Domain.Common;
 
 namespace O24OpenAPI.ACT.API.Application.Models.Response;
 

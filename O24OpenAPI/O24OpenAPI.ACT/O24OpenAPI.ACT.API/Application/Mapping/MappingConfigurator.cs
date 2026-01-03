@@ -1,6 +1,6 @@
 ﻿using LinKit.Core.Mapping;
 using O24OpenAPI.ACT.API.Application.Features.AccountCharts;
-using O24OpenAPI.ACT.Domain;
+using O24OpenAPI.ACT.Domain.AggregatesModel.AccountAggregate;
 using O24OpenAPI.ACT.Infrastructure.Repositories;
 
 namespace O24OpenAPI.ACT.API.Application.Mapping;

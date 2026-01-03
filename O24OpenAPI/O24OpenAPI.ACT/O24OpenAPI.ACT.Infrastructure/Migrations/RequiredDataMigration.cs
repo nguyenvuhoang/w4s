@@ -5,7 +5,7 @@ using O24OpenAPI.Core.Domain.Localization;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Data;
 using O24OpenAPI.Data.Migrations;
-using O24OpenAPI.ACT.Common;
+using O24OpenAPI.ACT.Domain.Common;
 
 namespace O24OpenAPI.ACT.Migrations;
 

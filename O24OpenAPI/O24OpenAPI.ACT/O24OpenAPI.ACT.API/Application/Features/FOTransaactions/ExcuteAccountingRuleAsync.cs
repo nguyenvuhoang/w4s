@@ -2,7 +2,6 @@
 using LinqToDB;
 using O24OpenAPI.ACT.API.Application.Models;
 using O24OpenAPI.ACT.API.Application.Models.Response;
-using O24OpenAPI.ACT.Domain;
 using O24OpenAPI.ACT.Domain.AggregatesModel.AccountAggregate;
 using O24OpenAPI.ACT.Infrastructure.Repositories;
 using O24OpenAPI.APIContracts.Constants;

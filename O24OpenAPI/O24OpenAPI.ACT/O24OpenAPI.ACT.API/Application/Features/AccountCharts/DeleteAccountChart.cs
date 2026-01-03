@@ -1,5 +1,4 @@
 ﻿using LinKit.Core.Cqrs;
-using O24OpenAPI.ACT.Domain;
 using O24OpenAPI.ACT.Domain.AggregatesModel.AccountAggregate;
 using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.Core;

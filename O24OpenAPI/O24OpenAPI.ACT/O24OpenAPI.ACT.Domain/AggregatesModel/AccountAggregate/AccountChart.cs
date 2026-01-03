@@ -1,6 +1,6 @@
 using O24OpenAPI.Core.Domain;
 
-namespace O24OpenAPI.ACT.Domain;
+namespace O24OpenAPI.ACT.Domain.AggregatesModel.AccountAggregate;
 
 /// <summary>
 /// AccountChart
@@ -10,22 +10,22 @@ public partial class AccountChart : BaseEntity
     /// <summary>
     /// AccountNumber
     /// </summary>
-    public string AccountNumber { get; set; }
+    public string? AccountNumber { get; set; }
 
     /// <summary>
     /// CurrencyCode
     /// </summary>
-    public string CurrencyCode { get; set; }
+    public string? CurrencyCode { get; set; }
 
     /// <summary>
     /// BranchCode
     /// </summary>
-    public string BranchCode { get; set; }
+    public string? BranchCode { get; set; }
 
     /// <summary>
     /// ParentAccountId
     /// </summary>
-    public string ParentAccountId { get; set; }
+    public string? ParentAccountId { get; set; }
 
     /// <summary>
     /// AccountLevel
@@ -40,77 +40,77 @@ public partial class AccountChart : BaseEntity
     /// <summary>
     /// BalanceSide
     /// </summary>
-    public string BalanceSide { get; set; }
+    public string? BalanceSide { get; set; }
 
     /// <summary>
     /// ReverseBalance
     /// </summary>
-    public string ReverseBalance { get; set; }
+    public string? ReverseBalance { get; set; }
 
     /// <summary>
     /// PostingSide
     /// </summary>
-    public string PostingSide { get; set; }
+    public string? PostingSide { get; set; }
 
     /// <summary>
     /// AccountName
     /// </summary>
-    public string AccountName { get; set; }
+    public string? AccountName { get; set; }
 
     /// <summary>
     /// ShortAccountName
     /// </summary>
-    public string ShortAccountName { get; set; }
+    public string? ShortAccountName { get; set; }
 
     /// <summary>
     /// MultiValueName
     /// </summary>
-    public string MultiValueName { get; set; }
+    public string? MultiValueName { get; set; }
 
     /// <summary>
     /// AccountClassification
     /// </summary>
-    public string AccountClassification { get; set; }
+    public string? AccountClassification { get; set; }
 
     /// <summary>
     /// AccountCategories
     /// </summary>
-    public string AccountCategories { get; set; }
+    public string? AccountCategories { get; set; }
 
     /// <summary>
     /// AccountGroup
     /// </summary>
-    public string AccountGroup { get; set; }
+    public string? AccountGroup { get; set; }
 
     /// <summary>
     /// DirectPosting
     /// </summary>
-    public string DirectPosting { get; set; }
+    public string? DirectPosting { get; set; }
 
     /// <summary>
     /// IsVisible
     /// </summary>
-    public string IsVisible { get; set; }
+    public string? IsVisible { get; set; }
 
     /// <summary>
     /// IsMultiCurrency
     /// </summary>
-    public string IsMultiCurrency { get; set; }
+    public string? IsMultiCurrency { get; set; }
 
     /// <summary>
     /// JobProcessOption
     /// </summary>
-    public string JobProcessOption { get; set; }
+    public string? JobProcessOption { get; set; }
 
     /// <summary>
     /// RefAccountNumber
     /// </summary>
-    public string RefAccountNumber { get; set; }
+    public string? RefAccountNumber { get; set; }
 
     /// <summary>
     /// ReferencesNumber
     /// </summary>
-    public string ReferencesNumber { get; set; }
+    public string? ReferencesNumber { get; set; }
 
     /// <summary>
     /// Last update date

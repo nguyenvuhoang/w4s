@@ -8,5 +8,4 @@ namespace O24OpenAPI.ACT.Domain.AggregatesModel.AccountAggregate;
 public partial class AccountStatementDone : BaseStatement
 {
     public string TransId { get; set; } = Guid.NewGuid().ToString();
-
 }

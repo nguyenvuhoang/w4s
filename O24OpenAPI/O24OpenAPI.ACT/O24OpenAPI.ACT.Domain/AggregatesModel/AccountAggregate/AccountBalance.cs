@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using O24OpenAPI.Core.Domain;
 
-namespace O24OpenAPI.ACT.Domain;
+namespace O24OpenAPI.ACT.Domain.AggregatesModel.AccountAggregate;
 
 /// <summary>
 /// Account Balance
@@ -12,19 +12,19 @@ public partial class AccountBalance : BaseEntity
     /// AccountNumber
     /// </summary>
     [JsonProperty("account_number")]
-    public string AccountNumber { get; set; }
+    public string? AccountNumber { get; set; }
 
     /// <summary>
     ///
     /// </summary>
     [JsonProperty("branch_code")]
-    public string BranchCode { get; set; }
+    public string? BranchCode { get; set; }
 
     /// <summary>
     ///
     /// </summary>
     [JsonProperty("currency_code")]
-    public string CurrencyCode { get; set; }
+    public string? CurrencyCode { get; set; }
 
     /// <summary>
     /// Balance

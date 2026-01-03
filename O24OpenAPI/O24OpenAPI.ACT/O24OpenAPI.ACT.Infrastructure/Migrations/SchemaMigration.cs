@@ -3,7 +3,6 @@ using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.Migrations;
 using O24OpenAPI.Framework.Domain;
-using O24OpenAPI.ACT.Domain;
 using O24OpenAPI.ACT.Domain.AggregatesModel.CommonAggregate;
 using O24OpenAPI.ACT.Domain.AggregatesModel.MappingAggregate;
 using O24OpenAPI.ACT.Domain.AggregatesModel.RulesAggregate;

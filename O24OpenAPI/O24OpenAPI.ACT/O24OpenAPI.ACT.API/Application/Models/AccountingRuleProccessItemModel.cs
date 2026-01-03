@@ -1,5 +1,5 @@
 ﻿using O24OpenAPI.Core.Abstractions;
-using O24OpenAPI.ACT.Domain;
+using O24OpenAPI.ACT.Domain.AggregatesModel.AccountAggregate;
 
 namespace O24OpenAPI.ACT.API.Application.Models;
 

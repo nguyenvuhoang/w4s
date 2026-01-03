@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using O24OpenAPI.Core.Domain;
 
-namespace O24OpenAPI.ACT.Domain;
+namespace O24OpenAPI.ACT.Domain.AggregatesModel.AccountAggregate;
 
 /// <summary>
 /// AccountCommon

@@ -3,7 +3,6 @@ using LinKit.Core.Cqrs;
 using LinqToDB;
 using O24OpenAPI.ACT.API.Application.Models;
 using O24OpenAPI.ACT.Config;
-using O24OpenAPI.ACT.Domain;
 using O24OpenAPI.ACT.Domain.AggregatesModel.AccountAggregate;
 using O24OpenAPI.ACT.Domain.AggregatesModel.CommonAggregate;
 using O24OpenAPI.ACT.Domain.AggregatesModel.RulesAggregate;

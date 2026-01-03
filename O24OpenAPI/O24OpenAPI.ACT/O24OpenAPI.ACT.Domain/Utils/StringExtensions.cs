@@ -1,4 +1,4 @@
-﻿namespace O24OpenAPI.ACT.Utils;
+﻿namespace O24OpenAPI.ACT.Domain.Utils;
 
 public static class StringExtensions
 {
