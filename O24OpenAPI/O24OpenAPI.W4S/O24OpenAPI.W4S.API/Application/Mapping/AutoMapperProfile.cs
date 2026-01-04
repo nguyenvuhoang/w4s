@@ -1,14 +1,15 @@
 ﻿using O24OpenAPI.Framework.Infrastructure.Mapper;
+using O24OpenAPI.W4S.API.Application.Features.WalletBugets;
 using O24OpenAPI.W4S.API.Application.Models.Wallet;
 using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
-namespace O24OpenAPI.W4S.API.Application.Mapping
+namespace O24OpenAPI.W4S.API.Application.Mapping;
+
+public class AutoMapperProfile : BaseMapperConfiguration
 {
-    public class AutoMapperProfile : BaseMapperConfiguration
+    public AutoMapperProfile()
     {
-        public AutoMapperProfile()
-        {
-            CreateMap<WalletCategory, WalletCategoryResponseModel>();
-        }
+        CreateMap<WalletCategory, WalletCategoryResponseModel>();
+        CreateModelMap<WalletBudget, GetWalletBudgetsByWalletModel>();
     }
 }
