@@ -1,19 +1,24 @@
-﻿using LinqToDB;
+﻿using LinKit.Core.Abstractions;
+using LinqToDB;
 using Newtonsoft.Json;
-using O24OpenAPI.CMS.API.Application.Services.Interfaces;
 using O24OpenAPI.CMS.Domain.AggregateModels.FormAggregate;
+using O24OpenAPI.Core.Caching;
+using O24OpenAPI.Data;
 
-namespace O24OpenAPI.CMS.API.Application.Services.Services;
+namespace O24OpenAPI.CMS.Infrastructure.Repositories;
 
-public class FormFieldDefinitionService(IRepository<FormFieldDefinition> formFieldRepo)
-    : IFormFieldDefinitionService
+[RegisterService(Lifetime.Scoped)]
+internal class FormFieldDefinitionRepository(
+    IO24OpenAPIDataProvider dataProvider,
+    IStaticCacheManager staticCacheManager
+)
+    : EntityRepository<FormFieldDefinition>(dataProvider, staticCacheManager),
+        IFormFieldDefinitionRepository
 {
-    private readonly IRepository<FormFieldDefinition> _formFieldRepo = formFieldRepo;
-
     public async Task<string> GetFieldValueAsync(string language, string formId, string fieldName)
     {
-        var fieldJson = await _formFieldRepo
-            .Table.Where(x => x.FormId == formId && x.FieldName == fieldName)
+        string? fieldJson = await Table
+            .Where(x => x.FormId == formId && x.FieldName == fieldName)
             .Select(x => x.FieldValue)
             .FirstOrDefaultAsync();
 
@@ -25,7 +30,7 @@ public class FormFieldDefinitionService(IRepository<FormFieldDefinition> formFie
         try
         {
             var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(fieldJson);
-            if (dict != null && dict.TryGetValue(language, out var value))
+            if (dict != null && dict.TryGetValue(language, out string? value))
             {
                 return value ?? string.Empty;
             }

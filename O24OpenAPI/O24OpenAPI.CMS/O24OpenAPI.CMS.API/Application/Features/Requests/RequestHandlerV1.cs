@@ -1,8 +1,12 @@
-﻿using LinKit.Core.Abstractions;
+﻿using System.Text;
+using System.Text.Json.Serialization;
+using LinKit.Core.Abstractions;
+using LinKit.Core.Cqrs;
 using LinKit.Json.Runtime;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.APIContracts.Models.CTH;
 using O24OpenAPI.CMS.API.Application.Models.ContextModels;
 using O24OpenAPI.CMS.API.Application.Models.Request;
@@ -23,8 +27,6 @@ using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using O24OpenAPI.Logging.Helpers;
-using System.Text;
-using System.Text.Json.Serialization;
 
 namespace O24OpenAPI.CMS.API.Application.Features.Requests;
 
@@ -553,7 +555,7 @@ public class RequestHandlerV1(
         try
         {
             string response;
-            if (!string.IsNullOrEmpty(requestModel.LearnApi))
+            if (!string.IsNullOrWhiteSpace(requestModel.LearnApi))
             {
                 string learnApiId = requestModel.LearnApi;
 
@@ -572,6 +574,16 @@ public class RequestHandlerV1(
                 else
                 {
                     mappedRequest = BuildContentWorkflowRequest(requestModel);
+                }
+                if (learnApiId.StartsWithOrdinalIgnoreCase("CMS"))
+                {
+                    return (JObject)(
+                        await LearnApiHandlers.HandleAsync(
+                            learnApiId,
+                            mappedRequest,
+                            EngineContext.Current.Resolve<IMediator>(MediatorKey.CMS)
+                        )
+                    );
                 }
                 if (learnApi.URI.StartsWith('$'))
                 {

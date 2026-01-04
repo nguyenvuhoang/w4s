@@ -52,11 +52,7 @@
     <ProjectReference Include="..\O24OpenAPI.CMS.Infrastructure\O24OpenAPI.CMS.Infrastructure.csproj" />
     <PackageReference Include="ExcelDataReader" Version="3.7.0" />
     <PackageReference Include="ExcelDataReader.DataSet" Version="3.7.0" />
-    <ProjectReference
-      Include="..\..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj"
-      OutputItemType="Analyzer"
-      ReferenceOutputAssembly="false"
-    />
+    <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Application\GrpcServices\" />

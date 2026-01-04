@@ -6,7 +6,7 @@ using O24OpenAPI.CMS.API.Application.Models.RabbitMQ;
 using O24OpenAPI.CMS.API.Application.Models.Tools;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces;
 using O24OpenAPI.CMS.Domain.AggregateModels.Digital;
-using O24OpenAPI.CMS.Domain.AggregateModels.PORTAL;
+using O24OpenAPI.CMS.Domain.AggregateModels.FormAggregate;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Framework.Controllers;
 using O24OpenAPI.Framework.Extensions;

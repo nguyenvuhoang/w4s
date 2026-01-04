@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace O24OpenAPI.CMS.Domain.AggregateModels.PORTAL;
+namespace O24OpenAPI.CMS.Domain.AggregateModels.FormAggregate;
 
 /// <summary>
 /// Represents an Bo
