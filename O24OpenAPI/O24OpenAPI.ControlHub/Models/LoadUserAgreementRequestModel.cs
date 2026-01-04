@@ -1,8 +1,0 @@
-﻿using O24OpenAPI.Framework.Models;
-
-namespace O24OpenAPI.ControlHub.Models;
-
-public class LoadUserAgreementRequestModel : BaseTransactionModel
-{
-    public new string TransactionCode { get; set; }
-}

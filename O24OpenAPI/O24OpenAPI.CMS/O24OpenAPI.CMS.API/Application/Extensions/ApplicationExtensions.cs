@@ -1,6 +1,6 @@
-﻿using O24OpenAPI.CMS.API.Application.Models.ContextModels;
+﻿using O24OpenAPI.CMS.API.Application.Features.QR;
+using O24OpenAPI.CMS.API.Application.Models.ContextModels;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces;
-using O24OpenAPI.CMS.API.Application.Services.QR;
 using O24OpenAPI.CMS.API.Application.Services.Services;
 using O24OpenAPI.Framework.Abstractions;
 using O24OpenAPI.Framework.Domain.Logging;
@@ -33,15 +33,12 @@ public class O24OpenAPIStartup : IO24OpenAPIStartup
         services.AddSingleton<IMemoryCacheService, MemoryCacheService>();
         services.AddSingleton<SignalHubService, SignalHubService>();
         services.AddScoped<ICMSSettingService, CMSSettingService>();
-        services.AddScoped<ILogServiceService, LogServiceService>();
         services.AddScoped<JWebUIObjectContextModel>();
         // services.AddScoped<DataMigration>();
         services.AddScoped<IMailConfigService, MailConfigService>();
         services.AddScoped<IMailTemplateService, MailTemplateService>();
         services.AddScoped<ISendMailService, SendMailService>();
         services.AddScoped<IRaiseErrorService, RaiseErrorService>();
-        services.AddScoped<IValidationService, ValidationService>();
-        services.AddScoped<ILoadFormService, LoadFormService>();
         services.AddScoped<IFormService, FormService>();
         services.AddScoped<IParaServerService, ParaServerService>();
         services.AddScoped<IDbFunctionService, DbFunctionService>();
@@ -54,7 +51,9 @@ public class O24OpenAPIStartup : IO24OpenAPIStartup
         services.AddScoped<ISignalHubBusinessService, SignalHubBusinessService>();
         services.AddLinKitCqrs("cms");
         services.AddLinKitDependency();
-        services.AddKeyedSingleton<IWorkflowStepInvoker, Workflow.Generated.WorkflowStepInvoker>("cms");
+        services.AddKeyedSingleton<IWorkflowStepInvoker, Workflow.Generated.WorkflowStepInvoker>(
+            "cms"
+        );
         services
             .AddHttpClient(
                 "DefaultClient",

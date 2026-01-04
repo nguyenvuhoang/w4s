@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
+using O24OpenAPI.CMS.API.Application.Features.QR;
 using O24OpenAPI.CMS.API.Application.Models.QR;
-using O24OpenAPI.CMS.API.Application.Services.QR;
 using O24OpenAPI.CMS.Domain.AggregateModels;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Services.Queue;
