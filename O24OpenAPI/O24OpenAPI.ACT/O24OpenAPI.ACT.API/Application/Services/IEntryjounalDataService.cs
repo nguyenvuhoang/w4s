@@ -2,7 +2,7 @@
 using O24OpenAPI.ACT.API.Application.Models.Response;
 using O24OpenAPI.ACT.API.Application.Models;
 
-namespace O24OpenAPI.O24ACT.Services.Interfaces;
+namespace O24OpenAPI.ACT.API.Application.Services;
 
 public interface IEntryjounalDataService
 {
