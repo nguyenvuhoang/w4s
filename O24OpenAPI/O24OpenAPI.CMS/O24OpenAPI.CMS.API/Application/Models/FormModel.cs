@@ -115,6 +115,10 @@ public class InfoForm : BaseO24OpenAPIModel
     ///
     /// </summary>
     [JsonProperty("app")] public string App { get; set; } = string.Empty;
+    /// <summary>
+    /// 
+    /// </summary>
+    [JsonProperty("is_static")] public bool IsStatic { get; set; } = false;
 
 
 }
