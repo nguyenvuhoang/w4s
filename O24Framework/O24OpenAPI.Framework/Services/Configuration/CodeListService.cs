@@ -1,11 +1,11 @@
-﻿using System.Text.Json;
-using O24OpenAPI.Core;
+﻿using O24OpenAPI.Core;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.Framework.Domain;
 using O24OpenAPI.Framework.Models;
+using System.Text.Json;
 
 namespace O24OpenAPI.Framework.Services.Configuration;
 
@@ -49,17 +49,17 @@ public class CodeListService(IRepository<C_CODELIST> codeListRepository) : ICode
         var lang = model.Language ?? "en";
 
         var items = page.Select(s => new C_CODELIST
-            {
-                Id = s.Id,
-                CodeId = s.CodeId,
-                CodeGroup = s.CodeGroup ?? "",
-                CodeName = s.CodeName ?? "",
-                CodeValue = s.CodeValue ?? "",
-                CodeIndex = s.CodeIndex,
-                Ftag = s.Ftag ?? "",
-                Visible = s.Visible,
-                Caption = ResolveCaption(s.MCaption, s.Caption, lang),
-            })
+        {
+            Id = s.Id,
+            CodeId = s.CodeId,
+            CodeGroup = s.CodeGroup ?? "",
+            CodeName = s.CodeName ?? "",
+            CodeValue = s.CodeValue ?? "",
+            CodeIndex = s.CodeIndex,
+            Ftag = s.Ftag ?? "",
+            Visible = s.Visible,
+            Caption = ResolveCaption(s.MCaption, s.Caption, lang),
+        })
             .ToList();
 
         return new PagedList<C_CODELIST>(items, page.PageIndex, page.PageSize, page.TotalCount);
@@ -115,5 +115,27 @@ public class CodeListService(IRepository<C_CODELIST> codeListRepository) : ICode
         {
             return fallbackCaption ?? string.Empty;
         }
+    }
+
+    public async Task<string> GetCaption(string codeId, string codeName, string codeGroup, string? language = null)
+    {
+        var lang = (language ?? "en").Trim().ToLowerInvariant();
+        if (string.IsNullOrWhiteSpace(codeId))
+            return string.Empty;
+        if (string.IsNullOrWhiteSpace(codeName))
+            return string.Empty;
+        if (string.IsNullOrWhiteSpace(codeGroup))
+            return string.Empty;
+
+        var caption = await _codeListRepository.Table
+            .Where(x => x.CodeId == codeId && x.CodeName == codeName && x.CodeGroup == codeGroup)
+            .Select(x => new { x.Caption, x.MCaption })
+            .FirstOrDefaultAsync();
+
+        if (caption == null)
+            return string.Empty;
+
+        return ResolveCaption(caption.MCaption, caption.Caption, lang);
+
     }
 }

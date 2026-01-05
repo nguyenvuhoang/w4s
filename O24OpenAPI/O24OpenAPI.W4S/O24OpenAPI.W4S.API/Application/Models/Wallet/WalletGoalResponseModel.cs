@@ -1,0 +1,15 @@
+﻿using O24OpenAPI.Framework.Models;
+
+namespace O24OpenAPI.W4S.API.Application.Models.Wallet
+{
+    public class WalletGoalResponseModel : BaseTransactionModel
+    {
+        public int Id { get; set; }
+        public string GoalId { get; set; } = default!;
+        public string WalletId { get; set; } = default!;
+        public string GoalName { get; set; } = default!;
+        public decimal TargetAmount { get; set; }
+        public decimal CurrentAmount { get; set; }
+        public DateTime? TargetDate { get; set; }
+    }
+}
