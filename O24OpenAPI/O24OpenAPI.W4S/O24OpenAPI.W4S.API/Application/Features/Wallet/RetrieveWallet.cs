@@ -25,7 +25,8 @@ public class RetrieveWalletInformationHandler(
     IWalletCategoryRepository walletCategoryRepository,
     IWalletBudgetRepository walletBudgetRepository,
     IWalletGoalRepository walletGoalRepository,
-    ICodeListService systemCodeService
+    ICodeListService systemCodeService,
+    IWalletTransactionRepository walletTransactionRepository
 ) : ICommandHandler<RetrieveWalletInformationCommand, WalletInformationResponseModel>
 {
     [WorkflowStep(WorkflowStepCode.W4S.WF_STEP_W4S_RETRIEVE_WALLET_INFORMATION)]
@@ -97,6 +98,24 @@ public class RetrieveWalletInformationHandler(
         var categoriesTask = walletCategoryRepository.GetByWalletIdsAsync(walletIdStrings);
         var budgetsTask = walletBudgetRepository.GetByWalletIdsAsync(walletIdStrings);
         var goalsTask = walletGoalRepository.GetByWalletIdsAsync(walletIdStrings);
+        var txTasks = walletIds.Select(async wid =>
+        {
+            var list = await walletTransactionRepository.GetByWalletIdAsync(
+                wid,
+                fromUtc: null,
+                toUtc: null,
+                skip: 0,
+                take: 50,
+                cancellationToken: cancellationToken
+            );
+
+            return new { WalletId = wid, Transactions = list };
+        });
+
+        var txResults = await Task.WhenAll(txTasks);
+
+        var txsByWallet = txResults.ToDictionary(x => x.WalletId, x => x.Transactions);
+
 
         await Task.WhenAll(balancesTask, categoriesTask, budgetsTask, goalsTask);
 
@@ -276,7 +295,26 @@ public class RetrieveWalletInformationHandler(
                         })];
                 }
 
+
+                if (txsByWallet.TryGetValue(wid, out var txs) && txs.Count > 0)
+                {
+                    walletDetail.Transactions = [.. txs
+                    .OrderByDescending(x => x.TransactionDate)
+                    .Select(x =>new WalletTransactionResponseModel
+                    {
+                        TransactionId = x.TransactionId,
+                        Name = x.TransactionName ?? x.Char01 ?? string.Empty,
+                        Category = x.Char02 ?? string.Empty,
+                        Amount = x.Num01 ?? 0,
+                        Currency = x.CcyId ?? "VND",
+                        TransactionDate = x.TransactionDate,
+                        Description = x.TranDesc,
+                        Status = x.Status
+                    })];
+                }
+
                 return walletDetail;
+
             });
 
         response.Wallets = [.. await Task.WhenAll(walletDetailTasks)];

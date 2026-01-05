@@ -19,6 +19,7 @@
         public IList<WalletCategoryResponseModel> Categories { get; set; } = [];
         public IList<WalletBudgetResponseModel> Budgets { get; set; } = [];
         public IList<WalletGoalResponseModel> Goals { get; set; } = [];
+        public IList<WalletTransactionResponseModel> Transactions { get; set; } = [];
 
     }
 }
