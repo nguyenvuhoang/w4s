@@ -14,8 +14,8 @@ namespace O24OpenAPI.W4S.Infrastructure.Migrations;
 /// </summary>
 /// <seealso cref="AutoReversingMigration"/>
 [O24OpenAPIMigration(
-    "2026/01/02 14:10:00:0000000",
-    "Table For WalletCategoryDefault",
+    "2026/01/05 14:10:00:0000000",
+    "Table For WalletAvatar",
     MigrationProcessType.Installation
 )]
 [Environment(EnvironmentType.All)]
@@ -115,6 +115,26 @@ public class SchemaMigration : AutoReversingMigration
                 .Ascending()
                 .WithOptions()
                 .NonClustered();
+        }
+
+        if (!Schema.Table("WalletAvatar").Exists())
+        {
+            Create.TableFor<WalletAvatar>();
+            Create.Index("UQ_WalletAvatar_AvatarId")
+           .OnTable("WalletAvatar")
+           .OnColumn("AvatarId").Ascending()
+           .WithOptions().Unique();
+
+            Create.Index("IX_WalletAvatar_WalletId_CreatedOnUtc")
+                .OnTable("WalletAvatar")
+                .OnColumn("WalletId").Ascending()
+                .OnColumn("CreatedOnUtc").Descending();
+
+            Create.Index("IX_WalletAvatar_UserCode_CreatedOnUtc")
+                .OnTable("WalletAvatar")
+                .OnColumn("UserCode").Ascending()
+                .OnColumn("CreatedOnUtc").Descending();
+
         }
 
     }
