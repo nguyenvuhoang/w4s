@@ -1,7 +1,7 @@
 ﻿namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
-using System.ComponentModel.DataAnnotations;
 using O24OpenAPI.Core.Domain;
+using System.ComponentModel.DataAnnotations;
 
 /// <summary>
 /// Defines the <see cref="WalletTransaction" />
@@ -11,415 +11,417 @@ public partial class WalletTransaction : BaseEntity
     /// <summary>
     /// Gets or sets the TransactionId
     /// </summary>
-    public string? TransactionId { get; set; }
+    public string? TRANSACTIONID { get; set; }
 
     /// <summary>
     /// Gets or sets the TransactionDate
     /// </summary>
-    public DateTime TransactionDate { get; set; } = DateTime.Now;
+    public DateTime TRANSACTIONDATE { get; set; } = DateTime.Now;
 
     /// <summary>
     /// Gets or sets the TransactionEndDate
     /// </summary>
-    public DateTime? TransactionEndDate { get; set; }
+    public DateTime? TRANSACTIONENDDATE { get; set; }
 
     /// <summary>
     /// Gets or sets the TransactionWorkDate
     /// </summary>
-    public DateTime? TransactionWorkDate { get; set; }
+    public DateTime? TRANSACTIONWORKDATE { get; set; }
 
     /// <summary>
     /// Gets or sets the TransactionName
     /// </summary>
-    public string TransactionName { get; set; } = string.Empty;
+    public string TRANSACTIONNAME { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the TransactionCode
     /// </summary>
     [Required]
     [MaxLength(20)]
-    public string? TransactionCode { get; set; }
+    public string? TRANSACTIONCODE { get; set; }
 
     /// <summary>
     /// Gets or sets the CcyId
     /// </summary>
     [MaxLength(10)]
-    public string? CcyId { get; set; }
+    public string? CCYID { get; set; }
 
     /// <summary>
     /// Gets or sets the SourceId
     /// </summary>
     [Required]
     [MaxLength(20)]
-    public string? SourceId { get; set; }
+    public string? SOURCEID { get; set; }
 
     /// <summary>
     /// Gets or sets the SourceTranRef
     /// </summary>
     [Required]
     [MaxLength(20)]
-    public string? SourceTranRef { get; set; }
+    public string? SOURCETRANREF { get; set; }
 
     /// <summary>
     /// Gets or sets the UserId
     /// </summary>
     [Required]
     [MaxLength(50)]
-    public string? UserId { get; set; }
+    public string? USERID { get; set; }
 
     /// <summary>
     /// Gets or sets the UserCurApp
     /// </summary>
     [MaxLength(2000)]
-    public string? UserCurApp { get; set; }
+    public string? USERCURAPP { get; set; }
 
     /// <summary>
     /// Gets or sets the NextUserApp
     /// </summary>
     [MaxLength(2000)]
-    public string? NextUserApp { get; set; }
+    public string? NEXTUSERAPP { get; set; }
 
     /// <summary>
     /// Gets or sets the ListUserApp
     /// </summary>
-    public string? ListUserApp { get; set; }
+    public string? LISTUSERAPP { get; set; }
 
     /// <summary>
     /// Gets or sets the TranDesc
     /// </summary>
     [Required]
     [MaxLength(400)]
-    public string? TranDesc { get; set; }
+    public string? TRANDESC { get; set; }
 
     /// <summary>
     /// Gets or sets the Status
     /// </summary>
     [Required]
     [MaxLength(10)]
-    public string? Status { get; set; }
+    public string? STATUS { get; set; }
 
     /// <summary>
     /// Gets or sets the ApprSts
     /// </summary>
-    public int ApprSts { get; set; }
+    public int APPRSTS { get; set; }
 
     /// <summary>
     /// Gets or sets the OfflSts
     /// </summary>
     [Required]
     [MaxLength(1)]
-    public string? OfflSts { get; set; }
+    public string? OFFLSTS { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether Deleted
     /// </summary>
-    public bool Deleted { get; set; }
+    public bool DELETED { get; set; }
 
     /// <summary>
     /// Gets or sets the DestId
     /// </summary>
     [Required]
     [MaxLength(20)]
-    public string? DestId { get; set; }
+    public string? DESTID { get; set; }
 
     /// <summary>
     /// Gets or sets the DestTranRef
     /// </summary>
     [MaxLength(20)]
-    public string? DestTranRef { get; set; }
+    public string? DESTTRANREF { get; set; }
 
     /// <summary>
     /// Gets or sets the DestErrorCode
     /// </summary>
     [MaxLength(50)]
-    public string? DestErrorCode { get; set; }
+    public string? DESTERRORCODE { get; set; }
 
     /// <summary>
     /// Gets or sets the ErrorCode
     /// </summary>
     [Required]
     [MaxLength(10)]
-    public string ErrorCode { get; set; } = "";
+    public string ERRORCODE { get; set; } = "";
 
     /// <summary>
     /// Gets or sets the ErrorDesc
     /// </summary>
     [Required]
     [MaxLength(1000)]
-    public string ErrorDesc { get; set; } = "";
+    public string ERRORDESC { get; set; } = "";
 
     /// <summary>
     /// Gets or sets a value indicating whether Online
     /// </summary>
-    public bool Online { get; set; } = true;
+    public bool ONLINE { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the Char01
     /// </summary>
-    public string? Char01 { get; set; }
+    public string? CHAR01 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char02
     /// </summary>
-    public string? Char02 { get; set; }
+    public string? CHAR02 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char03
     /// </summary>
-    public string? Char03 { get; set; }
+    public string? CHAR03 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char04
     /// </summary>
-    public string? Char04 { get; set; }
+    public string? CHAR04 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char05
     /// </summary>
-    public string? Char05 { get; set; }
+    public string? CHAR05 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char06
     /// </summary>
-    public string? Char06 { get; set; }
+    public string? CHAR06 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char07
     /// </summary>
-    public string? Char07 { get; set; }
+    public string? CHAR07 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char08
     /// </summary>
-    public string? Char08 { get; set; }
+    public string? CHAR08 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char09
     /// </summary>
-    public string? Char09 { get; set; }
+    public string? CHAR09 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char10
     /// </summary>
-    public string? Char10 { get; set; }
+    public string? CHAR10 { get; set; }
 
+    /// <summary>
     /// <summary>
     /// Gets or sets the Char11
     /// </summary>
-    public string? Char11 { get; set; }
+    public string? CHAR11 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char12
     /// </summary>
-    public string? Char12 { get; set; }
+    public string? CHAR12 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char13
     /// </summary>
-    public string? Char13 { get; set; }
+    public string? CHAR13 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char14
     /// </summary>
-    public string? Char14 { get; set; }
+    public string? CHAR14 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char15
     /// </summary>
-    public string? Char15 { get; set; }
+    public string? CHAR15 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char16
     /// </summary>
-    public string? Char16 { get; set; }
+    public string? CHAR16 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char17
     /// </summary>
-    public string? Char17 { get; set; }
+    public string? CHAR17 { get; set; }
 
+    /// <summary>
+    /// Gets or sets the Char20                                                                                                                                       
     /// <summary>
     /// Gets or sets the Char18
     /// </summary>
-    public string? Char18 { get; set; }
+    public string? CHAR18 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char19
     /// </summary>
-    public string? Char19 { get; set; }
+    public string? CHAR19 { get; set; }
 
-    /// <summary>
-    /// Gets or sets the Char20
     /// </summary>
-    public string? Char20 { get; set; }
+    public string? CHAR20 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char21
     /// </summary>
-    public string? Char21 { get; set; }
+    public string? CHAR21 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char22
     /// </summary>
-    public string? Char22 { get; set; }
+    public string? CHAR22 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char23
     /// </summary>
-    public string? Char23 { get; set; }
+    public string? CHAR23 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char24
     /// </summary>
-    public string? Char24 { get; set; }
+    public string? CHAR24 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char25
     /// </summary>
-    public string? Char25 { get; set; }
+    public string? CHAR25 { get; set; }
 
+    /// <summary>
     /// <summary>
     /// Gets or sets the Char26
     /// </summary>
-    public string? Char26 { get; set; }
+    public string? CHAR26 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char27
     /// </summary>
-    public string? Char27 { get; set; }
+    public string? CHAR27 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char28
     /// </summary>
-    public string? Char28 { get; set; }
+    public string? CHAR28 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char29
     /// </summary>
-    public string? Char29 { get; set; }
+    public string? CHAR29 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char30
     /// </summary>
-    public string? Char30 { get; set; }
+    public string? CHAR30 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num01
     /// </summary>
-    public decimal? Num01 { get; set; }
+    public decimal? NUM01 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num02
     /// </summary>
-    public decimal? Num02 { get; set; }
+    public decimal? NUM02 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num03
     /// </summary>
-    public decimal? Num03 { get; set; }
+    public decimal? NUM03 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num04
     /// </summary>
-    public decimal? Num04 { get; set; }
+    public decimal? NUM04 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num05
     /// </summary>
-    public decimal? Num05 { get; set; }
+    public decimal? NUM05 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num06
     /// </summary>
-    public decimal? Num06 { get; set; }
+    public decimal? NUM06 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num07
     /// </summary>
-    public decimal? Num07 { get; set; }
+    public decimal? NUM07 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num08
     /// </summary>
-    public decimal? Num08 { get; set; }
+    public decimal? NUM08 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num09
     /// </summary>
-    public decimal? Num09 { get; set; }
+    public decimal? NUM09 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num10
     /// </summary>
-    public decimal? Num10 { get; set; }
+    public decimal? NUM10 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num11
     /// </summary>
-    public decimal? Num11 { get; set; }
+    public decimal? NUM11 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num12
     /// </summary>
-    public decimal? Num12 { get; set; }
+    public decimal? NUM12 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num13
     /// </summary>
-    public decimal? Num13 { get; set; }
+    public decimal? NUM13 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num14
     /// </summary>
-    public decimal? Num14 { get; set; }
+    public decimal? NUM14 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num15
     /// </summary>
-    public decimal? Num15 { get; set; }
+    public decimal? NUM15 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num16
     /// </summary>
-    public decimal? Num16 { get; set; }
+    public decimal? NUM16 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num17
     /// </summary>
-    public decimal? Num17 { get; set; }
+    public decimal? NUM17 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num18
     /// </summary>
-    public decimal? Num18 { get; set; }
+    public decimal? NUM18 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num19
     /// </summary>
-    public decimal? Num19 { get; set; }
+    public decimal? NUM19 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num20
     /// </summary>
-    public decimal? Num20 { get; set; }
+    public decimal? NUM20 { get; set; }
 
     /// <summary>
     /// Gets or sets the IsBatch
     /// </summary>
-    public bool? IsBatch { get; set; }
+    public bool? ISBATCH { get; set; }
 
     /// <summary>
     /// Gets or sets the BatchRef
     /// </summary>
-    public string? BatchRef { get; set; }
+    public string? BATCHREF { get; set; }
 
     /// <summary>
     /// Gets or sets the AuthenType
     /// </summary>
-    public string? AuthenType { get; set; }
+    public string? AUTHENTYPE { get; set; }
 
     /// <summary>
     /// Gets or sets the AuthenCode
     /// </summary>
-    public string? AuthenCode { get; set; }
+    public string? AUTHENCODE { get; set; }
 }

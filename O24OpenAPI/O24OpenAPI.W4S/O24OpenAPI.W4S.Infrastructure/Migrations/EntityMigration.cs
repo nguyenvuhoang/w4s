@@ -139,23 +139,21 @@ public class EntityMigration : AutoReversingMigration
             // Indexes
             Create.Index("IDX_TransactionHistory_UserID")
                   .OnTable(nameof(WalletTransaction))
-                  .OnColumn(nameof(WalletTransaction.UserId)).Ascending().WithOptions().NonClustered();
+                  .OnColumn(nameof(WalletTransaction.USERID)).Ascending().WithOptions().NonClustered();
 
             Create.Index("WalletTransaction")
                   .OnTable(nameof(WalletTransaction))
-                  .OnColumn(nameof(WalletTransaction.SourceId)).Ascending().WithOptions().NonClustered();
-
+                  .OnColumn(nameof(WalletTransaction.SOURCEID)).Ascending().WithOptions().NonClustered();
             Create.Index("IDX_TransactionHistory_TransactionCode")
                   .OnTable(nameof(WalletTransaction))
-                  .OnColumn(nameof(WalletTransaction.TransactionCode)).Ascending().WithOptions().NonClustered();
+                  .OnColumn(nameof(WalletTransaction.TRANSACTIONCODE)).Ascending().WithOptions().NonClustered();
 
             Create.Index("IDX_TransactionHistory_Status")
                   .OnTable(nameof(WalletTransaction))
-                  .OnColumn(nameof(WalletTransaction.Status)).Ascending().WithOptions().NonClustered();
-
+                  .OnColumn(nameof(WalletTransaction.STATUS)).Ascending().WithOptions().NonClustered();
             Create.Index("IDX_TransactionHistory_WorkDate")
                   .OnTable(nameof(WalletTransaction))
-                  .OnColumn(nameof(WalletTransaction.TransactionWorkDate)).Descending().WithOptions().NonClustered();
+                  .OnColumn(nameof(WalletTransaction.TRANSACTIONWORKDATE)).Descending().WithOptions().NonClustered();
         }
 
         if (!Schema.Table(nameof(C_CODELIST)).Exists())
