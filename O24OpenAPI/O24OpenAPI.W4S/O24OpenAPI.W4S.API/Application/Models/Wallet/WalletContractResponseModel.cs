@@ -1,8 +1,6 @@
-﻿using O24OpenAPI.Framework.Models;
-
-namespace O24OpenAPI.W4S.API.Application.Models.Wallet
+﻿namespace O24OpenAPI.W4S.API.Application.Models.Wallet
 {
-    public class WalletContractResponseModel : BaseTransactionModel
+    public class WalletContractResponseModel : BaseO24OpenAPIModel
     {
         public int Id { get; set; }
         public string ContractNumber { get; set; } = default!;
@@ -12,7 +10,7 @@ namespace O24OpenAPI.W4S.API.Application.Models.Wallet
         public string? StatusCaption { get; set; }
         public DateTime? CreatedOnUtc { get; set; }
         public DateTime? UpdatedOnUtc { get; set; }
-
-
+        public DateTime OpenDateUtc { get; set; }
+        public DateTime? CloseDateUtc { get; set; }
     }
 }

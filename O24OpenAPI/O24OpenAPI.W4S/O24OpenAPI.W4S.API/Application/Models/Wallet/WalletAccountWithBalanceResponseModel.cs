@@ -1,8 +1,6 @@
-﻿using O24OpenAPI.Framework.Models;
-
-namespace O24OpenAPI.W4S.API.Application.Models.Wallet
+﻿namespace O24OpenAPI.W4S.API.Application.Models.Wallet
 {
-    public class WalletAccountWithBalanceResponseModel : BaseTransactionModel
+    public class WalletAccountWithBalanceResponseModel : BaseO24OpenAPIModel
     {
         public int Id { get; set; }
         public string WalletId { get; set; } = default!; // nvarchar(50) in DB

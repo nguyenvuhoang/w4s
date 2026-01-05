@@ -1,8 +1,6 @@
-﻿using O24OpenAPI.Framework.Models;
-
-namespace O24OpenAPI.W4S.API.Application.Models.Wallet
+﻿namespace O24OpenAPI.W4S.API.Application.Models.Wallet
 {
-    public class WalletGoalResponseModel : BaseTransactionModel
+    public class WalletGoalResponseModel : BaseO24OpenAPIModel
     {
         public int Id { get; set; }
         public string GoalId { get; set; } = default!;

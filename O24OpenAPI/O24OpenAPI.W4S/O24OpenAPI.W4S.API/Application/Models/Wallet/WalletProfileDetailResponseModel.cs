@@ -1,8 +1,6 @@
-﻿using O24OpenAPI.Framework.Models;
-
-namespace O24OpenAPI.W4S.API.Application.Models.Wallet
+﻿namespace O24OpenAPI.W4S.API.Application.Models.Wallet
 {
-    public class WalletProfileDetailResponseModel : BaseTransactionModel
+    public class WalletProfileDetailResponseModel : BaseO24OpenAPIModel
     {
         public int Id { get; set; }
         public Guid WalletId { get; set; }
