@@ -16,9 +16,7 @@ public enum WorkflowExecutionStatus
 public class WorkflowExecution
 {
     public WorkflowInfoModel execution { get; set; } = new();
-
     public List<WorkflowStepInfoModel> execution_steps { get; set; } = [];
-
     public string error_message { get; set; }
 }
 
@@ -38,47 +36,27 @@ public class WorkflowInfoModel : BaseO24OpenAPIModel
     }
 
     public string execution_id { get; set; }
-
     public string correlation_id { get; set; }
-
     public object input { get; set; }
-
     public string input_string { get; set; }
-
     public string workflow_id { get; set; }
-
     public WorkflowExecutionStatus status { get; set; }
     public string error { get; set; }
-
     public long created_on { get; set; }
-
     public long finish_on { get; set; }
-
     public string is_timeout { get; set; }
-
     public string is_processing { get; set; }
-
     public string is_success { get; set; }
-
     public string workflow_type { get; set; }
     public object response_content { get; set; }
-
     public string reversed_execution_id { get; set; }
-
     public string reversed_by_execution_id { get; set; }
-
     public string is_disputed { get; set; }
-
     public long archiving_time { get; set; }
-
     public long purging_time { get; set; }
-
     public string approved_execution_id { get; set; }
-
     public string transaction_number { get; set; }
-
     public string transaction_date { get; set; }
-
     public string value_date { get; set; }
 
     public long GetExecutionTime()
@@ -124,5 +102,5 @@ public class WorkflowStepInfoModel : BaseO24OpenAPIModel
     public object p2_content { get; set; }
     public string is_success { get; set; }
     public string is_timeout { get; set; }
-    public string execution_servcie { get; set; }
+    public string execution_service { get; set; }
 }

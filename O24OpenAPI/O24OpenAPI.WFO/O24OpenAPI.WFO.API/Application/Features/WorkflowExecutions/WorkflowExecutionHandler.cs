@@ -81,7 +81,7 @@ public class WorkflowExecutionHandler(
         {
             _wfExecution.execution = WorkflowInfoModel;
 
-            (WorkflowDef wfDef, List<WorkflowStep> steps) = await GetExecutingWorkflowasync(
+            (WorkflowDef wfDef, List<WorkflowStep> steps) = await GetExecutingWorkflowAsync(
                 input.WorkflowId,
                 input.ChannelId
             );
@@ -272,7 +272,7 @@ public class WorkflowExecutionHandler(
                                 stepInfo.p1_error = wfSchemeResponse.response.error_code;
                                 response.error_code = wfSchemeResponse.response.error_code;
                                 response.error_message = wfSchemeResponse.response.error_message;
-                                stepInfo.execution_servcie = wfSchemeResponse
+                                stepInfo.execution_service = wfSchemeResponse
                                     .request
                                     .request_header
                                     .service_instance_id;
@@ -294,7 +294,7 @@ public class WorkflowExecutionHandler(
                             {
                                 stepInfo.p1_status = WorkflowExecutionStatus.Completed;
                                 stepInfo.p1_content = wfSchemeResponse.response.data;
-                                stepInfo.execution_servcie = wfSchemeResponse
+                                stepInfo.execution_service = wfSchemeResponse
                                     .request
                                     .request_header
                                     .service_instance_id;
@@ -337,7 +337,7 @@ public class WorkflowExecutionHandler(
                         await QueueContext.Instance.SendWorkflow(currentQueueName, scheme);
                         stepInfo.p1_status = WorkflowExecutionStatus.Completed;
                         stepInfo.p1_finish = Common.GetCurrentDateAsLongNumber();
-                        stepInfo.execution_servcie = scheme
+                        stepInfo.execution_service = scheme
                             .request
                             .request_header
                             .service_instance_id;
@@ -679,7 +679,7 @@ public class WorkflowExecutionHandler(
         };
     }
 
-    private async Task<(WorkflowDef, List<WorkflowStep>)> GetExecutingWorkflowasync(
+    private async Task<(WorkflowDef, List<WorkflowStep>)> GetExecutingWorkflowAsync(
         string workflowId,
         string channelId
     )
