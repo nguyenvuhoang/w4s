@@ -124,6 +124,7 @@ public static class WorkflowStepCode
         public const string WF_STEP_W4S_CREATE_WALLET_BUDGET = "WF_STEP_W4S_CREATE_WALLET_BUDGET";
         public const string WF_STEP_W4S_GET_WALLET_BUDGETS = "WF_STEP_W4S_GET_WALLET_BUDGETS";
         public const string WF_STEP_W4S_RETRIEVE_WALLET_INFORMATION = "WF_STEP_W4S_RETRIEVE_WALLET_INFORMATION";
+        public const string WF_STEP_W4S_CREATE_WALLET_TRANSACTION = "WF_STEP_W4S_CREATE_WALLET_TRANSACTION";
     }
     #endregion
 }
