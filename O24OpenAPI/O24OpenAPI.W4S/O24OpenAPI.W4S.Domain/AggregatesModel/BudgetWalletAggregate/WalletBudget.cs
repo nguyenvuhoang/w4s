@@ -1,7 +1,9 @@
-﻿using O24OpenAPI.Core.Domain;
+﻿using O24OpenAPI.Core.Attributes;
+using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
+[Auditable]
 public partial class WalletBudget : BaseEntity
 {
     public string? BudgetId { get; set; }
