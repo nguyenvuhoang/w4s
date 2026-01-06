@@ -364,7 +364,7 @@ public class AppDomainTypeFinder : ITypeFinder
     /// Initializes a new instance of the <see cref="AppDomainTypeFinder"/> class
     /// </summary>
     /// <param name="fileProvider">The file provider</param>
-    public AppDomainTypeFinder(IO24OpenAPIFileProvider fileProvider = null)
+    public AppDomainTypeFinder(IO24OpenAPIFileProvider? fileProvider = null)
     {
         _fileProvider = fileProvider ?? CommonHelper.DefaultFileProvider;
     }

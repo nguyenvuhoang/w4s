@@ -1,7 +1,3 @@
-using System.Collections.Concurrent;
-using System.Data.Common;
-using System.Linq.Expressions;
-using System.Reflection;
 using FluentMigrator.Builders.Create.Table;
 using FluentMigrator.Expressions;
 using LinqToDB;
@@ -18,6 +14,10 @@ using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.Mapping;
 using O24OpenAPI.Data.Migrations;
+using System.Collections.Concurrent;
+using System.Data.Common;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace O24OpenAPI.Data.DataProviders;
 
@@ -33,7 +33,8 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
     protected static ConcurrentDictionary<
         Type,
         O24OpenAPIEntityDescriptor
-    > EntityDescriptors { get; } = new ConcurrentDictionary<Type, O24OpenAPIEntityDescriptor>();
+    > EntityDescriptors
+    { get; } = new ConcurrentDictionary<Type, O24OpenAPIEntityDescriptor>();
 
     /// <summary>
     /// Gets the value of the linq to db data provider
@@ -122,11 +123,11 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
     {
         return EntityDescriptors.GetOrAdd(
             entityType,
-            delegate(Type t)
+            delegate (Type t)
             {
                 string tableName = NameCompatibilityManager.GetTableName(t);
                 string schemaName = AppSettingsHelper.GetSchemaName(t);
-                CreateTableExpression expression = new CreateTableExpression
+                CreateTableExpression expression = new()
                 {
                     TableName = tableName,
                 };
@@ -259,7 +260,7 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
     public virtual async Task<TEntity> InsertEntity<TEntity>(TEntity entity)
         where TEntity : BaseEntity
     {
-        await using var dataContext = CreateDataConnection();
+        await using DataConnection dataContext = CreateDataConnection();
         entity.Id = await dataContext.InsertWithInt32IdentityAsync(entity);
         return entity;
     }
@@ -410,7 +411,7 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
             (actionType == "C")
                 ? (
                     x =>
-                        (Sql.Property<decimal?>(x, propertyName) * 100000m + value * 100000m)
+                        ((Sql.Property<decimal?>(x, propertyName) * 100000m) + (value * 100000m))
                         / 100000m
                 )
                 : (
@@ -419,8 +420,8 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
                         : (
                             x =>
                                 (
-                                    Sql.Property<decimal?>(x, propertyName) * 100000m
-                                    - value * 100000m
+                                    (Sql.Property<decimal?>(x, propertyName) * 100000m)
+                                    - (value * 100000m)
                                 ) / 100000m
                         )
                 );
@@ -776,11 +777,16 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
     /// <param name="predicate">The predicate</param>
     /// <returns>A task containing the int</returns>
     public virtual async Task<int> BulkDeleteEntities<TEntity>(
-        Expression<Func<TEntity, bool>> predicate
+        Expression<Func<TEntity, bool>> predicate,
+        int batchSize = 0
     )
         where TEntity : BaseEntity
     {
         using DataConnection dataContext = CreateDataConnection();
+        if (batchSize > 0)
+        {
+            return await dataContext.GetTable<TEntity>().Where(predicate).Take(batchSize).DeleteAsync();
+        }
         return await dataContext.GetTable<TEntity>().Where(predicate).DeleteAsync();
     }
 
@@ -872,7 +878,7 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
     {
         CommandInfo commandInfo = CreateDbCommand(procedureName, parameters);
         List<T> list = commandInfo.QueryProc<T>()?.ToList();
-        return Task.FromResult((IList<T>)(list ?? new List<T>()));
+        return Task.FromResult((IList<T>)(list ?? []));
     }
 
     /// <summary>
@@ -901,7 +907,7 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
     {
         using DataConnection connection = CreateDataConnection();
         return Task.FromResult(
-            (IList<T>)(connection.Query<T>(sql, parameters)?.ToList() ?? new List<T>())
+            (IList<T>)(connection.Query<T>(sql, parameters)?.ToList() ?? [])
         );
     }
 

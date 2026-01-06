@@ -13,10 +13,17 @@ internal class ApplicationLogRepository(
     LoggerSetting loggerSetting
 ) : EntityRepository<ApplicationLog>(dataProvider, staticCacheManager), IApplicationLogRepository
 {
-    public Task ClearApplicationLogAsync()
+    public async Task ClearApplicationLogAsync()
     {
-        return DeleteWhere(log =>
-            log.LogTimestamp < DateTime.UtcNow.AddDays(-loggerSetting.LogRetentionDays)
-        );
+        DateTime cutoff = DateTime.UtcNow.AddDays(-loggerSetting.LogRetentionDays);
+        const int batchSize = 5000;
+
+        while (true)
+        {
+            int deleted = await DeleteWhere(log => log.LogTimestamp < cutoff, batchSize);
+
+            if (deleted == 0)
+                break;
+        }
     }
 }

@@ -210,8 +210,8 @@ public class EntityRepository<TEntity>(
         TEntity entity1 = await _dataProvider.InsertEntity(entity);
         if (entity.IsAuditable())
         {
-            var workContext = EngineContext.Current.Resolve<WorkContext>();
-            var entityAudit = new EntityAudit
+            WorkContext workContext = EngineContext.Current.Resolve<WorkContext>();
+            EntityAudit entityAudit = new()
             {
                 EntityName = typeof(TEntity).Name,
                 EntityId = entity1.Id,
@@ -236,7 +236,7 @@ public class EntityRepository<TEntity>(
             return;
         }
 
-        using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        using TransactionScope transaction = new(TransactionScopeAsyncFlowOption.Enabled);
         await _dataProvider.BulkInsertEntities(entities);
         transaction.Complete();
     }
@@ -247,9 +247,9 @@ public class EntityRepository<TEntity>(
         await _dataProvider.UpdateEntity(entity);
         if (entity.IsAuditable())
         {
-            var workContext = EngineContext.Current.Resolve<WorkContext>();
-            var changes = entity.GetChanges(await LoadOriginalCopy(entity));
-            var entityAudit = new EntityAudit
+            WorkContext workContext = EngineContext.Current.Resolve<WorkContext>();
+            List<AuditDiff> changes = entity.GetChanges(await LoadOriginalCopy(entity));
+            EntityAudit entityAudit = new()
             {
                 EntityName = typeof(TEntity).Name,
                 EntityId = entity.Id,
@@ -270,9 +270,9 @@ public class EntityRepository<TEntity>(
         await _dataProvider.DeleteEntity(entity);
         if (entity.IsAuditable())
         {
-            var workContext = EngineContext.Current.Resolve<WorkContext>();
-            var changes = new TEntity().GetChanges(entity);
-            var entityAudit = new EntityAudit
+            WorkContext workContext = EngineContext.Current.Resolve<WorkContext>();
+            List<AuditDiff> changes = new TEntity().GetChanges(entity);
+            EntityAudit entityAudit = new()
             {
                 EntityName = typeof(TEntity).Name,
                 EntityId = entity.Id,
@@ -313,10 +313,10 @@ public class EntityRepository<TEntity>(
         await UpdateNoAudit(query, propertyName, value);
     }
 
-    public virtual async Task<int> DeleteWhere(Expression<Func<TEntity, bool>> predicate)
+    public virtual async Task<int> DeleteWhere(Expression<Func<TEntity, bool>> predicate, int batchSize = 0)
     {
         ArgumentNullException.ThrowIfNull(predicate);
-        int num = await _dataProvider.BulkDeleteEntities(predicate);
+        int num = await _dataProvider.BulkDeleteEntities(predicate, batchSize);
         return num;
     }
 
@@ -391,7 +391,7 @@ public class EntityRepository<TEntity>(
 
     public virtual async Task UpdateRangeNoAuditAsync(IEnumerable<TEntity> entities)
     {
-        foreach (var entity in entities)
+        foreach (TEntity entity in entities)
         {
             await _dataProvider.UpdateEntity(entity);
         }

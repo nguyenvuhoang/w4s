@@ -41,7 +41,7 @@ public interface IRepository<TEntity>
     Task BulkDelete(IList<TEntity> entities);
     Task UpdateNoAudit(IQueryable<TEntity> query, string propertyName, string value);
     Task FilterAndUpdate(Dictionary<string, string> searchInput, string propertyName, string value);
-    Task<int> DeleteWhere(Expression<Func<TEntity, bool>> predicate);
+    Task<int> DeleteWhere(Expression<Func<TEntity, bool>> predicate, int batchSize = 0);
     Task<TEntity> LoadOriginalCopy(TEntity entity);
     Task Truncate(bool resetIdentity = false);
     IQueryable<TEntity> Table { get; }

@@ -17,12 +17,7 @@ public class CorrelationIdMiddleware(RequestDelegate next)
 
     public async Task InvokeAsync(HttpContext context)
     {
-        var correlationId =
-            context.Request.Headers[HeaderKey].FirstOrDefault() ?? Guid.NewGuid().ToString();
-        EngineContext.Current.Resolve<WorkContext>().SetExecutionLogId(correlationId);
-
-        // The ServiceName is pushed once at application startup in LoggingExtensions.
-        // We only need to push the CorrelationId for each request scope.
+        string correlationId = EngineContext.Current.ResolveRequired<WorkContext>().ExecutionLogId;
         using (LogContext.PushProperty(LogContextHelper.CorrelationIdKey, correlationId))
         {
             context.Response.OnStarting(() =>

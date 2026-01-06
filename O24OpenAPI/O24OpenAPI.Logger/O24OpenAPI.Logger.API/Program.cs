@@ -17,6 +17,7 @@ if (!builder.Environment.IsDevelopment())
     builder.ConfigureWebHost();
 }
 builder.Services.AddWFOInfrastructureServices().AddApplicationServices();
+builder.AddBackgroundJobs("StaticConfig/BackgroundJobs.json");
 
 WebApplication app = builder.Build();
 app.UseHttpsRedirection();

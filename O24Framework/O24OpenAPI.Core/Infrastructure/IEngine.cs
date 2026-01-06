@@ -19,6 +19,7 @@ public interface IEngine
     IServiceScope? CreateScope();
     T Resolve<T>(object keyed, IServiceScope? scope = null);
     object ResolveRequired(Type type, object keyed, IServiceScope? scope = null);
+    T ResolveRequired<T>(object? keyed = null, IServiceScope? scope = null);
     object ResolveTypeInstance(Type type);
     IServiceScope CreateQueueScope(WorkContext workContext);
 }

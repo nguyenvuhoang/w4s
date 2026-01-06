@@ -1,8 +1,3 @@
-using System.Data;
-using System.Data.Common;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using System.Text;
 using LinqToDB;
 using LinqToDB.Data;
 using LinqToDB.DataProvider;
@@ -13,6 +8,11 @@ using O24OpenAPI.Core;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Helper;
 using O24OpenAPI.Data.Mapping;
+using System.Data;
+using System.Data.Common;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace O24OpenAPI.Data.DataProviders;
 
@@ -86,7 +86,7 @@ public class MySqlCoreDataProvider
 
         MySqlConnectionStringBuilder connectionStringBuilder = GetConnectionStringBuilder();
         string database = connectionStringBuilder.Database;
-        connectionStringBuilder.Database = (string)null;
+        connectionStringBuilder.Database = null;
         using (
             DbConnection internalDbConnection = this.GetInternalDbConnection(
                 connectionStringBuilder.ConnectionString
@@ -169,34 +169,31 @@ public class MySqlCoreDataProvider
                 )
             )
             {
-                internalDbConnection.StateChange += (StateChangeEventHandler)(
-                    (sender, e) =>
+                internalDbConnection.StateChange += (sender, e) =>
+                {
+                    try
                     {
-                        try
+                        if (e.CurrentState != ConnectionState.Open)
                         {
-                            if (e.CurrentState != ConnectionState.Open)
-                            {
-                                return;
-                            }
-
-                            IDbConnection dbConnection = (IDbConnection)sender;
-                            using (IDbCommand command = dbConnection.CreateCommand())
-                            {
-                                command.Connection = dbConnection;
-                                command.CommandText =
-                                    "SET @SESSION.information_schema_stats_expiry = 0;";
-                                command.ExecuteNonQuery();
-                            }
+                            return;
                         }
-                        catch (MySqlException ex) when (ex.Number == 1193) { }
+
+                        IDbConnection dbConnection = (IDbConnection)sender;
+                        using (IDbCommand command = dbConnection.CreateCommand())
+                        {
+                            command.Connection = dbConnection;
+                            command.CommandText =
+                                "SET @SESSION.information_schema_stats_expiry = 0;";
+                            command.ExecuteNonQuery();
+                        }
                     }
-                );
+                    catch (MySqlException ex) when (ex.Number == 1193) { }
+                };
                 using (DbCommand command = internalDbConnection.CreateCommand())
                 {
                     command.Connection = internalDbConnection;
                     DbCommand dbCommand = command;
-                    DefaultInterpolatedStringHandler interpolatedStringHandler =
-                        new DefaultInterpolatedStringHandler(96, 2);
+                    DefaultInterpolatedStringHandler interpolatedStringHandler = new(96, 2);
                     interpolatedStringHandler.AppendLiteral(
                         "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '"
                     );
@@ -207,7 +204,7 @@ public class MySqlCoreDataProvider
                     string stringAndClear = interpolatedStringHandler.ToStringAndClear();
                     dbCommand.CommandText = stringAndClear;
                     internalDbConnection.Open();
-                    return Convert.ToInt32(command.ExecuteScalar() ?? (object)1);
+                    return Convert.ToInt32(command.ExecuteScalar() ?? 1);
                 }
             }
         }
@@ -242,22 +239,20 @@ public class MySqlCoreDataProvider
         try
         {
             List<string> tables = currentConnection
-                .Query<string>(
-                    "SHOW TABLES FROM `" + currentConnection.Connection.Database + "`"
-                )
+                .Query<string>("SHOW TABLES FROM `" + currentConnection.Connection.Database + "`")
                 .ToList<string>();
             if (tables.Count <= 0)
             {
-                currentConnection = (DataConnection)null;
-                tables = (List<string>)null;
+                currentConnection = null;
+                tables = null;
             }
             else
             {
                 int num = await currentConnection.ExecuteAsync(
                     "OPTIMIZE TABLE `" + string.Join("`, `", (IEnumerable<string>)tables) + "`"
                 );
-                currentConnection = (DataConnection)null;
-                tables = (List<string>)null;
+                currentConnection = null;
+                tables = null;
             }
         }
         finally
@@ -311,8 +306,7 @@ public class MySqlCoreDataProvider
     )
     {
         Encoding utF8 = Encoding.UTF8;
-        DefaultInterpolatedStringHandler interpolatedStringHandler =
-            new DefaultInterpolatedStringHandler(3, 4);
+        DefaultInterpolatedStringHandler interpolatedStringHandler = new(3, 4);
         interpolatedStringHandler.AppendFormatted(foreignTable);
         interpolatedStringHandler.AppendLiteral("_");
         interpolatedStringHandler.AppendFormatted(foreignColumn);
@@ -437,7 +431,8 @@ public class MySqlCoreDataProvider
     /// <exception cref="NotImplementedException"></exception>
     /// <returns>A task containing the int</returns>
     public override Task<int> BulkDeleteEntities<TEntity>(
-        Expression<Func<TEntity, bool>> predicate
+        Expression<Func<TEntity, bool>> predicate,
+        int batchSize = 0
     )
     {
         throw new NotImplementedException();
@@ -500,10 +495,7 @@ public class MySqlCoreDataProvider
     /// <param name="parameters">The parameters</param>
     /// <exception cref="NotImplementedException"></exception>
     /// <returns>A task containing the int</returns>
-    public override Task<int> ExecuteProc(
-        string procedureName,
-        params DataParameter[] parameters
-    )
+    public override Task<int> ExecuteProc(string procedureName, params DataParameter[] parameters)
     {
         throw new NotImplementedException();
     }

@@ -1,11 +1,11 @@
-using System.Collections.Concurrent;
-using System.Reflection;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using O24OpenAPI.Core.Infrastructure.Mapper;
+using System.Collections.Concurrent;
+using System.Reflection;
 
 namespace O24OpenAPI.Core.Infrastructure;
 
@@ -20,7 +20,7 @@ public class O24OpenAPIEngine : IEngine
     /// </summary>
     /// <param name="scope">The scope</param>
     /// <returns>The service provider</returns>
-    protected IServiceProvider GetServiceProvider(IServiceScope scope = null)
+    protected IServiceProvider? GetServiceProvider(IServiceScope? scope = null)
     {
         if (scope != null)
         {
@@ -28,9 +28,9 @@ public class O24OpenAPIEngine : IEngine
         }
 
         //IServiceProvider serviceProvider = this.ServiceProvider ?? throw new InvalidOperationException("⚠️ ServiceProvider is null. It seems the DI container has not been initialized properly or has not been registered.");
-        IServiceProvider serviceProvider = this.ServiceProvider;
-        var httpContextAccessor = serviceProvider?.GetService<IHttpContextAccessor>();
-        var httpContext = httpContextAccessor?.HttpContext;
+        IServiceProvider? serviceProvider = this.ServiceProvider;
+        IHttpContextAccessor? httpContextAccessor = serviceProvider?.GetService<IHttpContextAccessor>();
+        HttpContext? httpContext = httpContextAccessor?.HttpContext;
         if (httpContext?.RequestServices != null)
         {
             return httpContext.RequestServices;
@@ -82,7 +82,7 @@ public class O24OpenAPIEngine : IEngine
                 this.Resolve<ITypeFinder>(null)
                     .FindClassesOfType<IO24OpenAPIStartup>()
                     .Select<Type, IO24OpenAPIStartup>(startup =>
-                        (IO24OpenAPIStartup)Activator.CreateInstance(startup)
+                        (IO24OpenAPIStartup?)Activator.CreateInstance(startup)
                     )
                     .OrderBy<IO24OpenAPIStartup, int>(startup => startup.Order)
         )
@@ -122,9 +122,9 @@ public class O24OpenAPIEngine : IEngine
     /// <param name="sender">The sender</param>
     /// <param name="args">The args</param>
     /// <returns>The assembly</returns>
-    private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+    private Assembly? CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
     {
-        Assembly assembly = AppDomain
+        Assembly? assembly = AppDomain
             .CurrentDomain.GetAssemblies()
             .FirstOrDefault<Assembly>(a => a.FullName == args.Name);
         if (assembly != null)
@@ -146,12 +146,12 @@ public class O24OpenAPIEngine : IEngine
     public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<IEngine>(this);
-        var listStartUp = Singleton<ITypeFinder>
+        List<IO24OpenAPIStartup?> listStartUp = Singleton<ITypeFinder>
             .Instance.FindClassesOfType<IO24OpenAPIStartup>()
             .Select(startup => (IO24OpenAPIStartup)Activator.CreateInstance(startup))
             .OrderBy(startup => startup.Order)
             .ToList();
-        foreach (var o24OpenAPIStartup in listStartUp)
+        foreach (IO24OpenAPIStartup? o24OpenAPIStartup in listStartUp)
         {
             try
             {
@@ -179,9 +179,9 @@ public class O24OpenAPIEngine : IEngine
     /// <returns>The service scope</returns>
     public IServiceScope CreateScope()
     {
-        var workContext = EngineContext.Current.Resolve<WorkContext>();
-        var scope = ServiceScopeFactory.CreateScope();
-        var newWorkContext = scope.ServiceProvider.GetRequiredService<WorkContext>();
+        WorkContext? workContext = EngineContext.Current.Resolve<WorkContext>();
+        IServiceScope scope = ServiceScopeFactory.CreateScope();
+        WorkContext newWorkContext = scope.ServiceProvider.GetRequiredService<WorkContext>();
         newWorkContext.SetWorkContext(workContext);
         AsyncScope.Scope = scope;
         AsyncScope.WorkContext = newWorkContext;
@@ -194,7 +194,7 @@ public class O24OpenAPIEngine : IEngine
     /// <typeparam name="T">The </typeparam>
     /// <param name="scope">The scope</param>
     /// <returns>The</returns>
-    public T Resolve<T>(IServiceScope scope = null)
+    public T Resolve<T>(IServiceScope? scope = null)
     {
         return (T)this.Resolve(typeof(T), scope);
     }
@@ -205,14 +205,14 @@ public class O24OpenAPIEngine : IEngine
     /// <param name="type">The type</param>
     /// <param name="scope">The scope</param>
     /// <returns>The object</returns>
-    public object Resolve(Type type, IServiceScope scope = null)
+    public object Resolve(Type type, IServiceScope? scope = null)
     {
         return this.GetServiceProvider(scope)?.GetService(type);
     }
 
-    public T Resolve<T>(object keyed, IServiceScope scope = null)
+    public T Resolve<T>(object keyed, IServiceScope? scope = null)
     {
-        var serviceProvider =
+        IServiceProvider serviceProvider =
             GetServiceProvider(scope)
             ?? throw new InvalidOperationException("Service provider is null");
         return keyed is null || string.IsNullOrWhiteSpace(keyed.ToString())
@@ -220,9 +220,9 @@ public class O24OpenAPIEngine : IEngine
             : serviceProvider.GetKeyedService<T>(keyed);
     }
 
-    public object ResolveRequired(Type type, object keyed, IServiceScope scope = null)
+    public object ResolveRequired(Type type, object keyed, IServiceScope? scope = null)
     {
-        var serviceProvider =
+        IServiceProvider serviceProvider =
             GetServiceProvider(scope)
             ?? throw new InvalidOperationException("Service provider is null");
         return serviceProvider.GetRequiredKeyedService(type, keyed);
@@ -331,7 +331,7 @@ public class O24OpenAPIEngine : IEngine
     {
         ArgumentNullException.ThrowIfNull(type);
 
-        var factory = _unregisteredFactoryCache.GetOrAdd(type, CreateFactory);
+        Func<IServiceProvider, object> factory = _unregisteredFactoryCache.GetOrAdd(type, CreateFactory);
 
         try
         {
@@ -352,14 +352,14 @@ public class O24OpenAPIEngine : IEngine
             );
         }
 
-        var defaultCtor = type.GetConstructor(Type.EmptyTypes);
+        ConstructorInfo? defaultCtor = type.GetConstructor(Type.EmptyTypes);
         if (defaultCtor != null)
         {
             return _ => Activator.CreateInstance(type)!;
         }
 
-        var constructors = type.GetConstructors();
-        var constructor = constructors
+        ConstructorInfo[] constructors = type.GetConstructors();
+        ConstructorInfo? constructor = constructors
             .OrderByDescending(c =>
                 c.IsDefined(typeof(ActivatorUtilitiesConstructorAttribute), true) ? 1 : 0
             )
@@ -371,14 +371,14 @@ public class O24OpenAPIEngine : IEngine
             throw new InvalidOperationException($"No public constructor found for {type.FullName}");
         }
 
-        var parameters = constructor.GetParameters();
+        ParameterInfo[] parameters = constructor.GetParameters();
 
         return serviceProvider =>
         {
-            var args = parameters
+            object[] args = parameters
                 .Select(p =>
                 {
-                    var service = serviceProvider?.GetService(p.ParameterType);
+                    object? service = serviceProvider?.GetService(p.ParameterType);
                     if (service != null)
                     {
                         return service;
@@ -406,7 +406,7 @@ public class O24OpenAPIEngine : IEngine
     public virtual object ResolveInterfaceUnregistered(Type type)
     {
         Exception innerException = null;
-        var implementingClasses = type
+        Type? implementingClasses = type
             .Assembly.GetExportedTypes()
             .FirstOrDefault(t => type.IsAssignableFrom(t) && t.IsClass);
         if (implementingClasses == null)
@@ -444,11 +444,23 @@ public class O24OpenAPIEngine : IEngine
 
     public IServiceScope CreateQueueScope(WorkContext workContext)
     {
-        var scope = ServiceScopeFactory.CreateScope();
-        var newWorkContext = scope.ServiceProvider.GetRequiredService<WorkContext>();
+        IServiceScope? scope = ServiceScopeFactory?.CreateScope();
+        WorkContext newWorkContext = scope.ServiceProvider.GetRequiredService<WorkContext>();
         newWorkContext.SetWorkContext(workContext);
         AsyncScope.Scope = scope;
         AsyncScope.WorkContext = newWorkContext;
         return scope;
+    }
+
+    public T ResolveRequired<T>(object? keyed = null, IServiceScope? scope = null)
+    {
+        IServiceProvider serviceProvider =
+            GetServiceProvider(scope)
+            ?? throw new InvalidOperationException("Service provider is null");
+        if (keyed is not null)
+        {
+            return (T)serviceProvider.GetRequiredKeyedService(typeof(T), keyed);
+        }
+        return (T)serviceProvider.GetRequiredService(typeof(T)); ;
     }
 }

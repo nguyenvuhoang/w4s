@@ -9,7 +9,10 @@ public class WorkContext
     public string CurrentChannel { get; private set; } = default!;
     public UserContext UserContext { get; private set; } = new();
     public string WorkingLanguage { get; private set; } = "en";
-    public string ExecutionLogId { get; private set; } = GuildUtils.GetNewStringGuild();
+    public string ExecutionLogId
+    {
+        get { return ExecutionId; }
+    }
     public string ExecutionId { get; private set; } = GuildUtils.GetNewStringGuild();
     public Dictionary<string, object> DeviceRequest { get; set; } = [];
 
@@ -23,7 +26,6 @@ public class WorkContext
         CurrentChannel = workContext.CurrentChannel;
         UserContext = workContext.UserContext;
         WorkingLanguage = workContext.WorkingLanguage;
-        ExecutionLogId = workContext.ExecutionLogId;
         ExecutionId = workContext.ExecutionId;
     }
 
@@ -37,7 +39,6 @@ public class WorkContext
         CurrentChannel = workContext.CurrentChannel ?? CurrentChannel;
         UserContext.SetUserContext(workContext.UserContext ?? new UserContextTemplate());
         WorkingLanguage = workContext.WorkingLanguage ?? WorkingLanguage;
-        ExecutionLogId = workContext.ExecutionLogId ?? ExecutionLogId;
         ExecutionId = workContext.ExecutionId ?? ExecutionId;
     }
 
@@ -67,14 +68,6 @@ public class WorkContext
         }
     }
 
-    public void SetExecutionLogId(string logId)
-    {
-        if (logId.HasValue())
-        {
-            ExecutionLogId = logId;
-        }
-    }
-
     public void SetExecutionId(string executionId)
     {
         if (executionId.HasValue())
@@ -99,6 +92,5 @@ public class WorkContextTemplate
     public string? CurrentChannel { get; set; }
     public UserContextTemplate? UserContext { get; set; }
     public string? WorkingLanguage { get; set; }
-    public string? ExecutionLogId { get; set; }
     public string? ExecutionId { get; set; }
 }
