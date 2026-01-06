@@ -38,7 +38,15 @@ public class ChangeOwnerPasswordHandle(
                 request.Language
             );
 
-        string hashPassword = O9Encrypt.sha_sha256(request.Password, userAccount.UserCode);
+        string passwordDecrypted = O9Encrypt.Decrypt(request.Password);
+        int lastUnderscoreIndex = passwordDecrypted.LastIndexOf('_');
+        if (lastUnderscoreIndex == -1)
+        {
+            throw new FormatException("Invalid password format. No underscore found.");
+        }
+
+        string newPassword = passwordDecrypted[(lastUnderscoreIndex + 1)..];
+        string hashPassword = O9Encrypt.sha_sha256(newPassword, userAccount.UserCode);
 
         var userPassword = await userPasswordRepository.GetByUserCodeAsync(userAccount.UserCode);
 
