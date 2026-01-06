@@ -11,5 +11,6 @@ public class AutoMapperProfile : BaseMapperConfiguration
     {
         CreateMap<WalletCategory, WalletCategoryResponseModel>();
         CreateModelMap<WalletBudget, GetWalletBudgetsByWalletModel>();
+        CreateModelMap<WalletTransaction, WalletTransactionResponseModel>();
     }
 }

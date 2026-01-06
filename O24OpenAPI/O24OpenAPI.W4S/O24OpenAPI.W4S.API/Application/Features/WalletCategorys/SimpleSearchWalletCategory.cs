@@ -6,7 +6,7 @@ using O24OpenAPI.Framework.Models;
 using O24OpenAPI.W4S.API.Application.Models.Wallet;
 using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
-namespace O24OpenAPI.W4S.API.Application.Features.Wallet
+namespace O24OpenAPI.W4S.API.Application.Features.WalletCategorys
 {
     public class SimpleSearchWalletCategoryCommand : SimpleSearchModel, ICommand<PagedListModel<WalletCategory, WalletCategoryResponseModel>>
     {
