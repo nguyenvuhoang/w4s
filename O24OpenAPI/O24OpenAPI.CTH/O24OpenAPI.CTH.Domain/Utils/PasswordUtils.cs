@@ -86,14 +86,8 @@ public class PasswordUtils
         }
         try
         {
-            string passwordDecrypted = O9Encrypt.Decrypt(password);
-            int lastUnderscoreIndex = passwordDecrypted.LastIndexOf('_');
-            if (lastUnderscoreIndex == -1)
-            {
-                throw new FormatException("Invalid password format. No underscore found.");
-            }
 
-            string newPassword = passwordDecrypted[(lastUnderscoreIndex + 1)..];
+            string newPassword = DecryptUserPassword(password);
             string hashPassword = O9Encrypt.sha_sha256(newPassword, usercode);
 
             return hashPassword.Equals(storedHash, StringComparison.OrdinalIgnoreCase);
@@ -184,5 +178,22 @@ public class PasswordUtils
     {
         byte[] saltBytes = RandomNumberGenerator.GetBytes(size);
         return Convert.ToBase64String(saltBytes);
+    }
+
+    /// <summary>
+    /// Decrypt User Password
+    /// </summary>
+    /// <param name="encryptedPassword"></param>
+    /// <returns></returns>
+    /// <exception cref="FormatException"></exception>
+    public static string DecryptUserPassword(string encryptedPassword)
+    {
+        string passwordDecrypted = O9Encrypt.Decrypt(encryptedPassword);
+        int lastUnderscoreIndex = passwordDecrypted.LastIndexOf('_');
+        if (lastUnderscoreIndex == -1)
+        {
+            throw new FormatException("Invalid password format. No underscore found.");
+        }
+        return passwordDecrypted[(lastUnderscoreIndex + 1)..];
     }
 }
