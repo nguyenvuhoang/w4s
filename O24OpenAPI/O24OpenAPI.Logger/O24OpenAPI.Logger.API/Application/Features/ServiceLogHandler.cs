@@ -11,21 +11,25 @@ namespace O24OpenAPI.Logger.API.Application.Features;
 
 public static class ServiceLogExtensions
 {
-    public static object GetServiceLogcommand(this string logType, string input)
+    public static object GetServiceLogCommand(this string logType, string input)
     {
         return logType switch
         {
             "HTTP_LOG" => input.FromJson<CreateHttLogCommand>(),
             "WORKFLOW_LOG" => input.FromJson<CreateWorkflowLogCommand>(),
             "WORKFLOW_STEP_LOG" => input.FromJson<CreateWorkflowStepLogCommand>(),
-            _ => throw new Exception($"Logtype {logType} is not supported."),
+            _ => input.FromJson<CreateServiceLogCommand>(),
         };
     }
 }
 
 public class CreateHttLogCommand : HttpLog, ICommand { }
+
 public class CreateWorkflowLogCommand : WorkflowLog, ICommand { }
+
 public class CreateWorkflowStepLogCommand : WorkflowStepLog, ICommand { }
+
+public class CreateServiceLogCommand : ServiceLog, ICommand { }
 
 public class ServiceLogHandler([FromKeyedServices("log")] IMediator mediator) : IConsumer<LogEvent>
 {
@@ -33,7 +37,7 @@ public class ServiceLogHandler([FromKeyedServices("log")] IMediator mediator) : 
     {
         try
         {
-            object command = eventMessage.LogType.GetServiceLogcommand(eventMessage.TextData);
+            object command = eventMessage.LogType.GetServiceLogCommand(eventMessage.TextData);
             await mediator.SendAsync((ICommand)command);
         }
         catch (Exception ex)

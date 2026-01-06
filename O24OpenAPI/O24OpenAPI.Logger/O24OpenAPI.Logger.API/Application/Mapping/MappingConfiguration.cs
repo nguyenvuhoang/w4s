@@ -13,7 +13,14 @@ public class MappingConfiguration : IMappingConfigurator
     {
         builder.CreateMap<LogEntryModel, ApplicationLog>();
         builder.CreateMap<CreateHttLogCommand, HttpLog>();
-        builder.CreateMap<CreateWorkflowLogCommand, Domain.AggregateModels.WorkflowLogAggregate.WorkflowLog>();
-        builder.CreateMap<CreateWorkflowStepLogCommand, Domain.AggregateModels.WorkflowLogAggregate.WorkflowStepLog>();
+        builder.CreateMap<
+            CreateWorkflowLogCommand,
+            Domain.AggregateModels.WorkflowLogAggregate.WorkflowLog
+        >();
+        builder.CreateMap<
+            CreateWorkflowStepLogCommand,
+            Domain.AggregateModels.WorkflowLogAggregate.WorkflowStepLog
+        >();
+        builder.CreateMap<CreateServiceLogCommand, ServiceLog>();
     }
 }

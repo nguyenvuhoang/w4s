@@ -9,5 +9,4 @@ namespace O24OpenAPI.Logger.Infrastructure.Repositories;
 internal class ServiceLogRepository(
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-) : EntityRepository<ServiceLog>(dataProvider, staticCacheManager), IServiceLogRepository
-{ }
+) : EntityRepository<ServiceLog>(dataProvider, staticCacheManager), IServiceLogRepository { }

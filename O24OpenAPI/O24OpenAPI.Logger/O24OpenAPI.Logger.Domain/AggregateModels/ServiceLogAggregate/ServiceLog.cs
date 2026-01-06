@@ -1,5 +1,5 @@
-﻿using O24OpenAPI.Core.Domain;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.Logger.Domain.AggregateModels.ServiceLogAggregate;
 
