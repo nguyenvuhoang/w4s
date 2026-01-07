@@ -26,7 +26,7 @@ public class LoadFullUserCommandsQueryHandler(IUserCommandRepository _userComman
                 .ThenBy(x => x.DisplayOrder)
                 .ToListAsync(token: cancellationToken);
 
-            List<CTHUserCommandModel> listUserCommand = listUserCommandDomain
+            List<CTHUserCommandModel> listUserCommand = [.. listUserCommandDomain
                 .Select(x => new CTHUserCommandModel
                 {
                     ApplicationCode = x.ApplicationCode,
@@ -43,8 +43,7 @@ public class LoadFullUserCommandsQueryHandler(IUserCommandRepository _userComman
                     GroupMenuVisible = x.GroupMenuVisible,
                     GroupMenuId = x.GroupMenuId ?? "",
                     GroupMenuListAuthorizeForm = x.GroupMenuListAuthorizeForm ?? "",
-                })
-                .ToList();
+                })];
 
             return listUserCommand;
         }
