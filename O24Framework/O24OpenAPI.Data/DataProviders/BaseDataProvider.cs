@@ -21,29 +21,14 @@ using System.Reflection;
 
 namespace O24OpenAPI.Data.DataProviders;
 
-/// <summary>
-/// The base data provider class
-/// </summary>
-/// <seealso cref="IMappingEntityAccessor"/>
 public abstract class BaseDataProvider : IMappingEntityAccessor
 {
-    /// <summary>
-    /// Gets the value of the entity descriptors
-    /// </summary>
     protected static ConcurrentDictionary<
         Type,
         O24OpenAPIEntityDescriptor
     > EntityDescriptors
     { get; } = new ConcurrentDictionary<Type, O24OpenAPIEntityDescriptor>();
-
-    /// <summary>
-    /// Gets the value of the linq to db data provider
-    /// /// </summary>
     protected abstract IDataProvider LinqToDbDataProvider { get; }
-
-    /// <summary>
-    /// Gets the value of the configuration name
-    /// </summary>
     public string ConfigurationName => LinqToDbDataProvider.Name;
 
     /// <summary>
@@ -127,10 +112,7 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
             {
                 string tableName = NameCompatibilityManager.GetTableName(t);
                 string schemaName = AppSettingsHelper.GetSchemaName(t);
-                CreateTableExpression expression = new()
-                {
-                    TableName = tableName,
-                };
+                CreateTableExpression expression = new() { TableName = tableName };
                 CreateTableExpressionBuilder createTableExpressionBuilder = new(
                     expression,
                     new NullMigrationContext()
@@ -785,7 +767,11 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
         using DataConnection dataContext = CreateDataConnection();
         if (batchSize > 0)
         {
-            return await dataContext.GetTable<TEntity>().Where(predicate).Take(batchSize).DeleteAsync();
+            return await dataContext
+                .GetTable<TEntity>()
+                .Where(predicate)
+                .Take(batchSize)
+                .DeleteAsync();
         }
         return await dataContext.GetTable<TEntity>().Where(predicate).DeleteAsync();
     }
@@ -906,9 +892,7 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
     public virtual Task<IList<T>> Query<T>(string sql, params DataParameter[] parameters)
     {
         using DataConnection connection = CreateDataConnection();
-        return Task.FromResult(
-            (IList<T>)(connection.Query<T>(sql, parameters)?.ToList() ?? [])
-        );
+        return Task.FromResult((IList<T>)(connection.Query<T>(sql, parameters)?.ToList() ?? []));
     }
 
     /// <summary>

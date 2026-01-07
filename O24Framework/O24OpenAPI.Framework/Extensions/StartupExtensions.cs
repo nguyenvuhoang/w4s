@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using O24OpenAPI.Core.Configuration;
+using O24OpenAPI.Core.Infrastructure;
+using O24OpenAPI.Framework.Infrastructure;
 
 namespace O24OpenAPI.Framework.Extensions;
 
@@ -23,7 +26,12 @@ public static class StartupExtensions
         var machine = Environment.MachineName;
         var os = RuntimeInformation.OSDescription;
         var framework = RuntimeInformation.FrameworkDescription;
-        var urls = config["ASPNETCORE_URLS"] ?? "not set";
+        var kestrelConfig = Singleton<AppSettings>.Instance.Get<Kestrel>();
+        var urls = "not set";
+        if (kestrelConfig is not null)
+        {
+            urls = string.Join(";", kestrelConfig.Endpoints.Select(e => e.Value.Url));
+        }
         var buildDate = GetAssemblyMetadata("BuildDate") ?? "unknown";
         var buildUser = GetAssemblyMetadata("BuildUser") ?? "unknown";
         var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");

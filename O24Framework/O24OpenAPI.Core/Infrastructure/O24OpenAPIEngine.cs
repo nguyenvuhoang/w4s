@@ -133,9 +133,7 @@ public class O24OpenAPIEngine : IEngine
         }
 
         ITypeFinder instance = Singleton<ITypeFinder>.Instance;
-        return instance != null
-            ? instance.GetAssemblies().FirstOrDefault<Assembly>(a => a.FullName == args.Name)
-            : null;
+        return instance?.GetAssemblies().FirstOrDefault<Assembly>(a => a.FullName == args.Name);
     }
 
     /// <summary>

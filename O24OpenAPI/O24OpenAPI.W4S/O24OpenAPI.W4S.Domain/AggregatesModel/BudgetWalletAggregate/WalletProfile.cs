@@ -13,7 +13,7 @@ public partial class WalletProfile : BaseEntity
     /// <summary>
     /// Contract owner identifier
     /// </summary>
-    public string ContractNumber { get; set; }
+    public string? ContractNumber { get; set; }
 
     /// <summary>
     /// Owner of the wallet

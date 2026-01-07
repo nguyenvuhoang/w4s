@@ -1,3 +1,6 @@
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Transactions;
 using LinKit.Json.Runtime;
 using LinqToDB;
 using O24OpenAPI.Core;
@@ -7,9 +10,6 @@ using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data.System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Transactions;
 
 namespace O24OpenAPI.Data;
 
@@ -38,9 +38,7 @@ public class EntityRepository<TEntity>(
 
         CacheKey cacheKey =
             getCacheKey(_staticCacheManager)
-            ?? _staticCacheManager.PrepareKeyForDefaultCache(
-                O24OpenAPIEntityCacheDefaults<TEntity>.AllCacheKey
-            );
+            ?? _staticCacheManager.PrepareKeyForDefaultCache(CachingKey.EntityKey<TEntity>("all"));
         IList<TEntity> entities1 = await _staticCacheManager.Get(cacheKey, getAll);
         return entities1;
     }
@@ -59,7 +57,7 @@ public class EntityRepository<TEntity>(
 
         async Task<TEntity> getEntity()
         {
-            return await Table.FirstOrDefaultAsync(entity => entity.Id == Convert.ToInt32(id));
+            return await Table.FirstOrDefaultAsync(entity => entity.Id == id);
         }
     }
 
@@ -313,7 +311,10 @@ public class EntityRepository<TEntity>(
         await UpdateNoAudit(query, propertyName, value);
     }
 
-    public virtual async Task<int> DeleteWhere(Expression<Func<TEntity, bool>> predicate, int batchSize = 0)
+    public virtual async Task<int> DeleteWhere(
+        Expression<Func<TEntity, bool>> predicate,
+        int batchSize = 0
+    )
     {
         ArgumentNullException.ThrowIfNull(predicate);
         int num = await _dataProvider.BulkDeleteEntities(predicate, batchSize);

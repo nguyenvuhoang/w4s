@@ -40,7 +40,7 @@ public class AppSettings
     /// <typeparam name="TConfig">The config</typeparam>
     /// <exception cref="O24OpenAPIException"></exception>
     /// <returns>The configuration</returns>
-    public TConfig Get<TConfig>()
+    public TConfig? Get<TConfig>()
         where TConfig : class, IConfig
     {
         if (

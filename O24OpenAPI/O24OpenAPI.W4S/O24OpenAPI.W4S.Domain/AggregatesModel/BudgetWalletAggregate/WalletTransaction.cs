@@ -1,13 +1,12 @@
-﻿namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
-
+﻿
 using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Core.Domain;
 using System.ComponentModel.DataAnnotations;
 
+namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 /// <summary>
 /// Defines the <see cref="WalletTransaction" />
 /// </summary>
-/// 
 [Auditable]
 public partial class WalletTransaction : BaseEntity
 {
