@@ -6,9 +6,9 @@ namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 [Auditable]
 public partial class WalletCategory : BaseEntity
 {
-    public string? CategoryId { get; set; }
-    public string? WalletId { get; set; }
-    public string ParentCategoryId { get; set; } = string.Empty;
+    public string? CategoryCode { get; set; }
+    public int? WalletId { get; set; }
+    public string ParentCategoryCode { get; set; } = string.Empty;
     public string? CategoryGroup { get; set; }
     public string? CategoryType { get; set; }
     public string? CategoryName { get; set; }
@@ -17,9 +17,9 @@ public partial class WalletCategory : BaseEntity
 
     // ===== Factory =====
     public static WalletCategory Create(
-        string categoryId,
-        string walletId,
-        string parentCategoryId,
+        string categoryCode,
+        int walletId,
+        string parentCategoryCode,
         string? categoryGroup,
         string? categoryType,
         string? categoryName,
@@ -27,17 +27,20 @@ public partial class WalletCategory : BaseEntity
         string? color
     )
     {
-        if (string.IsNullOrWhiteSpace(categoryId))
-            throw new ArgumentException("CategoryId is required.");
+        if (string.IsNullOrWhiteSpace(categoryCode))
+            throw new ArgumentException("CategoryCode is required.");
 
-        if (string.IsNullOrWhiteSpace(walletId))
+        if (walletId <= 0)
             throw new ArgumentException("WalletId is required.");
+
+        if (string.IsNullOrWhiteSpace(parentCategoryCode))
+            throw new ArgumentException("ParentCategoryCode is required.");
 
         return new WalletCategory
         {
-            CategoryId = categoryId.Trim(),
-            WalletId = walletId.Trim(),
-            ParentCategoryId = parentCategoryId.Trim(),
+            CategoryCode = categoryCode.Trim(),
+            WalletId = walletId,
+            ParentCategoryCode = parentCategoryCode.Trim(),
             CategoryGroup = categoryGroup?.Trim(),
             CategoryType = categoryType?.Trim(),
             CategoryName = categoryName?.Trim(),

@@ -9,7 +9,7 @@ public partial class WalletProfile : BaseEntity
     /// <summary>
     /// Unique wallet identifier
     /// </summary>
-    public Guid WalletId { get; private set; }
+    public string? WalletProfileCode { get; private set; }
     /// <summary>
     /// Contract owner identifier
     /// </summary>
@@ -43,7 +43,7 @@ public partial class WalletProfile : BaseEntity
     public WalletProfile() { }
 
     public WalletProfile(
-        Guid walletId,
+        string? walletProfileCode,
         string contractNumber,
         string userCode,
         string walletName,
@@ -51,7 +51,7 @@ public partial class WalletProfile : BaseEntity
         string defaultCurrency
     )
     {
-        WalletId = walletId;
+        WalletProfileCode = walletProfileCode;
         ContractNumber = contractNumber;
         UserCode = userCode;
         WalletName = walletName;
@@ -77,7 +77,7 @@ public partial class WalletProfile : BaseEntity
     }
 
     public static WalletProfile Create(
-        Guid walletId,
+        string? walletProfileCode,
         string contractNumber,
         string userCode,
         string walletName,
@@ -88,7 +88,7 @@ public partial class WalletProfile : BaseEntity
     {
         return new WalletProfile
         {
-            WalletId = walletId,
+            WalletProfileCode = walletProfileCode,
             ContractNumber = contractNumber,
             UserCode = userCode,
             WalletName = walletName,

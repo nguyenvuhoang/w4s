@@ -4,8 +4,7 @@ namespace O24OpenAPI.W4S.Domain.AggregatesModel.WalletMasterAggregate
 {
     public class WalletAvatar : BaseEntity
     {
-        public string AvatarId { get; set; } = default!;
-        public string WalletId { get; set; } = default!;
+        public int WalletId { get; set; } = default!;
         public string? UserCode { get; set; }
 
         public string FileKey { get; set; } = default!;

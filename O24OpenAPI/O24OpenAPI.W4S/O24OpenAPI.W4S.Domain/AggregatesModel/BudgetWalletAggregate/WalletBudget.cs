@@ -6,9 +6,9 @@ namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 [Auditable]
 public partial class WalletBudget : BaseEntity
 {
-    public string? BudgetId { get; set; }
-    public string? WalletId { get; set; }
-    public string? CategoryId { get; set; }
+    public string? BudgetCode { get; set; }
+    public int WalletId { get; set; }
+    public int CategoryId { get; set; }
     public decimal Amount { get; set; }
     public string? SourceBudget { get; set; }
     public string? SouceTracker { get; set; }
@@ -17,9 +17,9 @@ public partial class WalletBudget : BaseEntity
     public DateTime EndDate { get; set; }
 
     public static WalletBudget Create(
-        string budgetId,
-        string walletId,
-        string categoryId,
+        string budgetCode,
+        int walletId,
+        int categoryId,
         decimal amount,
         string sourceBudget,
         string? sourceTracker,
@@ -30,7 +30,7 @@ public partial class WalletBudget : BaseEntity
     {
         return new WalletBudget
         {
-            BudgetId = budgetId.ToString(),
+            BudgetCode = budgetCode.Trim(),
             WalletId = walletId,
             CategoryId = categoryId,
             Amount = amount,

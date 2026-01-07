@@ -20,7 +20,7 @@ public class UserController([FromKeyedServices("cth")] IMediator mediator) : Bas
         }
         catch (Exception ex)
         {
-            throw;
+            throw ex.InnerException;
         }
     }
 }
