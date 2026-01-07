@@ -17,23 +17,20 @@ public class WalletProfileRepository(
         return await InsertAsync(profile);
     }
 
-    public async Task<bool> ExistsByWalletIdAsync(string WalletId)
+    public async Task<bool> ExistsByWalletIdAsync(int walletId)
     {
-        var profile = await GetByWalletIdAsync(WalletId);
+        WalletProfile profile = await GetByWalletIdAsync(walletId);
         return profile != null;
     }
 
     public async Task<List<WalletProfile>> GetByContractNumber(string Contractnumber)
     {
-        return await Table.Where(wp => wp.ContractNumber == Contractnumber)
-            .ToListAsync();
+        return await Table.Where(wp => wp.ContractNumber == Contractnumber).ToListAsync();
     }
 
-    public async Task<WalletProfile> GetByWalletIdAsync(string WalletId)
+    public async Task<WalletProfile> GetByWalletIdAsync(int walletId)
     {
-        var guidWalletId = Guid.Parse(WalletId);
-        var profile = await Table.Where(wp => wp.WalletId == guidWalletId)
-            .FirstOrDefaultAsync();
+        WalletProfile profile = await Table.Where(wp => wp.Id == walletId).FirstOrDefaultAsync();
         return profile;
     }
 }

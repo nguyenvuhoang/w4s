@@ -1,5 +1,6 @@
 ﻿using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Core.Domain;
+using O24OpenAPI.W4S.Domain.Constants;
 
 namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
@@ -10,6 +11,7 @@ public partial class WalletProfile : BaseEntity
     /// Unique wallet identifier
     /// </summary>
     public string? WalletProfileCode { get; private set; }
+
     /// <summary>
     /// Contract owner identifier
     /// </summary>
@@ -38,7 +40,7 @@ public partial class WalletProfile : BaseEntity
     /// <summary>
     /// Wallet status: A = Active, I = Inactive, C = Closed
     /// </summary>
-    public char Status { get; private set; }
+    public string? Status { get; private set; }
 
     public WalletProfile() { }
 
@@ -58,7 +60,7 @@ public partial class WalletProfile : BaseEntity
         WalletType = walletType;
         DefaultCurrency = defaultCurrency;
 
-        Status = 'A';
+        Status = WalletProfileStatus.Active;
     }
 
     public void ChangeName(string walletName)
@@ -66,7 +68,7 @@ public partial class WalletProfile : BaseEntity
         WalletName = walletName;
     }
 
-    public void ChangeStatus(char status)
+    public void ChangeStatus(string status)
     {
         Status = status;
     }
@@ -83,7 +85,6 @@ public partial class WalletProfile : BaseEntity
         string walletName,
         string walletType,
         string defaultCurrency
-
     )
     {
         return new WalletProfile
@@ -94,8 +95,7 @@ public partial class WalletProfile : BaseEntity
             WalletName = walletName,
             WalletType = walletType,
             DefaultCurrency = defaultCurrency,
-            Status = 'A'
+            Status = WalletProfileStatus.Active,
         };
     }
-
 }

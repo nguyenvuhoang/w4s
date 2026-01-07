@@ -9,5 +9,5 @@ public interface IWalletAccountProfileRepository : IRepository<WalletAccount>
     /// </summary>
     /// <param name="walletId"></param>
     /// <returns></returns>
-    Task<List<WalletAccount>> GetWalletAccountByWalletIdAsync(List<string> walletId);
+    Task<List<WalletAccount>> GetWalletAccountByWalletIdAsync(List<int> walletId);
 }

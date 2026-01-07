@@ -10,33 +10,27 @@ public class WalletProfileConfiguration : O24OpenAPIEntityBuilder<WalletProfile>
     {
         table
             // ===== Business Fields =====
-            .WithColumn(nameof(WalletProfile.WalletId))
-                .AsGuid()
-                .NotNullable()
-
+            .WithColumn(nameof(WalletProfile.WalletProfileCode))
+            .AsString(100)
+            .NotNullable()
             .WithColumn(nameof(WalletProfile.ContractNumber))
             .AsString(100)
-                .NotNullable()
-
+            .NotNullable()
             .WithColumn(nameof(WalletProfile.UserCode))
-                .AsString(50)
-                .NotNullable()
-
+            .AsString(50)
+            .NotNullable()
             .WithColumn(nameof(WalletProfile.WalletName))
-                .AsString(200)
-                .NotNullable()
-
+            .AsString(200)
+            .NotNullable()
             .WithColumn(nameof(WalletProfile.WalletType))
-                .AsString(20)
-                .NotNullable()
-
+            .AsString(20)
+            .NotNullable()
             .WithColumn(nameof(WalletProfile.DefaultCurrency))
-                .AsString(10)
-                .NotNullable()
-
+            .AsString(10)
+            .NotNullable()
             .WithColumn(nameof(WalletProfile.Status))
-                .AsFixedLengthString(1)
-                .NotNullable()
-                .WithDefaultValue('A');
+            .AsFixedLengthString(1)
+            .NotNullable()
+            .WithDefaultValue('A');
     }
 }

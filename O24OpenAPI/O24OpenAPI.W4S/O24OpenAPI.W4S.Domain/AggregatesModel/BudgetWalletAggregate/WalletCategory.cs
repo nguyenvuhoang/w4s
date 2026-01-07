@@ -7,8 +7,8 @@ namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 public partial class WalletCategory : BaseEntity
 {
     public string? CategoryCode { get; set; }
-    public int? WalletId { get; set; }
-    public string ParentCategoryCode { get; set; } = string.Empty;
+    public int WalletId { get; set; }
+    public int ParentCategoryId { get; set; }
     public string? CategoryGroup { get; set; }
     public string? CategoryType { get; set; }
     public string? CategoryName { get; set; }
@@ -19,7 +19,7 @@ public partial class WalletCategory : BaseEntity
     public static WalletCategory Create(
         string categoryCode,
         int walletId,
-        string parentCategoryCode,
+        int parentCategoryId,
         string? categoryGroup,
         string? categoryType,
         string? categoryName,
@@ -33,14 +33,14 @@ public partial class WalletCategory : BaseEntity
         if (walletId <= 0)
             throw new ArgumentException("WalletId is required.");
 
-        if (string.IsNullOrWhiteSpace(parentCategoryCode))
+        if (parentCategoryId == 0)
             throw new ArgumentException("ParentCategoryCode is required.");
 
         return new WalletCategory
         {
             CategoryCode = categoryCode.Trim(),
             WalletId = walletId,
-            ParentCategoryCode = parentCategoryCode.Trim(),
+            ParentCategoryId = parentCategoryId,
             CategoryGroup = categoryGroup?.Trim(),
             CategoryType = categoryType?.Trim(),
             CategoryName = categoryName?.Trim(),

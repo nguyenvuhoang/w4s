@@ -7,7 +7,7 @@ namespace O24OpenAPI.W4S.API.Application.Features.WalletProfiles;
 [ApiEndpoint(ApiMethod.Post, "wallet-profile", MediatorKey = "w4s")]
 public class GetByWalletId : ICommand<WalletProfile>
 {
-    public string WalletId { get; set; }
+    public int WalletId { get; set; }
 }
 
 [CqrsHandler]

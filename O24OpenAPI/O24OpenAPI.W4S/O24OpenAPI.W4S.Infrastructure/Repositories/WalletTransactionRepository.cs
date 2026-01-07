@@ -10,7 +10,9 @@ namespace O24OpenAPI.W4S.Infrastructure.Repositories;
 public class WalletTransactionRepository(
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-) : EntityRepository<WalletTransaction>(dataProvider, staticCacheManager), IWalletTransactionRepository
+)
+    : EntityRepository<WalletTransaction>(dataProvider, staticCacheManager),
+        IWalletTransactionRepository
 {
     /// <summary>
     /// Insert a new wallet transaction record
@@ -32,12 +34,16 @@ public class WalletTransactionRepository(
     /// <param name="take"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-
-    public async Task<IList<WalletTransaction>> GetByWalletIdAsync(Guid walletId, DateTime? fromUtc = null, DateTime? toUtc = null, int skip = 0, int take = 50, CancellationToken cancellationToken = default)
+    public async Task<IList<WalletTransaction>> GetByWalletIdAsync(
+        int walletId,
+        DateTime? fromUtc = null,
+        DateTime? toUtc = null,
+        int skip = 0,
+        int take = 50,
+        CancellationToken cancellationToken = default
+    )
     {
-        var wid = walletId.ToString("D").ToUpperInvariant();
-
-        var q = Table.Where(x => x.SOURCETRANREF == wid);
+        IQueryable<WalletTransaction> q = Table.Where(x => x.SOURCETRANREF == walletId.ToString());
 
         if (fromUtc.HasValue)
             q = q.Where(x => x.TRANSACTIONDATE >= fromUtc.Value);
@@ -45,12 +51,11 @@ public class WalletTransactionRepository(
         if (toUtc.HasValue)
             q = q.Where(x => x.TRANSACTIONDATE < toUtc.Value);
 
-        return (IList<WalletTransaction>)await q
-        .OrderByDescending(x => x.TRANSACTIONDATE)
-        .ThenByDescending(x => x.Id)
-        .Skip(skip)
-        .Take(take)
-        .ToListAsync(cancellationToken)
-        ?? [];
+        return (IList<WalletTransaction>)
+                await q.OrderByDescending(x => x.TRANSACTIONDATE)
+                    .ThenByDescending(x => x.Id)
+                    .Skip(skip)
+                    .Take(take)
+                    .ToListAsync(cancellationToken) ?? [];
     }
 }

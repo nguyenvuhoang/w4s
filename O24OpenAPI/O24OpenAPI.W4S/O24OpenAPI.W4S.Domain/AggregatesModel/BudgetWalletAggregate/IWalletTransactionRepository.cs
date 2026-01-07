@@ -6,7 +6,7 @@ public interface IWalletTransactionRepository : IRepository<WalletTransaction>
 {
     Task<WalletTransaction> AddAsync(WalletTransaction transaction);
     Task<IList<WalletTransaction>> GetByWalletIdAsync(
-        Guid walletId,
+        int walletId,
         DateTime? fromUtc = null,
         DateTime? toUtc = null,
         int skip = 0,

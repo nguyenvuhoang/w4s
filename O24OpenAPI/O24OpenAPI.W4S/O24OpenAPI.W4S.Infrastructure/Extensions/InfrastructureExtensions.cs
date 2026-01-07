@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
 using O24OpenAPI.Logging.Interceptors;
 
-namespace O24OpenAPI.W4S.Infrastructure;
+namespace O24OpenAPI.W4S.Infrastructure.Extensions;
 
 public static class InfrastructureExtensions
 {

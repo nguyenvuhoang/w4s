@@ -1,7 +1,6 @@
-﻿namespace O24OpenAPI.W4S.API.Application.Models.Wallet
+﻿namespace O24OpenAPI.W4S.API.Application.Models.Wallet;
+
+public class CreateWalletBudgetResponseModel : BaseO24OpenAPIModel
 {
-    public class CreateWalletBudgetResponseModel : BaseO24OpenAPIModel
-    {
-        public string BudgetId { get; set; }
-    }
+    public int BudgetId { get; set; }
 }

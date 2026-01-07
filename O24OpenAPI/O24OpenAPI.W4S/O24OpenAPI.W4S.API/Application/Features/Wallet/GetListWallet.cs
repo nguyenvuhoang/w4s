@@ -35,7 +35,7 @@ public class GetListWalletHandler(
                    request.ContractNumber
                );
 
-            var contractNumber = request.ContractNumber.Trim();
+            string contractNumber = request.ContractNumber.Trim();
 
             var wallets =
                 await walletProfileRepository.GetByContractNumber(contractNumber)
@@ -48,7 +48,7 @@ public class GetListWalletHandler(
 
             var result = wallets.Select(w => new ListWalletResponseModel
             {
-                WalletId = w.WalletId.ToString(),
+                WalletId = w.Id,
                 ContractNumber = w.ContractNumber,
                 UserCode = w.UserCode ?? string.Empty,
                 WalletName = w.WalletName,

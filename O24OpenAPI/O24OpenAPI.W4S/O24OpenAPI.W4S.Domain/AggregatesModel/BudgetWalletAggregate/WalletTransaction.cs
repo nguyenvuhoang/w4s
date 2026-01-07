@@ -1,9 +1,9 @@
-﻿
-using O24OpenAPI.Core.Attributes;
+﻿using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Core.Domain;
 using System.ComponentModel.DataAnnotations;
 
 namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
+
 /// <summary>
 /// Defines the <see cref="WalletTransaction" />
 /// </summary>
@@ -242,7 +242,7 @@ public partial class WalletTransaction : BaseEntity
     public string? CHAR17 { get; set; }
 
     /// <summary>
-    /// Gets or sets the Char20                                                                                                                                       
+    /// Gets or sets the Char20
     /// <summary>
     /// Gets or sets the Char18
     /// </summary>

@@ -34,9 +34,10 @@ public class CreateWalletCommand : BaseTransactionModel, ICommand<CreateWalletRe
     public string ContractNumber { get; set; }
     public string UserChannelId { get; set; }
     public string RoleChannel { get; set; }
-    public string NotificationType { get; set; } = "MAIL";
+    public string NotificationType { get; set; } = NotificationTypes.Mail;
     public string ContractType { get; set; }
     public string UserType { get; set; } = "0502";
+    public string Classification { get; set; }
 }
 
 [CqrsHandler]
@@ -59,7 +60,7 @@ public class CreateWalletHandle(
             await ValidateRequest(request, walletContractRepository);
 
             string contractNumber = await ResolveContractNumberAsync(request, cancellationToken);
-            var contract = WalletContract.Create(
+            WalletContract contract = WalletContract.Create(
                 contractNumber: contractNumber,
                 contractType: WalletContractTypeHelper.Parse(request.ContractType),
                 walletTier: WalletTier.Basic,
@@ -85,9 +86,11 @@ public class CreateWalletHandle(
                 await walletContractRepository.InsertAsync(contract);
             }
 
-            var walletid = Guid.NewGuid();
-            var profile = WalletProfile.Create(
-                walletId: walletid,
+            WalletProfile profile = WalletProfile.Create(
+                walletProfileCode: GenerateWalletProfileCode(
+                    Code.WalletType.TWDR,
+                    request.Classification
+                ),
                 contractNumber: contract.ContractNumber,
                 userCode: request.Phone,
                 walletName: $"{request.FirstName} {request.MiddleName} {request.LastName}".Trim(),
@@ -95,13 +98,13 @@ public class CreateWalletHandle(
                 defaultCurrency: w4SSetting.BaseCurrency
             );
 
-            await walletProfileRepository.InsertAsync(profile);
+            profile = await walletProfileRepository.InsertAsync(profile);
 
-            await CloneDefaultCategoriesToWalletAsync(profile.WalletId);
+            await CloneDefaultCategoriesToWalletAsync(profile.Id);
 
             return new CreateWalletResponseModel
             {
-                WalletId = profile.WalletId,
+                WalletId = profile.Id,
                 ContractNumber = contract.ContractNumber,
                 UserCode = profile.UserCode,
             };
@@ -144,7 +147,7 @@ public class CreateWalletHandle(
                 "FirstName"
             );
 
-        var walletContract = await walletContractRepository.GetByPhoneAsync(r.Phone);
+        WalletContract walletContract = await walletContractRepository.GetByPhoneAsync(r.Phone);
         if (walletContract != null)
         {
             throw await O24Exception.CreateAsync(
@@ -188,32 +191,30 @@ public class CreateWalletHandle(
     /// <param name="walletId"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    private async Task CloneDefaultCategoriesToWalletAsync(
-        Guid walletId
-    )
+    private async Task CloneDefaultCategoriesToWalletAsync(int walletId)
     {
-        var defaults = await walletCategoryDefaultRepository.GetActiveAsync();
+        IList<WalletCategoryDefault> defaults =
+            await walletCategoryDefaultRepository.GetActiveAsync();
 
         if (defaults is null || defaults.Count == 0)
             return;
 
-        string walletIdStr = walletId.ToString();
+        List<WalletCategory> toInsert = new(defaults.Count);
 
-        var toInsert = new List<WalletCategory>(defaults.Count);
-
-        foreach (var d in defaults.OrderBy(x => x.SortOrder))
+        foreach (WalletCategoryDefault d in defaults.OrderBy(x => x.SortOrder))
         {
             // CategoryId bên WalletCategory = CategoryCode bên Default
-            var categoryId = d.CategoryCode;
+            string categoryCode = d.CategoryCode;
 
             // Skip if already exists (avoid duplicate insert)
-            bool exists = await walletCategoryRepository.ExistsAsync(walletIdStr, categoryId);
-            if (exists) continue;
+            bool exists = await walletCategoryRepository.ExistsAsync(walletId, categoryCode);
+            if (exists)
+                continue;
 
-            var entity = WalletCategory.Create(
-                categoryId: categoryId,
-                walletId: walletIdStr,
-                parentCategoryId: d.ParentCategoryCode ?? string.Empty,
+            WalletCategory entity = WalletCategory.Create(
+                categoryCode: GenerateCategoryCode(d.CategoryGroup),
+                walletId: walletId,
+                parentCategoryId: d.Id,
                 categoryGroup: d.CategoryGroup,
                 categoryType: d.CategoryType,
                 categoryName: d.CategoryName,
@@ -226,7 +227,33 @@ public class CreateWalletHandle(
 
         if (toInsert.Count > 0)
             await walletCategoryRepository.BulkInsertAsync(toInsert);
-
     }
 
+    private static string GenerateWalletProfileCode(string walletType, string classification)
+    {
+        string date = DateTime.UtcNow.ToString("yyyyMMdd");
+
+        long ms = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        string last3 = (ms % 1000).ToString("D2");
+
+        string rand = Random.Shared.Next(0, 1000).ToString("D2");
+
+        string suffix = last3 + rand;
+
+        return $"{date}{walletType}{classification}{suffix}";
+    }
+
+    private static string GenerateCategoryCode(string groupCode)
+    {
+        string date = DateTime.UtcNow.ToString("yyyyMMdd");
+
+        long ms = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        string last3 = (ms % 1000).ToString("D2");
+
+        string rand = Random.Shared.Next(0, 1000).ToString("D2");
+
+        string suffix = last3 + rand;
+
+        return $"{date}{groupCode}{suffix}";
+    }
 }

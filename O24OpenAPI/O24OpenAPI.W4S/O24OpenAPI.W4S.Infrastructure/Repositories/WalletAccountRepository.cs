@@ -15,7 +15,7 @@ public class WalletAccountRepository(
         IWalletAccountProfileRepository
 {
     public async Task<List<WalletAccount>> GetWalletAccountByWalletIdAsync(
-     List<string> walletIds
+     List<int> walletIds
     )
     {
         if (walletIds == null || walletIds.Count == 0)

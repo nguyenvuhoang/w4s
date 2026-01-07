@@ -12,7 +12,7 @@ public class WalletGoalRepository(
     IStaticCacheManager staticCacheManager
 ) : EntityRepository<WalletGoal>(dataProvider, staticCacheManager), IWalletGoalRepository
 {
-    public async Task<List<WalletGoal>> GetByWalletIdsAsync(List<string> walletIds)
+    public async Task<List<WalletGoal>> GetByWalletIdsAsync(List<int> walletIds)
     {
         if (walletIds == null || walletIds.Count == 0)
             return [];

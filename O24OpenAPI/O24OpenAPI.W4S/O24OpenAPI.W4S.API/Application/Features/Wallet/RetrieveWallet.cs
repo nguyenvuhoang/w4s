@@ -45,34 +45,29 @@ public class RetrieveWalletInformationHandler(
                    request.ContractNumber
                );
 
-            var contractNumber = request.ContractNumber.Trim();
+            string contractNumber = request.ContractNumber.Trim();
 
-            var captionCache = new Dictionary<string, string>(StringComparer.Ordinal);
+            Dictionary<string, string> captionCache = new(StringComparer.Ordinal);
 
             Task<string> GetCaptionCached(string? code, string group, string app)
             {
                 code ??= string.Empty;
-                var key = $"{app}|{group}|{request.Language}|{code}";
+                string key = $"{app}|{group}|{request.Language}|{code}";
 
-                if (captionCache.TryGetValue(key, out var cached))
+                if (captionCache.TryGetValue(key, out string cached))
                     return Task.FromResult(cached);
 
                 return LoadAndCache();
 
                 async Task<string> LoadAndCache()
                 {
-                    var v = await systemCodeService.GetCaption(code, group, app, request.Language);
+                    string v = await systemCodeService.GetCaption(code, group, app, request.Language);
                     captionCache[key] = v;
                     return v;
                 }
             }
 
-            static Guid ParseGuidOrEmpty(string? s)
-            {
-                return Guid.TryParse(s, out var g) ? g : Guid.Empty;
-            }
-
-            var wallets =
+            List<WalletProfile> wallets =
                 await walletProfileRepository.GetByContractNumber(contractNumber)
                 ?? throw await O24Exception.CreateAsync(
                     O24W4SResourceCode.Validation.WalletContractNotFound,
@@ -80,29 +75,27 @@ public class RetrieveWalletInformationHandler(
                     contractNumber
                 );
 
-            var contract = await walletContractRepository.GetByContractNumberAsync(contractNumber);
+            WalletContract contract = await walletContractRepository.GetByContractNumberAsync(contractNumber);
 
-            var walletIds = wallets.Select(x => x.WalletId).Distinct().ToList();
+            List<int> walletIds = wallets.Select(x => x.Id).Distinct().ToList();
 
-            var walletIdStrings = walletIds.Select(x => x.ToString()).ToList();
-
-            var accountsTask = walletAccountRepository.GetWalletAccountByWalletIdAsync(walletIdStrings);
+            Task<List<WalletAccount>> accountsTask = walletAccountRepository.GetWalletAccountByWalletIdAsync(walletIds);
             await Task.WhenAll(accountsTask);
 
-            var accounts = accountsTask.Result ?? [];
+            List<WalletAccount> accounts = accountsTask.Result ?? [];
 
-            var accountNumbers = accounts
+            List<string> accountNumbers = accounts
                 .Select(a => a.AccountNumber)
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Distinct()
                 .ToList();
 
-            var balancesTask = walletBalanceRepository.GetByAccountNumbersAsync(accountNumbers);
-            var categoriesTask = walletCategoryRepository.GetByWalletIdsAsync(walletIdStrings);
-            var budgetsTask = walletBudgetRepository.GetByWalletIdsAsync(walletIdStrings);
-            var goalsTask = walletGoalRepository.GetByWalletIdsAsync(walletIdStrings);
+            Task<List<WalletBalance>> balancesTask = walletBalanceRepository.GetByAccountNumbersAsync(accountNumbers);
+            Task<List<WalletCategory>> categoriesTask = walletCategoryRepository.GetByWalletIdsAsync(walletIds);
+            Task<List<WalletBudget>> budgetsTask = walletBudgetRepository.GetByWalletIdsAsync(walletIds);
+            Task<List<WalletGoal>> goalsTask = walletGoalRepository.GetByWalletIdsAsync(walletIds);
 
-            var txTaskList = walletIds
+            List<(int WalletId, Task<IList<WalletTransaction>> Task)> txTaskList = walletIds
             .Distinct()
             .Select(wid => (
                 WalletId: wid,
@@ -136,46 +129,42 @@ public class RetrieveWalletInformationHandler(
                 throw;
             }
 
-            var txsByWallet = txTaskList.ToDictionary(
+            Dictionary<int, IList<WalletTransaction>> txsByWallet = txTaskList.ToDictionary(
                 x => x.WalletId,
-                x => (IList<WalletTransaction>)(x.Task.Result ?? [])
+                x => x.Task.Result ?? []
             );
 
 
             txsByWallet = txTaskList.ToDictionary(
                x => x.WalletId,
-               x => (IList<WalletTransaction>)(x.Task.Result ?? [])
+               x => x.Task.Result ?? []
            );
 
             await Task.WhenAll(balancesTask, categoriesTask, budgetsTask, goalsTask);
 
-            var balances = balancesTask.Result ?? [];
-            var categories = categoriesTask.Result ?? [];
-            var budgets = budgetsTask.Result ?? [];
-            var goals = goalsTask.Result ?? [];
+            List<WalletBalance> balances = balancesTask.Result ?? [];
+            List<WalletCategory> categories = categoriesTask.Result ?? [];
+            List<WalletBudget> budgets = budgetsTask.Result ?? [];
+            List<WalletGoal> goals = goalsTask.Result ?? [];
 
-            var balancesByAcc = balances
+            Dictionary<string, WalletBalance> balancesByAcc = balances
                 .GroupBy(x => x.AccountNumber)
                 .ToDictionary(g => g.Key, g => g.OrderByDescending(x => x.Id).First(), StringComparer.Ordinal);
 
-            var accountsByWallet = accounts
-                .GroupBy(a => ParseGuidOrEmpty(a.WalletId))
-                .Where(g => g.Key != Guid.Empty)
+            Dictionary<int, List<WalletAccount>> accountsByWallet = accounts
+                .GroupBy(a => a.WalletId)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
-            var categoriesByWallet = categories
-                .GroupBy(c => ParseGuidOrEmpty(c.WalletId))
-                .Where(g => g.Key != Guid.Empty)
+            Dictionary<int, List<WalletCategory>> categoriesByWallet = categories
+                .GroupBy(a => a.WalletId)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
-            var budgetsByWallet = budgets
-                .GroupBy(b => ParseGuidOrEmpty(b.WalletId))
-                .Where(g => g.Key != Guid.Empty)
+            Dictionary<int, List<WalletBudget>> budgetsByWallet = budgets
+                .GroupBy(a => a.WalletId)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
-            var goalsByWallet = goals
-                .GroupBy(gl => ParseGuidOrEmpty(gl.WalletId))
-                .Where(g => g.Key != Guid.Empty)
+            Dictionary<int, List<WalletGoal>> goalsByWallet = goals
+                .GroupBy(a => a.WalletId)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
             // Contract captions (only if contract exists)
@@ -192,7 +181,7 @@ public class RetrieveWalletInformationHandler(
                 contractStatusCaption = await GetCaptionCached(contractStatus, "CONTRACTSTATUS", "BO");
             }
 
-            var response = new WalletInformationResponseModel
+            WalletInformationResponseModel response = new()
             {
                 Contract = contract == null
                     ? null
@@ -211,20 +200,20 @@ public class RetrieveWalletInformationHandler(
                     }
             };
 
-            var walletDetailTasks = wallets
+            IEnumerable<Task<WalletProfileDetailResponseModel>> walletDetailTasks = wallets
                 .OrderBy(x => x.Id)
                 .Select(async w =>
                 {
-                    var wid = w.WalletId;
+                    int wid = w.Id;
 
-                    var walletTypeCaption = await GetCaptionCached(w.WalletType, "WALLETTYPE", "W4S");
-                    var walletStatusCode = w.Status.ToString() ?? string.Empty;
-                    var walletStatusCaption = await GetCaptionCached(walletStatusCode, "WALLETSTATUS", "BO");
+                    string walletTypeCaption = await GetCaptionCached(w.WalletType, "WALLETTYPE", "W4S");
+                    string walletStatusCode = w.Status.ToString() ?? string.Empty;
+                    string walletStatusCaption = await GetCaptionCached(walletStatusCode, "WALLETSTATUS", "BO");
 
-                    var walletDetail = new WalletProfileDetailResponseModel
+                    WalletProfileDetailResponseModel walletDetail = new()
                     {
                         Id = w.Id,
-                        WalletId = w.WalletId,
+                        WalletId = w.Id,
                         UserCode = w.UserCode,
                         ContractNumber = w.ContractNumber,
                         WalletName = w.WalletName,
@@ -238,19 +227,19 @@ public class RetrieveWalletInformationHandler(
                     };
 
                     // accounts + balance
-                    if (accountsByWallet.TryGetValue(wid, out var accs) && accs.Count > 0)
+                    if (accountsByWallet.TryGetValue(wid, out List<WalletAccount> accs) && accs.Count > 0)
                     {
-                        var ordered = accs
+                        List<WalletAccount> ordered = accs
                             .OrderByDescending(a => a.IsPrimary)
                             .ThenBy(a => a.Id)
                             .ToList();
 
-                        var accountTasks = ordered.Select(async a =>
+                        IEnumerable<Task<WalletAccountWithBalanceResponseModel>> accountTasks = ordered.Select(async a =>
                         {
-                            balancesByAcc.TryGetValue(a.AccountNumber, out var bal);
+                            balancesByAcc.TryGetValue(a.AccountNumber, out WalletBalance bal);
 
-                            var accountTypeCaption = await GetCaptionCached(a.AccountType, "ACCOUNTTYPE", "W4S");
-                            var accountStatusCaption = await GetCaptionCached(a.Status, "ACCOUNTSTATUS", "W4S");
+                            string accountTypeCaption = await GetCaptionCached(a.AccountType, "ACCOUNTTYPE", "W4S");
+                            string accountStatusCaption = await GetCaptionCached(a.Status, "ACCOUNTSTATUS", "W4S");
 
                             return new WalletAccountWithBalanceResponseModel
                             {
@@ -276,11 +265,11 @@ public class RetrieveWalletInformationHandler(
                             };
                         });
 
-                        walletDetail.Accounts = [.. (await Task.WhenAll(accountTasks))];
+                        walletDetail.Accounts = [.. await Task.WhenAll(accountTasks)];
                     }
 
                     // categories
-                    if (categoriesByWallet.TryGetValue(wid, out var cats) && cats.Count > 0)
+                    if (categoriesByWallet.TryGetValue(wid, out List<WalletCategory> cats) && cats.Count > 0)
                     {
                         walletDetail.Categories = [.. cats
                         .OrderBy(x => x.Id)
@@ -288,7 +277,7 @@ public class RetrieveWalletInformationHandler(
                     }
 
                     // budgets
-                    if (budgetsByWallet.TryGetValue(wid, out var bgs) && bgs.Count > 0)
+                    if (budgetsByWallet.TryGetValue(wid, out List<WalletBudget> bgs) && bgs.Count > 0)
                     {
                         walletDetail.Budgets = [.. bgs
                         .OrderByDescending(x => x.StartDate)
@@ -296,7 +285,7 @@ public class RetrieveWalletInformationHandler(
                         .Select(x => new WalletBudgetResponseModel
                         {
                             Id = x.Id,
-                            BudgetId = x.BudgetId,
+                            BudgetId = x.Id,
                             WalletId = x.WalletId,
                             CategoryId = x.CategoryId,
                             Amount = x.Amount,
@@ -309,14 +298,13 @@ public class RetrieveWalletInformationHandler(
                     }
 
                     // goals
-                    if (goalsByWallet.TryGetValue(wid, out var gls) && gls.Count > 0)
+                    if (goalsByWallet.TryGetValue(wid, out List<WalletGoal> gls) && gls.Count > 0)
                     {
                         walletDetail.Goals = [.. gls
                         .OrderByDescending(x => x.Id)
                         .Select(x => new WalletGoalResponseModel
                         {
                             Id = x.Id,
-                            GoalId = x.GoalId,
                             WalletId = x.WalletId,
                             GoalName = x.GoalName,
                             TargetAmount = x.TargetAmount ?? 0,

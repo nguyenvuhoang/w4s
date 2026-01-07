@@ -14,7 +14,7 @@ public class WalletAccountConfiguration : O24OpenAPIEntityBuilder<WalletAccount>
                 .NotNullable()
 
             .WithColumn(nameof(WalletAccount.WalletId))
-                .AsString(50)
+                .AsInt32()
                 .NotNullable()
 
             .WithColumn(nameof(WalletAccount.AccountType))

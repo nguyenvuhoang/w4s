@@ -10,27 +10,23 @@ public class WalletBalanceConfiguration : O24OpenAPIEntityBuilder<WalletBalance>
     {
         table
             .WithColumn(nameof(WalletBalance.AccountNumber))
-                .AsString(50)
-                .NotNullable()
-
+            .AsString(50)
+            .NotNullable()
             .WithColumn(nameof(WalletBalance.Balance))
-                .AsDecimal(18, 2)
-                .NotNullable()
-                .WithDefaultValue(0)
-
+            .AsDecimal(18, 2)
+            .NotNullable()
+            .WithDefaultValue(0)
             .WithColumn(nameof(WalletBalance.BonusBalance))
-                .AsDecimal(18, 2)
-                .NotNullable()
-                .WithDefaultValue(0)
-
+            .AsDecimal(18, 2)
+            .NotNullable()
+            .WithDefaultValue(0)
             .WithColumn(nameof(WalletBalance.LockedBalance))
-                .AsDecimal(18, 2)
-                .NotNullable()
-                .WithDefaultValue(0)
-
+            .AsDecimal(18, 2)
+            .NotNullable()
+            .WithDefaultValue(0)
             .WithColumn(nameof(WalletBalance.AvailableBalance))
-                .AsDecimal(18, 2)
-                .NotNullable()
-                .WithDefaultValue(0);
+            .AsDecimal(18, 2)
+            .NotNullable()
+            .WithDefaultValue(0);
     }
 }

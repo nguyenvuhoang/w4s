@@ -7,27 +7,26 @@ using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
 namespace O24OpenAPI.W4S.API.Application.Features.WalletBugets;
 
-
-
-public class CreateWalletBudgetCommand : BaseTransactionModel, ICommand<CreateWalletBudgetResponseModel>
+public class CreateWalletBudgetCommand
+    : BaseTransactionModel,
+        ICommand<CreateWalletBudgetResponseModel>
 {
-    public string WalletId { get; set; }
-    public string CategoryId { get; set; }
+    public int WalletId { get; set; }
+    public int CategoryId { get; set; }
     public decimal Amount { get; set; }
 
     public string SourceBudget { get; set; } = "DEFAULT_CATEGORY";
-    public string? SourceTracker { get; set; }
+    public string SourceTracker { get; set; }
 
     public string PeriodType { get; set; } = "MONTH";
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
 }
 
-
-
 [CqrsHandler]
 public class CreateWalletBudgetHandler(
-    IWalletBudgetRepository walletBudgetRepository
+    IWalletBudgetRepository walletBudgetRepository,
+    IWalletCategoryRepository walletCategoryRepository
 ) : ICommandHandler<CreateWalletBudgetCommand, CreateWalletBudgetResponseModel>
 {
     [WorkflowStep(WorkflowStepCode.W4S.WF_STEP_W4S_CREATE_WALLET_BUDGET)]
@@ -36,15 +35,15 @@ public class CreateWalletBudgetHandler(
         CancellationToken ct = default
     )
     {
-        if (string.IsNullOrWhiteSpace(request.WalletId))
+        if (request.WalletId == 0)
             throw new ArgumentException("WalletId is required");
 
-        if (string.IsNullOrWhiteSpace(request.CategoryId))
+        if (request.CategoryId == 0)
             throw new ArgumentException("CategoryId is required");
-
-        var entity = WalletBudget.Create(
-            budgetId: Guid.NewGuid().ToString(),
-            walletId: request.WalletId.ToString(),
+        WalletCategory category = await walletCategoryRepository.GetById(request.CategoryId);
+        WalletBudget entity = WalletBudget.Create(
+            budgetCode: GenerateWalletBudgetCode(category.CategoryCode),
+            walletId: request.WalletId,
             categoryId: request.CategoryId,
             amount: request.Amount,
             sourceBudget: request.SourceBudget,
@@ -56,9 +55,12 @@ public class CreateWalletBudgetHandler(
 
         await walletBudgetRepository.InsertAsync(entity);
 
-        return new CreateWalletBudgetResponseModel
-        {
-            BudgetId = entity.BudgetId
-        };
+        return new CreateWalletBudgetResponseModel { BudgetId = entity.Id };
+    }
+
+    private static string GenerateWalletBudgetCode(string categoryCode)
+    {
+        string date = DateTime.UtcNow.ToString("yyyyMMdd");
+        return $"{date}{categoryCode}";
     }
 }

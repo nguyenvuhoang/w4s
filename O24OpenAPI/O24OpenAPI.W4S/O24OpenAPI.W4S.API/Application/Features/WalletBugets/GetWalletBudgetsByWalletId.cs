@@ -12,14 +12,14 @@ public class GetWalletBudgetsByWalletId
     : BaseTransactionModel,
         ICommand<PagedListModel<WalletBudget, GetWalletBudgetsByWalletModel>>
 {
-    public string WalletId { get; set; }
+    public int WalletId { get; set; }
 }
 
 public class GetWalletBudgetsByWalletModel : BaseO24OpenAPIModel
 {
     public string BuggetId { get; set; }
-    public string WalletId { get; set; }
-    public string CategoryId { get; set; }
+    public int WalletId { get; set; }
+    public int CategoryId { get; set; }
     public decimal Amount { get; set; }
     public string SourceBudget { get; set; }
     public string SouceTracker { get; set; }

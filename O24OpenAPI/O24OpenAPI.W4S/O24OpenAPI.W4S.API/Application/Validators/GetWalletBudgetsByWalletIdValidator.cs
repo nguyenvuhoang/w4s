@@ -11,7 +11,7 @@ public class GetWalletBudgetsByWalletIdValidator : IValidator<GetWalletBudgetsBy
     public async Task ValidateAsync(GetWalletBudgetsByWalletId request)
     {
         await Task.CompletedTask;
-        if (string.IsNullOrWhiteSpace(request.WalletId))
+        if (request.WalletId == 0)
         {
             throw new ValidationException("WalletId cannot be null or empty.");
         }

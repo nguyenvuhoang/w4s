@@ -1,7 +1,7 @@
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
 using O24OpenAPI.W4S.API.Application;
-using O24OpenAPI.W4S.Infrastructure;
+using O24OpenAPI.W4S.Infrastructure.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureApplicationServices(builder);

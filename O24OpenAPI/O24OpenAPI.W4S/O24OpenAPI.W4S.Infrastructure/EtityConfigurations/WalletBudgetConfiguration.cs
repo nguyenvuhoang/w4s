@@ -9,12 +9,12 @@ public class WalletBudgetConfiguration : O24OpenAPIEntityBuilder<WalletBudget>
     public override void MapEntity(CreateTableExpressionBuilder table)
     {
         table
-            .WithColumn(nameof(WalletBudget.BudgetId))
+            .WithColumn(nameof(WalletBudget.BudgetCode))
                 .AsString(50)
                 .NotNullable()
 
             .WithColumn(nameof(WalletBudget.WalletId))
-                .AsString(50)
+                .AsInt32()
                 .NotNullable()
 
             .WithColumn(nameof(WalletBudget.CategoryId))

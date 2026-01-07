@@ -1,9 +1,8 @@
 ﻿using O24OpenAPI.Core.Configuration;
 
-namespace O24OpenAPI.W4S.Infrastructure.Configurations
+namespace O24OpenAPI.W4S.Infrastructure.Configurations;
+
+public class W4SSetting : ISettings
 {
-    public class W4SSetting : ISettings
-    {
-        public string BaseCurrency { get; set; } = "VND";
-    }
+    public string BaseCurrency { get; set; } = "VND";
 }

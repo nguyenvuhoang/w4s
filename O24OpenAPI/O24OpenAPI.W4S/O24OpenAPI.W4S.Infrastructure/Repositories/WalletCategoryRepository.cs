@@ -25,12 +25,12 @@ public class WalletCategoryRepository(
     /// <param name="walletId"></param>
     /// <param name="categoryId"></param>
     /// <returns></returns>
-    public async Task<bool> ExistsAsync(string walletId, string categoryId)
+    public async Task<bool> ExistsAsync(int walletId, string categorycode)
     {
-        return await Table.AnyAsync(wc => wc.WalletId == walletId && wc.CategoryId == categoryId);
+        return await Table.AnyAsync(wc => wc.WalletId == walletId && wc.CategoryCode == categorycode);
     }
 
-    public async Task<List<WalletCategory>> GetByWalletIdsAsync(List<string> walletIds)
+    public async Task<List<WalletCategory>> GetByWalletIdsAsync(List<int> walletIds)
     {
         if (walletIds == null || walletIds.Count == 0)
             return [];

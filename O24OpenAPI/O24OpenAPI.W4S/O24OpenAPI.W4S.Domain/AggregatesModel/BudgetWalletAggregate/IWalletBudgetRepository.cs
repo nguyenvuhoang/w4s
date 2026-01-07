@@ -4,5 +4,5 @@ namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
 public interface IWalletBudgetRepository : IRepository<WalletBudget>
 {
-    Task<List<WalletBudget>> GetByWalletIdsAsync(List<string> walletIds);
+    Task<List<WalletBudget>> GetByWalletIdsAsync(List<int> walletIds);
 }

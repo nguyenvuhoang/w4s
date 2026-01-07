@@ -9,37 +9,30 @@ public class WalletCategoryConfiguration : O24OpenAPIEntityBuilder<WalletCategor
     public override void MapEntity(CreateTableExpressionBuilder table)
     {
         table
-            .WithColumn(nameof(WalletCategory.CategoryId))
-                .AsString(50)
-                .NotNullable()
-
+            .WithColumn(nameof(WalletCategory.CategoryCode))
+            .AsString(50)
+            .NotNullable()
             .WithColumn(nameof(WalletCategory.WalletId))
-                .AsString(50)
-                .NotNullable()
-
+            .AsInt32()
+            .NotNullable()
             .WithColumn(nameof(WalletCategory.ParentCategoryId))
-                .AsString(50)
-                .NotNullable()
-                .WithDefaultValue(string.Empty)
-
+            .AsInt32()
+            .NotNullable()
+            .WithDefaultValue(string.Empty)
             .WithColumn(nameof(WalletCategory.CategoryGroup))
-                .AsString(50)
-                .Nullable()
-
+            .AsString(50)
+            .Nullable()
             .WithColumn(nameof(WalletCategory.CategoryType))
-                .AsString(20)
-                .NotNullable()
-
+            .AsString(20)
+            .NotNullable()
             .WithColumn(nameof(WalletCategory.CategoryName))
-                .AsString(200)
-                .NotNullable()
-
+            .AsString(200)
+            .NotNullable()
             .WithColumn(nameof(WalletCategory.Icon))
-                .AsString(200)
-                .Nullable()
-
+            .AsString(200)
+            .Nullable()
             .WithColumn(nameof(WalletCategory.Color))
-                .AsString(50)
-                .Nullable();
+            .AsString(50)
+            .Nullable();
     }
 }

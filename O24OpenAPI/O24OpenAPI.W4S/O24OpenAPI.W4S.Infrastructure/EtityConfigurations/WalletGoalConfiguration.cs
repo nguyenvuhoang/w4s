@@ -9,29 +9,21 @@ public class WalletGoalConfiguration : O24OpenAPIEntityBuilder<WalletGoal>
     public override void MapEntity(CreateTableExpressionBuilder table)
     {
         table
-            .WithColumn(nameof(WalletGoal.GoalId))
-                .AsString(50)
-                .NotNullable()
-
             .WithColumn(nameof(WalletGoal.WalletId))
-                .AsString(50)
-                .NotNullable()
-
+            .AsInt32()
+            .NotNullable()
             .WithColumn(nameof(WalletGoal.GoalName))
-                .AsString(200)
-                .NotNullable()
-
+            .AsString(200)
+            .NotNullable()
             .WithColumn(nameof(WalletGoal.TargetAmount))
-                .AsDecimal(18, 2)
-                .Nullable()
-
+            .AsDecimal(18, 2)
+            .Nullable()
             .WithColumn(nameof(WalletGoal.CurrentAmount))
-                .AsDecimal(18, 2)
-                .Nullable()
-                .WithDefaultValue(0)
-
+            .AsDecimal(18, 2)
+            .Nullable()
+            .WithDefaultValue(0)
             .WithColumn(nameof(WalletGoal.TargetDate))
-                .AsDateTime()
-                .Nullable();
+            .AsDateTime()
+            .Nullable();
     }
 }

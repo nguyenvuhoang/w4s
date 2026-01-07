@@ -10,7 +10,7 @@ public interface IWalletCategoryRepository : IRepository<WalletCategory>
     /// <param name="walletId"></param>
     /// <param name="categoryId"></param>
     /// <returns></returns>
-    Task<bool> ExistsAsync(string walletId, string categoryId);
+    Task<bool> ExistsAsync(int walletId, string categorycode);
     /// <summary>
     /// Bulks the insert asynchronous.
     /// </summary>
@@ -22,6 +22,6 @@ public interface IWalletCategoryRepository : IRepository<WalletCategory>
     /// </summary>
     /// <param name="walletIds"></param>
     /// <returns></returns>
-    Task<List<WalletCategory>> GetByWalletIdsAsync(List<string> walletIds);
+    Task<List<WalletCategory>> GetByWalletIdsAsync(List<int> walletIds);
 
 }
