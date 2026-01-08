@@ -1,57 +1,59 @@
-﻿using O24OpenAPI.Kit.OCR.Abstractions;
+﻿using Microsoft.Extensions.AI;
+using O24OpenAPI.Kit.OCR.Abstractions;
 using O24OpenAPI.Kit.OCR.Options;
 using O24OpenAPI.Kit.OCR.Services;
-using Tesseract;
-using Microsoft.Extensions.AI;
 using OpenAI;
+using Tesseract;
+using Test.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<IChatClient>(sp =>
-{
-    var config = sp.GetRequiredService<IConfiguration>()
-                   .GetSection("AI:OpenAI");
 
-//Add OCR service
+// OCR service: đăng ký OUTSIDE factory
 var opt = new TesseractOcrOptions
 {
     TessdataPath = Path.Combine(AppContext.BaseDirectory, "tessdata"),
     DefaultLanguage = "vie",
     EngineMode = EngineMode.LstmOnly,
-    PageSegMode = PageSegMode.SparseText
+    PageSegMode = PageSegMode.SparseText,
 };
 opt.EngineVariables["user_defined_dpi"] = "300";
 opt.EngineVariables["preserve_interword_spaces"] = "1";
-
 builder.Services.AddSingleton<IOcrService>(_ => new TesseractOcrService(opt));
 
-    IChatClient chatClient =
-    new OpenAIClient(config["ApiKey"]!).GetChatClient(config["Model"] ?? "gpt-4o-mini").AsIChatClient();
-
-    return chatClient;
+// Chat client
+builder.Services.AddSingleton<IChatClient>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>().GetSection("AI:OpenAI");
+    return new OpenAIClient(config["ApiKey"]!)
+        .GetChatClient(config["Model"] ?? "gpt-4o-mini")
+        .AsIChatClient();
 });
+
 builder.Services.AddLinKitCqrs();
+
+// (mục 3) Zalo services sẽ add ở đây (trước Build)
+builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient(); // base
+builder.Services.Configure<ZaloOptions>(builder.Configuration.GetSection("Zalo"));
+builder.Services.AddSingleton<ZaloTokenProvider>();
+builder.Services.AddSingleton<ZaloZnsClient>();
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
 app.UseSwagger();
 app.UseSwaggerUI();
+
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
 app.MapGeneratedEndpoints();
 
 app.Run();

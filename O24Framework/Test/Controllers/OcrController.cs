@@ -8,6 +8,7 @@ namespace Test.Controllers;
 
 [ApiController]
 [Route("api/ocr")]
+[ApiExplorerSettings(IgnoreApi = true)] // Ẩn khỏi Swagger
 public sealed class OcrController : ControllerBase
 {
     private readonly IOcrService _ocr;
