@@ -68,4 +68,28 @@ public class MenuController([FromKeyedServices(MediatorKey.CTH)] IMediator media
             return Ok(errorObj);
         }
     }
+
+    [HttpPost]
+    public async Task<IActionResult> Modify(
+        [FromBody] ModifyMenuCommand request,
+        CancellationToken cancellationToken
+    )
+    {
+        try
+        {
+            var result = await mediator.SendAsync(request, cancellationToken);
+
+            return Ok(new
+            {
+                data = result
+            });
+
+        }
+        catch (Exception ex)
+        {
+            var raw = ex.InnerException?.Message ?? ex.Message;
+            var errorObj = ErrorExtensions.BuildErrorDataFromResponse(raw);
+            return Ok(errorObj);
+        }
+    }
 }

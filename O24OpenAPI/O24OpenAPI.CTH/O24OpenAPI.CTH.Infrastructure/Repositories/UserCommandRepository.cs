@@ -88,4 +88,10 @@ public class UserCommandRepository(
             )
             .FirstOrDefaultAsync();
     }
+
+    public async Task<UserCommand> ModifyAsync(UserCommand command)
+    {
+        await Update(command);
+        return command;
+    }
 }

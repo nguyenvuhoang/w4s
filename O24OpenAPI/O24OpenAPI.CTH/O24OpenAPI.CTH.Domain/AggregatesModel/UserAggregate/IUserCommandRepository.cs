@@ -9,4 +9,5 @@ public interface IUserCommandRepository : IRepository<UserCommand>
     Task<List<UserCommand>> GetInfoFromFormCode(string applicationCode, string formCode);
     Task<UserCommand> AddAsync(UserCommand command);
     Task<UserCommand> GetByCommandIdAsync(string commandId, string applicationCode);
+    Task<UserCommand> ModifyAsync(UserCommand command);
 }
