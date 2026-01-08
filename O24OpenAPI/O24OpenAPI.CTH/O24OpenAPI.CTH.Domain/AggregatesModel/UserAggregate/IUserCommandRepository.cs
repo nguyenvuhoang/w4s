@@ -7,4 +7,6 @@ public interface IUserCommandRepository : IRepository<UserCommand>
     Task<List<string>> GetListCommandParentAsync(string applicationCode);
     Task<List<UserCommand>> LoadUserCommand(string applicationCode, string roleCommand);
     Task<List<UserCommand>> GetInfoFromFormCode(string applicationCode, string formCode);
+    Task<UserCommand> AddAsync(UserCommand command);
+    Task<UserCommand> GetByCommandIdAsync(string commandId, string applicationCode);
 }

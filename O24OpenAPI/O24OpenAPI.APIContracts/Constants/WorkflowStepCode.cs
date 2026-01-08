@@ -71,6 +71,7 @@ public static class WorkflowStepCode
         public const string WF_STEP_CTH_VERIFY_CHANNEL_STATUS = "WF_STEP_CTH_VERIFY_CHANNEL_STATUS";
         public const string WF_STEP_CTH_CHANGE_AVATAR = "WF_STEP_CTH_CHANGE_AVATAR";
         public const string WF_STEP_CTH_RETRIEVE_USER = "WF_STEP_CTH_RETRIEVE_USER";
+        public const string WF_STEP_CTH_CREATE_MENU = "WF_STEP_CTH_CREATE_MENU";
     }
     #endregion
 

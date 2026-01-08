@@ -69,4 +69,23 @@ public class UserCommandRepository(
             .ToListAsync();
         return result;
     }
+
+    public async Task<UserCommand> AddAsync(UserCommand command)
+    {
+        return await InsertAsync(command); ;
+    }
+
+    public async Task<UserCommand> GetByCommandIdAsync(string commandId, string applicationCode)
+    {
+        if (string.IsNullOrEmpty(commandId) || string.IsNullOrEmpty(applicationCode) || string.IsNullOrEmpty(commandId))
+        {
+            throw new ArgumentNullException("commandId or applicationCode is null or empty");
+        }
+
+        return await Table
+            .Where(s =>
+                s.CommandId == commandId && s.ApplicationCode == applicationCode
+            )
+            .FirstOrDefaultAsync();
+    }
 }

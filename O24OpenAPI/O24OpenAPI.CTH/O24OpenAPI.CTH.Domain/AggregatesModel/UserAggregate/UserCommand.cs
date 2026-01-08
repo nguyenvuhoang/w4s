@@ -20,6 +20,4 @@ public partial class UserCommand : BaseEntity
     public string? GroupMenuVisible { get; set; }
     public string? GroupMenuId { get; set; }
     public string? GroupMenuListAuthorizeForm { get; set; }
-    public DateTime? CreatedOnUtc { get; set; }
-    public DateTime? UpdatedOnUtc { get; set; }
 }
