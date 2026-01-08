@@ -41,6 +41,8 @@ public partial class WalletProfile : BaseEntity
     /// Wallet status: A = Active, I = Inactive, C = Closed
     /// </summary>
     public string? Status { get; private set; }
+    public string? Icon { get; set; }
+    public string? Color { get; set; }
 
     public WalletProfile() { }
 

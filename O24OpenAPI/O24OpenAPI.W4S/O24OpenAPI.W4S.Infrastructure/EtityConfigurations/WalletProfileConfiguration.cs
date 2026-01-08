@@ -31,6 +31,12 @@ public class WalletProfileConfiguration : O24OpenAPIEntityBuilder<WalletProfile>
             .WithColumn(nameof(WalletProfile.Status))
             .AsFixedLengthString(1)
             .NotNullable()
-            .WithDefaultValue('A');
+            .WithDefaultValue('A')
+            .WithColumn(nameof(WalletProfile.Icon))
+            .AsString(100)
+            .NotNullable()
+            .WithColumn(nameof(WalletProfile.Color))
+            .AsString(100)
+            .NotNullable();
     }
 }

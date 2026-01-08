@@ -1,4 +1,8 @@
-﻿using LinKit.Core.Abstractions;
+﻿using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
+using LinKit.Core.Abstractions;
 using LinKit.Core.Cqrs;
 using LinKit.Json.Runtime;
 using Microsoft.Extensions.Caching.Memory;
@@ -26,10 +30,6 @@ using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using O24OpenAPI.Logging.Helpers;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace O24OpenAPI.CMS.API.Application.Features.Requests;
@@ -80,12 +80,6 @@ public class ResponseModel
     public string Message { get; set; } = string.Empty;
 
     /// <summary>
-    /// Dữ liệu trả về
-    /// </summary>
-    [JsonPropertyName("data")]
-    public object Data { get; set; }
-
-    /// <summary>
     /// ID để trace/track execution
     /// </summary>
     [JsonPropertyName("execution_id")]
@@ -97,6 +91,12 @@ public class ResponseModel
     /// </summary>
     [JsonPropertyName("timestamp")]
     public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// Dữ liệu trả về
+    /// </summary>
+    [JsonPropertyName("data")]
+    public object Data { get; set; }
 
     /// <summary>
     /// Thông tin lỗi chi tiết (nếu có)
