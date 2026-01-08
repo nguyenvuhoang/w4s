@@ -2,6 +2,7 @@ using Grpc.Core;
 using LinKit.Core.Cqrs;
 using LinKit.Generated.Cqrs;
 using O24OpenAPI.APIContracts.Models.CTH;
+using O24OpenAPI.Core;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.CTH.API.Application.Features.UserCommands;
 using O24OpenAPI.CTH.API.Application.Features.UserDevice;
@@ -238,7 +239,7 @@ public class CTHGrpcService : CTHGrpcServiceBase
     {
         try
         {
-            List<CTHUserCommandModel> list = await _mediator.QueryAsync(
+            IPagedList<CTHUserCommandModel> list = await _mediator.QueryAsync(
                 new LoadFullUserCommandsQuery()
             );
 

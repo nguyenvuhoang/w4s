@@ -14,6 +14,5 @@ public class AutoMapperProfile : BaseMapperConfiguration
         CreateMap<UserAccount, UserAccountResponseModel>();
         CreateModelMap<UserRight, UserRightModel>();
         CreateModelMap<CTHUserCommandModel, MenuInfoModel>();
-
     }
 }

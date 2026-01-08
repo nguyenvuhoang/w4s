@@ -1,8 +1,7 @@
-using System.Data;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using O24OpenAPI.Core;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.Framework.Helpers;
@@ -13,6 +12,8 @@ using O24OpenAPI.Framework.Services.Queue;
 using O24OpenAPI.Framework.Services.Security;
 using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
+using System.Data;
+using System.Text;
 
 namespace O24OpenAPI.Framework.Controllers;
 
@@ -485,7 +486,7 @@ public class ToolController(
     {
         try
         {
-            var files = DataUtils.ExportMultiFiles(
+            List<FileModel> files = DataUtils.ExportMultiFiles(
                 HttpContext.Request.Host.ToString(),
                 entityName,
                 listFields
@@ -516,7 +517,7 @@ public class ToolController(
     {
         try
         {
-            var file = DataUtils.ExportFile(
+            FileModel file = DataUtils.ExportFile(
                 HttpContext.Request.Host.ToString(),
                 entityName,
                 listFields
@@ -551,7 +552,7 @@ public class ToolController(
     {
         try
         {
-            foreach (var file in files)
+            foreach (FileModel file in files)
             {
                 string path = $"Migrations/DataJson/{tableName}";
 
@@ -612,7 +613,7 @@ public class ToolController(
     public async Task<IActionResult> GetFullClassName(string assemblyName)
     {
         await Task.CompletedTask;
-        var listType = EngineContext.Current.Resolve<ITypeFinder>().FindClassesOfType<BaseQueue>();
+        IEnumerable<Type> listType = EngineContext.Current.Resolve<ITypeFinder>().FindClassesOfType<BaseQueue>();
 
         if (listType is null || !listType.Any())
         {
@@ -620,7 +621,7 @@ public class ToolController(
         }
 
         var result = new List<string>();
-        foreach (var type in listType)
+        foreach (Type type in listType)
         {
             var fullClassName = type.FullName;
             if (fullClassName != null && fullClassName.Contains(assemblyName))
@@ -648,7 +649,7 @@ public class ToolController(
                 .ToList();
             listModel.AddRange(methods);
         }
-        var pageList = await listModel.AsQueryable().ToPagedList(0, int.MaxValue);
+        IPagedList<MethodResponse> pageList = await listModel.AsQueryable().ToPagedList(0, int.MaxValue);
         var response = pageList.ToPagedListModel<MethodResponse, MethodResponse>();
 
         return Ok(response);
@@ -670,7 +671,7 @@ public class ToolController(
     [HttpPost]
     public virtual async Task<IActionResult> SayHello(string name)
     {
-        var wfoGrpcClient = EngineContext.Current.Resolve<IWFOGrpcClientService>();
+        IWFOGrpcClientService wfoGrpcClient = EngineContext.Current.Resolve<IWFOGrpcClientService>();
         await wfoGrpcClient.SayHelloAsync(name);
         return Ok();
     }
@@ -692,7 +693,7 @@ public class ToolController(
     {
         try
         {
-            var wfoGrpcClient = EngineContext.Current.Resolve<IWFOGrpcClientService>();
+            IWFOGrpcClientService wfoGrpcClient = EngineContext.Current.Resolve<IWFOGrpcClientService>();
 
             var grpcService = $"{yourServiceID}GrpcService";
 

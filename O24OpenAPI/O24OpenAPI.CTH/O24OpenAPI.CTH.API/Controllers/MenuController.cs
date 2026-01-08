@@ -1,43 +1,43 @@
 ﻿using LinKit.Core.Cqrs;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.APIContracts.Models.CTH;
+using O24OpenAPI.Core;
 using O24OpenAPI.CTH.API.Application.Extensions;
 using O24OpenAPI.CTH.API.Application.Features.UserCommands;
+using O24OpenAPI.CTH.API.Application.Models.Roles;
 using O24OpenAPI.CTH.API.Application.Models.UserCommandModels;
-using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.Framework.Controllers;
 using O24OpenAPI.Framework.Helpers;
 using O24OpenAPI.Framework.Models;
 
 namespace O24OpenAPI.CTH.API.Controllers;
 
-public class MenuController([FromKeyedServices(MediatorKey.CTH)] IMediator mediator) : BaseController
+public class MenuController([FromKeyedServices(MediatorKey.CTH)] IMediator mediator)
+    : BaseController
 {
     [HttpPost]
     public async Task<IActionResult> Load(
-        [FromBody] SimpleSearchModel request,
-        CancellationToken cancellationToken
+       [FromBody] SimpleSearchModel request
     )
     {
         try
         {
-            var search = new LoadFullUserCommandsQuery();
+            LoadFullUserCommandsQuery search = request.ToLoadFullUserCommandsQuery();
 
-            var result = await mediator.QueryAsync(search, cancellationToken);
+            IPagedList<CTHUserCommandModel> result = await mediator.QueryAsync(search);
             if (result == null)
             {
                 return NotFound();
             }
 
-            var pageList = await result.AsQueryable().ToPagedList(request.PageIndex, request.PageSize);
-            var response = pageList.ToPagedListModel<CTHUserCommandModel, MenuInfoModel>();
+            PagedListModel<CTHUserCommandModel, MenuInfoModel> response = result.ToPagedListModel<
+                CTHUserCommandModel,
+                MenuInfoModel
+            >();
 
-            return Ok(new
-            {
-                data = response
-            });
-
+            return Ok(new { data = response });
         }
         catch (Exception ex)
         {
@@ -53,18 +53,14 @@ public class MenuController([FromKeyedServices(MediatorKey.CTH)] IMediator media
     {
         try
         {
-            var result = await mediator.SendAsync(request, cancellationToken);
+            UserCommandResponseModel result = await mediator.SendAsync(request, cancellationToken);
 
-            return Ok(new
-            {
-                data = result
-            });
-
+            return Ok(new { data = result });
         }
         catch (Exception ex)
         {
-            var raw = ex.InnerException?.Message ?? ex.Message;
-            var errorObj = ErrorExtensions.BuildErrorDataFromResponse(raw);
+            string raw = ex.InnerException?.Message ?? ex.Message;
+            JObject errorObj = ErrorExtensions.BuildErrorDataFromResponse(raw);
             return Ok(errorObj);
         }
     }
@@ -77,18 +73,14 @@ public class MenuController([FromKeyedServices(MediatorKey.CTH)] IMediator media
     {
         try
         {
-            var result = await mediator.SendAsync(request, cancellationToken);
+            UserCommandResponseModel result = await mediator.SendAsync(request, cancellationToken);
 
-            return Ok(new
-            {
-                data = result
-            });
-
+            return Ok(new { data = result });
         }
         catch (Exception ex)
         {
-            var raw = ex.InnerException?.Message ?? ex.Message;
-            var errorObj = ErrorExtensions.BuildErrorDataFromResponse(raw);
+            string raw = ex.InnerException?.Message ?? ex.Message;
+            JObject errorObj = ErrorExtensions.BuildErrorDataFromResponse(raw);
             return Ok(errorObj);
         }
     }

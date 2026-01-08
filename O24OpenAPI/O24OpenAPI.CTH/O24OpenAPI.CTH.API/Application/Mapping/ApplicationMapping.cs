@@ -1,7 +1,9 @@
 ﻿using LinKit.Core.Mapping;
 using O24OpenAPI.APIContracts.Models.CTH;
+using O24OpenAPI.CTH.API.Application.Features.UserCommands;
 using O24OpenAPI.CTH.API.Application.Models.Roles;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Grpc.CTH;
 
 namespace O24OpenAPI.CTH.API.Application.Mapping;
@@ -14,6 +16,6 @@ public class ApplicationMapping : IMappingConfigurator
         builder.CreateMap<CTHUserNotificationModel, GetUserNotificationReply>();
         builder.CreateMap<CTHUserCommandModel, UserCommandReply>();
         builder.CreateMap<UserCommand, UserCommandResponseModel>();
-
+        builder.CreateMap<SimpleSearchModel, LoadFullUserCommandsQuery>();
     }
 }
