@@ -14,8 +14,8 @@ namespace O24OpenAPI.W4S.Infrastructure.Migrations;
 /// </summary>
 /// <seealso cref="AutoReversingMigration"/>
 [O24OpenAPIMigration(
-    "2026/01/05 14:10:00:0000000",
-    "Table For WalletAvatar",
+    "2026/01/05 14:10:01:0000000",
+    "Init W4S table",
     MigrationProcessType.Installation
 )]
 [Environment(EnvironmentType.All)]
@@ -27,25 +27,27 @@ public class SchemaMigration : AutoReversingMigration
     /// </summary>
     public override void Up()
     {
-
         if (!Schema.Table(nameof(WalletProfile)).Exists())
         {
             Create.TableFor<WalletProfile>();
-            Create.Index("IDX_WalletProfile_UserId")
+            Create
+                .Index("IDX_WalletProfile_UserId")
                 .OnTable(nameof(WalletProfile))
                 .OnColumn(nameof(WalletProfile.UserCode))
                 .Ascending()
                 .WithOptions()
                 .NonClustered();
 
-            Create.Index("IDX_WalletProfile_WalletType")
+            Create
+                .Index("IDX_WalletProfile_WalletType")
                 .OnTable(nameof(WalletProfile))
                 .OnColumn(nameof(WalletProfile.WalletType))
                 .Ascending()
                 .WithOptions()
                 .NonClustered();
 
-            Create.Index("IDX_WalletProfile_Status")
+            Create
+                .Index("IDX_WalletProfile_Status")
                 .OnTable(nameof(WalletProfile))
                 .OnColumn(nameof(WalletProfile.Status))
                 .Ascending()
@@ -58,7 +60,8 @@ public class SchemaMigration : AutoReversingMigration
             Create.TableFor<WalletContract>();
 
             // ===== Unique: ContractNumber (must-have) =====
-            Create.Index("UQ_WalletContract_ContractNumber")
+            Create
+                .Index("UQ_WalletContract_ContractNumber")
                 .OnTable(nameof(WalletContract))
                 .OnColumn(nameof(WalletContract.ContractNumber))
                 .Ascending()
@@ -66,28 +69,32 @@ public class SchemaMigration : AutoReversingMigration
                 .Unique();
 
             // ===== Query indexes =====
-            Create.Index("IDX_WalletContract_CustomerCode")
+            Create
+                .Index("IDX_WalletContract_CustomerCode")
                 .OnTable(nameof(WalletContract))
                 .OnColumn(nameof(WalletContract.CustomerCode))
                 .Ascending()
                 .WithOptions()
                 .NonClustered();
 
-            Create.Index("IDX_WalletContract_Status")
+            Create
+                .Index("IDX_WalletContract_Status")
                 .OnTable(nameof(WalletContract))
                 .OnColumn(nameof(WalletContract.Status))
                 .Ascending()
                 .WithOptions()
                 .NonClustered();
 
-            Create.Index("IDX_WalletContract_PolicyCode")
+            Create
+                .Index("IDX_WalletContract_PolicyCode")
                 .OnTable(nameof(WalletContract))
                 .OnColumn(nameof(WalletContract.PolicyCode))
                 .Ascending()
                 .WithOptions()
                 .NonClustered();
 
-            Create.Index("IDX_WalletContract_OpenDateUtc")
+            Create
+                .Index("IDX_WalletContract_OpenDateUtc")
                 .OnTable(nameof(WalletContract))
                 .OnColumn(nameof(WalletContract.OpenDateUtc))
                 .Descending()
@@ -97,19 +104,22 @@ public class SchemaMigration : AutoReversingMigration
         if (!Schema.Table(nameof(WalletCategoryDefault)).Exists())
         {
             Create.TableFor<WalletCategoryDefault>();
-            Create.Index("IDX_WalletCategoryDefault_ParentCategoryCode")
+            Create
+                .Index("IDX_WalletCategoryDefault_ParentCategoryCode")
                 .OnTable(nameof(WalletCategoryDefault))
                 .OnColumn(nameof(WalletCategoryDefault.ParentCategoryCode))
                 .Ascending()
                 .WithOptions()
                 .NonClustered();
-            Create.Index("IDX_WalletCategoryDefault_CategoryType")
+            Create
+                .Index("IDX_WalletCategoryDefault_CategoryType")
                 .OnTable(nameof(WalletCategoryDefault))
                 .OnColumn(nameof(WalletCategoryDefault.CategoryType))
                 .Ascending()
                 .WithOptions()
                 .NonClustered();
-            Create.Index("IDX_WalletCategoryDefault_CategoryGroup")
+            Create
+                .Index("IDX_WalletCategoryDefault_CategoryGroup")
                 .OnTable(nameof(WalletCategoryDefault))
                 .OnColumn(nameof(WalletCategoryDefault.CategoryGroup))
                 .Ascending()
@@ -120,22 +130,22 @@ public class SchemaMigration : AutoReversingMigration
         if (!Schema.Table("WalletAvatar").Exists())
         {
             Create.TableFor<WalletAvatar>();
-            Create.Index("UQ_WalletAvatar_AvatarId")
-           .OnTable("WalletAvatar")
-           .OnColumn("AvatarId").Ascending()
-           .WithOptions().Unique();
 
-            Create.Index("IX_WalletAvatar_WalletId_CreatedOnUtc")
+            Create
+                .Index("IX_WalletAvatar_WalletId_CreatedOnUtc")
                 .OnTable("WalletAvatar")
-                .OnColumn("WalletId").Ascending()
-                .OnColumn("CreatedOnUtc").Descending();
+                .OnColumn("WalletId")
+                .Ascending()
+                .OnColumn("CreatedOnUtc")
+                .Descending();
 
-            Create.Index("IX_WalletAvatar_UserCode_CreatedOnUtc")
+            Create
+                .Index("IX_WalletAvatar_UserCode_CreatedOnUtc")
                 .OnTable("WalletAvatar")
-                .OnColumn("UserCode").Ascending()
-                .OnColumn("CreatedOnUtc").Descending();
-
+                .OnColumn("UserCode")
+                .Ascending()
+                .OnColumn("CreatedOnUtc")
+                .Descending();
         }
-
     }
 }

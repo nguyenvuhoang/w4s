@@ -8,12 +8,11 @@ using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 namespace O24OpenAPI.W4S.Infrastructure.Migrations;
 
 [O24OpenAPIMigration(
-    "2025/12/31 21:15:00:0000000",
+    "2025/12/31 21:15:01:0000000",
     "6. Create SchemeMigration (Business Table)",
     MigrationProcessType.Installation
 )]
 [Environment(EnvironmentType.All)]
-
 public class EntityMigration : AutoReversingMigration
 {
     public override void Up()
@@ -22,17 +21,24 @@ public class EntityMigration : AutoReversingMigration
         {
             Create.TableFor<WalletAccount>();
 
-            Create.Index("IDX_WalletAccount_WalletId")
+            Create
+                .Index("IDX_WalletAccount_WalletId")
                 .OnTable(nameof(WalletAccount))
                 .OnColumn(nameof(WalletAccount.WalletId))
-                .Ascending().WithOptions().NonClustered();
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
 
-            Create.Index("IDX_WalletAccount_AccountNumber")
+            Create
+                .Index("IDX_WalletAccount_AccountNumber")
                 .OnTable(nameof(WalletAccount))
                 .OnColumn(nameof(WalletAccount.AccountNumber))
-                .Ascending().WithOptions().NonClustered();
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
 
-            Create.UniqueConstraint("UQ_WalletAccount_Wallet_Account")
+            Create
+                .UniqueConstraint("UQ_WalletAccount_Wallet_Account")
                 .OnTable(nameof(WalletAccount))
                 .Columns(nameof(WalletAccount.WalletId), nameof(WalletAccount.AccountNumber));
         }
@@ -41,23 +47,34 @@ public class EntityMigration : AutoReversingMigration
         {
             Create.TableFor<WalletBudget>();
 
-            Create.Index("IDX_WalletBudget_WalletId")
+            Create
+                .Index("IDX_WalletBudget_WalletId")
                 .OnTable(nameof(WalletBudget))
                 .OnColumn(nameof(WalletBudget.WalletId))
-                .Ascending().WithOptions().NonClustered();
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
 
-            Create.Index("IDX_WalletBudget_CategoryId")
+            Create
+                .Index("IDX_WalletBudget_CategoryId")
                 .OnTable(nameof(WalletBudget))
                 .OnColumn(nameof(WalletBudget.CategoryId))
-                .Ascending().WithOptions().NonClustered();
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
 
-            Create.Index("IDX_WalletBudget_Period")
+            Create
+                .Index("IDX_WalletBudget_Period")
                 .OnTable(nameof(WalletBudget))
-                .OnColumn(nameof(WalletBudget.StartDate)).Ascending()
-                .OnColumn(nameof(WalletBudget.EndDate)).Ascending()
-                .WithOptions().NonClustered();
+                .OnColumn(nameof(WalletBudget.StartDate))
+                .Ascending()
+                .OnColumn(nameof(WalletBudget.EndDate))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
 
-            Create.UniqueConstraint("UQ_WalletBudget_Wallet_Category_Period")
+            Create
+                .UniqueConstraint("UQ_WalletBudget_Wallet_Category_Period")
                 .OnTable(nameof(WalletBudget))
                 .Columns(
                     nameof(WalletBudget.WalletId),
@@ -71,58 +88,76 @@ public class EntityMigration : AutoReversingMigration
         {
             Create.TableFor<WalletGoal>();
 
-            Create.Index("IDX_WalletGoal_WalletId")
+            Create
+                .Index("IDX_WalletGoal_WalletId")
                 .OnTable(nameof(WalletGoal))
                 .OnColumn(nameof(WalletGoal.WalletId))
-                .Ascending().WithOptions().NonClustered();
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
 
-            Create.Index("IDX_WalletGoal_TargetDate")
+            Create
+                .Index("IDX_WalletGoal_TargetDate")
                 .OnTable(nameof(WalletGoal))
                 .OnColumn(nameof(WalletGoal.TargetDate))
-                .Ascending().WithOptions().NonClustered();
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
 
-            Create.UniqueConstraint("UQ_WalletGoal_Wallet_GoalName")
+            Create
+                .UniqueConstraint("UQ_WalletGoal_Wallet_GoalName")
                 .OnTable(nameof(WalletGoal))
-                .Columns(
-                    nameof(WalletGoal.WalletId),
-                    nameof(WalletGoal.GoalName)
-                );
+                .Columns(nameof(WalletGoal.WalletId), nameof(WalletGoal.GoalName));
         }
 
         if (!Schema.Table(nameof(WalletBalance)).Exists())
         {
             Create.TableFor<WalletBalance>();
 
-            Create.UniqueConstraint("UQ_WalletBalance_AccountNumber")
+            Create
+                .UniqueConstraint("UQ_WalletBalance_AccountNumber")
                 .OnTable(nameof(WalletBalance))
                 .Columns(nameof(WalletBalance.AccountNumber));
 
-            Create.Index("IDX_WalletBalance_AvailableBalance")
+            Create
+                .Index("IDX_WalletBalance_AvailableBalance")
                 .OnTable(nameof(WalletBalance))
                 .OnColumn(nameof(WalletBalance.AvailableBalance))
-                .Descending().WithOptions().NonClustered();
+                .Descending()
+                .WithOptions()
+                .NonClustered();
         }
 
         if (!Schema.Table(nameof(WalletCategory)).Exists())
         {
             Create.TableFor<WalletCategory>();
 
-            Create.Index("IDX_WalletCategory_WalletId")
+            Create
+                .Index("IDX_WalletCategory_WalletId")
                 .OnTable(nameof(WalletCategory))
                 .OnColumn(nameof(WalletCategory.WalletId))
-                .Ascending().WithOptions().NonClustered();
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
 
-            Create.Index("IDX_WalletCategory_ParentCategoryId")
+            Create
+                .Index("IDX_WalletCategory_ParentCategoryId")
                 .OnTable(nameof(WalletCategory))
                 .OnColumn(nameof(WalletCategory.ParentCategoryId))
-                .Ascending().WithOptions().NonClustered();
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
 
-            Create.Index("IDX_WalletCategory_CategoryType")
+            Create
+                .Index("IDX_WalletCategory_CategoryType")
                 .OnTable(nameof(WalletCategory))
                 .OnColumn(nameof(WalletCategory.CategoryType))
-                .Ascending().WithOptions().NonClustered();
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
 
-            Create.UniqueConstraint("UQ_WalletCategory_Wallet_Type_Name")
+            Create
+                .UniqueConstraint("UQ_WalletCategory_Wallet_Type_Name")
                 .OnTable(nameof(WalletCategory))
                 .Columns(
                     nameof(WalletCategory.WalletId),
@@ -131,29 +166,48 @@ public class EntityMigration : AutoReversingMigration
                 );
         }
 
-
         if (!Schema.Table(nameof(WalletTransaction)).Exists())
         {
             Create.TableFor<WalletTransaction>();
 
             // Indexes
-            Create.Index("IDX_TransactionHistory_UserID")
-                  .OnTable(nameof(WalletTransaction))
-                  .OnColumn(nameof(WalletTransaction.USERID)).Ascending().WithOptions().NonClustered();
+            Create
+                .Index("IDX_TransactionHistory_UserID")
+                .OnTable(nameof(WalletTransaction))
+                .OnColumn(nameof(WalletTransaction.USERID))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
 
-            Create.Index("WalletTransaction")
-                  .OnTable(nameof(WalletTransaction))
-                  .OnColumn(nameof(WalletTransaction.SOURCEID)).Ascending().WithOptions().NonClustered();
-            Create.Index("IDX_TransactionHistory_TransactionCode")
-                  .OnTable(nameof(WalletTransaction))
-                  .OnColumn(nameof(WalletTransaction.TRANSACTIONCODE)).Ascending().WithOptions().NonClustered();
+            Create
+                .Index("WalletTransaction")
+                .OnTable(nameof(WalletTransaction))
+                .OnColumn(nameof(WalletTransaction.SOURCEID))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
+            Create
+                .Index("IDX_TransactionHistory_TransactionCode")
+                .OnTable(nameof(WalletTransaction))
+                .OnColumn(nameof(WalletTransaction.TRANSACTIONCODE))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
 
-            Create.Index("IDX_TransactionHistory_Status")
-                  .OnTable(nameof(WalletTransaction))
-                  .OnColumn(nameof(WalletTransaction.STATUS)).Ascending().WithOptions().NonClustered();
-            Create.Index("IDX_TransactionHistory_WorkDate")
-                  .OnTable(nameof(WalletTransaction))
-                  .OnColumn(nameof(WalletTransaction.TRANSACTIONWORKDATE)).Descending().WithOptions().NonClustered();
+            Create
+                .Index("IDX_TransactionHistory_Status")
+                .OnTable(nameof(WalletTransaction))
+                .OnColumn(nameof(WalletTransaction.STATUS))
+                .Ascending()
+                .WithOptions()
+                .NonClustered();
+            Create
+                .Index("IDX_TransactionHistory_WorkDate")
+                .OnTable(nameof(WalletTransaction))
+                .OnColumn(nameof(WalletTransaction.TRANSACTIONWORKDATE))
+                .Descending()
+                .WithOptions()
+                .NonClustered();
         }
 
         if (!Schema.Table(nameof(C_CODELIST)).Exists())
@@ -168,6 +222,5 @@ public class EntityMigration : AutoReversingMigration
                     nameof(C_CODELIST.CodeGroup)
                 );
         }
-
     }
 }

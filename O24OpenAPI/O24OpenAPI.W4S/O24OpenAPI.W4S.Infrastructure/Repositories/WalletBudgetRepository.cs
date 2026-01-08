@@ -17,8 +17,6 @@ public class WalletBudgetRepository(
         if (walletIds == null || walletIds.Count == 0)
             return [];
 
-        return await Table
-            .Where(x => walletIds.Contains(x.WalletId))
-            .ToListAsync();
+        return await Table.Where(x => walletIds.Contains(x.WalletId)).ToListAsync();
     }
 }

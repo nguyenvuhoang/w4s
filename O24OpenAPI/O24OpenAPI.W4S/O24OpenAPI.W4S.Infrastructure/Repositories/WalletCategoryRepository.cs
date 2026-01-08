@@ -10,9 +10,7 @@ namespace O24OpenAPI.W4S.Infrastructure.Repositories;
 public class WalletCategoryRepository(
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<WalletCategory>(dataProvider, staticCacheManager),
-        IWalletCategoryRepository
+) : EntityRepository<WalletCategory>(dataProvider, staticCacheManager), IWalletCategoryRepository
 {
     public async Task BulkInsertAsync(IList<WalletCategory> items)
     {
@@ -27,7 +25,9 @@ public class WalletCategoryRepository(
     /// <returns></returns>
     public async Task<bool> ExistsAsync(int walletId, string categorycode)
     {
-        return await Table.AnyAsync(wc => wc.WalletId == walletId && wc.CategoryCode == categorycode);
+        return await Table.AnyAsync(wc =>
+            wc.WalletId == walletId && wc.CategoryCode == categorycode
+        );
     }
 
     public async Task<List<WalletCategory>> GetByWalletIdsAsync(List<int> walletIds)
@@ -35,8 +35,6 @@ public class WalletCategoryRepository(
         if (walletIds == null || walletIds.Count == 0)
             return [];
 
-        return await Table
-            .Where(x => walletIds.Contains(x.WalletId))
-            .ToListAsync();
+        return await Table.Where(x => walletIds.Contains(x.WalletId)).ToListAsync();
     }
 }
