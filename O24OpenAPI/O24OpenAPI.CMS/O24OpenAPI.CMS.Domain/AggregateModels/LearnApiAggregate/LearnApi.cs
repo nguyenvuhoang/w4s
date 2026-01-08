@@ -99,4 +99,6 @@ public partial class LearnApi : BaseEntity
 
     [JsonProperty("uri")]
     public string URI { get; set; } = string.Empty;
+
+    public bool? IsInternal { get; set; } = true;
 }

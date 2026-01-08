@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using O24OpenAPI.Core.Domain;
+using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Logging.Enums;
 using Serilog;
 
@@ -24,7 +26,7 @@ public class RestApiLoggingMiddleware(RequestDelegate next)
 
         var correlationId =
             context.Request.Headers["X-Correlation-ID"].FirstOrDefault()
-            ?? Guid.NewGuid().ToString();
+            ?? EngineContext.Current.ResolveRequired<WorkContext>().ExecutionLogId;
         context.Items["CorrelationId"] = correlationId;
 
         var stopwatch = Stopwatch.StartNew();

@@ -9,4 +9,9 @@ public interface IDataMapper
         JsonNode target,
         Func<string, Task<object>> func = null
     );
+    Task<JsonNode> MapDataAsync(
+        JsonNode source,
+        JsonNode target,
+        Func<string, Task<object>> func = null
+    );
 }

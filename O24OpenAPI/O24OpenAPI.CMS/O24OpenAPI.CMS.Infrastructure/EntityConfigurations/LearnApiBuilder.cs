@@ -115,6 +115,9 @@ public class SQLSERVER_LearnApiBuilder : O24OpenAPIEntityBuilder<LearnApi>
             .Nullable()
             .WithColumn(nameof(LearnApi.URI))
             .AsString(1000)
+            .Nullable()
+            .WithColumn(nameof(LearnApi.IsInternal))
+            .AsBoolean()
             .Nullable();
     }
 }

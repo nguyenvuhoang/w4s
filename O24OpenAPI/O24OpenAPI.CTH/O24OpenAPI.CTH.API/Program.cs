@@ -4,6 +4,7 @@ using O24OpenAPI.CTH.API.Application.GrpcServices;
 using O24OpenAPI.CTH.Infrastructure;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
+using O24OpenAPI.Framework.Middlewares;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureApplicationServices(builder);
@@ -26,8 +27,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-app.MapControllers();
-app.MapGrpcService<CTHGrpcService>();
+
+app.UseMiddleware<WorkContextPropagationMiddleware>();
 
 using IServiceScope scope = app.Services.CreateScope();
 AsyncScope.Scope = scope;
@@ -35,5 +36,6 @@ AsyncScope.Scope = scope;
 await app.ConfigureInfrastructure();
 await app.StartEngine();
 app.ShowStartupBanner();
-
+app.MapControllers();
+app.MapGrpcService<CTHGrpcService>();
 app.Run();

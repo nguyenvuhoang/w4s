@@ -1,4 +1,7 @@
-﻿using LinKit.Core.Abstractions;
+﻿using System.Data;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using LinKit.Core.Abstractions;
 using O24OpenAPI.Client.Events;
 using O24OpenAPI.Client.Events.EventData;
 using O24OpenAPI.Client.Lib;
@@ -12,14 +15,12 @@ using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Core.Utils;
 using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Services.Mapping;
+using O24OpenAPI.WFO.API.Application.Extensions;
 using O24OpenAPI.WFO.API.Application.Models;
 using O24OpenAPI.WFO.API.Application.Utils;
 using O24OpenAPI.WFO.Domain.AggregateModels.WorkflowAggregate;
 using O24OpenAPI.WFO.Infrastructure.Services;
 using O24OpenAPI.WFO.Infrastructure.Services.Queue;
-using System.Data;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using static O24OpenAPI.Client.Scheme.Workflow.WFScheme.REQUEST;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using WorkflowExecution = O24OpenAPI.WFO.API.Application.Models.WorkflowExecution;
@@ -55,7 +56,7 @@ public class WorkflowExecutionHandler(
     {
         WorkflowInput workflowInput = JsonSerializer.Deserialize<WorkflowInput>(
             input,
-            SerializerOptions.JsonSerializerOptions
+            WFOJsonContext.Default.WorkflowInput
         );
         WorkflowInfoModel = new WorkflowInfoModel(workflowInput)
         {

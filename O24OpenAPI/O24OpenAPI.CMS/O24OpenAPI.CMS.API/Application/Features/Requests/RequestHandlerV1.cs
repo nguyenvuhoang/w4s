@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.APIContracts.Models.CTH;
+using O24OpenAPI.CMS.API.Application.Extensions;
 using O24OpenAPI.CMS.API.Application.Models.ContextModels;
 using O24OpenAPI.CMS.API.Application.Models.Request;
 using O24OpenAPI.CMS.API.Application.Models.Response;
@@ -26,7 +27,10 @@ using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using O24OpenAPI.Logging.Helpers;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace O24OpenAPI.CMS.API.Application.Features.Requests;
 
@@ -117,7 +121,7 @@ public class RequestHandlerV1(
     WorkContext workContext,
     ICTHGrpcClientService cthGrpcClientService,
     ILearnApiRepository learnApiRepository,
-    IDataMappingService dataMappingService
+    IDataMapper dataMapper
 ) : IRequestHandler
 {
     private readonly ILocalizationService _localizationService = localizationService;
@@ -563,27 +567,30 @@ public class RequestHandlerV1(
                     context.InfoApp.GetApp(),
                     learnApiId
                 );
-                JObject mappedRequest = [];
+                JsonNode mappedRequest;
                 if (learnApi.LearnApiMapping.HasValue())
                 {
-                    mappedRequest = await dataMappingService.MapDataAsync(
-                        JObject.FromObject(requestModel.Fields),
-                        JObject.Parse(learnApi.LearnApiMapping)
+                    JsonSerializerOptions options = new()
+                    {
+                        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+                    };
+                    mappedRequest = await dataMapper.MapDataAsync(
+                        JsonSerializer.SerializeToNode(requestModel.Fields, options).AsObject(),
+                        JsonNode.Parse(learnApi.LearnApiMapping).AsObject()
                     );
                 }
                 else
                 {
-                    mappedRequest = BuildContentWorkflowRequest(requestModel);
+                    mappedRequest = BuildContentWorkflowRequestV1(requestModel);
                 }
                 if (learnApiId.StartsWithOrdinalIgnoreCase("CMS"))
                 {
-                    return (JObject)(
+                    return (JObject)
                         await LearnApiHandlers.HandleAsync(
                             learnApiId,
                             mappedRequest,
                             EngineContext.Current.Resolve<IMediator>(MediatorKey.CMS)
-                        )
-                    );
+                        );
                 }
                 if (learnApi.URI.StartsWith('$'))
                 {
@@ -594,7 +601,7 @@ public class RequestHandlerV1(
                     if (firstKey != -1 && secondKey != -1 && secondKey > firstKey)
                     {
                         string settingKey = uri.Substring(firstKey + 1, secondKey - firstKey - 1);
-                        string remainingPath = uri[(secondKey + 1)..];
+                        string remainingPath = uri.Substring(secondKey + 1);
                         if (settingKey.Contains("WFO"))
                         {
                             string wfoURI = Singleton<O24OpenAPIConfiguration>.Instance.WFOHttpURL;
@@ -613,17 +620,16 @@ public class RequestHandlerV1(
                     path: learnApi.URI,
                     method: learnApi.LearnApiMethod,
                     content: mappedRequest,
+                    isInternal: learnApi.IsInternal ?? true,
                     headerToken: context.InfoUser.GetUserLogin().Token
                 );
             }
             else
             {
-                JObject obContent = BuildContentWorkflowRequest(requestModel);
+                JsonObject obContent = BuildContentWorkflowRequestV1(requestModel);
                 IWFOGrpcClientService wfoGrpcClientService =
                     EngineContext.Current.Resolve<IWFOGrpcClientService>();
-                response = await wfoGrpcClientService.ExecuteWorkflowAsync(
-                    JsonConvert.SerializeObject(obContent)
-                );
+                response = await wfoGrpcClientService.ExecuteWorkflowAsync(obContent.ToJson());
             }
 
             JObject result = JObject.Parse(response);
@@ -690,10 +696,64 @@ public class RequestHandlerV1(
         return wfInput;
     }
 
+    private JsonObject BuildContentWorkflowRequestV1(RequestModel requestModel)
+    {
+        // Chuyển requestModel thành JsonNode, sau đó ép kiểu sang JsonObject
+        // Sử dụng JsonSerializer.SerializeToNode để tạo bản sao mới từ model
+        JsonObject wfInput =
+            JsonSerializer
+                .SerializeToNode(requestModel, CMSJsonContext.Default.RequestModel)
+                ?.AsObject() ?? [];
+
+        // Gán các giá trị mở rộng
+        wfInput["lang"] = context.InfoRequest.Language;
+        wfInput["token"] = context.InfoUser.GetUserLogin().Token;
+        wfInput["user_id"] = context.InfoUser.UserSession?.UserId.ToString() ?? "0";
+        wfInput["user_code"] = context.InfoUser.UserSession?.UserCode.ToString() ?? "0";
+        wfInput["execution_id"] = _workContext?.ExecutionId ?? Guid.NewGuid().ToString();
+        wfInput["channel_id"] = context.InfoApp.GetApp();
+        wfInput["transaction_date"] = DateTime.UtcNow;
+
+        // Tương đương ["value_date"] nếu cần mở comment
+        // wfInput["value_date"] = context.InfoUser.UserSession?.SomeDate ?? DateTime.UtcNow;
+
+        // Xử lý DeviceModel phức tạp bằng cách Serialize nó thành Node
+        DeviceModel deviceData = new()
+        {
+            IpAddress = context.InfoRequest.GetIp() ?? "::1",
+            DeviceId = string.IsNullOrWhiteSpace(context.InfoRequest.DeviceID)
+                ? Guid.NewGuid().ToString()
+                : context.InfoRequest.DeviceID,
+            OsVersion =
+                context.InfoRequest.OsVersion ?? context.InfoRequest.GetClientOs() ?? "unknown",
+            UserAgent =
+                context.InfoRequest.UserAgent
+                ?? context.InfoRequest.GetClientBrowser()
+                ?? string.Empty,
+            DeviceType = context.InfoRequest.DeviceType ?? "unknown",
+            AppVersion = context.InfoRequest.AppVersion ?? "1.0.0",
+            DeviceName = context.InfoRequest.DeviceName ?? "Generic Device",
+            Brand = context.InfoRequest.Brand ?? "Unknown",
+            IsEmulator = context.InfoRequest.IsEmulator,
+            IsRootedOrJailbroken = context.InfoRequest.IsRootedOrJailbroken,
+            Memory = context.InfoRequest.Memory,
+            Network = context.InfoRequest.Network,
+        };
+
+        // Chèn object lồng nhau
+        wfInput["device"] = JsonSerializer.SerializeToNode(
+            deviceData,
+            FWJsonContext.Default.DeviceModel
+        );
+
+        return wfInput;
+    }
+
     private static async Task<string> CallAPIAsync(
         string path,
         string method,
         object content,
+        bool isInternal,
         string headerToken = ""
     )
     {
@@ -703,8 +763,16 @@ public class RequestHandlerV1(
         {
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + headerToken);
         }
-
-        string requestString = JsonConvert.SerializeObject(content);
+        if (isInternal)
+        {
+            WorkContext workContext = EngineContext.Current.Resolve<WorkContext>();
+            string workContextJson = JsonSerializer.Serialize(
+                workContext,
+                CoreJsonContext.Default.WorkContext
+            );
+            httpClient.DefaultRequestHeaders.Add("WorkContext", workContextJson);
+        }
+        string requestString = content.ToJson();
         StringContent requestContent = new(requestString, Encoding.Default, "application/json");
         HttpRequestMessage requestMessage = new(new HttpMethod(method), path)
         {

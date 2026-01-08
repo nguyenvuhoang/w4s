@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using LinKit.Json.Runtime;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
 namespace O24OpenAPI.Framework.Extensions;
@@ -15,6 +16,26 @@ public static class HttpContextExtensions
         }
 
         return requestHeaders;
+    }
+
+    public static T GetHeaderValue<T>(this HttpContext context, string key)
+    {
+        if (!context.Request.Headers.TryGetValue(key, out var raw))
+            return default;
+
+        var str = raw.ToString();
+        if (string.IsNullOrWhiteSpace(str))
+        {
+            return default;
+        }
+
+        if (typeof(T) == typeof(string))
+            return (T)(object)str;
+
+        if (typeof(T).IsPrimitive || typeof(T) == typeof(decimal))
+            return (T)Convert.ChangeType(str, typeof(T));
+
+        return str.FromJson<T>();
     }
 
     public static Dictionary<string, string> GetCookies(this HttpContext httpContext)

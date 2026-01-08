@@ -1,46 +1,59 @@
-using LinKit.Json.Runtime;
-using O24OpenAPI.Core.Extensions;
-using O24OpenAPI.Core.Helper;
-using O24OpenAPI.Framework.Constants;
-using O24OpenAPI.Framework.Extensions;
 using System.Globalization;
-using System.Text.Json;
 using System.Text.Json.Nodes;
+using LinKit.Json.Runtime;
+using Microsoft.Extensions.Caching.Memory;
+using O24OpenAPI.Core.Extensions;
+using O24OpenAPI.Framework.Extensions;
 
 namespace O24OpenAPI.Framework.Services.Mapping;
 
 public class DataMapper : IDataMapper
 {
+    private readonly IMemoryCache _cache;
+    private readonly MemoryCacheEntryOptions _cacheOptions;
+
     public record MappingContext(JsonNode DataSource, string JsonPath);
 
-    private static readonly Dictionary<string, Delegate> _handlers = new()
+    // Handler dictionary chuyển thành instance để có thể truy cập instance methods
+    private readonly Dictionary<string, Func<MappingContext, object>> _handlers;
+
+    public DataMapper(IMemoryCache cache)
     {
-        ["dataS"] = (GetValue<string>),
-        ["dataSNull"] = (GetValue<string>),
-        ["dataI"] = (GetValue<int>),
-        ["dataINull"] = (GetValue<int?>),
-        ["dataB"] = (GetValue<bool>),
-        ["dataBNull"] = (GetValue<bool?>),
-        ["dataN"] = (GetValue<decimal>),
-        ["dataNNull"] = (GetValue<decimal?>),
-        ["dataDt"] = (GetValue<DateTime>),
-        ["dataDtNull"] = (GetValue<DateTime?>),
-        ["dataD"] = (GetValue<double>),
-        ["dataDNull"] = (GetValue<double?>),
-        ["dataL"] = (GetValue<long>),
-        ["dataLNull"] = (GetValue<long?>),
-        ["dataO"] = (GetValue<JsonObject>),
-        ["dataONull"] = (GetValue<JsonObject>),
-        ["dataUnixToDate"] = GetDateTimeFromUnix,
-        ["dataDateToUnix"] = GetUnixFromDateTime,
-        ["dataUnixToDateLocal"] = GetDateTimeLocalFromUnix,
-        ["dataDateToUnixLocal"] = GetUnixLocalFromDateTime,
-        ["dataA"] = (GetValue<JsonArray>),
-        ["dataANull"] = (GetValue<JsonArray>),
-        ["dataSet"] = GetDataSet,
-        ["dataUnixMilToDateLocal"] = GetDateTimeLocalFromUnixMil,
-        ["dataFormatDate"] = GetFormatCustomDate,
-    };
+        _cache = cache;
+        _cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(24));
+
+        // Khởi tạo handlers trong constructor
+        _handlers = new Dictionary<string, Func<MappingContext, object>>
+        {
+            ["dataS"] = (GetValue<string>),
+            ["dataSNull"] = (GetValue<string>),
+            ["dataI"] = ctx => GetValue<int>(ctx),
+            ["dataINull"] = ctx => GetValue<int?>(ctx),
+            ["dataB"] = ctx => GetValue<bool>(ctx),
+            ["dataBNull"] = ctx => GetValue<bool?>(ctx),
+            ["dataN"] = ctx => GetValue<decimal>(ctx),
+            ["dataNNull"] = ctx => GetValue<decimal?>(ctx),
+            ["dataDt"] = ctx => GetValue<DateTime>(ctx),
+            ["dataDtNull"] = ctx => GetValue<DateTime?>(ctx),
+            ["dataD"] = ctx => GetValue<double>(ctx),
+            ["dataDNull"] = ctx => GetValue<double?>(ctx),
+            ["dataL"] = ctx => GetValue<long>(ctx),
+            ["dataLNull"] = ctx => GetValue<long?>(ctx),
+            ["dataO"] = (GetValue<JsonObject>),
+            ["dataONull"] = (GetValue<JsonObject>),
+            ["dataA"] = (GetValue<JsonArray>),
+            ["dataANull"] = (GetValue<JsonArray>),
+            ["dataUnixToDate"] = GetDateTimeFromUnix,
+            ["dataDateToUnix"] = GetUnixFromDateTime,
+            ["dataUnixToDateLocal"] = GetDateTimeLocalFromUnix,
+            ["dataDateToUnixLocal"] = GetUnixLocalFromDateTime,
+            ["dataUnixMilToDateLocal"] = GetDateTimeLocalFromUnixMil,
+            ["dataFormatDate"] = GetFormatCustomDate,
+            ["dataSet"] = GetDataSet, // Bây giờ là instance method
+        };
+    }
+
+    #region Public APIs
 
     public async Task<JsonNode> MapDataAsync(
         JsonNode source,
@@ -48,60 +61,10 @@ public class DataMapper : IDataMapper
         Func<string, Task<object>> func = null
     )
     {
-        if (target is not JsonObject targetObj)
-        {
-            return target;
-        }
-
-        try
-        {
-            foreach (var property in targetObj.ToList())
-            {
-                if (property.Key == "condition" || property.Value == null)
-                {
-                    continue;
-                }
-
-                string configMapping =
-                    property.Value is JsonValue value && value.TryGetValue<string>(out var str)
-                        ? str.Trim()
-                        : null;
-
-                if (!string.IsNullOrEmpty(configMapping))
-                {
-                    if (func != null && configMapping.StartsWith("dataFunc"))
-                    {
-                        string jsonPath = ExtractJsonPath(configMapping);
-                        targetObj[property.Key] = JsonValue.Create(await func(jsonPath));
-                    }
-                    else
-                    {
-                        var mappedValue = await Map(source, configMapping);
-
-                        targetObj[property.Key] = mappedValue switch
-                        {
-                            JsonNode node => node.DeepClone(),
-                            _ => JsonValue.Create(mappedValue),
-                        };
-                    }
-                    continue;
-                }
-
-                switch (property.Value)
-                {
-                    case JsonArray array:
-                        targetObj[property.Key] = await MapArrayDataAsync(source, array);
-                        break;
-                    case JsonObject obj:
-                        targetObj[property.Key] = await MapDataAsync(source, obj, func);
-                        break;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error in MapDataAsync: {ex.Message}");
-        }
+        if (target is JsonObject obj)
+            return await MapObjectInternal(source, obj, func);
+        if (target is JsonArray arr)
+            return await MapArrayInternal(source, arr, func);
         return target;
     }
 
@@ -111,471 +74,254 @@ public class DataMapper : IDataMapper
         Func<string, Task<object>> func = null
     )
     {
-        var result = new Dictionary<string, object>();
-
-        if (target is not JsonObject targetObj)
-        {
-            return result;
-        }
-
-        try
-        {
-            foreach (var property in targetObj)
-            {
-                if (property.Key == "condition" || property.Value == null)
-                {
-                    continue;
-                }
-
-                if (property.Value is JsonValue value)
-                {
-                    if (value.TryGetValue<string>(out var str))
-                    {
-                        string configMapping = str.Trim();
-
-                        if (!string.IsNullOrEmpty(configMapping))
-                        {
-                            if (func != null && configMapping.StartsWith("dataFunc"))
-                            {
-                                string jsonPath = ExtractJsonPath(configMapping);
-                                result[property.Key] = await func(jsonPath);
-                            }
-                            else
-                            {
-                                try
-                                {
-                                    var mappedValue = await Map(source, configMapping);
-                                    if (mappedValue is JsonNode node)
-                                    {
-                                        result[property.Key] = ConvertJsonNode(node);
-                                    }
-                                    else
-                                    {
-                                        result[property.Key] = mappedValue;
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    result[property.Key] = null;
-                                    await ex.LogErrorAsync(
-                                        new
-                                        {
-                                            source,
-                                            target,
-                                            property.Key,
-                                            configMapping,
-                                        }
-                                    );
-                                }
-                            }
-                        }
-                        else
-                        {
-                            result[property.Key] = value.Deserialize<object>();
-                        }
-                    }
-                    else
-                    {
-                        result[property.Key] = value.Deserialize<object>();
-                    }
-
-                    continue;
-                }
-
-                result[property.Key] = property.Value switch
-                {
-                    JsonArray array => await MapArrayDataAsync(source, array),
-                    JsonObject obj => await MapDataAsync(source, obj, func),
-                    _ => property.Value.Deserialize<object>(),
-                };
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error in MapDataToDictionaryAsync: {ex.Message}");
-            await ex.LogErrorAsync(new { source, target });
-        }
-
-        return result;
+        var mappedNode = await MapDataAsync(source, target.DeepClone(), func);
+        return ConvertJsonNodeToDictionary(mappedNode) as Dictionary<string, object> ?? new();
     }
 
-    private static object ConvertJsonNode(JsonNode node)
+    #endregion
+
+    #region Core Engine
+
+    private async Task<JsonObject> MapObjectInternal(
+        JsonNode source,
+        JsonObject target,
+        Func<string, Task<object>>? func
+    )
+    {
+        foreach (var property in target.ToList())
+        {
+            if (property.Key == "condition" || property.Value == null)
+                continue;
+
+            if (
+                property.Value is JsonValue value
+                && value.TryGetValue<string>(out var configMapping)
+            )
+            {
+                var trimmedConfig = configMapping.Trim();
+                if (string.IsNullOrEmpty(trimmedConfig))
+                    continue;
+
+                if (func != null && trimmedConfig.StartsWith("dataFunc"))
+                {
+                    string path = ExtractPath(trimmedConfig);
+                    target[property.Key] = JsonValue.Create(await func(path));
+                }
+                else
+                {
+                    var mappedValue = await MapValueAsync(source, trimmedConfig);
+                    target[property.Key] = mappedValue switch
+                    {
+                        JsonNode node => node.DeepClone(),
+                        _ => JsonValue.Create(mappedValue),
+                    };
+                }
+            }
+            else if (property.Value is JsonObject innerObj)
+            {
+                await MapObjectInternal(source, innerObj, func);
+            }
+            else if (property.Value is JsonArray innerArr)
+            {
+                target[property.Key] = await MapArrayInternal(source, innerArr, func);
+            }
+        }
+        return target;
+    }
+
+    private async Task<JsonArray> MapArrayInternal(
+        JsonNode source,
+        JsonArray target,
+        Func<string, Task<object>> func
+    )
+    {
+        for (int i = 0; i < target.Count; i++)
+        {
+            if (target[i] is JsonObject obj)
+                target[i] = await MapObjectInternal(source, obj, func);
+            else if (target[i] is JsonArray arr)
+                target[i] = await MapArrayInternal(source, arr, func);
+        }
+        return target;
+    }
+
+    private Task<object> MapValueAsync(JsonNode source, string configMapping)
+    {
+        var (function, path) = ParseConfig(configMapping);
+
+        if (function != null && _handlers.TryGetValue(function, out var handler))
+        {
+            return Task.FromResult(handler(new MappingContext(source, path)));
+        }
+
+        return Task.FromResult<object>(configMapping);
+    }
+
+    #endregion
+
+    #region Parsing & Helpers
+
+    private (string Function, string Path) ParseConfig(string config)
+    {
+        // Sử dụng IMemoryCache thay cho ConcurrentDictionary
+        return _cache.GetOrCreate(
+            config,
+            entry =>
+            {
+                entry.SetOptions(_cacheOptions);
+
+                int openParen = config.IndexOf('(');
+                int closeParen = config.LastIndexOf(')');
+
+                if (openParen > 0 && closeParen > openParen)
+                {
+                    return (config[..openParen].Trim(), config[(openParen + 1)..closeParen].Trim());
+                }
+                return (null, config);
+            }
+        );
+    }
+
+    private string ExtractPath(string config) => ParseConfig(config).Path;
+
+    private static T GetValue<T>(MappingContext context)
+    {
+        return context.DataSource.TryGetValueByPath(context.JsonPath, out T value)
+            ? value
+            : default;
+    }
+
+    private static object ConvertJsonNodeToDictionary(JsonNode node)
     {
         return node switch
         {
-            JsonObject obj => obj.ToDictionary(kvp => kvp.Key, kvp => ConvertJsonNode(kvp.Value)),
-            JsonArray array => array.Select(ConvertJsonNode).ToList(),
-            JsonValue value => GetPrimitiveValue(value),
+            JsonObject obj => obj.ToDictionary(
+                kvp => kvp.Key,
+                kvp => ConvertJsonNodeToDictionary(kvp.Value)
+            ),
+            JsonArray array => array.Select(ConvertJsonNodeToDictionary).ToList(),
+            JsonValue value => GetPrimitive(value),
             _ => null,
         };
     }
 
-    private static object GetPrimitiveValue(JsonValue value)
+    private static object GetPrimitive(JsonValue value)
     {
-        if (value.TryGetValue(out bool b))
-        {
-            return b;
-        }
-
-        if (value.TryGetValue(out int i))
-        {
-            return i;
-        }
-
-        if (value.TryGetValue(out long l))
-        {
-            return l;
-        }
-
-        if (value.TryGetValue(out double d))
-        {
-            return d;
-        }
-
-        if (value.TryGetValue(out decimal m))
-        {
-            return m;
-        }
-
         if (value.TryGetValue(out string s))
-        {
             return s;
-        }
-
+        if (value.TryGetValue(out int i))
+            return i;
+        if (value.TryGetValue(out bool b))
+            return b;
+        if (value.TryGetValue(out long l))
+            return l;
+        if (value.TryGetValue(out decimal m))
+            return m;
+        if (value.TryGetValue(out double d))
+            return d;
         if (value.TryGetValue(out DateTime dt))
-        {
             return dt;
-        }
-
         return value.ToString();
     }
 
-    private static string ExtractJsonPath(string configMapping)
-    {
-        int startIndex = configMapping.IndexOf('(') + 1;
-        int endIndex = configMapping.LastIndexOf(')');
-        return startIndex > 0 && endIndex > startIndex
-            ? configMapping.Substring(startIndex, endIndex - startIndex).Trim()
-            : string.Empty;
-    }
+    #endregion
 
-    public static Task<object> Map(JsonNode source, string configMapping)
-    {
-        if (string.IsNullOrWhiteSpace(configMapping))
-        {
-            return Task.FromResult<object>(null);
-        }
-
-        var lastIndexOfFunc = configMapping.IndexOf('(');
-        if (lastIndexOfFunc >= 0)
-        {
-            string function = configMapping[..lastIndexOfFunc].Trim();
-            string jsonPath = ExtractJsonPath(configMapping);
-
-            if (_handlers.TryGetValue(function, out var handler))
-            {
-                var context = new MappingContext(source, jsonPath);
-                return handler switch
-                {
-                    Func<MappingContext, object> syncHandler => Task.FromResult(
-                        syncHandler(context)
-                    ),
-                    _ => Task.FromResult<object>(null),
-                };
-            }
-
-            Console.WriteLine($"Unknown function: {function}");
-            return Task.FromResult<object>(null);
-        }
-        return Task.FromResult<object>(configMapping);
-    }
-
-    private async Task<JsonArray> MapArrayDataAsync(JsonNode source, JsonArray target)
-    {
-        var tasks = new Task[target.Count];
-        for (int i = 0; i < target.Count; i++)
-        {
-            int index = i;
-            tasks[i] = Task.Run(async () =>
-            {
-                target[index] = target[index] switch
-                {
-                    JsonObject obj => await MapDataAsync(source, obj),
-                    JsonArray array => await MapArrayDataAsync(source, array),
-                    _ => target[index],
-                };
-            });
-        }
-
-        await Task.WhenAll(tasks);
-        return target;
-    }
-
-    private static object GetValue<T>(MappingContext context)
-    {
-        if (context.DataSource.TryGetValueByPath(context.JsonPath, out T value))
-        {
-            return value;
-        }
-        else
-        {
-            return default(T);
-        }
-    }
-
-    public static T ConvertJsonValue<T>(JsonValue jsonValue)
-    {
-        Type targetType = typeof(T);
-
-        if (jsonValue.TryGetValue(out object rawValue))
-        {
-            if (rawValue == null || rawValue is DBNull)
-            {
-                return default;
-            }
-
-            // Handle Nullable types
-            Type underlyingType = Nullable.GetUnderlyingType(targetType);
-            if (underlyingType != null)
-            {
-                return (T)ConvertJsonValueInternal(rawValue, underlyingType);
-            }
-
-            return (T)ConvertJsonValueInternal(rawValue, targetType);
-        }
-
-        throw new InvalidOperationException($"Cannot convert JsonValue to {typeof(T).Name}.");
-    }
-
-    private static object ConvertJsonValueInternal(object rawValue, Type targetType)
-    {
-        try
-        {
-            if (targetType == typeof(string))
-            {
-                return rawValue.ToString();
-            }
-
-            if (targetType.IsInstanceOfType(rawValue))
-            {
-                return rawValue;
-            }
-
-            if (targetType.IsEnum)
-            {
-                if (rawValue is string s)
-                {
-                    return Enum.Parse(targetType, s, ignoreCase: true);
-                }
-
-                return Enum.ToObject(targetType, rawValue);
-            }
-
-            if (targetType == typeof(bool))
-            {
-                if (rawValue is string s)
-                {
-                    return s == "true" || s == "1";
-                }
-
-                if (rawValue is int i)
-                {
-                    return i != 0;
-                }
-
-                if (rawValue is long l)
-                {
-                    return l != 0;
-                }
-            }
-
-            if (targetType == typeof(DateTime))
-            {
-                string str = rawValue.ToString();
-
-                if (
-                    DateTime.TryParse(
-                        str,
-                        CultureInfo.InvariantCulture,
-                        DateTimeStyles.None,
-                        out var dtGlobal
-                    )
-                )
-                {
-                    return dtGlobal;
-                }
-
-                if (
-                    DateTime.TryParse(
-                        str,
-                        CultureInfo.CurrentCulture,
-                        DateTimeStyles.None,
-                        out var dtLocal
-                    )
-                )
-                {
-                    return dtLocal;
-                }
-
-                if (
-                    DateTime.TryParseExact(
-                        str,
-                        DateTimeFormat.DateFormats,
-                        CultureInfo.InvariantCulture,
-                        DateTimeStyles.None,
-                        out var dt
-                    )
-                )
-                {
-                    return dt;
-                }
-            }
-
-            if (targetType == typeof(DateTimeOffset))
-            {
-                return DateTimeOffset.Parse(
-                    rawValue.ToString(),
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.RoundtripKind
-                );
-            }
-
-            if (rawValue is JsonElement el)
-            {
-                return el.Deserialize(targetType, new JsonSerializerOptions());
-            }
-            else if (rawValue is IConvertible)
-            {
-                return Convert.ChangeType(rawValue, targetType, CultureInfo.InvariantCulture);
-            }
-            else
-            {
-                throw new InvalidCastException(
-                    $"Cannot convert value of type {rawValue.GetType()} to {targetType.Name}"
-                );
-            }
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException(
-                $"Cannot convert value '{rawValue}' to type {targetType.Name}.",
-                ex
-            );
-        }
-    }
+    #region Specialized Handlers
 
     private static object GetDateTimeFromUnix(MappingContext context)
     {
-        var token = JsonHelper.GetValueByPath(context.DataSource, context.JsonPath);
-        return token != null && long.TryParse(token.ToString(), out long unixTimestamp)
-            ? DateTimeOffset.FromUnixTimeSeconds(unixTimestamp).DateTime
-            : DateTime.MinValue;
+        var val = GetValue<long>(context);
+        return val > 0 ? DateTimeOffset.FromUnixTimeSeconds(val).DateTime : null;
     }
 
     private static object GetUnixFromDateTime(MappingContext context)
     {
-        var token = JsonHelper.GetValueByPath(context.DataSource, context.JsonPath);
-        return token != null && DateTime.TryParse(token.ToString(), out DateTime dateTime)
-            ? new DateTimeOffset(dateTime).ToUnixTimeSeconds()
-            : 0;
+        var val = GetValue<string>(context);
+        return DateTime.TryParse(val, out var dt) ? new DateTimeOffset(dt).ToUnixTimeSeconds() : 0;
     }
 
     private static object GetDateTimeLocalFromUnix(MappingContext context)
     {
-        var token = JsonHelper.GetValueByPath(context.DataSource, context.JsonPath);
-        return token != null && long.TryParse(token.ToString(), out long unixTimestamp)
-            ? DateTimeOffset.FromUnixTimeSeconds(unixTimestamp).UtcDateTime.ToLocalTime()
-            : DateTime.MinValue;
+        var val = GetValue<long>(context);
+        return val > 0 ? DateTimeOffset.FromUnixTimeSeconds(val).UtcDateTime.ToLocalTime() : null;
     }
 
     private static object GetUnixLocalFromDateTime(MappingContext context)
     {
-        var token = JsonHelper.GetValueByPath(context.DataSource, context.JsonPath);
-        return token != null && DateTime.TryParse(token.ToString(), out DateTime localDateTime)
-            ? new DateTimeOffset(localDateTime.ToUniversalTime()).ToUnixTimeSeconds()
+        var val = GetValue<string>(context);
+        return DateTime.TryParse(val, out var dt)
+            ? new DateTimeOffset(dt.ToUniversalTime()).ToUnixTimeSeconds()
             : 0;
-    }
-
-    private static object GetDataSet(MappingContext context)
-    {
-        var result = new List<object>();
-        var token = JsonHelper.GetValueByPath(context.DataSource, context.JsonPath);
-        var configMappingItem = context.JsonPath.ToJsonNode() as JsonObject;
-
-        if (configMappingItem == null || configMappingItem.Count == 0)
-        {
-            return result;
-        }
-
-        var firstMappingValue = configMappingItem.First().Value?.ToString();
-        int start = firstMappingValue.IndexOf('(') + 1;
-        int end = firstMappingValue.IndexOf('[', start);
-        firstMappingValue = firstMappingValue.Substring(start, end - start);
-        var firstSet =
-            GetValue<JsonArray>(new MappingContext(context.DataSource, firstMappingValue))
-            as JsonArray;
-        var rowCount = firstSet?.Count ?? 0;
-
-        for (int i = 0; i < rowCount; i++)
-        {
-            var obj = new Dictionary<string, object>();
-            foreach (var kvp in configMappingItem)
-            {
-                var template = kvp.Value?.ToString() ?? "";
-                var path = string.Format(template, i);
-                obj[kvp.Key] = Map(context.DataSource, path).GetAwaiter().GetResult();
-            }
-            result.Add(obj);
-        }
-
-        return result;
     }
 
     private static object GetDateTimeLocalFromUnixMil(MappingContext context)
     {
-        var token = JsonHelper.GetValueByPath(context.DataSource, context.JsonPath);
-        if (!string.IsNullOrEmpty(token.ToString()))
-        {
-            long date1 = long.Parse(token.ToString());
-            return DateTimeOffset
-                .FromUnixTimeMilliseconds(date1)
+        var val = GetValue<long>(context);
+        return val > 0
+            ? DateTimeOffset
+                .FromUnixTimeMilliseconds(val)
                 .UtcDateTime.ToLocalTime()
-                .ToString("dd-MM-yyyy");
-        }
-
-        return null;
+                .ToString("dd-MM-yyyy")
+            : null;
     }
 
     private static object GetFormatCustomDate(MappingContext context)
     {
-        var token = JsonHelper.GetValueByPath(context.DataSource, context.JsonPath);
-        if (!string.IsNullOrEmpty(token.ToString()))
+        var token = GetValue<string>(context);
+        if (string.IsNullOrEmpty(token))
+            return null;
+
+        string dataDate = token.Trim('"');
+        if (dataDate.Contains('|'))
         {
-            string dataDate = token.ToString().Trim('"');
-            DateTime date1;
-            if (dataDate.Contains('|'))
-            {
-                var dataArray = dataDate.Split('|');
-                date1 = DateTime.ParseExact(
-                    dataArray[0],
-                    dataArray[1],
+            var parts = dataDate.Split('|');
+            if (
+                DateTime.TryParseExact(
+                    parts[0],
+                    parts[1],
                     CultureInfo.InvariantCulture,
-                    DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal
-                );
-            }
-            else
-            {
-                date1 = DateTime.ParseExact(
-                    dataDate.ToString(),
-                    DateTimeFormat.DateFormats,
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal
-                );
-            }
-
-            return date1.ToString("dd/MM/yyyy");
+                    DateTimeStyles.None,
+                    out var dt
+                )
+            )
+                return dt.ToString("dd/MM/yyyy");
         }
-
-        return null;
+        else if (DateTime.TryParse(dataDate, out var dt))
+        {
+            return dt.ToString("dd/MM/yyyy");
+        }
+        return dataDate;
     }
+
+    private object GetDataSet(MappingContext context)
+    {
+        var result = new List<object>();
+        if (context.JsonPath.ToJsonNode() is not JsonObject configMappingItem)
+            return result;
+
+        var firstMappingValue = configMappingItem.First().Value?.ToString() ?? string.Empty;
+        var (func, pathTemplate) = ParseConfig(firstMappingValue);
+
+        string arrayPath = pathTemplate.Split('[')[0];
+        var sourceArray = GetValue<JsonArray>(new MappingContext(context.DataSource, arrayPath));
+        if (sourceArray == null)
+            return result;
+
+        for (int i = 0; i < sourceArray.Count; i++)
+        {
+            var row = new Dictionary<string, object>();
+            foreach (var kvp in configMappingItem)
+            {
+                string template = kvp.Value?.ToString() ?? string.Empty;
+                string actualPath = string.Format(template, i);
+                row[kvp.Key] = MapValueAsync(context.DataSource, actualPath)
+                    .GetAwaiter()
+                    .GetResult();
+            }
+            result.Add(row);
+        }
+        return result;
+    }
+
+    #endregion
 }
