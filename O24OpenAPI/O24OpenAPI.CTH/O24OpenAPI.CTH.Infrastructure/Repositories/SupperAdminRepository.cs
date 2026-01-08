@@ -17,7 +17,7 @@ public class SupperAdminRepository(
         return await Table.Where(s => s.LoginName == userName).FirstOrDefaultAsync();
     }
 
-    public async Task<SupperAdmin> IsExit()
+    public async Task<SupperAdmin?> IsExit()
     {
         return await Table.FirstOrDefaultAsync();
     }

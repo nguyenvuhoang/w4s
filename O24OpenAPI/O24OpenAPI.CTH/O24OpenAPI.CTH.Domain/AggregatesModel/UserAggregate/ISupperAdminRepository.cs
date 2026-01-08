@@ -4,5 +4,5 @@ namespace O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 
 public interface ISupperAdminRepository : IRepository<SupperAdmin>
 {
-    Task<SupperAdmin> IsExit();
+    Task<SupperAdmin?> IsExit();
 }
