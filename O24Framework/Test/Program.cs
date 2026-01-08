@@ -37,10 +37,10 @@ builder.Services.AddLinKitCqrs();
 
 // (mục 3) Zalo services sẽ add ở đây (trước Build)
 builder.Services.AddMemoryCache();
-builder.Services.AddHttpClient(); // base
-builder.Services.Configure<ZaloOptions>(builder.Configuration.GetSection("Zalo"));
-builder.Services.AddSingleton<ZaloTokenProvider>();
-builder.Services.AddSingleton<ZaloZnsClient>();
+builder.Services.AddSingleton<Test.Features.Otp.IOtpSender, Test.Features.Otp.MockOtpSender>();
+builder.Services.AddSingleton<Test.Features.Otp.OtpService>();
+builder.Services.Configure<Test.Features.Otp.OtpOptions>(
+    builder.Configuration.GetSection("Otp"));
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
