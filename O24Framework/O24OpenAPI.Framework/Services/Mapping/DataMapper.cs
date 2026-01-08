@@ -1,11 +1,11 @@
-using System.Globalization;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using LinKit.Json.Runtime;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Helper;
 using O24OpenAPI.Framework.Constants;
 using O24OpenAPI.Framework.Extensions;
+using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace O24OpenAPI.Framework.Services.Mapping;
 
@@ -280,7 +280,6 @@ public class DataMapper : IDataMapper
                     Func<MappingContext, object> syncHandler => Task.FromResult(
                         syncHandler(context)
                     ),
-                    // Func<MappingContext, Task<object>> asyncHandler => asyncHandler(context),
                     _ => Task.FromResult<object>(null),
                 };
             }

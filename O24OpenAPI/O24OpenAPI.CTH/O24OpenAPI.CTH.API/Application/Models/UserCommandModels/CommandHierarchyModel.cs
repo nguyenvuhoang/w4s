@@ -1,4 +1,4 @@
-﻿namespace O24OpenAPI.CTH.API.Application.Models;
+﻿namespace O24OpenAPI.CTH.API.Application.Models.UserCommandModels;
 
 public class CommandHierarchyModel
 {

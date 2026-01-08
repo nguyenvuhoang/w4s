@@ -1,5 +1,7 @@
-﻿using O24OpenAPI.CTH.API.Application.Models;
+﻿using O24OpenAPI.APIContracts.Models.CTH;
+using O24OpenAPI.CTH.API.Application.Models;
 using O24OpenAPI.CTH.API.Application.Models.Roles;
+using O24OpenAPI.CTH.API.Application.Models.UserCommandModels;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Infrastructure.Mapper;
 
@@ -11,5 +13,7 @@ public class AutoMapperProfile : BaseMapperConfiguration
     {
         CreateMap<UserAccount, UserAccountResponseModel>();
         CreateModelMap<UserRight, UserRightModel>();
+        CreateModelMap<CTHUserCommandModel, MenuInfoModel>();
+
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Text;
-using System.Text.Json.Serialization;
-using LinKit.Core.Abstractions;
+﻿using LinKit.Core.Abstractions;
 using LinKit.Core.Cqrs;
 using LinKit.Json.Runtime;
 using Microsoft.Extensions.Caching.Memory;
@@ -27,6 +25,8 @@ using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using O24OpenAPI.Logging.Helpers;
+using System.Text;
+using System.Text.Json.Serialization;
 
 namespace O24OpenAPI.CMS.API.Application.Features.Requests;
 
@@ -594,7 +594,7 @@ public class RequestHandlerV1(
                     if (firstKey != -1 && secondKey != -1 && secondKey > firstKey)
                     {
                         string settingKey = uri.Substring(firstKey + 1, secondKey - firstKey - 1);
-                        string remainingPath = uri.Substring(secondKey + 1);
+                        string remainingPath = uri[(secondKey + 1)..];
                         if (settingKey.Contains("WFO"))
                         {
                             string wfoURI = Singleton<O24OpenAPIConfiguration>.Instance.WFOHttpURL;
