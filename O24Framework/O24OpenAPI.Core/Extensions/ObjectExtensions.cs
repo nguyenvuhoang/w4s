@@ -57,6 +57,8 @@ public static class ObjectExtensions
 
     public static string ToSerialize(this object obj)
     {
+        if (obj == null)
+            return string.Empty;
         return JsonConvert.SerializeObject(obj);
     }
 

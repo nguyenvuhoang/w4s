@@ -1,4 +1,5 @@
 using O24OpenAPI.Client.Scheme.Workflow;
+using O24OpenAPI.Contracts.Models;
 using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.WFO.Infrastructure.Services;
 
@@ -42,6 +43,7 @@ public class WorkflowInfoModel : BaseO24OpenAPIModel
     public string workflow_id { get; set; }
     public WorkflowExecutionStatus status { get; set; }
     public string error { get; set; }
+    public ErrorInfo error_info { get; set; }
     public long created_on { get; set; }
     public long finish_on { get; set; }
     public string is_timeout { get; set; }

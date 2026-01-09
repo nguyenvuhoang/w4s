@@ -7,6 +7,7 @@ using O24OpenAPI.Client.Events.EventData;
 using O24OpenAPI.Client.Lib;
 using O24OpenAPI.Client.Scheme.Workflow;
 using O24OpenAPI.Client.Workflow;
+using O24OpenAPI.Contracts.Models;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Extensions;
@@ -357,6 +358,7 @@ public class WorkflowExecutionHandler(
                 {
                     _wfExecution.execution.status = WorkflowExecutionStatus.Error;
                     _wfExecution.execution.error = ex.Message;
+                    _wfExecution.execution.error_info = ex.ToErrorInfo();
                     context.IsReverseFlow = true;
                     await ReverseWorkflow(context);
                     throw;
@@ -367,6 +369,7 @@ public class WorkflowExecutionHandler(
         catch (Exception ex)
         {
             _wfExecution.execution.status = WorkflowExecutionStatus.Error;
+            _wfExecution.execution.error_info = ex.ToErrorInfo();
             _wfExecution.execution.error =
                 $"{ex.Message} | StackTrace: {ex.StackTrace?.Substring(0, Math.Min(ex.StackTrace?.Length ?? 0, 500))}";
             throw;
