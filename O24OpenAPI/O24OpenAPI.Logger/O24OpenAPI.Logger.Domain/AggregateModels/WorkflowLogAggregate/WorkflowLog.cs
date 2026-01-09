@@ -35,6 +35,8 @@ public partial class WorkflowLog : BaseEntity
     /// </summary>
     public string? error { get; set; }
 
+    public string? error_info { get; set; }
+
     /// <summary>
     /// Gets or sets the value of the created on
     /// </summary>
