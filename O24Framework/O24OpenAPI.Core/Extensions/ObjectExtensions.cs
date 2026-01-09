@@ -210,16 +210,23 @@ public static class ObjectExtensions
         return JConvert.FromJson<T>(obj.ToJson());
     }
 
-    public static string WriteIndentedJson(this object? obj, JsonSerializerOptions? options = null)
+    public static string WriteIndentedJson(
+        this object? obj,
+        JsonSerializerSettings? settings = null
+    )
     {
         if (obj is null)
         {
             return string.Empty;
         }
 
-        options ??= JsonOptions.IgnoreCyclesAndWriteIndented;
+        settings ??= new JsonSerializerSettings
+        {
+            Formatting = Formatting.Indented,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+        };
 
-        return System.Text.Json.JsonSerializer.Serialize(obj, options);
+        return JsonConvert.SerializeObject(obj, settings);
     }
 
     public static JsonNode? ToJsonNode(this object obj)

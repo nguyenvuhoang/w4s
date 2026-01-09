@@ -15,7 +15,6 @@ using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Core.Utils;
 using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Services.Mapping;
-using O24OpenAPI.WFO.API.Application.Extensions;
 using O24OpenAPI.WFO.API.Application.Models;
 using O24OpenAPI.WFO.API.Application.Utils;
 using O24OpenAPI.WFO.Domain.AggregateModels.WorkflowAggregate;
@@ -115,12 +114,14 @@ public class WorkflowExecutionHandler(
             _wfExecution.execution.error = ewa.Message;
             response.error_message = ewa.Message;
             response.error_next_action = ewa.NextAction;
+            response.success = false;
         }
         catch (Exception ex)
         {
             _wfExecution.execution.status = WorkflowExecutionStatus.Error;
             _wfExecution.execution.error = ex.Message;
             response.error_message = ex.Message;
+            response.success = false;
         }
         finally
         {
@@ -318,9 +319,11 @@ public class WorkflowExecutionHandler(
                             context.IsReverseFlow = true;
                             throw;
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
                             context.IsReverseFlow = true;
+                            stepInfo.p1_status = WorkflowExecutionStatus.Error;
+                            stepInfo.p1_error = ex.ToSerialize();
                             await ReverseWorkflow(context);
                             throw;
                         }

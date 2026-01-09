@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using LinKit.Json.Runtime;
 using Microsoft.Extensions.Caching.Memory;
@@ -105,7 +106,7 @@ public class DataMapper : IDataMapper
                 if (func != null && trimmedConfig.StartsWith("dataFunc"))
                 {
                     string path = ExtractPath(trimmedConfig);
-                    target[property.Key] = JsonValue.Create(await func(path));
+                    target[property.Key] = JsonSerializer.SerializeToNode(await func(path));
                 }
                 else
                 {

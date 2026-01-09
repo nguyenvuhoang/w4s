@@ -36,6 +36,8 @@ public class WorkflowResponse<T>
 /// </summary>
 public class WorkflowResponse
 {
+    public bool success { get; set; } = true;
+
     /// <summary>
     /// Gets or sets the value of the time in milliseconds
     /// </summary>
