@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
@@ -29,16 +28,15 @@ public class APIStarUp : IO24OpenAPIStartup
     {
         services.AddMemoryCache();
         services.AddSingleton<IMemoryCacheService, MemoryCacheManager>();
-        services
-            .AddMvc()
-            .AddNewtonsoftJson(opts =>
-            {
-                opts.SerializerSettings.Converters.Add(new StringEnumConverter());
-                opts.SerializerSettings.ContractResolver = new DefaultContractResolver
+        services.AddControllers()
+                .AddJsonOptions(opts =>
                 {
-                    NamingStrategy = new SnakeCaseNamingStrategy(),
-                };
-            });
+                    opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+                    opts.JsonSerializerOptions.Converters.Add(
+                        new System.Text.Json.Serialization.JsonStringEnumConverter()
+                    );
+                });
+
         services.AddGrpc(options =>
         {
             options.MaxReceiveMessageSize = new int?();

@@ -1,16 +1,9 @@
-﻿using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
-using LinKit.Core.Abstractions;
+﻿using LinKit.Core.Abstractions;
 using LinKit.Core.Cqrs;
 using LinKit.Json.Runtime;
 using Microsoft.Extensions.Caching.Memory;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.APIContracts.Models.CTH;
-using O24OpenAPI.CMS.API.Application.Extensions;
 using O24OpenAPI.CMS.API.Application.Models.ContextModels;
 using O24OpenAPI.CMS.API.Application.Models.Request;
 using O24OpenAPI.CMS.API.Application.Models.Response;
@@ -30,6 +23,10 @@ using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using O24OpenAPI.Logging.Helpers;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace O24OpenAPI.CMS.API.Application.Features.Requests;
@@ -39,15 +36,12 @@ namespace O24OpenAPI.CMS.API.Application.Features.Requests;
 public class RequestModel
 {
     [JsonPropertyName("learn_api")]
-    [JsonProperty("learn_api")]
     public string LearnApi { get; set; } = string.Empty;
 
     [JsonPropertyName("workflowid")]
-    [JsonProperty("workflowid")]
     public string WorkflowId { get; set; } = string.Empty;
 
     [JsonPropertyName("fields")]
-    [JsonProperty("fields")]
     public Dictionary<string, object> Fields { get; set; } = [];
 
     public void Validate()
@@ -83,7 +77,6 @@ public class ResponseModel
     /// ID để trace/track execution
     /// </summary>
     [JsonPropertyName("execution_id")]
-    [JsonProperty("execution_id")]
     public string ExecutionId { get; set; } = string.Empty;
 
     /// <summary>
@@ -479,12 +472,14 @@ public class RequestHandlerV1(
         WorkContext workflowContext = EngineContext.Current.Resolve<WorkContext>();
         string executeId = workflowContext.ExecutionId;
 
-        JObject data = (await ExecuteAsync(requestModel)).Value<JObject>("data");
+        var executionResult = await ExecuteAsync(requestModel);
+        var data = executionResult["data"];
 
         if (data != null)
         {
+            var dict = data.ToJson().FromJson<Dictionary<string, object>>();
             if (
-                data.TryGetValue("error_message", out JToken errorMessage)
+                dict.TryGetValue("error_message", out var errorMessage)
                 && !string.IsNullOrWhiteSpace(errorMessage?.ToString())
             )
             {
@@ -494,9 +489,9 @@ public class RequestHandlerV1(
                         ErrorType.errorSystem,
                         ErrorMainForm.danger,
                         errorMessage.ToString(),
-                        data["error_code"]?.ToString() ?? "UNKNOWN_ERROR",
+                        dict["error_code"]?.ToString() ?? "UNKNOWN_ERROR",
                         "ERROR: ",
-                        nextAction: data["next_action"]?.ToString() ?? "",
+                        nextAction: dict["next_action"]?.ToString() ?? "",
                         executeId: executeId
                     ),
                 ];
@@ -554,7 +549,7 @@ public class RequestHandlerV1(
         return (isNeedCheckSession, isRefreshToken);
     }
 
-    private async Task<JObject> ExecuteAsync(RequestModel requestModel)
+    private async Task<Dictionary<string, object>> ExecuteAsync(RequestModel requestModel)
     {
         try
         {
@@ -585,12 +580,12 @@ public class RequestHandlerV1(
                 }
                 if (learnApiId.StartsWithOrdinalIgnoreCase("CMS"))
                 {
-                    return (JObject)
-                        await LearnApiHandlers.HandleAsync(
+                    var learnApiExecutionResult = await LearnApiHandlers.HandleAsync(
                             learnApiId,
                             mappedRequest,
                             EngineContext.Current.Resolve<IMediator>(MediatorKey.CMS)
                         );
+                    return learnApiExecutionResult.ToJson().FromJson<Dictionary<string, object>>();
                 }
                 if (learnApi.URI.StartsWith('$'))
                 {
@@ -632,12 +627,12 @@ public class RequestHandlerV1(
                 response = await wfoGrpcClientService.ExecuteWorkflowAsync(obContent.ToJson());
             }
 
-            JObject result = JObject.Parse(response);
-            if (result.TryGetValue("error_message", out JToken messageToken))
+            var result = response.FromJson<Dictionary<string, object>>();
+            if (result.TryGetValue("error_message", out var messageToken))
             {
                 if (!string.IsNullOrEmpty(messageToken?.ToString()))
                 {
-                    result["data"] = new JObject
+                    result["data"] = new Dictionary<string, object>
                     {
                         { "error_message", messageToken },
                         { "next_action", result["error_next_action"] },
@@ -653,57 +648,11 @@ public class RequestHandlerV1(
             throw;
         }
     }
-
-    private JObject BuildContentWorkflowRequest(RequestModel requestModel)
-    {
-        JObject sourceInput = JObject.FromObject(requestModel);
-        JObject wfInput = new(sourceInput)
-        {
-            ["lang"] = context.InfoRequest.Language,
-            ["token"] = context.InfoUser.GetUserLogin().Token,
-            ["user_id"] = context.InfoUser.UserSession?.UserId.ToString() ?? "0",
-            ["user_code"] = context.InfoUser.UserSession?.UserCode.ToString() ?? "0",
-            ["execution_id"] = _workContext?.ExecutionId ?? Guid.NewGuid().ToString(),
-            ["channel_id"] = context.InfoApp.GetApp(),
-            ["transaction_date"] = DateTime.UtcNow,
-            //["value_date"] = context.InfoUser.UserSession? ?? DateTime.UtcNow,
-            ["device"] = JToken.FromObject(
-                new DeviceModel
-                {
-                    IpAddress = context.InfoRequest.GetIp() ?? "::1",
-                    DeviceId = string.IsNullOrWhiteSpace(context.InfoRequest.DeviceID)
-                        ? Guid.NewGuid().ToString()
-                        : context.InfoRequest.DeviceID,
-                    OsVersion =
-                        context.InfoRequest.OsVersion
-                        ?? context.InfoRequest.GetClientOs()
-                        ?? "unknown",
-                    UserAgent =
-                        context.InfoRequest.UserAgent
-                        ?? context.InfoRequest.GetClientBrowser()
-                        ?? string.Empty,
-                    DeviceType = context.InfoRequest.DeviceType ?? "unknown",
-                    AppVersion = context.InfoRequest.AppVersion ?? "1.0.0",
-                    DeviceName = context.InfoRequest.DeviceName ?? "Generic Device",
-                    Brand = context.InfoRequest.Brand ?? "Unknown",
-                    IsEmulator = context.InfoRequest.IsEmulator,
-                    IsRootedOrJailbroken = context.InfoRequest.IsRootedOrJailbroken,
-                    Memory = context.InfoRequest.Memory,
-                    Network = context.InfoRequest.Network,
-                }
-            ),
-        }; // Create a new copy of the input
-        return wfInput;
-    }
-
     private JsonObject BuildContentWorkflowRequestV1(RequestModel requestModel)
     {
         // Chuyển requestModel thành JsonNode, sau đó ép kiểu sang JsonObject
         // Sử dụng JsonSerializer.SerializeToNode để tạo bản sao mới từ model
-        JsonObject wfInput =
-            JsonSerializer
-                .SerializeToNode(requestModel, CMSJsonContext.Default.RequestModel)
-                ?.AsObject() ?? [];
+        JsonObject wfInput = JsonSerializer.SerializeToNode(requestModel)?.AsObject() ?? [];
 
         // Gán các giá trị mở rộng
         wfInput["lang"] = context.InfoRequest.Language;
