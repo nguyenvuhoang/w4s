@@ -4,6 +4,7 @@ using LinqToDB;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Data;
+using O24OpenAPI.Framework.Extensions;
 
 namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
@@ -77,21 +78,34 @@ public class UserCommandRepository(
 
     public async Task<UserCommand> GetByCommandIdAsync(string commandId, string applicationCode)
     {
-        if (string.IsNullOrEmpty(commandId) || string.IsNullOrEmpty(applicationCode) || string.IsNullOrEmpty(commandId))
+        try
         {
-            throw new ArgumentNullException("commandId or applicationCode is null or empty");
-        }
+            if (string.IsNullOrEmpty(commandId) || string.IsNullOrEmpty(applicationCode) || string.IsNullOrEmpty(commandId))
+            {
+                throw new ArgumentNullException("commandId or applicationCode is null or empty");
+            }
 
-        return await Table
-            .Where(s =>
-                s.CommandId == commandId && s.ApplicationCode == applicationCode
-            )
-            .FirstOrDefaultAsync();
+            return await Table
+                .Where(s =>
+                    s.CommandId == commandId && s.ApplicationCode == applicationCode
+                )
+                .FirstOrDefaultAsync();
+        }
+        catch (Exception ex)
+        {
+            await ex.LogErrorAsync();
+            throw;
+        }
     }
 
     public async Task<UserCommand> ModifyAsync(UserCommand command)
     {
         await Update(command);
         return command;
+    }
+
+    public async Task DeleteAsync(UserCommand command)
+    {
+        await Delete(command);
     }
 }

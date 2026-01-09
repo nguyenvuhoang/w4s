@@ -17,16 +17,20 @@ namespace O24OpenAPI.CTH.API.Controllers;
 public class MenuController([FromKeyedServices(MediatorKey.CTH)] IMediator mediator)
     : BaseController
 {
+    /// <summary>
+    /// Load user commands with full details
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<IActionResult> Load(
-       [FromBody] SimpleSearchModel request
+       [FromBody] LoadFullUserCommandsQuery request
     )
     {
         try
         {
-            LoadFullUserCommandsQuery search = request.ToLoadFullUserCommandsQuery();
 
-            IPagedList<CTHUserCommandModel> result = await mediator.QueryAsync(search);
+            IPagedList<CTHUserCommandModel> result = await mediator.QueryAsync(request);
             if (result == null)
             {
                 return NotFound();
@@ -44,6 +48,13 @@ public class MenuController([FromKeyedServices(MediatorKey.CTH)] IMediator media
             throw ex.InnerException;
         }
     }
+
+    /// <summary>
+    /// Create Menu Command
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
 
     [HttpPost]
     public async Task<IActionResult> Create(
@@ -65,6 +76,13 @@ public class MenuController([FromKeyedServices(MediatorKey.CTH)] IMediator media
         }
     }
 
+    /// <summary>
+    /// Modify Menu Command
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+
     [HttpPost]
     public async Task<IActionResult> Modify(
         [FromBody] ModifyMenuCommand request,
@@ -74,6 +92,32 @@ public class MenuController([FromKeyedServices(MediatorKey.CTH)] IMediator media
         try
         {
             UserCommandResponseModel result = await mediator.SendAsync(request, cancellationToken);
+
+            return Ok(new { data = result });
+        }
+        catch (Exception ex)
+        {
+            string raw = ex.InnerException?.Message ?? ex.Message;
+            JObject errorObj = ErrorExtensions.BuildErrorDataFromResponse(raw);
+            return Ok(errorObj);
+        }
+    }
+
+    /// <summary>
+    /// Delete Menu Command
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpPost]
+    public async Task<IActionResult> Delete(
+        [FromBody] DeleteMenuCommand request,
+        CancellationToken cancellationToken
+    )
+    {
+        try
+        {
+            bool result = await mediator.SendAsync(request, cancellationToken);
 
             return Ok(new { data = result });
         }

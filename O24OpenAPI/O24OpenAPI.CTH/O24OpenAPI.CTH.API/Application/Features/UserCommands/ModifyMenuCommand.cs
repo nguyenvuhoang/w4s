@@ -5,6 +5,7 @@ using O24OpenAPI.CTH.API.Application.Models.Roles;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Models;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace O24OpenAPI.CTH.API.Application.Features.UserCommands;
@@ -42,9 +43,27 @@ public class ModifyMenuCommandHandler(IUserCommandRepository userCommandReposito
         var userCommandExists = await userCommandRepository.GetByCommandIdAsync(request.CommandId, request.ApplicationCode) ??
             throw new O24OpenAPIException($"CommandId {request.CommandId} is does not exists.");
 
+        Dictionary<string, string> langMap;
+        var options = new JsonSerializerOptions
+        {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
+        try
+        {
+
+            langMap = JsonSerializer.Deserialize<Dictionary<string, string>>(
+                request.CommandNameLanguage,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            ) ?? [];
+        }
+        catch (JsonException ex)
+        {
+            throw new ArgumentException("command_name_language must be a JSON object like {\"en\":\"...\",\"vi\":\"...\"}", ex);
+        }
+
         userCommandExists.ParentId = request.ParentId;
         userCommandExists.CommandName = request.CommandName;
-        userCommandExists.CommandNameLanguage = JsonSerializer.Serialize(request.CommandNameLanguage);
+        userCommandExists.CommandNameLanguage = JsonSerializer.Serialize(langMap, options);
         userCommandExists.CommandType = request.CommandType;
         userCommandExists.Enabled = request.Enabled;
         userCommandExists.IsVisible = request.IsVisible;

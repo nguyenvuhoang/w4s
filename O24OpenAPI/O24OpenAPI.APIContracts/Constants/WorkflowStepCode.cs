@@ -73,6 +73,7 @@ public static class WorkflowStepCode
         public const string WF_STEP_CTH_RETRIEVE_USER = "WF_STEP_CTH_RETRIEVE_USER";
         public const string WF_STEP_CTH_CREATE_MENU = "WF_STEP_CTH_CREATE_MENU";
         public const string WF_STEP_CTH_MODIFY_MENU = "WF_STEP_CTH_MODIFY_MENU";
+        public const string WF_STEP_CTH_DELETE_MENU = "WF_STEP_CTH_DELETE_MENU";
     }
     #endregion
 

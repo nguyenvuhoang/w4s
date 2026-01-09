@@ -5,6 +5,7 @@ using O24OpenAPI.CTH.API.Application.Models.Roles;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Models;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace O24OpenAPI.CTH.API.Application.Features.UserCommands;
@@ -45,13 +46,31 @@ public class CreateMenuCommandHandler(IUserCommandRepository userCommandReposito
             throw new O24OpenAPIException($"CommandId {request.CommandId} already exists.");
         }
 
+        Dictionary<string, string> langMap;
+        var options = new JsonSerializerOptions
+        {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
+        try
+        {
+
+            langMap = JsonSerializer.Deserialize<Dictionary<string, string>>(
+                request.CommandNameLanguage,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            ) ?? [];
+        }
+        catch (JsonException ex)
+        {
+            throw new ArgumentException("command_name_language must be a JSON object like {\"en\":\"...\",\"vi\":\"...\"}", ex);
+        }
+
         var command = new UserCommand
         {
             CommandId = request.CommandId,
             ApplicationCode = request.ApplicationCode,
             ParentId = request.ParentId,
             CommandName = request.CommandName,
-            CommandNameLanguage = JsonSerializer.Serialize(request.CommandNameLanguage),
+            CommandNameLanguage = JsonSerializer.Serialize(langMap, options),
             CommandType = request.CommandType,
             CommandURI = request.CommandURI,
             Enabled = request.Enabled,
