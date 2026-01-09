@@ -1,4 +1,8 @@
-﻿using LinKit.Core.Abstractions;
+﻿using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
+using LinKit.Core.Abstractions;
 using LinKit.Core.Cqrs;
 using LinKit.Json.Runtime;
 using Microsoft.Extensions.Caching.Memory;
@@ -24,10 +28,6 @@ using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using O24OpenAPI.Logging.Helpers;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 
 namespace O24OpenAPI.CMS.API.Application.Features.Requests;
 
@@ -605,8 +605,8 @@ public class RequestHandlerV1(
                             ICMSSettingService settingService =
                                 EngineContext.Current.Resolve<ICMSSettingService>();
                             string setting = await settingService.GetStringValue(settingKey);
-                            //learnApi.URI = setting + remainingPath;
-                            learnApi.URI = "https://localhost:5070" + remainingPath;
+                            learnApi.URI = setting + remainingPath;
+                            // learnApi.URI = "https://localhost:5070" + remainingPath;
                         }
                     }
                 }
