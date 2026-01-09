@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using O24OpenAPI.CMS.API.Application.Features.Requests;
+using O24OpenAPI.CMS.API.Application.Models;
 using O24OpenAPI.Framework.Controllers;
 using O24OpenAPI.Kit.Keyvault.Extensions;
 using O24OpenAPI.Kit.Signature.Extensions;
@@ -19,8 +19,8 @@ public class SignatureController : BaseController
         }
 
         string privateKey = KeyvaultExtension.GetSecretKey();
-        var result = SignatureExtension.GetSignature(requestJson, privateKey);
-        var (signature, timestamp, nounce) = await Task.FromResult(result);
+        (string signature, string timestamp, string nounce) result = SignatureExtension.GetSignature(requestJson, privateKey);
+        (string signature, string timestamp, string nounce) = await Task.FromResult(result);
 
         return Ok(
             new

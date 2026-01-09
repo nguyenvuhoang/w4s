@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
+using LinKit.Json.Runtime;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using O24OpenAPI.Core.Domain;
+using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Logging.Enums;
 using Serilog;
@@ -89,7 +89,7 @@ public class RestApiLoggingMiddleware(RequestDelegate next)
             .ForContext("Response", prettyResponse)
             .ForContext("Error", exception)
             .ForContext("Duration", duration)
-            .ForContext("Headers", JsonConvert.SerializeObject(headers, Formatting.Indented))
+            .ForContext("Headers", headers.WriteIndentedJson())
             .ForContext(
                 "Flow",
                 headers is not null && headers.TryGetValue("Flow", out var flowValue)
@@ -108,8 +108,8 @@ public class RestApiLoggingMiddleware(RequestDelegate next)
 
         try
         {
-            var jObject = JObject.Parse(jsonString);
-            return JsonConvert.SerializeObject(jObject, Formatting.Indented);
+            var dataObject = jsonString.FromJson<object>();
+            return dataObject.WriteIndentedJson();
         }
         catch
         {

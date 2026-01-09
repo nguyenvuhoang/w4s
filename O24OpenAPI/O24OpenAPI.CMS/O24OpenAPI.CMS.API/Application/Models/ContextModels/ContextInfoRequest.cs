@@ -12,8 +12,7 @@ public class ContextInfoRequestModel
     private string ClientOs = "";
     private string ClientBrowser = "";
     public string Language { get; set; } = "";
-    private BoRequestModel RequestJson = new();
-    private RequestModel RequestModel = new RequestModel();
+    private RequestModel RequestModel = new();
 
     public string GetIp() => Ip;
 
@@ -34,13 +33,6 @@ public class ContextInfoRequestModel
     public void SetClientBrowser(string clientBrowser)
     {
         ClientBrowser = clientBrowser;
-    }
-
-    public BoRequestModel GetRequestJson() => RequestJson;
-
-    public void SetRequestJson(BoRequestModel requestJson)
-    {
-        RequestJson = requestJson;
     }
 
     public RequestModel GetRequestModel() => RequestModel;

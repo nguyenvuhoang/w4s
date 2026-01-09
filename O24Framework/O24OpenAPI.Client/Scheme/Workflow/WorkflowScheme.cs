@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Newtonsoft.Json;
 using O24OpenAPI.Client.Enums;
 using O24OpenAPI.Client.Log;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -499,7 +498,6 @@ public class WorkflowScheme : IValidScheme
             /// <summary>
             /// Gets or sets the value of the data
             /// </summary>
-            [JsonConverter(typeof(JsonElementToStringConverter))]
             public object Data { get; set; }
 
             /// <summary>
@@ -621,49 +619,5 @@ public class WorkflowScheme : IValidScheme
             /// </summary>
             PROCESSING,
         }
-    }
-}
-
-/// <summary>
-/// The json element to string converter class
-/// </summary>
-/// <seealso cref="JsonConverter{JsonElement}"/>
-public class JsonElementToStringConverter : JsonConverter<JsonElement>
-{
-    /// <summary>
-    /// Writes the json using the specified writer
-    /// </summary>
-    /// <param name="writer">The writer</param>
-    /// <param name="value">The value</param>
-    /// <param name="serializer">The serializer</param>
-    public override void WriteJson(
-        JsonWriter writer,
-        JsonElement value,
-        Newtonsoft.Json.JsonSerializer serializer
-    )
-    {
-        // Sử dụng GetRawText để lấy chuỗi JSON gốc từ JsonElement
-        writer.WriteValue(value.GetRawText());
-    }
-
-    /// <summary>
-    /// Reads the json using the specified reader
-    /// </summary>
-    /// <param name="reader">The reader</param>
-    /// <param name="objectType">The object type</param>
-    /// <param name="existingValue">The existing value</param>
-    /// <param name="hasExistingValue">The has existing value</param>
-    /// <param name="serializer">The serializer</param>
-    /// <returns>The json element</returns>
-    public override JsonElement ReadJson(
-        JsonReader reader,
-        Type objectType,
-        JsonElement existingValue,
-        bool hasExistingValue,
-        Newtonsoft.Json.JsonSerializer serializer
-    )
-    {
-        // Parse lại chuỗi JSON vào JsonElement khi deserializing
-        return JsonDocument.Parse(reader.Value.ToString()).RootElement;
     }
 }

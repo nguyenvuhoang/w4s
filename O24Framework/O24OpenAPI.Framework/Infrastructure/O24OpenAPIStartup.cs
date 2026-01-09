@@ -112,7 +112,6 @@ internal class O24OpenAPIStartup : IO24OpenAPIStartup
         services.AddScoped<IStoredCommandService, StoredCommandService>();
         services.AddScoped<IEncryptionService, EncryptionService>();
         services.AddScoped<IO24OpenAPIMappingService, O24OpenAPIMappingService>();
-        services.AddScoped<IDataMappingService, DataMappingService>();
         services.AddScoped<IDataMapper, DataMapper>();
         //services.AddScoped<IEntityAuditService, EntityAuditService>();
         services.AddScoped<WorkContext>();

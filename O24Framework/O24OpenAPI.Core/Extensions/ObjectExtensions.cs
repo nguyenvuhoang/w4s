@@ -1,9 +1,9 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using LinKit.Json.Runtime;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.Core.Helper;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace O24OpenAPI.Core.Extensions;
 
@@ -210,7 +210,7 @@ public static class ObjectExtensions
         return JConvert.FromJson<T>(obj.ToJson());
     }
 
-    public static string WriteIndentedJson(this object obj, JsonSerializerOptions? options = null)
+    public static string WriteIndentedJson(this object? obj, JsonSerializerOptions? options = null)
     {
         if (obj is null)
         {

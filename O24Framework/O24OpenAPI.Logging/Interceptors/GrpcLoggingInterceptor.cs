@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
-using Newtonsoft.Json;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
@@ -19,7 +18,7 @@ public class GrpcLoggingInterceptor : Interceptor
         UnaryServerMethod<TRequest, TResponse> continuation
     )
     {
-        var correlationId = EngineContext.Current.Resolve<WorkContext>().ExecutionLogId;
+        var correlationId = EngineContext.Current.ResolveRequired<WorkContext>().ExecutionLogId;
         var headers = context
             .RequestHeaders.Where(e => !e.IsBinary)
             .ToDictionary(e => e.Key, e => e.Value);
@@ -66,11 +65,11 @@ public class GrpcLoggingInterceptor : Interceptor
         TResponse? response,
         Exception? exception,
         long duration,
-        IDictionary<string, string> headers
+        Dictionary<string, string> headers
     )
     {
-        var prettyRequest = TryPrettifyJson(request);
-        var prettyResponse = TryPrettifyJson(response);
+        var prettyRequest = request.WriteIndentedJson();
+        var prettyResponse = response.WriteIndentedJson();
 
         Log.ForContext("LogType", LogType.Grpc)
             .ForContext("Direction", LogDirection.In)
@@ -79,28 +78,11 @@ public class GrpcLoggingInterceptor : Interceptor
             .ForContext("Response", prettyResponse)
             .ForContext("Error", exception)
             .ForContext("Duration", duration)
-            .ForContext("Headers", JsonConvert.SerializeObject(headers, Formatting.Indented))
+            .ForContext("Headers", headers.WriteIndentedJson())
             .ForContext(
                 "Flow",
                 headers.TryGetValue("flow", out var flowValue) ? flowValue.ToString() : null
             )
             .Information("gRPC Call Log");
-    }
-
-    private static string? TryPrettifyJson(object? data)
-    {
-        if (data is null)
-        {
-            return null;
-        }
-
-        try
-        {
-            return JsonConvert.SerializeObject(data, Formatting.Indented);
-        }
-        catch
-        {
-            return data.ToString();
-        }
     }
 }

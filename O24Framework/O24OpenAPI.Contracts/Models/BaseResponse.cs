@@ -1,40 +1,64 @@
+using System.Text.Json.Serialization;
 using O24OpenAPI.Core;
 
 namespace O24OpenAPI.Contracts.Models;
 
 public class BaseResponse<T>
 {
-    public bool success { get; set; }
-    public long time_in_milliseconds { get; set; }
-    public string? status { get; set; }
-    public string? description { get; set; }
-    public string? error_code { get; set; }
-    public string? error_message { get; set; }
-    public string? execution_id { get; set; }
-    public string? error_next_action { get; set; }
-    public object? transaction_number { get; set; }
-    public object? transaction_date { get; set; }
-    public object? value_date { get; set; }
-    public T? data { get; set; }
+    [JsonPropertyName("success")]
+    public bool Success { get; set; }
+
+    [JsonPropertyName("execution_id")]
+    public string? ExecutionId { get; set; }
+
+    [JsonPropertyName("time_in_milliseconds")]
+    public long TimeInMilliseconds { get; set; }
+
+    [JsonPropertyName("status")]
+    public string? Status { get; set; }
+
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
+
+    [JsonPropertyName("error_code")]
+    public string? ErrorCode { get; set; }
+
+    [JsonPropertyName("error_message")]
+    public string? ErrorMessage { get; set; }
+
+    [JsonPropertyName("error_next_action")]
+    public string? ErrorNextAction { get; set; }
+
+    [JsonPropertyName("transaction_number")]
+    public object? TransactionNumber { get; set; }
+
+    [JsonPropertyName("transaction_date")]
+    public object? TransactionDate { get; set; }
+
+    [JsonPropertyName("value_date")]
+    public object? ValueDate { get; set; }
+
+    [JsonPropertyName("data")]
+    public T? Data { get; set; }
 
     public BaseResponse() { }
 
-    public BaseResponse(T? _data)
+    public BaseResponse(T? data)
     {
-        data = _data;
-        success = true;
+        Data = data;
+        Success = true;
     }
 
     public BaseResponse(Exception ex)
     {
-        success = false;
-        error_message = ex.Message;
+        Success = false;
+        ErrorMessage = ex.Message;
     }
 
     public BaseResponse(O24OpenAPIException ex)
     {
-        success = false;
-        error_code = ex.ErrorCode;
-        error_message = ex.Message;
+        Success = false;
+        ErrorCode = ex.ErrorCode;
+        ErrorMessage = ex.Message;
     }
 }

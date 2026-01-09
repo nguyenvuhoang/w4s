@@ -35,6 +35,7 @@ AsyncScope.Scope = scope;
 
 await app.ConfigureInfrastructure();
 await app.StartEngine();
+app.UseMiddleware<ResponseWrapperMiddleware>();
 app.ShowStartupBanner();
 app.MapControllers();
 app.MapGrpcService<CTHGrpcService>();

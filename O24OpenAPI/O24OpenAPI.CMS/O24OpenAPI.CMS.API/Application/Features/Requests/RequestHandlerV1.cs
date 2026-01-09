@@ -1,4 +1,8 @@
-﻿using LinKit.Core.Abstractions;
+﻿using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
+using LinKit.Core.Abstractions;
 using LinKit.Core.Cqrs;
 using LinKit.Json.Runtime;
 using Microsoft.Extensions.Caching.Memory;
@@ -11,6 +15,7 @@ using O24OpenAPI.CMS.API.Application.Services.Interfaces;
 using O24OpenAPI.CMS.API.Application.Utils;
 using O24OpenAPI.CMS.Domain.AggregateModels.LearnApiAggregate;
 using O24OpenAPI.CMS.Infrastructure.Configurations;
+using O24OpenAPI.Contracts.Models;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Utils;
@@ -23,11 +28,6 @@ using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using O24OpenAPI.Logging.Helpers;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace O24OpenAPI.CMS.API.Application.Features.Requests;
 
@@ -416,7 +416,6 @@ public class RequestHandlerV1(
 
             result = await ProcessBoRequest(requestModel);
 
-            Console.WriteLine("result.error ==" + result.ToSerialize());
             return result;
         }
         catch (Exception ex)
@@ -472,32 +471,27 @@ public class RequestHandlerV1(
         WorkContext workflowContext = EngineContext.Current.Resolve<WorkContext>();
         string executeId = workflowContext.ExecutionId;
 
-        var executionResult = await ExecuteAsync(requestModel);
-        var data = executionResult["data"];
+        BaseResponse<object> executionResult = await ExecuteAsync(requestModel);
 
-        if (data != null)
+        if (executionResult != null)
         {
-            var dict = data.ToJson().FromJson<Dictionary<string, object>>();
-            if (
-                dict.TryGetValue("error_message", out var errorMessage)
-                && !string.IsNullOrWhiteSpace(errorMessage?.ToString())
-            )
+            if (executionResult.Success == false)
             {
                 List<ErrorInfoModel> errors =
                 [
                     new ErrorInfoModel(
                         ErrorType.errorSystem,
                         ErrorMainForm.danger,
-                        errorMessage.ToString(),
-                        dict["error_code"]?.ToString() ?? "UNKNOWN_ERROR",
+                        executionResult.ErrorMessage,
+                        executionResult.ErrorCode ?? "UNKNOWN_ERROR",
                         "ERROR: ",
-                        nextAction: dict["next_action"]?.ToString() ?? "",
+                        nextAction: executionResult.ErrorNextAction ?? "",
                         executeId: executeId
                     ),
                 ];
                 return ResponseFactory.Error(errors, executeId);
             }
-            return ResponseFactory.Success(data);
+            return ResponseFactory.Success(executionResult.Data);
         }
         List<ErrorInfoModel> genericError =
         [
@@ -549,7 +543,7 @@ public class RequestHandlerV1(
         return (isNeedCheckSession, isRefreshToken);
     }
 
-    private async Task<Dictionary<string, object>> ExecuteAsync(RequestModel requestModel)
+    private async Task<BaseResponse<object>> ExecuteAsync(RequestModel requestModel)
     {
         try
         {
@@ -580,12 +574,16 @@ public class RequestHandlerV1(
                 }
                 if (learnApiId.StartsWithOrdinalIgnoreCase("CMS"))
                 {
-                    var learnApiExecutionResult = await LearnApiHandlers.HandleAsync(
+                    object learnApiExecutionResult =
+                        await LearnApiHandlers.HandleAsync(
                             learnApiId,
                             mappedRequest,
                             EngineContext.Current.Resolve<IMediator>(MediatorKey.CMS)
+                        )
+                        ?? throw new Exception(
+                            $"A error occur when processing learn api [{learnApiId}], result is null."
                         );
-                    return learnApiExecutionResult.ToJson().FromJson<Dictionary<string, object>>();
+                    return new BaseResponse<object>(learnApiExecutionResult);
                 }
                 if (learnApi.URI.StartsWith('$'))
                 {
@@ -608,6 +606,7 @@ public class RequestHandlerV1(
                                 EngineContext.Current.Resolve<ICMSSettingService>();
                             string setting = await settingService.GetStringValue(settingKey);
                             learnApi.URI = setting + remainingPath;
+                            // learnApi.URI = "https://localhost:5070" + remainingPath;
                         }
                     }
                 }
@@ -627,19 +626,7 @@ public class RequestHandlerV1(
                 response = await wfoGrpcClientService.ExecuteWorkflowAsync(obContent.ToJson());
             }
 
-            var result = response.FromJson<Dictionary<string, object>>();
-            if (result.TryGetValue("error_message", out var messageToken))
-            {
-                if (!string.IsNullOrEmpty(messageToken?.ToString()))
-                {
-                    result["data"] = new Dictionary<string, object>
-                    {
-                        { "error_message", messageToken },
-                        { "next_action", result["error_next_action"] },
-                        { "error_code", result["error_code"] },
-                    };
-                }
-            }
+            BaseResponse<object> result = response.FromJson<BaseResponse<object>>();
             return result;
         }
         catch (Exception ex)
@@ -648,13 +635,10 @@ public class RequestHandlerV1(
             throw;
         }
     }
+
     private JsonObject BuildContentWorkflowRequestV1(RequestModel requestModel)
     {
-        // Chuyển requestModel thành JsonNode, sau đó ép kiểu sang JsonObject
-        // Sử dụng JsonSerializer.SerializeToNode để tạo bản sao mới từ model
         JsonObject wfInput = JsonSerializer.SerializeToNode(requestModel)?.AsObject() ?? [];
-
-        // Gán các giá trị mở rộng
         wfInput["lang"] = context.InfoRequest.Language;
         wfInput["token"] = context.InfoUser.GetUserLogin().Token;
         wfInput["user_id"] = context.InfoUser.UserSession?.UserId.ToString() ?? "0";
@@ -663,10 +647,6 @@ public class RequestHandlerV1(
         wfInput["channel_id"] = context.InfoApp.GetApp();
         wfInput["transaction_date"] = DateTime.UtcNow;
 
-        // Tương đương ["value_date"] nếu cần mở comment
-        // wfInput["value_date"] = context.InfoUser.UserSession?.SomeDate ?? DateTime.UtcNow;
-
-        // Xử lý DeviceModel phức tạp bằng cách Serialize nó thành Node
         DeviceModel deviceData = new()
         {
             IpAddress = context.InfoRequest.GetIp() ?? "::1",
@@ -689,7 +669,6 @@ public class RequestHandlerV1(
             Network = context.InfoRequest.Network,
         };
 
-        // Chèn object lồng nhau
         wfInput["device"] = JsonSerializer.SerializeToNode(
             deviceData,
             FWJsonContext.Default.DeviceModel
@@ -732,13 +711,5 @@ public class RequestHandlerV1(
         string result = await httpResponse.Content.ReadAsStringAsync();
 
         return result;
-    }
-
-    public Task<ActionsResponseModel<object>> HandleAsync(
-        BoRequestModel bo,
-        HttpContext httpContext
-    )
-    {
-        throw new NotImplementedException();
     }
 }

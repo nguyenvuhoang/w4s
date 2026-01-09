@@ -54,10 +54,7 @@ public class WorkflowExecutionHandler(
 
     public async Task<WorkflowResponse> ExecuteWorkflowAsync(string input)
     {
-        WorkflowInput workflowInput = JsonSerializer.Deserialize<WorkflowInput>(
-            input,
-            WFOJsonContext.Default.WorkflowInput
-        );
+        WorkflowInput workflowInput = JsonSerializer.Deserialize<WorkflowInput>(input);
         WorkflowInfoModel = new WorkflowInfoModel(workflowInput)
         {
             input_string = input,

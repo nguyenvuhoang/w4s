@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using System.Diagnostics;
+using System.Text;
 using O24OpenAPI.Core.Domain;
+using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Logging.Enums;
 using Serilog;
-using System.Diagnostics;
-using System.Text;
 
 namespace O24OpenAPI.Logging.Helpers;
 
@@ -17,17 +17,17 @@ public static class RabbitMqLogHelper
         IDictionary<string, object> headers
     )
     {
-        string correlationId = EngineContext.Current.Resolve<WorkContext>().ExecutionLogId;
+        string correlationId = EngineContext.Current.ResolveRequired<WorkContext>().ExecutionLogId;
 
         using (LogContextHelper.Push(correlationId, serviceName))
         {
-            string payload = JsonConvert.SerializeObject(message, Formatting.Indented);
+            string payload = message.WriteIndentedJson();
 
             Log.ForContext("LogType", LogType.RabbitMq)
                 .ForContext("Direction", LogDirection.Out)
                 .ForContext("Action", $"Publish to {destination}")
                 .ForContext("Request", payload)
-                .ForContext("Headers", JsonConvert.SerializeObject(headers, Formatting.Indented))
+                .ForContext("Headers", headers.WriteIndentedJson())
                 .ForContext(
                     "Flow",
                     headers.TryGetValue("Flow", out object? flowValue) ? flowValue.ToString() : null
@@ -44,7 +44,7 @@ public static class RabbitMqLogHelper
         Func<Task> processAction
     )
     {
-        string correlationId = EngineContext.Current.Resolve<WorkContext>().ExecutionLogId;
+        string correlationId = EngineContext.Current.ResolveRequired<WorkContext>().ExecutionLogId;
 
         using (LogContextHelper.Push(correlationId, serviceName))
         {
@@ -69,10 +69,7 @@ public static class RabbitMqLogHelper
                     .ForContext("Request", payload)
                     .ForContext("Error", exception)
                     .ForContext("Duration", stopwatch.ElapsedMilliseconds)
-                    .ForContext(
-                        "Headers",
-                        JsonConvert.SerializeObject(headers, Formatting.Indented)
-                    )
+                    .ForContext("Headers", headers.WriteIndentedJson())
                     .Information("RabbitMQ Consume Log");
             }
         }

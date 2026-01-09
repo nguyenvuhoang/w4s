@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using O24OpenAPI.CMS.API.Application.Features.Requests;
 
 namespace O24OpenAPI.CMS.API.Application.Models.Request;
 
@@ -224,57 +223,4 @@ public class FoCreateModel : BaseO24OpenAPIModel
     /// <value></value>
     [JsonProperty("app")]
     public string App { get; set; } = string.Empty;
-}
-
-/// <summary>
-///
-/// </summary>
-public partial class FoAction : BaseO24OpenAPIModel
-{
-    /// <summary>
-    ///
-    /// </summary>
-    public FoAction() { }
-
-    /// <summary>
-    ///
-    /// </summary>
-    /// <value></value>
-    [JsonProperty("name")]
-    public string Name { get; set; } = string.Empty;
-
-    /// <summary>
-    ///
-    /// </summary>
-    /// <value></value>
-    [JsonProperty("function")]
-    public string Function { get; set; } = string.Empty;
-
-    /// <summary>
-    ///
-    /// </summary>
-    /// <value></value>
-    [JsonProperty("type")]
-    public string Type { get; set; } = string.Empty;
-
-    /// <summary>
-    ///
-    /// </summary>
-    /// <value></value>
-    [JsonProperty("status")]
-    public string Status { get; set; } = string.Empty;
-
-    /// <summary>
-    ///
-    /// </summary>
-    /// <value></value>
-    [JsonProperty("para")]
-    public List<object> Para { get; set; } = null;
-
-    /// <summary>
-    ///
-    /// </summary>
-    /// <value></value>
-    [JsonProperty("request")]
-    public Dictionary<string, BoRequestModel> Request { get; set; }
 }

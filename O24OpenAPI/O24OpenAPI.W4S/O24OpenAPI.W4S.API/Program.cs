@@ -1,5 +1,6 @@
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
+using O24OpenAPI.Framework.Middlewares;
 using O24OpenAPI.W4S.API.Application;
 using O24OpenAPI.W4S.Infrastructure.Extensions;
 
@@ -24,13 +25,15 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-app.MapControllers();
+app.UseMiddleware<WorkContextPropagationMiddleware>();
 
 using IServiceScope scope = app.Services.CreateScope();
 AsyncScope.Scope = scope;
 
 await app.ConfigureInfrastructure();
 await app.StartEngine();
+app.UseMiddleware<ResponseWrapperMiddleware>();
+app.MapControllers();
 app.ShowStartupBanner();
 app.MapGeneratedEndpoints();
 app.Run();

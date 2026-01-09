@@ -13,14 +13,7 @@ public class UserController([FromKeyedServices("cth")] IMediator mediator) : Bas
         CancellationToken cancellationToken
     )
     {
-        try
-        {
-            bool? result = await mediator.SendAsync(request, cancellationToken);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            throw ex.InnerException;
-        }
+        bool? result = await mediator.SendAsync(request, cancellationToken);
+        return Ok(result);
     }
 }

@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using System.Text;
-using Newtonsoft.Json;
+using LinKit.Json.Runtime;
 using O24OpenAPI.KeyVault.Utility;
 
 namespace O24OpenAPI.Client.Infisical;
@@ -21,7 +21,7 @@ public class InfisicalManager
     /// <typeparam name="T">The </typeparam>
     /// <param name="key">The key</param>
     /// <returns>The</returns>
-    public static T GetSecretByKey<T>(string key)
+    public static T? GetSecretByKey<T>(string key)
     {
         var secret = _secrets.GetOrAdd(
             key,
@@ -33,10 +33,10 @@ public class InfisicalManager
                     ?? throw new Exception($"Cannot find secret with key [{key}]");
                 byte[] data = Convert.FromBase64String(secret.SecretValue);
                 string decodedString = Encoding.UTF8.GetString(data);
-                var result = JsonConvert.DeserializeObject<T>(decodedString);
+                var result = decodedString.FromJson<T>();
                 return result;
             }
         );
-        return (T)secret;
+        return (T?)secret;
     }
 }

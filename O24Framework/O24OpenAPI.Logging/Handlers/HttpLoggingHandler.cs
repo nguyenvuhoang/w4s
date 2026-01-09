@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using LinKit.Json.Runtime;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Infrastructure;
@@ -100,8 +99,8 @@ public class HttpLoggingHandler : DelegatingHandler
 
         try
         {
-            var jObject = JObject.Parse(jsonString);
-            return JsonConvert.SerializeObject(jObject, Formatting.Indented);
+            var dataObject = jsonString.FromJson<object>();
+            return dataObject.ToJson(o => o.WriteIndented = true);
         }
         catch
         {

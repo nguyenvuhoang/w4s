@@ -1,10 +1,8 @@
 ﻿using LinKit.Core.Cqrs;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.APIContracts.Models.CTH;
 using O24OpenAPI.Core;
-using O24OpenAPI.CTH.API.Application.Extensions;
 using O24OpenAPI.CTH.API.Application.Features.UserCommands;
 using O24OpenAPI.CTH.API.Application.Models.Roles;
 using O24OpenAPI.CTH.API.Application.Models.UserCommandModels;
@@ -23,30 +21,20 @@ public class MenuController([FromKeyedServices(MediatorKey.CTH)] IMediator media
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> Load(
-       [FromBody] LoadFullUserCommandsQuery request
-    )
+    public async Task<IActionResult> Load([FromBody] LoadFullUserCommandsQuery request)
     {
-        try
+        IPagedList<CTHUserCommandModel> result = await mediator.QueryAsync(request);
+        if (result == null)
         {
-
-            IPagedList<CTHUserCommandModel> result = await mediator.QueryAsync(request);
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            PagedListModel<CTHUserCommandModel, MenuInfoModel> response = result.ToPagedListModel<
-                CTHUserCommandModel,
-                MenuInfoModel
-            >();
-
-            return Ok(new { data = response });
+            return NotFound();
         }
-        catch (Exception ex)
-        {
-            throw ex.InnerException;
-        }
+
+        PagedListModel<CTHUserCommandModel, MenuInfoModel> response = result.ToPagedListModel<
+            CTHUserCommandModel,
+            MenuInfoModel
+        >();
+
+        return Ok(response);
     }
 
     /// <summary>
@@ -55,25 +43,15 @@ public class MenuController([FromKeyedServices(MediatorKey.CTH)] IMediator media
     /// <param name="request"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-
     [HttpPost]
     public async Task<IActionResult> Create(
         [FromBody] CreateMenuCommand request,
         CancellationToken cancellationToken
     )
     {
-        try
-        {
-            UserCommandResponseModel result = await mediator.SendAsync(request, cancellationToken);
+        UserCommandResponseModel result = await mediator.SendAsync(request, cancellationToken);
 
-            return Ok(new { data = result });
-        }
-        catch (Exception ex)
-        {
-            string raw = ex.InnerException?.Message ?? ex.Message;
-            JObject errorObj = ErrorExtensions.BuildErrorDataFromResponse(raw);
-            return Ok(errorObj);
-        }
+        return Ok(result);
     }
 
     /// <summary>
@@ -82,25 +60,15 @@ public class MenuController([FromKeyedServices(MediatorKey.CTH)] IMediator media
     /// <param name="request"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-
     [HttpPost]
     public async Task<IActionResult> Modify(
         [FromBody] ModifyMenuCommand request,
         CancellationToken cancellationToken
     )
     {
-        try
-        {
-            UserCommandResponseModel result = await mediator.SendAsync(request, cancellationToken);
+        UserCommandResponseModel result = await mediator.SendAsync(request, cancellationToken);
 
-            return Ok(new { data = result });
-        }
-        catch (Exception ex)
-        {
-            string raw = ex.InnerException?.Message ?? ex.Message;
-            JObject errorObj = ErrorExtensions.BuildErrorDataFromResponse(raw);
-            return Ok(errorObj);
-        }
+        return Ok(result);
     }
 
     /// <summary>
@@ -115,17 +83,8 @@ public class MenuController([FromKeyedServices(MediatorKey.CTH)] IMediator media
         CancellationToken cancellationToken
     )
     {
-        try
-        {
-            bool result = await mediator.SendAsync(request, cancellationToken);
+        bool result = await mediator.SendAsync(request, cancellationToken);
 
-            return Ok(new { data = result });
-        }
-        catch (Exception ex)
-        {
-            string raw = ex.InnerException?.Message ?? ex.Message;
-            JObject errorObj = ErrorExtensions.BuildErrorDataFromResponse(raw);
-            return Ok(errorObj);
-        }
+        return Ok(result);
     }
 }
