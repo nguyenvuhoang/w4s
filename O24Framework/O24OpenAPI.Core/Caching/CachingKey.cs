@@ -12,6 +12,9 @@ public class CachingKey
     public static CacheKey SessionKey(string token) =>
         new(SessionTemplate, new object[] { token.Hash() });
 
+    public static CacheKey SessionKeyNoHash(string token) =>
+       new(SessionTemplate, new object[] { token });
+
     public static CacheKey EntityKey<T>(params string[] values) =>
         new(EntityTemplate, new object[] { typeof(T).Name, string.Join(":", values) });
 

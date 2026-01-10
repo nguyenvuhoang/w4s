@@ -77,7 +77,6 @@ public class LoginHandler(
     ISupperAdminRepository supperAdminRepository,
     IUserAccountRepository userAccountRepository,
     IJwtTokenService jwtTokenService,
-    IUserRightRepository userRightRepository,
     IUserSessionRepository userSessionRepository,
     IUserDeviceRepository userDeviceRepository,
     WebApiSettings webApiSettings,
@@ -296,6 +295,8 @@ public class LoginHandler(
             },
             ((DateTimeOffset)expireTime).ToUnixTimeSeconds()
         );
+
+        await userSessionRepository.RevokeByLoginName(request.LoginName);
 
         string hashedToken = token.Hash();
         string refreshToken = JwtTokenService.GenerateRefreshToken();

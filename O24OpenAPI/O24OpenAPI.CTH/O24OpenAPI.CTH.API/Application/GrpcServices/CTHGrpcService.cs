@@ -20,15 +20,12 @@ public class CTHGrpcService : CTHGrpcServiceBase
 {
     private readonly IUserSessionRepository _userSessionRepository =
         EngineContext.Current.Resolve<IUserSessionRepository>();
-    private readonly IUserRightRepository _userRightRepository =
-        EngineContext.Current.Resolve<IUserRightRepository>();
     private readonly IUserRightChannelRepository _userRightChannelRepository =
         EngineContext.Current.Resolve<IUserRightChannelRepository>();
     private readonly IUserDeviceRepository _userDeviceRepository =
         EngineContext.Current.Resolve<IUserDeviceRepository>();
     private readonly IUserCommandRepository _userCommandRepository =
         EngineContext.Current.Resolve<IUserCommandRepository>();
-
     private readonly IUserAccountRepository _userAccountRepository =
         EngineContext.Current.Resolve<IUserAccountRepository>();
     private readonly IUserInRoleRepository userInRoleRepository =

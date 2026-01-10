@@ -14,8 +14,8 @@ namespace O24OpenAPI.W4S.Infrastructure.Migrations;
 /// </summary>
 /// <seealso cref="AutoReversingMigration"/>
 [O24OpenAPIMigration(
-    "2026/01/05 14:10:01:0000000",
-    "Init W4S table",
+    "2026/01/10 12:10:01:0000000",
+    "10. Init W4S table",
     MigrationProcessType.Installation
 )]
 [Environment(EnvironmentType.All)]
@@ -146,6 +146,78 @@ public class SchemaMigration : AutoReversingMigration
                 .Ascending()
                 .OnColumn("CreatedOnUtc")
                 .Descending();
+        }
+
+        if (!Schema.Table(nameof(WalletStatement)).Exists())
+        {
+            Create.TableFor<WalletStatement>();
+
+            Create.Index("IX_WalletStatement_WalletId_StatementOnUtc")
+                .OnTable(nameof(WalletStatement))
+                .OnColumn(nameof(WalletStatement.WalletId)).Ascending()
+                .OnColumn(nameof(WalletStatement.StatementOnUtc)).Descending();
+
+            Create.Index("IX_WalletStatement_WalletId_AccountNumber_StatementOnUtc")
+                .OnTable(nameof(WalletStatement))
+                .OnColumn(nameof(WalletStatement.WalletId)).Ascending()
+                .OnColumn(nameof(WalletStatement.AccountNumber)).Ascending()
+                .OnColumn(nameof(WalletStatement.StatementOnUtc)).Descending();
+
+            Create.Index("IX_WalletStatement_WalletId_IsReconciled_StatementOnUtc")
+                .OnTable(nameof(WalletStatement))
+                .OnColumn(nameof(WalletStatement.WalletId)).Ascending()
+                .OnColumn(nameof(WalletStatement.IsReconciled)).Ascending()
+                .OnColumn(nameof(WalletStatement.StatementOnUtc)).Descending();
+
+            Create.Index("IX_WalletStatement_ReferenceType_ReferenceId")
+                .OnTable(nameof(WalletStatement))
+                .OnColumn(nameof(WalletStatement.ReferenceType)).Ascending()
+                .OnColumn(nameof(WalletStatement.ReferenceId)).Ascending();
+
+            Create.Index("IX_WalletStatement_ExternalRef")
+                .OnTable(nameof(WalletStatement))
+                .OnColumn(nameof(WalletStatement.ExternalRef)).Ascending();
+
+            Create.Index("IX_WalletStatement_WalletId_CategoryId_StatementOnUtc")
+                .OnTable(nameof(WalletStatement))
+                .OnColumn(nameof(WalletStatement.WalletId)).Ascending()
+                .OnColumn(nameof(WalletStatement.CategoryId)).Ascending()
+                .OnColumn(nameof(WalletStatement.StatementOnUtc)).Descending();
+
+            Create.Index("IX_WalletStatement_WalletId_EventId_StatementOnUtc")
+                .OnTable(nameof(WalletStatement))
+                .OnColumn(nameof(WalletStatement.WalletId)).Ascending()
+                .OnColumn(nameof(WalletStatement.EventId)).Ascending()
+                .OnColumn(nameof(WalletStatement.StatementOnUtc)).Descending();
+        }
+
+        if (!Schema.Table(nameof(WalletEvent)).Exists())
+        {
+            Create.TableFor<WalletEvent>();
+
+            Create.Index("IX_WalletEvent_WalletId_StartOnUtc")
+                .OnTable(nameof(WalletEvent))
+                .OnColumn(nameof(WalletEvent.WalletId)).Ascending()
+                .OnColumn(nameof(WalletEvent.StartOnUtc)).Descending();
+
+            Create.Index("IX_WalletEvent_WalletId_Status_StartOnUtc")
+                .OnTable(nameof(WalletEvent))
+                .OnColumn(nameof(WalletEvent.WalletId)).Ascending()
+                .OnColumn(nameof(WalletEvent.Status)).Ascending()
+                .OnColumn(nameof(WalletEvent.StartOnUtc)).Descending();
+
+            Create.Index("IX_WalletEvent_ReminderOnUtc")
+                .OnTable(nameof(WalletEvent))
+                .OnColumn(nameof(WalletEvent.ReminderOnUtc)).Ascending();
+
+            Create.Index("IX_WalletEvent_RecurringGroupId")
+                .OnTable(nameof(WalletEvent))
+                .OnColumn(nameof(WalletEvent.RecurrenceGroupId)).Ascending();
+
+            Create.Index("IX_WalletEvent_ReferenceType_ReferenceId")
+                .OnTable(nameof(WalletEvent))
+                .OnColumn(nameof(WalletEvent.ReferenceType)).Ascending()
+                .OnColumn(nameof(WalletEvent.ReferenceId)).Ascending();
         }
     }
 }

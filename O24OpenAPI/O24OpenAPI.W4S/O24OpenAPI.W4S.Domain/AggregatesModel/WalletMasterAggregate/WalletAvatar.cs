@@ -1,8 +1,10 @@
-﻿using O24OpenAPI.Core.Domain;
+﻿using O24OpenAPI.Core.Attributes;
+using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.W4S.Domain.AggregatesModel.WalletMasterAggregate
 {
-    public class WalletAvatar : BaseEntity
+    [Auditable]
+    public partial class WalletAvatar : BaseEntity
     {
         public int WalletId { get; set; } = default!;
         public string? UserCode { get; set; }
@@ -18,6 +20,8 @@ namespace O24OpenAPI.W4S.Domain.AggregatesModel.WalletMasterAggregate
 
         public void SetCurrent() => IsCurrent = true;
         public void UnsetCurrent() => IsCurrent = false;
+
+        public WalletAvatar() { }
 
     }
 }

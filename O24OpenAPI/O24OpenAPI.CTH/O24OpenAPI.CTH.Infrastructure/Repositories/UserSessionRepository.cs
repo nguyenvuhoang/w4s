@@ -4,6 +4,7 @@ using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Data;
+using O24OpenAPI.Logging.Helpers;
 
 namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
@@ -49,10 +50,8 @@ public class UserSessionRepository(
 
     public async Task AddAsync(UserSession userSession)
     {
-        //ArgumentNullException.ThrowIfNull(userSession);
         await InsertAsync(userSession);
-        // var sessionModel = userSession.ToModel<UserSessionModel>();
-        await _staticCacheManager.Set(CachingKey.SessionKey(userSession.Token!), userSession);
+        await _staticCacheManager.Set(CachingKey.SessionKeyNoHash(userSession.Token!), userSession);
     }
 
     public async Task RevokeByLoginName(string loginName)
@@ -86,28 +85,63 @@ public class UserSessionRepository(
     public async Task<UserSession?> GetByToken(string token, bool activeOnly = true)
     {
         CacheKey cacheKey = CachingKey.SessionKey(token);
-        UserSession? session = await _staticCacheManager.Get<UserSession>(cacheKey);
+        string hashedToken = token.Hash();
+
+        BusinessLogHelper.Info(
+            "===============Getting user session by token {0} from cache or database.===============",
+            hashedToken
+        );
+
+        UserSession? session = null;
+
+        try
+        {
+            session = await _staticCacheManager.Get<UserSession>(cacheKey);
+        }
+        catch (Exception ex)
+        {
+            BusinessLogHelper.Error(
+                ex,
+                "Failed to get UserSession from cache. TokenHash={0}",
+                hashedToken
+            );
+        }
 
         if (session == null || session.Id == 0)
         {
-            string hashedToken = token.Hash();
             IQueryable<UserSession> query = Table.Where(s => s.Token == hashedToken);
 
             if (activeOnly)
             {
-                query = query.Where(s => !s.IsRevoked && s.ExpiresAt > DateTime.UtcNow);
+                query = query.Where(s =>
+                    !s.IsRevoked &&
+                    s.ExpiresAt > DateTime.UtcNow
+                );
             }
 
             session = await query.FirstOrDefaultAsync();
 
             if (session != null)
             {
-                await _staticCacheManager.Set(cacheKey, session);
+                try
+                {
+                    BusinessLogHelper.Info("Session loaded from DB {0}", session.Token);
+                    await _staticCacheManager.Set(cacheKey, session);
+                }
+                catch (Exception ex)
+                {
+                    BusinessLogHelper.Error(
+                        ex,
+                        "Failed to set UserSession to cache. TokenHash={0}",
+                        hashedToken
+                    );
+                }
             }
         }
 
         return session;
     }
+
 
     public async Task UpdateSignatureKey(string token, string signatureKey)
     {

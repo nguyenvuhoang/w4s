@@ -90,10 +90,7 @@ public class CreateUserHandle(
             string salt = PasswordUtils.GenerateRandomSalt();
             string hashPassword = O9Encrypt.sha_sha256(password, userCode);
 
-            string userchannel = string.IsNullOrEmpty(request.ContractType)
-                ? "BO"
-                : (request.ContractType == "IND" ? "MB" : "AM");
-
+            string userchannel = Code.Channel.MB;
             List<int> listofRoleUser = await userRightChannelRepository.GetListRoleIdByChannelAsync(
                 userchannel
             );
