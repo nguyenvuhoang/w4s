@@ -185,10 +185,10 @@ public class RetrieveWalletInformationHandler(
 
             // Contract captions (only if contract exists)
             int? contractType = (int?)(contract?.ContractType);
-            string? contractStatus = contract?.Status.ToString();
+            string contractStatus = contract?.Status.ToString();
 
-            string? contractTypeCaption = null;
-            string? contractStatusCaption = null;
+            string contractTypeCaption = null;
+            string contractStatusCaption = null;
 
             if (contract != null)
             {

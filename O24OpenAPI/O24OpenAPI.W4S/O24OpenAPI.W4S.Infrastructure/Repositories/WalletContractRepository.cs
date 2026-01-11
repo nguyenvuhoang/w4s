@@ -14,21 +14,21 @@ public class WalletContractRepository(
 {
     public async Task<bool> ExistsByContractNumberAsync(string contractNumber)
     {
-        var walletContract = await GetByContractNumberAsync(contractNumber);
+        WalletContract walletContract = await GetByContractNumberAsync(contractNumber);
         return walletContract != null;
     }
 
     public async Task<WalletContract> GetByContractNumberAsync(string contractNumber)
     {
-        var contract = await Table.Where(x => x.ContractNumber == contractNumber)
+        WalletContract contract = await Table
+            .Where(x => x.ContractNumber == contractNumber)
             .FirstOrDefaultAsync();
         return contract;
     }
 
     public async Task<WalletContract> GetByPhoneAsync(string Phone)
     {
-        var contract = await Table.Where(x => x.Phone == Phone)
-            .FirstOrDefaultAsync();
+        WalletContract contract = await Table.Where(x => x.Phone == Phone).FirstOrDefaultAsync();
         return contract;
     }
 }

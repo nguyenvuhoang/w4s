@@ -10,16 +10,12 @@ namespace O24OpenAPI.W4S.Infrastructure.Repositories;
 public class WalletEventRepository(
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<WalletEvent>(dataProvider, staticCacheManager),
-        IWalletEventRepository
+) : EntityRepository<WalletEvent>(dataProvider, staticCacheManager), IWalletEventRepository
 {
-    public Task<List<WalletEvent>> GetByWalletIdsAsync(int walletIds)
+    public async Task<List<WalletEvent>> GetByWalletIdsAsync(int walletId)
     {
-        if (walletIds <= 0)
-            return Task.FromResult(new List<WalletEvent>());
-        return Table
-            .Where(x => x.WalletId == walletIds)
-            .ToListAsync();
+        if (walletId <= 0)
+            return [];
+        return await Table.Where(x => x.WalletId == walletId).ToListAsync();
     }
 }
