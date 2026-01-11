@@ -1,5 +1,5 @@
-using System.Text.Json.Serialization;
 using O24OpenAPI.Core;
+using System.Text.Json.Serialization;
 
 namespace O24OpenAPI.Contracts.Models;
 

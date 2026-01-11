@@ -4,6 +4,7 @@ using O24OpenAPI.CMS.API.Application.Models.ContextModels;
 using O24OpenAPI.CMS.API.Application.Models.Response;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Framework.Controllers;
+using O24OpenAPI.Logging.Helpers;
 
 namespace O24OpenAPI.CMS.API.Controllers;
 
@@ -55,6 +56,7 @@ public partial class GatewayController(
         }
         catch (Exception ex)
         {
+            BusinessLogHelper.Error(ex, ex.Message);
             List<ErrorInfoModel> listError =
             [
                 new ErrorInfoModel(

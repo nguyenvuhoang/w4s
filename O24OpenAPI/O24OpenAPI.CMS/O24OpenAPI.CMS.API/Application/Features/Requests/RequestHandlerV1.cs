@@ -1,11 +1,8 @@
-﻿using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
-using LinKit.Core.Abstractions;
+﻿using LinKit.Core.Abstractions;
 using LinKit.Core.Cqrs;
 using LinKit.Json.Runtime;
 using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json.Linq;
 using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.APIContracts.Models.CTH;
 using O24OpenAPI.CMS.API.Application.Models.ContextModels;
@@ -28,6 +25,10 @@ using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using O24OpenAPI.Logging.Helpers;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace O24OpenAPI.CMS.API.Application.Features.Requests;
 
@@ -204,8 +205,7 @@ public class RequestHandlerV1(
             );
             if (!validateTokenResponse.IsValid)
             {
-                List<ErrorInfoModel> error = await AddErrorSystem("invalid.token", "401");
-                return ResponseFactory.Error(error);
+                throw new O24OpenAPIException("invalid.token");
             }
             infoHeader.UserId = validateTokenResponse.UserId;
             _workContext.UserContext.SetUserId(infoHeader.UserId);
@@ -242,20 +242,14 @@ public class RequestHandlerV1(
                         );
                         if (currentSession == null)
                         {
-                            List<ErrorInfoModel> error = await AddErrorSystem(
-                                "Invalid Token",
-                                "400"
-                            );
-                            return ResponseFactory.Error(error);
+                            throw new O24OpenAPIException("Invalid token.");
                         }
                         isValid = true;
                     }
                     catch (Exception ex)
                     {
-                        await ex.LogErrorAsync();
                         BusinessLogHelper.Error(ex, ex.Message);
-                        List<ErrorInfoModel> error = await AddErrorSystem(ex.Message, "401");
-                        return ResponseFactory.Error(error);
+                        throw new O24OpenAPIException(ex.Message, ex.InnerException);
                     }
 
                     if (isValid)
@@ -301,14 +295,14 @@ public class RequestHandlerV1(
             catch (Exception ex)
             {
                 Console.WriteLine(ex.StackTrace);
+                BusinessLogHelper.Error(ex, ex.Message);
                 List<ErrorInfoModel> error = await AddErrorSystem(ex.Message, "500");
                 return ResponseFactory.Error(error);
             }
 
             if (!checkedSession)
             {
-                List<ErrorInfoModel> error = await AddErrorSystem("invalid.session", "401");
-                return ResponseFactory.Error(error);
+                throw new O24OpenAPIException("Invalid token.");
             }
             #endregion
 
@@ -418,6 +412,7 @@ public class RequestHandlerV1(
         }
         catch (Exception ex)
         {
+            BusinessLogHelper.Error(ex, ex.Message);
             List<ErrorInfoModel> error = await AddErrorSystem(ex.Message, "500");
             return ResponseFactory.Error(error);
         }
@@ -447,6 +442,7 @@ public class RequestHandlerV1(
         }
         catch (Exception ex)
         {
+            BusinessLogHelper.Error(ex, ex.Message);
             Console.WriteLine("AddErrorSystem == " + ex.ToString());
             string Error_string = "Can't connect to database. Please check your database!";
             BusinessLogHelper.Error(ex, Error_string);
@@ -581,6 +577,10 @@ public class RequestHandlerV1(
                         ?? throw new Exception(
                             $"A error occur when processing learn api [{learnApiId}], result is null."
                         );
+                    if (learnApiExecutionResult is JToken token)
+                    {
+                        return new BaseResponse<object>(learnApiExecutionResult.ToJson().FromJson<object>());
+                    }
                     return new BaseResponse<object>(learnApiExecutionResult);
                 }
                 if (learnApi.URI.StartsWith('$'))
@@ -629,6 +629,7 @@ public class RequestHandlerV1(
         }
         catch (Exception ex)
         {
+            BusinessLogHelper.Error(ex, ex.Message);
             Console.WriteLine(ex.StackTrace);
             throw;
         }
