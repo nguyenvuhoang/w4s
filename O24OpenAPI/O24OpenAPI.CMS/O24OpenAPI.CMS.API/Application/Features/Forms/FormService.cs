@@ -1,4 +1,5 @@
-﻿using LinKit.Core.Abstractions;
+﻿using Linh.JsonKit.Json;
+using LinKit.Core.Abstractions;
 using LinqToDB;
 using Newtonsoft.Json;
 using O24OpenAPI.CMS.API.Application.Features.Requests;
@@ -30,7 +31,7 @@ public class FormService(IFormRepository formRepository) : IFormService
                 Info = JsonConvert.DeserializeObject<InfoForm>(s.Info),
                 MasterData = string.IsNullOrEmpty(s.MasterData)
                     ? null
-                    : JsonConvert.DeserializeObject<RequestModel>(s.MasterData),
+                    : s.MasterData.FromJson<RequestModel>(),
             })
             .FirstOrDefaultAsync();
 

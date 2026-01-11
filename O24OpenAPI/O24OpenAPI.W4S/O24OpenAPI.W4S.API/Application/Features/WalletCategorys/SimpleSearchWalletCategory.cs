@@ -39,6 +39,7 @@ public class SimpleSearchWalletCategoryHandle(
             0,
             0
         );
-        return new PagedListModel<WalletCategory, WalletCategoryResponseModel>(walletCategory);
+        var result = new PagedListModel<WalletCategory, WalletCategoryResponseModel>(walletCategory);
+        return result;
     }
 }

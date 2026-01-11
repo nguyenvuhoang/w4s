@@ -1,4 +1,5 @@
-﻿using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
+﻿using O24OpenAPI.W4S.API.Application.Helpers;
+using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
 namespace O24OpenAPI.W4S.API.Application.Models.Wallet;
 
@@ -13,6 +14,7 @@ public class WalletCategoryResponseModel : BaseO24OpenAPIModel
     public string? CategoryName { get; set; }
     public string? Icon { get; set; }
     public string? Color { get; set; }
+    public string? WebIcon { get; set; }
     public WalletCategoryResponseModel(WalletCategory category)
     {
         CategoryId = category.Id;
@@ -22,6 +24,7 @@ public class WalletCategoryResponseModel : BaseO24OpenAPIModel
         CategoryType = category.CategoryType;
         CategoryName = category.CategoryName;
         Icon = category.Icon;
+        WebIcon = IconHelper.ToFaIcon(category.Icon);
         Color = category.Color;
     }
 }

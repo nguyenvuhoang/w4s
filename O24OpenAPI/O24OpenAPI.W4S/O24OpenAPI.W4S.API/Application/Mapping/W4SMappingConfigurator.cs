@@ -1,4 +1,5 @@
 ﻿using LinKit.Core.Mapping;
+using O24OpenAPI.W4S.API.Application.Helpers;
 using O24OpenAPI.W4S.API.Application.Models.Wallet;
 using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
@@ -9,6 +10,7 @@ public class W4SMappingConfigurator : IMappingConfigurator
 {
     public void Configure(IMapperConfigurationBuilder builder)
     {
-        builder.CreateMap<WalletCategory, WalletCategoryResponseModel>();
+        builder.CreateMap<WalletCategory, WalletCategoryResponseModel>()
+            .ForMember(dest => dest.WebIcon, opt => opt.MapFrom(src => IconHelper.ToFaIcon(src.Icon)));
     }
 }
