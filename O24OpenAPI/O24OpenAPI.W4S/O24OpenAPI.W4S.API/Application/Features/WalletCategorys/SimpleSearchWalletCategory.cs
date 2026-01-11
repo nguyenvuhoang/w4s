@@ -8,14 +8,16 @@ using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
 namespace O24OpenAPI.W4S.API.Application.Features.WalletCategorys;
 
-public class SimpleSearchWalletCategoryCommand : SimpleSearchModel, ICommand<PagedListModel<WalletCategory, WalletCategoryResponseModel>>
-{
-}
+public class SimpleSearchWalletCategoryCommand
+    : SimpleSearchModel,
+        ICommand<PagedListModel<WalletCategory, WalletCategoryResponseModel>> { }
 
 [CqrsHandler]
-public class SimpleSearchWalletCategoryHandle(
-    IWalletCategoryRepository walletCategoryRepository
-) : ICommandHandler<SimpleSearchWalletCategoryCommand, PagedListModel<WalletCategory, WalletCategoryResponseModel>>
+public class SimpleSearchWalletCategoryHandle(IWalletCategoryRepository walletCategoryRepository)
+    : ICommandHandler<
+        SimpleSearchWalletCategoryCommand,
+        PagedListModel<WalletCategory, WalletCategoryResponseModel>
+    >
 {
     [WorkflowStep(WorkflowStepCode.W4S.WF_STEP_W4S_RETRIEVE_WALLET_CATEGORY)]
     public async Task<PagedListModel<WalletCategory, WalletCategoryResponseModel>> HandleAsync(
@@ -28,9 +30,7 @@ public class SimpleSearchWalletCategoryHandle(
             {
                 if (!string.IsNullOrEmpty(request.SearchText))
                 {
-                    query = query.Where(c =>
-                        c.CategoryGroup.Contains(request.SearchText)
-                    );
+                    query = query.Where(c => c.CategoryGroup.Contains(request.SearchText));
                 }
 
                 query = query.OrderBy(c => c.Id);
@@ -39,7 +39,9 @@ public class SimpleSearchWalletCategoryHandle(
             0,
             0
         );
-        var result = new PagedListModel<WalletCategory, WalletCategoryResponseModel>(walletCategory);
+        var result = new PagedListModel<WalletCategory, WalletCategoryResponseModel>(
+            walletCategory
+        );
         return result;
     }
 }

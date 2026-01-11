@@ -1,6 +1,6 @@
 ﻿using LinKit.Core.Abstractions;
 using O24OpenAPI.Framework.Abstractions;
-using O24OpenAPI.W4S.API.Application.Features.WalletBugets;
+using O24OpenAPI.W4S.API.Application.Features.WalletBudgets;
 using System.ComponentModel.DataAnnotations;
 
 namespace O24OpenAPI.W4S.API.Application.Validators;

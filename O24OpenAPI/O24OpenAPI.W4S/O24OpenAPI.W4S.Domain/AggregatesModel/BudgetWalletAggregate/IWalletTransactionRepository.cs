@@ -13,4 +13,5 @@ public interface IWalletTransactionRepository : IRepository<WalletTransaction>
         int take = 50,
         CancellationToken cancellationToken = default
     );
+    Task<List<WalletTransaction>> GetByCategoryIdAndWalletIdAsync(int categoryId, int walletId);
 }

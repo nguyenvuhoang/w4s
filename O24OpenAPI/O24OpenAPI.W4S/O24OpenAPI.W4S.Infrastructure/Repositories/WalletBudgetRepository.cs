@@ -19,4 +19,14 @@ public class WalletBudgetRepository(
 
         return await Table.Where(x => walletIds.Contains(x.WalletId)).ToListAsync();
     }
+
+    public async Task<List<WalletBudget>> GetByCategoryIdAndWalletIdAsync(
+        int categoryId,
+        int walletId
+    )
+    {
+        return await Table
+            .Where(x => x.CategoryId == categoryId && x.WalletId == walletId)
+            .ToListAsync();
+    }
 }

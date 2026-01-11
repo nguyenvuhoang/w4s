@@ -13,7 +13,7 @@ public class SearchExpenseCategoryQuery : BaseSearch, IQuery<PagedListModel<Expe
     public int WalletId { get; set; }
 }
 
-public class ExpenseCategory
+public class ExpenseCategory : BaseO24OpenAPIModel
 {
     public int CategoryId { get; set; }
     public string CategoryName { get; set; }

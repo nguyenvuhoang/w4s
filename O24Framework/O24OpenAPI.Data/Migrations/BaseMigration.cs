@@ -57,6 +57,12 @@ public abstract class BaseMigration : Migration
         return _dataProvider.GetTable<TEntity>();
     }
 
+    public async Task SeedData<TEntity>(TEntity entity, List<string> conditionKeys = null)
+    {
+        var list = new List<TEntity>([entity]);
+        await SeedData(list, conditionKeys);
+    }
+
     /// <summary>
     /// Seeds the data using the specified entities
     /// </summary>

@@ -6,7 +6,7 @@ using O24OpenAPI.Framework.Helpers;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
-namespace O24OpenAPI.W4S.API.Application.Features.WalletBugets;
+namespace O24OpenAPI.W4S.API.Application.Features.WalletBudgets;
 
 public class GetWalletBudgetsByWalletId
     : BaseTransactionModel,

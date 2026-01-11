@@ -1,5 +1,5 @@
 ﻿using O24OpenAPI.Framework.Infrastructure.Mapper;
-using O24OpenAPI.W4S.API.Application.Features.WalletBugets;
+using O24OpenAPI.W4S.API.Application.Features.WalletBudgets;
 using O24OpenAPI.W4S.API.Application.Helpers;
 using O24OpenAPI.W4S.API.Application.Models.Wallet;
 using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;

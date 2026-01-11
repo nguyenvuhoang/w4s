@@ -58,4 +58,14 @@ public class WalletTransactionRepository(
                     .Take(take)
                     .ToListAsync(cancellationToken) ?? [];
     }
+
+    public async Task<List<WalletTransaction>> GetByCategoryIdAndWalletIdAsync(
+        int categoryId,
+        int walletId
+    )
+    {
+        return await Table
+            .Where(x => int.Parse(x.CHAR01) == walletId && int.Parse(x.CHAR02) == categoryId)
+            .ToListAsync();
+    }
 }

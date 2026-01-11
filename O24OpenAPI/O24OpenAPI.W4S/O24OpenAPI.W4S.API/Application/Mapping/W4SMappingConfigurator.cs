@@ -10,7 +10,12 @@ public class W4SMappingConfigurator : IMappingConfigurator
 {
     public void Configure(IMapperConfigurationBuilder builder)
     {
-        builder.CreateMap<WalletCategory, WalletCategoryResponseModel>()
-            .ForMember(dest => dest.WebIcon, opt => opt.MapFrom(src => IconHelper.ToFaIcon(src.Icon)));
+        builder
+            .CreateMap<WalletCategory, WalletCategoryResponseModel>()
+            .ForMember(
+                dest => dest.WebIcon,
+                opt => opt.MapFrom(src => IconHelper.ToFaIcon(src.Icon))
+            );
+        builder.CreateMap<WalletBudget, WalletBudgetResponseModel>();
     }
 }
