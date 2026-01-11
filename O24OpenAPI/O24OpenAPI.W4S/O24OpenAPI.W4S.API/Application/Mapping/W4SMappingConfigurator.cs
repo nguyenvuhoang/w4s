@@ -16,6 +16,8 @@ public class W4SMappingConfigurator : IMappingConfigurator
                 dest => dest.WebIcon,
                 opt => opt.MapFrom(src => IconHelper.ToFaIcon(src.Icon))
             );
-        builder.CreateMap<WalletBudget, WalletBudgetResponseModel>();
+        builder
+            .CreateMap<WalletBudget, WalletBudgetResponseModel>()
+            .ForMember(d => d.BudgetId, o => o.MapFrom(s => s.Id));
     }
 }

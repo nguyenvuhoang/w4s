@@ -11,7 +11,10 @@ public class AutoMapperProfile : BaseMapperConfiguration
     public AutoMapperProfile()
     {
         CreateMap<WalletCategory, WalletCategoryResponseModel>()
-            .ForMember(dest => dest.WebIcon, opt => opt.MapFrom(src => IconHelper.ToFaIcon(src.Icon)));
+            .ForMember(
+                dest => dest.WebIcon,
+                opt => opt.MapFrom(src => IconHelper.ToFaIcon(src.Icon))
+            );
 
         CreateModelMap<WalletBudget, GetWalletBudgetsByWalletModel>();
         CreateModelMap<WalletTransaction, WalletTransactionResponseModel>();
