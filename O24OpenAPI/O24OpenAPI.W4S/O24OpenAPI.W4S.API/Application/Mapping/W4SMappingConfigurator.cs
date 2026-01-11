@@ -1,6 +1,7 @@
 ﻿using LinKit.Core.Mapping;
 using O24OpenAPI.W4S.API.Application.Helpers;
 using O24OpenAPI.W4S.API.Application.Models.Wallet;
+using O24OpenAPI.W4S.API.Application.Models.WalletTransactions;
 using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
 namespace O24OpenAPI.W4S.API.Application.Mapping;
@@ -19,5 +20,6 @@ public class W4SMappingConfigurator : IMappingConfigurator
         builder
             .CreateMap<WalletBudget, WalletBudgetResponseModel>()
             .ForMember(d => d.BudgetId, o => o.MapFrom(s => s.Id));
+        builder.CreateMap<WalletTransaction, WalletTransactionModel>();
     }
 }

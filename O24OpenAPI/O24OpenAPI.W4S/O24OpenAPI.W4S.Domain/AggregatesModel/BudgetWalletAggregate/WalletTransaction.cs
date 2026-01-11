@@ -1,6 +1,6 @@
-﻿using O24OpenAPI.Core.Attributes;
+﻿using System.ComponentModel.DataAnnotations;
+using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Core.Domain;
-using System.ComponentModel.DataAnnotations;
 
 namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 

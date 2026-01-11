@@ -139,6 +139,9 @@ public static class WorkflowStepCode
         public const string WF_STEP_W4S_SEARCH_EXPENSE_CATEGORY =
             "WF_STEP_W4S_SEARCH_EXPENSE_CATEGORY";
         public const string WF_STEP_W4S_GET_BUDGET_BY_ID = "WF_STEP_W4S_GET_BUDGET_BY_ID";
+        public const string WF_STEP_W4S_GET_TRAN_BY_ID = "WF_STEP_W4S_GET_TRAN_BY_ID";
+        public const string WF_STEP_W4S_GET_TRAN_BY_TRANSACTIONID =
+            "WF_STEP_W4S_GET_TRAN_BY_TRANSACTIONID";
     }
     #endregion
 }
