@@ -1,4 +1,8 @@
-﻿using LinKit.Core.Abstractions;
+﻿using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
+using LinKit.Core.Abstractions;
 using LinKit.Core.Cqrs;
 using LinKit.Json.Runtime;
 using Microsoft.Extensions.Caching.Memory;
@@ -25,10 +29,6 @@ using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using O24OpenAPI.Logging.Helpers;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 
 namespace O24OpenAPI.CMS.API.Application.Features.Requests;
 
@@ -253,7 +253,11 @@ public class RequestHandlerV1(
                     catch (Exception ex)
                     {
                         BusinessLogHelper.Error(ex, ex.Message);
-                        throw new O24OpenAPIException(ex.Message, ex.InnerException);
+                        throw new O24OpenAPIException(
+                            "invalid.session",
+                            ex.Message,
+                            nextAction: "logout"
+                        );
                     }
 
                     if (isValid)
@@ -583,7 +587,9 @@ public class RequestHandlerV1(
                         );
                     if (learnApiExecutionResult is JToken token)
                     {
-                        return new BaseResponse<object>(learnApiExecutionResult.ToJson().FromJson<object>());
+                        return new BaseResponse<object>(
+                            learnApiExecutionResult.ToJson().FromJson<object>()
+                        );
                     }
                     return new BaseResponse<object>(learnApiExecutionResult);
                 }
