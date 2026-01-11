@@ -1,5 +1,7 @@
 ﻿using O24OpenAPI.Contracts.Models.Log;
+using O24OpenAPI.Logging.Formatters;
 using Serilog.Events;
+using Serilog.Formatting;
 
 namespace O24OpenAPI.Logging.Extensions;
 
@@ -7,11 +9,14 @@ public static class LogEventExtensions
 {
     public static LogEntryModel ToLogEntryModel(this LogEvent logEvent)
     {
+        var formatter = new CustomTextFormatter();
+
+        var renderedText = logEvent.RenderWithFormatter(formatter);
         var logEntry = new LogEntryModel()
         {
             LogTimestamp = logEvent.Timestamp,
             LogLevel = logEvent.Level.ToString(),
-            RenderedMessage = logEvent.RenderMessage(),
+            Message = renderedText,
             Exception = logEvent.Exception?.ToString(),
             LogType = GetStringValue(logEvent, "LogType"),
             Direction = GetStringValue(logEvent, "Direction"),
@@ -26,6 +31,13 @@ public static class LogEventExtensions
         };
 
         return logEntry;
+    }
+
+    public static string RenderWithFormatter(this LogEvent logEvent, ITextFormatter formatter)
+    {
+        using var sw = new StringWriter();
+        formatter.Format(logEvent, sw);
+        return sw.ToString();
     }
 
     private static string? GetStringValue(LogEvent logEvent, string key)

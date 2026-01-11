@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json;
 using LinKit.Json.Runtime;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using O24OpenAPI.Contracts.Models;
@@ -8,16 +9,30 @@ using O24OpenAPI.Core.Domain;
 
 namespace O24OpenAPI.Framework.Middlewares;
 
+public static class ApplicationBuilderExtensions
+{
+    public static IApplicationBuilder UseResponseWrapperExceptGrpc(this IApplicationBuilder app)
+    {
+        return app.UseWhen(
+            ctx => !ctx.Request.ContentType?.StartsWith("application/grpc") == true,
+            appBuilder =>
+            {
+                appBuilder.UseMiddleware<ResponseWrapperMiddleware>();
+            }
+        );
+    }
+}
+
 public sealed class ResponseWrapperMiddleware(RequestDelegate next)
 {
     private readonly RequestDelegate _next = next;
 
     public async Task InvokeAsync(HttpContext context)
     {
-        var stopwatch = Stopwatch.StartNew();
+        Stopwatch stopwatch = Stopwatch.StartNew();
         var originalBody = context.Response.Body;
 
-        await using var memoryStream = new MemoryStream();
+        await using MemoryStream memoryStream = new();
         context.Response.Body = memoryStream;
         var executionId = context.RequestServices.GetRequiredService<WorkContext>().ExecutionId;
         context.TraceIdentifier = executionId;
@@ -41,7 +56,7 @@ public sealed class ResponseWrapperMiddleware(RequestDelegate next)
                 ? null
                 : bodyText.FromJson<JsonElement>();
 
-            var response = new BaseResponse<JsonElement?>
+            BaseResponse<JsonElement?> response = new()
             {
                 Success = context.Response.StatusCode is >= 200 and < 300,
                 ExecutionId = context.TraceIdentifier,
@@ -63,7 +78,7 @@ public sealed class ResponseWrapperMiddleware(RequestDelegate next)
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = StatusCodes.Status200OK;
 
-            var errorResponse = new BaseResponse<object>
+            BaseResponse<object> errorResponse = new()
             {
                 Success = false,
                 ExecutionId = context.TraceIdentifier,

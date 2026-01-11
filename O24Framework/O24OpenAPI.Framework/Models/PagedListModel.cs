@@ -64,18 +64,19 @@ public class PagedListModel<TEntity, T> : PagedModel
 /// The paged list model class
 /// </summary>
 /// <seealso cref="PagedModel"/>
-public class PagedListModel<TEntity> : PagedModel
+public class PagedListModel<T> : PagedModel
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PagedListModel{TEntity}"/> class
-    /// </summary>
+    public int TotalCount { get; set; } = 0;
+    public int TotalPages { get; set; }
+    public bool HasPreviousPage { get; set; }
+    public bool HasNextPage { get; set; }
+    public List<T> Items { get; set; } = [];
+    public int? TotalSuccess { get; set; } = 0;
+    public int? TotalFailed { get; set; } = 0;
+
     public PagedListModel() { }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PagedListModel{TEntity}"/> class
-    /// </summary>
-    /// <param name="items">The items</param>
-    public PagedListModel(IPagedList<TEntity> items)
+    public PagedListModel(IPagedList<T> items)
     {
         PageIndex = items.PageIndex;
         PageSize = items.PageSize;
@@ -83,43 +84,8 @@ public class PagedListModel<TEntity> : PagedModel
         TotalPages = items.TotalPages;
         HasPreviousPage = items.HasPreviousPage;
         HasNextPage = items.HasNextPage;
-        Items = items.ToList();
+        Items = [.. items];
         TotalSuccess = items.TotalSuccess;
         TotalFailed = items.TotalFailed;
     }
-
-    /// <summary>
-    /// Gets or sets the value of the total count
-    /// </summary>
-    public int TotalCount { get; set; } = 0;
-
-    /// <summary>
-    /// Gets or sets the value of the total pages
-    /// </summary>
-    public int TotalPages { get; set; }
-
-    /// <summary>
-    /// Gets or sets the value of the has previous page
-    /// </summary>
-    public bool HasPreviousPage { get; set; }
-
-    /// <summary>
-    /// Gets or sets the value of the has next page
-    /// </summary>
-    public bool HasNextPage { get; set; }
-
-    /// <summary>
-    /// Gets or sets the value of the items
-    /// </summary>
-    public List<TEntity> Items { get; set; } = [];
-
-    /// <summary>
-    /// Get or sets the value of the total success
-    /// </summary>
-    public int? TotalSuccess { get; set; } = 0;
-
-    /// <summary>
-    /// Get or sets the value of the total failed
-    /// </summary>
-    public int? TotalFailed { get; set; } = 0;
 }

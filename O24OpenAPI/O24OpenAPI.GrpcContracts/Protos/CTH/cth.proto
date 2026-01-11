@@ -19,6 +19,7 @@ service CTHGrpcService {
   rpc GetUserPushIdByContractNumber(GetUserPushIdByContractNumberRequest) returns (common.GrpcResponse);
   rpc GetUserNotification(GetUserNotificationRequest) returns (stream GetUserNotificationReply);
   rpc LoadFullUserCommands(LoadFullUserCommandRequest) returns (stream UserCommandReply);
+  rpc SayHello(HelloRequest) returns (HelloReply);
 }
 
 message GetUserSessionRequest {
@@ -85,4 +86,12 @@ message UserCommandReply {
   string group_menu_icon = 11;
   string group_menu_visibale = 12;
   string group_menu_authorize_form = 13;
+}
+
+message HelloRequest{
+  string name =1;
+}
+
+message HelloReply{
+  string hello =1;
 }

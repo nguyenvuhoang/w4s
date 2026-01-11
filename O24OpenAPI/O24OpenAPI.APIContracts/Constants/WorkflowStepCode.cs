@@ -116,20 +116,28 @@ public static class WorkflowStepCode
     #endregion
 
     #region CMS
+
     public static class CMS { }
+
     #endregion
 
     #region W4S
     public static class W4S
     {
         public const string WF_STEP_W4S_CREATE_WALLET = "WF_STEP_W4S_CREATE_WALLET";
-        public const string WF_STEP_W4S_RETRIEVE_WALLET_CATEGORY = "WF_STEP_W4S_RETRIEVE_WALLET_CATEGORY";
+        public const string WF_STEP_W4S_RETRIEVE_WALLET_CATEGORY =
+            "WF_STEP_W4S_RETRIEVE_WALLET_CATEGORY";
         public const string WF_STEP_W4S_CREATE_WALLET_BUDGET = "WF_STEP_W4S_CREATE_WALLET_BUDGET";
         public const string WF_STEP_W4S_GET_WALLET_BUDGETS = "WF_STEP_W4S_GET_WALLET_BUDGETS";
-        public const string WF_STEP_W4S_RETRIEVE_WALLET_INFORMATION = "WF_STEP_W4S_RETRIEVE_WALLET_INFORMATION";
-        public const string WF_STEP_W4S_CREATE_WALLET_TRANSACTION = "WF_STEP_W4S_CREATE_WALLET_TRANSACTION";
-        public const string WF_STEP_W4S_GET_WALLET_TRANSACTIONS = "WF_STEP_W4S_GET_WALLET_TRANSACTIONS";
+        public const string WF_STEP_W4S_RETRIEVE_WALLET_INFORMATION =
+            "WF_STEP_W4S_RETRIEVE_WALLET_INFORMATION";
+        public const string WF_STEP_W4S_CREATE_WALLET_TRANSACTION =
+            "WF_STEP_W4S_CREATE_WALLET_TRANSACTION";
+        public const string WF_STEP_W4S_GET_WALLET_TRANSACTIONS =
+            "WF_STEP_W4S_GET_WALLET_TRANSACTIONS";
         public const string WF_STEP_W4S_GET_LIST_WALLET = "WF_STEP_W4S_GET_LIST_WALLET";
+        public const string WF_STEP_W4S_SEARCH_EXPENSE_CATEGORY =
+            "WF_STEP_W4S_SEARCH_EXPENSE_CATEGORY";
     }
     #endregion
 }

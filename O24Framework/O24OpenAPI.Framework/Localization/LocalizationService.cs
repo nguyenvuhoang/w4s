@@ -9,45 +9,17 @@ using O24OpenAPI.Framework.Services.Logging;
 namespace O24OpenAPI.Framework.Localization;
 
 /// <summary>Provides information about localization</summary>
-public class LocalizationService : ILocalizationService
+public class LocalizationService(
+    ILogger logger,
+    IRepository<LocaleStringResource> lsrRepository,
+    IStaticCacheManager staticCacheManager,
+    IWorkContext workContext
+) : ILocalizationService
 {
-    /// <summary>
-    /// The logger
-    /// </summary>
-    protected readonly ILogger _logger;
-
-    /// <summary>
-    /// The lsr repository
-    /// </summary>
-    protected readonly IRepository<LocaleStringResource> _lsrRepository;
-
-    /// <summary>
-    /// The work context
-    /// </summary>
-    protected readonly IWorkContext _workContext;
-
-    /// <summary>
-    /// The static cache manager
-    /// </summary>
-    protected readonly IStaticCacheManager _staticCacheManager;
-
-    /// <summary>Constructor</summary>
-    /// <param name="logger"></param>
-    /// <param name="lsrRepository"></param>
-    /// <param name="staticCacheManager"></param>
-    /// <param name="workContext"></param>
-    public LocalizationService(
-        ILogger logger,
-        IRepository<LocaleStringResource> lsrRepository,
-        IStaticCacheManager staticCacheManager,
-        IWorkContext workContext
-    )
-    {
-        _logger = logger;
-        _lsrRepository = lsrRepository;
-        _staticCacheManager = staticCacheManager;
-        _workContext = workContext;
-    }
+    protected readonly ILogger _logger = logger;
+    protected readonly IRepository<LocaleStringResource> _lsrRepository = lsrRepository;
+    protected readonly IWorkContext _workContext = workContext;
+    protected readonly IStaticCacheManager _staticCacheManager = staticCacheManager;
 
     /// <summary>Gets all resource</summary>
     /// <param name="resource"></param>

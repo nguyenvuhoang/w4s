@@ -10,13 +10,10 @@ public interface IGrpcClientFactory
     Task<TClient> GetClientAsync<TClient>()
         where TClient : ClientBase;
 
-    Task<AsyncServerStreamingCall<TResponse>> GetServerStreamAsync<
-        TClient,
-        TRequest,
-        TResponse
-    >(
+    Task<AsyncServerStreamingCall<TResponse>> GetServerStreamAsync<TClient, TRequest, TResponse>(
         Func<TClient, TRequest, CallOptions, AsyncServerStreamingCall<TResponse>> streamMethod,
         TRequest request,
         CallOptions? callOptions = null
-    ) where TClient : ClientBase;
+    )
+        where TClient : ClientBase;
 }

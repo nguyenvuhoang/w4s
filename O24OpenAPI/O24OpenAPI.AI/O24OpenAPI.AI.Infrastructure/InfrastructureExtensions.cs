@@ -4,6 +4,7 @@ using O24OpenAPI.AI.Infrastructure.Configurations;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
+using O24OpenAPI.GrpcContracts.Interceptors;
 using O24OpenAPI.Logging.Interceptors;
 using Qdrant.Client;
 
@@ -13,10 +14,6 @@ public static class InfrastructureExtensions
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
-        services.AddGrpc(options =>
-        {
-            options.Interceptors.Add<GrpcLoggingInterceptor>();
-        });
         services.AddLinKitDependency();
         QdrantSettingConfig qdrantSettingConfig =
             Singleton<AppSettings>.Instance.Get<QdrantSettingConfig>();

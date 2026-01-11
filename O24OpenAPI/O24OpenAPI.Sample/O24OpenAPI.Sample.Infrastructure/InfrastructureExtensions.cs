@@ -11,7 +11,7 @@ public static class InfrastructureExtensions
     {
         services.AddGrpc(options =>
         {
-            options.Interceptors.Add<GrpcLoggingInterceptor>();
+            options.Interceptors.Add<GrpcServerInboundInterceptor>();
         });
         services.AddLinKitDependency();
         return services;

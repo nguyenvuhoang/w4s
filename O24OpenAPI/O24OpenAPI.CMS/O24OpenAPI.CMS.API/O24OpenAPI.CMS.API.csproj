@@ -55,7 +55,6 @@
     <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Application\GrpcServices\" />
     <Folder Include="Application\Services\Services\Media\" />
   </ItemGroup>
 </Project>

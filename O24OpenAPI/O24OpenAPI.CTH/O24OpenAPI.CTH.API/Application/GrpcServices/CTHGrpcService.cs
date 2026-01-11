@@ -10,6 +10,7 @@ using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Grpc.Common;
 using O24OpenAPI.Grpc.CTH;
+using O24OpenAPI.GrpcContracts.Extensions;
 using O24OpenAPI.GrpcContracts.GrpcServerServices;
 using O24OpenAPI.Logging.Helpers;
 using static O24OpenAPI.Grpc.CTH.CTHGrpcService;
@@ -20,12 +21,15 @@ public class CTHGrpcService : CTHGrpcServiceBase
 {
     private readonly IUserSessionRepository _userSessionRepository =
         EngineContext.Current.Resolve<IUserSessionRepository>();
+    private readonly IUserRightRepository _userRightRepository =
+        EngineContext.Current.Resolve<IUserRightRepository>();
     private readonly IUserRightChannelRepository _userRightChannelRepository =
         EngineContext.Current.Resolve<IUserRightChannelRepository>();
     private readonly IUserDeviceRepository _userDeviceRepository =
         EngineContext.Current.Resolve<IUserDeviceRepository>();
     private readonly IUserCommandRepository _userCommandRepository =
         EngineContext.Current.Resolve<IUserCommandRepository>();
+
     private readonly IUserAccountRepository _userAccountRepository =
         EngineContext.Current.Resolve<IUserAccountRepository>();
     private readonly IUserInRoleRepository userInRoleRepository =
@@ -38,13 +42,7 @@ public class CTHGrpcService : CTHGrpcServiceBase
         ServerCallContext context
     )
     {
-        return await GrpcExecutor.ExecuteAsync(
-            context,
-            async () =>
-            {
-                return await _userSessionRepository.GetByToken(request.Token);
-            }
-        );
+        return await _userSessionRepository.GetByToken(request.Token).GetGrpcResponseAsync();
     }
 
     public override async Task<GrpcResponse> GetChannelRoles(
@@ -52,13 +50,9 @@ public class CTHGrpcService : CTHGrpcServiceBase
         ServerCallContext context
     )
     {
-        return await GrpcExecutor.ExecuteAsync(
-            context,
-            async () =>
-            {
-                return await _userRightChannelRepository.GetSetChannelInRoleAsync(request.RoleId);
-            }
-        );
+        return await _userRightChannelRepository
+            .GetSetChannelInRoleAsync(request.RoleId)
+            .GetGrpcResponseAsync();
     }
 
     public override async Task<GrpcResponse> GetUserPushId(
@@ -66,17 +60,14 @@ public class CTHGrpcService : CTHGrpcServiceBase
         ServerCallContext context
     )
     {
-        return await GrpcExecutor.ExecuteAsync(
-            context,
-            async () =>
-            {
-                UserDevice userAccount = await _userDeviceRepository.GetByUserCodeAsync(
-                    request.UserCode
-                );
-                string pushId = userAccount?.PushId ?? string.Empty;
-                return pushId ?? "NONE";
-            }
-        );
+        return await GetUserPushIdAsync(request).GetGrpcResponseAsync();
+    }
+
+    private async Task<string> GetUserPushIdAsync(GetUserPushIdRequest request)
+    {
+        UserDevice userAccount = await _userDeviceRepository.GetByUserCodeAsync(request.UserCode);
+        string pushId = userAccount?.PushId ?? string.Empty;
+        return pushId ?? "NONE";
     }
 
     public override async Task<GrpcResponse> LoadUserCommands(
@@ -84,16 +75,9 @@ public class CTHGrpcService : CTHGrpcServiceBase
         ServerCallContext context
     )
     {
-        return await GrpcExecutor.ExecuteAsync(
-            context,
-            async () =>
-            {
-                return await _userCommandRepository.LoadUserCommand(
-                    request.ApplicationCode,
-                    request.RoleCommand
-                );
-            }
-        );
+        return await _userCommandRepository
+            .LoadUserCommand(request.ApplicationCode, request.RoleCommand)
+            .GetGrpcResponseAsync();
     }
 
     public override async Task<GrpcResponse> GetInfoFromFormCode(
@@ -101,16 +85,9 @@ public class CTHGrpcService : CTHGrpcServiceBase
         ServerCallContext context
     )
     {
-        return await GrpcExecutor.ExecuteAsync(
-            context,
-            async () =>
-            {
-                return await _userCommandRepository.GetInfoFromFormCode(
-                    request.ApplicationCode,
-                    request.FormCode
-                );
-            }
-        );
+        return await _userCommandRepository
+            .GetInfoFromFormCode(request.ApplicationCode, request.FormCode)
+            .GetGrpcResponseAsync();
     }
 
     public override async Task<GrpcResponse> GetListRoleByUserCode(
@@ -118,13 +95,9 @@ public class CTHGrpcService : CTHGrpcServiceBase
         ServerCallContext context
     )
     {
-        return await GrpcExecutor.ExecuteAsync(
-            context,
-            async () =>
-            {
-                return await userInRoleRepository.GetListRoleByUserCodeAsync(request.UserCode);
-            }
-        );
+        return await userInRoleRepository
+            .GetListRoleByUserCodeAsync(request.UserCode)
+            .GetGrpcResponseAsync();
     }
 
     public override async Task<GrpcResponse> GetInfoFromCommandId(
@@ -132,19 +105,15 @@ public class CTHGrpcService : CTHGrpcServiceBase
         ServerCallContext context
     )
     {
-        return await GrpcExecutor.ExecuteAsync(
-            context,
-            async () =>
-            {
-                return await _mediator.QueryAsync(
-                    new GetUserCommandInfoFromCommandIdQuery
-                    {
-                        ApplicationCode = request.ApplicationCode,
-                        CommandId = request.CommandId,
-                    }
-                );
-            }
-        );
+        return await _mediator
+            .QueryAsync(
+                new GetUserCommandInfoFromCommandIdQuery
+                {
+                    ApplicationCode = request.ApplicationCode,
+                    CommandId = request.CommandId,
+                }
+            )
+            .GetGrpcResponseAsync();
     }
 
     public override async Task<GrpcResponse> GetInfoFromParentId(
@@ -152,19 +121,15 @@ public class CTHGrpcService : CTHGrpcServiceBase
         ServerCallContext context
     )
     {
-        return await GrpcExecutor.ExecuteAsync(
-            context,
-            async () =>
-            {
-                return await _mediator.QueryAsync(
-                    new GetUserCommandInfoFromParentIdQuery
-                    {
-                        ApplicationCode = request.ApplicationCode,
-                        ParentId = request.ParentId,
-                    }
-                );
-            }
-        );
+        return await _mediator
+            .QueryAsync(
+                new GetUserCommandInfoFromParentIdQuery
+                {
+                    ApplicationCode = request.ApplicationCode,
+                    ParentId = request.ParentId,
+                }
+            )
+            .GetGrpcResponseAsync();
     }
 
     public override async Task<GrpcResponse> GetUserInfoByUserCode(
@@ -172,13 +137,9 @@ public class CTHGrpcService : CTHGrpcServiceBase
         ServerCallContext context
     )
     {
-        return await GrpcExecutor.ExecuteAsync(
-            context,
-            async () =>
-            {
-                return await _userAccountRepository.GetByUserCodeAsync(request.UserCode);
-            }
-        );
+        return await _userAccountRepository
+            .GetByUserCodeAsync(request.UserCode)
+            .GetGrpcResponseAsync();
     }
 
     // public override async Task<GrpcResponse> GetUserPushIdByContractNumber(
@@ -267,5 +228,11 @@ public class CTHGrpcService : CTHGrpcServiceBase
 
             await ex.LogErrorAsync();
         }
+    }
+
+    public override async Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context)
+    {
+        await Task.CompletedTask;
+        return new HelloReply { Hello = $"hello {request.Name}" };
     }
 }

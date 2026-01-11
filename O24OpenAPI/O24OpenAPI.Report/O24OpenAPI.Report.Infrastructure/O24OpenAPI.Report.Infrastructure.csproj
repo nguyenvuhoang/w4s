@@ -8,7 +8,7 @@
     <Folder Include="EntityConfigurations\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="LinKit.Core" Version="2.1.1" />
+    <PackageReference Include="LinKit.Core" Version="2.1.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Data\O24OpenAPI.Data.csproj" />

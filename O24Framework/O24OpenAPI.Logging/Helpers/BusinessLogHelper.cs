@@ -1,7 +1,7 @@
-﻿using LinKit.Json.Runtime;
+﻿using System.Diagnostics;
+using LinKit.Json.Runtime;
 using O24OpenAPI.Logging.Enums;
 using Serilog;
-using System.Diagnostics;
 
 namespace O24OpenAPI.Logging.Helpers;
 
@@ -67,13 +67,21 @@ public static class BusinessLogHelper
         finally
         {
             stopwatch.Stop();
-            Log.ForContext("LogType", LogType.Business)
+            var logger = Log.ForContext("LogType", LogType.Business)
                 .ForContext("Direction", "Process")
                 .ForContext("Action", actionName)
                 .ForContext("Request", inputData?.ToJson(o => o.WriteIndented = true))
                 .ForContext("Error", exception)
-                .ForContext("Duration", stopwatch.ElapsedMilliseconds)
-                .Information("Business Process Log");
+                .ForContext("Duration", stopwatch.ElapsedMilliseconds);
+
+            if (exception is not null)
+            {
+                logger.Error(exception, exception.Message);
+            }
+            else
+            {
+                logger.Information("Business Process Log");
+            }
         }
     }
 }

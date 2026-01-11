@@ -27,7 +27,7 @@ public class ServiceInstanceRepository(
     {
         try
         {
-            var instance = await GetByServiceCodeAndGrpcUrlAsync(
+            ServiceInstance? instance = await GetByServiceCodeAndGrpcUrlAsync(
                 serviceInstance.ServiceCode,
                 serviceInstance.GrpcUrl
             );
@@ -210,25 +210,22 @@ public class ServiceInstanceRepository(
 
     private static string? GetHostFromGrpcUrl(string? grpcUrl)
     {
-        if (string.IsNullOrEmpty(grpcUrl))
-        {
+        if (string.IsNullOrWhiteSpace(grpcUrl))
             return null;
-        }
-        Console.WriteLine($"[INFO] grpcUrl instance = {grpcUrl}");
+
         try
         {
-            Uri uri = new(grpcUrl);
-            string host = uri.Host;
+            var uri = new Uri(grpcUrl);
+            var host = uri.Host;
+
+            if (string.Equals(host, "localhost", StringComparison.OrdinalIgnoreCase))
+                return host;
 
             if (IPAddress.TryParse(host, out _))
-            {
-                return host; // IP
-            }
+                return host;
 
             if (host.All(c => char.IsLetterOrDigit(c) || c == '-'))
-            {
-                return host; // Docker name
-            }
+                return host;
 
             return null;
         }

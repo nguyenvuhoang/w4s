@@ -77,14 +77,15 @@ public class RestApiLoggingMiddleware(RequestDelegate next)
         IDictionary<string, string>? headers
     )
     {
-        var action =
-            $"{context.Request.Method} {context.Request.Path}{context.Request.QueryString}";
+        var request = context.Request;
+
+        var fullUrl = $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
         var prettyRequest = TryPrettifyJson(requestBody);
         var prettyResponse = TryPrettifyJson(responseBody);
 
-        Log.ForContext("LogType", LogType.RestApi)
+        var logger = Log.ForContext("LogType", LogType.RestApi)
             .ForContext("Direction", LogDirection.In)
-            .ForContext("Action", action)
+            .ForContext("Action", fullUrl)
             .ForContext("Request", prettyRequest)
             .ForContext("Response", prettyResponse)
             .ForContext("Error", exception)
@@ -95,8 +96,15 @@ public class RestApiLoggingMiddleware(RequestDelegate next)
                 headers is not null && headers.TryGetValue("Flow", out var flowValue)
                     ? flowValue.ToString()
                     : null
-            )
-            .Information("REST API Call Log");
+            );
+        if (exception is not null)
+        {
+            logger.Error(exception, exception.Message);
+        }
+        else
+        {
+            logger.Information("REST API Call Log");
+        }
     }
 
     private static string? TryPrettifyJson(string? jsonString)

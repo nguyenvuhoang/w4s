@@ -1,3 +1,4 @@
+using O24OpenAPI.CMS.API.Application.GrpcServices;
 using O24OpenAPI.CMS.API.Application.Services.Services;
 using O24OpenAPI.CMS.Infrastructure.Extensions;
 using O24OpenAPI.Framework.Extensions;
@@ -33,6 +34,7 @@ app.UseMiddleware<RateLimitingMiddleware>();
 using IServiceScope scope = app.Services.CreateScope();
 AsyncScope.Scope = scope;
 app.ConfigureRequestPipeline();
+app.MapGrpcService<CMSGrpcServer>();
 
 await app.StartEngine();
 app.ShowStartupBanner();

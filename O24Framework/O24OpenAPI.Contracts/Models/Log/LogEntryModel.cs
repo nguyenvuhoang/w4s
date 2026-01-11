@@ -4,7 +4,7 @@ public class LogEntryModel
 {
     public DateTimeOffset LogTimestamp { get; set; }
     public string LogLevel { get; set; } = string.Empty;
-    public string RenderedMessage { get; set; } = string.Empty;
+    public string Message { get; set; } = string.Empty;
     public string? Exception { get; set; }
     public string? LogType { get; set; }
     public string? Direction { get; set; }

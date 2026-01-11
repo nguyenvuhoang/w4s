@@ -9,8 +9,18 @@ import "Common/common.proto";
 // CMS gRPC service
 service CMSGrpcService {
   rpc GetUserSession (GetUserSessionRequest) returns (common.GrpcResponse);
+  rpc SayHello(HelloRequest) returns (HelloReply);
 }
 
 message GetUserSessionRequest {
   string token = 1;
 }
+
+message HelloRequest{
+  string name =1;
+}
+
+message HelloReply{
+  string hello =1;
+}
+

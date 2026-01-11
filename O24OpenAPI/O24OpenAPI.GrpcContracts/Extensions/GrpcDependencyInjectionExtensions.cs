@@ -25,6 +25,7 @@ public static class GrpcDependencyInjectionExtensions
     {
         services.AddSingleton<IGrpcClientFactory, GrpcClientFactory>();
         services.AddSingleton(typeof(IGrpcClient<>), typeof(ClientGrpc<>));
+        services.AddLinKitDependency();
 
         services.AddScoped<IWFOGrpcClientService, WFOGrpcClientService>();
         services.AddScoped<ICTHGrpcClientService, CTHGrpcClientService>();

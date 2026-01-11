@@ -478,7 +478,7 @@ public static class StringExtensions
 
     #region Contains Methods
 
-    public static bool ContainsOrdinal(this string str, string value)
+    public static bool ContainsOrdinal(this string? str, string value)
     {
         if (str == null)
         {
@@ -490,7 +490,7 @@ public static class StringExtensions
             return false;
         }
 
-        return str.IndexOf(value, StringComparison.Ordinal) >= 0;
+        return str.Contains(value);
     }
 
     public static bool ContainsOrdinalIgnoreCase(this string str, string value)
@@ -505,7 +505,7 @@ public static class StringExtensions
             return false;
         }
 
-        return str.IndexOf(value, StringComparison.OrdinalIgnoreCase) >= 0;
+        return str.Contains(value, StringComparison.OrdinalIgnoreCase);
     }
 
     public static bool ContainsCurrentCulture(this string str, string value)
@@ -520,7 +520,7 @@ public static class StringExtensions
             return false;
         }
 
-        return str.IndexOf(value, StringComparison.CurrentCulture) >= 0;
+        return str.Contains(value, StringComparison.CurrentCulture);
     }
 
     public static bool ContainsCurrentCultureIgnoreCase(this string str, string value)
@@ -535,7 +535,7 @@ public static class StringExtensions
             return false;
         }
 
-        return str.IndexOf(value, StringComparison.CurrentCultureIgnoreCase) >= 0;
+        return str.Contains(value, StringComparison.CurrentCultureIgnoreCase);
     }
 
     public static bool ContainsInvariantCulture(this string str, string value)
@@ -550,7 +550,7 @@ public static class StringExtensions
             return false;
         }
 
-        return str.IndexOf(value, StringComparison.InvariantCulture) >= 0;
+        return str.Contains(value, StringComparison.InvariantCulture);
     }
 
     public static bool ContainsInvariantCultureIgnoreCase(this string str, string value)
@@ -565,7 +565,7 @@ public static class StringExtensions
             return false;
         }
 
-        return str.IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0;
+        return str.Contains(value, StringComparison.InvariantCultureIgnoreCase);
     }
 
     #endregion

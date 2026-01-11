@@ -2,7 +2,7 @@ using Newtonsoft.Json.Serialization;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
-using O24OpenAPI.Logging.Interceptors;
+using O24OpenAPI.GrpcContracts.Interceptors;
 using O24OpenAPI.WFO.API.Application.Extensions;
 using O24OpenAPI.WFO.API.GrpcServices;
 using O24OpenAPI.WFO.Infrastructure.Extensions;
@@ -32,7 +32,7 @@ if (!builder.Environment.IsDevelopment())
 }
 builder.Services.AddGrpc(options =>
 {
-    options.Interceptors.Add<GrpcLoggingInterceptor>();
+    options.Interceptors.Add<GrpcServerInboundInterceptor>();
 });
 builder.Services.AddApplicationServices().AddWFOInfrastructureServices();
 WebApplication app = builder.Build();

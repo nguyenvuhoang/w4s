@@ -1,5 +1,4 @@
 ﻿using Grpc.Core;
-using LinKit.Json.Runtime;
 using Microsoft.Extensions.DependencyInjection;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Domain;
@@ -24,16 +23,16 @@ public class GrpcExecutor
     {
         try
         {
-            var serviceProvider = context.GetHttpContext().RequestServices;
-            using var scope = serviceProvider.CreateAsyncScope();
+            IServiceProvider serviceProvider = context.GetHttpContext().RequestServices;
+            using AsyncServiceScope scope = serviceProvider.CreateAsyncScope();
             AsyncScope.Scope = scope;
-            var header = context.RequestHeaders;
-            var stringWorkContext = header
+            Metadata header = context.RequestHeaders;
+            string stringWorkContext = header
                 .FirstOrDefault(x => x.Key.EndsWithOrdinalIgnoreCase("work_context"))
                 ?.Value;
             if (stringWorkContext.HasValue())
             {
-                var workContext =
+                WorkContextTemplate workContext =
                     stringWorkContext.ToObject<WorkContextTemplate>()
                     ?? throw new ArgumentNullException(
                         nameof(stringWorkContext),
@@ -41,13 +40,18 @@ public class GrpcExecutor
                     );
                 EngineContext.Current.Resolve<WorkContext>().SetWorkContext(workContext);
             }
-            var result = await operation();
-
+            object result = await operation();
+            //if (result is null)
+            //{
+            //    throw new Exception("Notfound");
+            //}
             return new GrpcResponse
             {
                 Code = GrpcResponseCode.Success,
                 Message = "OK",
-                Data = result is string json ? json : result?.ToJson() ?? "",
+                Detail = "",
+                Data = "Notfound",//result is string json ? json : result?.ToJson() ?? "",
+                ErrorCode = ""
             };
         }
         catch (Exception ex)

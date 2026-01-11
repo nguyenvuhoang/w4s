@@ -253,10 +253,8 @@ public class RequestHandlerV1(
                     catch (Exception ex)
                     {
                         await ex.LogErrorAsync();
-                        List<ErrorInfoModel> error = await AddErrorSystem(
-                            "Can not connect to Control Hub",
-                            "401"
-                        );
+                        BusinessLogHelper.Error(ex, ex.Message);
+                        List<ErrorInfoModel> error = await AddErrorSystem(ex.Message, "401");
                         return ResponseFactory.Error(error);
                     }
 

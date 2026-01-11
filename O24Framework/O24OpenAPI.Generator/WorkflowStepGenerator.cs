@@ -7,6 +7,8 @@ using O24OpenAPI.Generator.Models;
 [Generator]
 public sealed class WorkflowStepGenerator : ISourceGenerator
 {
+    private const string IQueryInterfaceName = "LinKit.Core.Cqrs.IQuery";
+
     public void Initialize(GeneratorInitializationContext context)
     {
         context.RegisterForSyntaxNotifications(() => new MethodSyntaxReceiver());
@@ -19,6 +21,7 @@ public sealed class WorkflowStepGenerator : ISourceGenerator
 
         var compilation = context.Compilation;
 
+        // Lấy Type Symbol của các Attribute và Interface cần thiết
         var workflowStepAttr = compilation.GetTypeByMetadataName(
             "O24OpenAPI.Framework.Attributes.WorkflowStepAttribute"
         );
@@ -41,24 +44,27 @@ public sealed class WorkflowStepGenerator : ISourceGenerator
                     SymbolEqualityComparer.Default.Equals(a.AttributeClass, workflowStepAttr)
                 );
 
-            if (attr is null)
-                continue;
-
-            if (method.Parameters.Length == 0)
+            if (attr is null || method.Parameters.Length == 0)
                 continue;
 
             var stepCode = attr.ConstructorArguments[0].Value?.ToString();
             if (string.IsNullOrWhiteSpace(stepCode))
                 continue;
 
-            var inputType = method
-                .Parameters[0]
-                .Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            var inputTypeSymbol = method.Parameters[0].Type;
+            var inputTypeName = inputTypeSymbol.ToDisplayString(
+                SymbolDisplayFormat.FullyQualifiedFormat
+            );
 
-            steps.Add(new WorkflowStepInfo(stepCode!, inputType));
+            // Kiểm tra xem inputType có thực thi IQuery hay không
+            bool isQuery = false;
+            isQuery = inputTypeSymbol.AllInterfaces.Any(i =>
+                i.OriginalDefinition.ToDisplayString().Contains(IQueryInterfaceName)
+            );
+
+            steps.Add(new WorkflowStepInfo(stepCode!, inputTypeName, isQuery));
         }
 
-        // 🔥 LUÔN generate – kể cả steps rỗng
         var source = WorkflowInvokerEmitter.Emit(steps);
         context.AddSource("WorkflowStepInvoker.g.cs", source);
     }
