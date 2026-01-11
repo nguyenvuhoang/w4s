@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using LinKit.Core.Abstractions;
@@ -10,6 +9,7 @@ using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Logging.Enums;
 using O24OpenAPI.Logging.Helpers;
 using Serilog;
+using System.Diagnostics;
 
 namespace O24OpenAPI.GrpcContracts.Interceptors;
 
@@ -28,8 +28,11 @@ public sealed class GrpcClientOutboundInterceptor : Interceptor
         string correlationId = workContext?.ExecutionLogId ?? Guid.NewGuid().ToString();
 
         Metadata headers = context.Options.Headers ?? [];
-        headers.Add("x-correlation-id", correlationId);
-        headers.Add("work_context", workContext.ToJson() ?? "{}");
+
+        if (!headers.Any(h => h.Key == "work_context"))
+        {
+            headers.Add("work_context", workContext.ToJson() ?? "{}");
+        }
 
         CallOptions newOptions = context.Options.WithHeaders(headers);
         ClientInterceptorContext<TRequest, TResponse> newContext = new(

@@ -25,7 +25,7 @@ public class GrpcClientLoggingInterceptor : Interceptor
         var correlationId = correlationIdProp ?? Guid.NewGuid().ToString();
         var existingHeaders = context.Options.Headers ?? new Metadata();
 
-        existingHeaders.Add("x-correlation-id", correlationId);
+        // existingHeaders.Add("x-correlation-id", correlationId);
 
         var newOptions = context.Options.WithHeaders(existingHeaders);
         var newContext = new ClientInterceptorContext<TRequest, TResponse>(
