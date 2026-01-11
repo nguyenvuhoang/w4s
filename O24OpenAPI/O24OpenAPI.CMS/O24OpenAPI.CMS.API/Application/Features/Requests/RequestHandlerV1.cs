@@ -304,7 +304,7 @@ public class RequestHandlerV1(
             {
                 Console.WriteLine(ex.StackTrace);
                 BusinessLogHelper.Error(ex, ex.Message);
-                List<ErrorInfoModel> error = await AddErrorSystem(ex.Message, "500");
+                List<ErrorInfoModel> error = await AddErrorSystem(ex.Message, "500", ex);
                 return ResponseFactory.Error(error);
             }
 
@@ -421,12 +421,16 @@ public class RequestHandlerV1(
         catch (Exception ex)
         {
             BusinessLogHelper.Error(ex, ex.Message);
-            List<ErrorInfoModel> error = await AddErrorSystem(ex.Message, "500");
+            List<ErrorInfoModel> error = await AddErrorSystem(ex.Message, "500", ex);
             return ResponseFactory.Error(error);
         }
     }
 
-    private async Task<List<ErrorInfoModel>> AddErrorSystem(string keyError, string key = "")
+    private async Task<List<ErrorInfoModel>> AddErrorSystem(
+        string keyError,
+        string key = "",
+        Exception exception = null
+    )
     {
         try
         {
@@ -434,6 +438,11 @@ public class RequestHandlerV1(
                 keyError,
                 context.InfoUser?.GetUserLogin()?.Lang ?? "en"
             );
+            string nextAction = string.Empty;
+            if (exception is O24OpenAPIException o24OpenAPIException)
+            {
+                nextAction = o24OpenAPIException.NextAction;
+            }
 
             List<ErrorInfoModel> listError =
             [
@@ -442,7 +451,8 @@ public class RequestHandlerV1(
                     ErrorMainForm.danger,
                     errorString,
                     keyError,
-                    key
+                    key,
+                    nextAction: nextAction
                 ),
             ];
 
