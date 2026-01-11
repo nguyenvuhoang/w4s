@@ -295,9 +295,10 @@ public class QueueClient : MyConsole
                         }
                     }
                 }
-                catch (Exception pException)
+                catch (Exception ex)
                 {
-                    WriteLine(pException);
+                    BusinessLogHelper.Error(ex, ex.Message);
+                    WriteLine(ex);
                 }
             }
         );

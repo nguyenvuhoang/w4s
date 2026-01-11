@@ -15,7 +15,7 @@ public static class StringExtensions
 
     public static bool NullOrEmpty(this string value) => string.IsNullOrEmpty(value);
 
-    public static bool NullOrWhiteSpace(this string value) => string.IsNullOrWhiteSpace(value);
+    public static bool NullOrWhiteSpace(this string value) => !value.HasValue();
 
     public static T ToEnum<T>(this string value, T defaultValue = default)
         where T : struct, Enum
@@ -40,7 +40,7 @@ public static class StringExtensions
             return str;
         }
 
-        foreach (var value in values)
+        foreach (string value in values)
         {
             if (!string.IsNullOrWhiteSpace(value))
             {
@@ -132,7 +132,7 @@ public static class StringExtensions
         value.ToString(format);
 
     public static decimal StringToDecimal(string value) =>
-        decimal.TryParse(value, out var v) ? v : 0;
+        decimal.TryParse(value, out decimal v) ? v : 0;
 
     #region Equals Methods
 

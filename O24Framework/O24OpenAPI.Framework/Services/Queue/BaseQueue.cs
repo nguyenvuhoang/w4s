@@ -15,6 +15,7 @@ using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Framework.Services.Configuration;
 using O24OpenAPI.Framework.Services.Logging;
+using O24OpenAPI.Logging.Helpers;
 
 namespace O24OpenAPI.Framework.Services.Queue;
 
@@ -83,7 +84,7 @@ public abstract class BaseQueue
                         workflow.request.request_header.execution_id
                     );
                 }
-
+                BusinessLogHelper.Error(ex, ex.Message);
                 throw new O24OpenAPIException(
                     "system_busy",
                     "System is busy now, please try again later"
@@ -101,6 +102,7 @@ public abstract class BaseQueue
                         workflow.request.request_header.execution_id
                     );
                 }
+                BusinessLogHelper.Error(ex, ex.Message);
                 throw;
             }
             if (returnObject is not null)
@@ -171,6 +173,7 @@ public abstract class BaseQueue
             }
             catch (Exception ex)
             {
+                BusinessLogHelper.Error(ex, ex.Message);
                 throw new O24OpenAPIException(
                     $"Error occurs when executing service [{Singleton<O24OpenAPIClientConfiguration>.Instance.YourServiceID}] validation : {ex.Message}"
                 );

@@ -73,6 +73,7 @@ public class O24OpenAPIServiceManager(
         }
         catch (Exception ex)
         {
+            BusinessLogHelper.Error(ex, ex.Message);
             return await ErrorWorkflow(workflow, ex);
         }
     }
@@ -123,6 +124,7 @@ public class O24OpenAPIServiceManager(
         }
         catch (Exception ex)
         {
+            BusinessLogHelper.Error(ex, ex.Message);
             return await ErrorWorkflow(workflow, ex);
         }
     }
@@ -229,6 +231,7 @@ public class O24OpenAPIServiceManager(
         }
         catch (Exception ex)
         {
+            BusinessLogHelper.Error(ex, ex.Message);
             return await ErrorWorkflow(workflow, ex);
         }
     }
@@ -322,6 +325,7 @@ public class O24OpenAPIServiceManager(
         }
         catch
         {
+            BusinessLogHelper.Error(ex, ex.Message);
             workflow.response.data = JsonSerializer.Serialize(new { ERROR_MESSAGE = ex.Message });
         }
         workflow.response.status = WFScheme.RESPONSE.EnumResponseStatus.ERROR;

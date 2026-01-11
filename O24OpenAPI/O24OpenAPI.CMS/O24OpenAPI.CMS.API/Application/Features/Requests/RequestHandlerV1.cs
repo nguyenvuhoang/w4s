@@ -200,6 +200,10 @@ public class RequestHandlerV1(
         #region Validate token
         if (IsNeedCheckSession && !string.IsNullOrEmpty(infoHeader.Token))
         {
+            if (infoHeader.Token.NullOrWhiteSpace())
+            {
+                throw new O24OpenAPIException("uid is required.");
+            }
             ValidateTokenResponseModel validateTokenResponse = _jwtTokenService.ValidateToken(
                 infoHeader.Token
             );

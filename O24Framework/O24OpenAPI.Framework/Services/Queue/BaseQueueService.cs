@@ -9,6 +9,7 @@ using O24OpenAPI.Core.Helper;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.DBContext;
 using O24OpenAPI.Framework.Models;
+using O24OpenAPI.Logging.Helpers;
 
 namespace O24OpenAPI.Framework.Services.Queue;
 
@@ -192,11 +193,12 @@ public abstract class BaseQueueService
                     "System is busy now, please try again later"
                 );
             }
-
+            BusinessLogHelper.Error(ex, ex.Message);
             throw;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            BusinessLogHelper.Error(ex, ex.Message);
             throw;
         }
 

@@ -46,7 +46,7 @@ public class SearchExpenseCategoryHandler(
             .GroupBy(t => t.CHAR02)
             .Join(
                 walletCategoryRepository.Table,
-                g => g.Key.ToInt(),
+                g => int.Parse(g.Key),
                 c => c.Id,
                 (g, c) =>
                     new ExpenseCategory

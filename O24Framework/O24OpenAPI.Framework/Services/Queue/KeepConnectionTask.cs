@@ -3,6 +3,7 @@ using O24OpenAPI.Client;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Services.Logging;
 using O24OpenAPI.Framework.Services.ScheduleTasks;
+using O24OpenAPI.Logging.Helpers;
 
 namespace O24OpenAPI.Framework.Services.Queue;
 
@@ -37,6 +38,7 @@ public class KeepConnectionTask : IScheduleTask
         }
         catch (Exception ex)
         {
+            BusinessLogHelper.Error(ex, ex.Message);
             await _logger.Error("Cannot create queue client connect to portal", ex);
             Singleton<QueueClient>.Instance = null;
         }
