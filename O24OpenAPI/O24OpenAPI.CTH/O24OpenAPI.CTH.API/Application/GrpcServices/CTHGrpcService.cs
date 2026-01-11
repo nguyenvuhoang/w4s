@@ -1,6 +1,5 @@
 using Grpc.Core;
 using LinKit.Core.Cqrs;
-using LinKit.Generated.Cqrs;
 using O24OpenAPI.APIContracts.Models.CTH;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Infrastructure;
@@ -11,7 +10,6 @@ using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Grpc.Common;
 using O24OpenAPI.Grpc.CTH;
 using O24OpenAPI.GrpcContracts.Extensions;
-using O24OpenAPI.GrpcContracts.GrpcServerServices;
 using O24OpenAPI.Logging.Helpers;
 using static O24OpenAPI.Grpc.CTH.CTHGrpcService;
 
@@ -35,7 +33,7 @@ public class CTHGrpcService : CTHGrpcServiceBase
     private readonly IUserInRoleRepository userInRoleRepository =
         EngineContext.Current.Resolve<IUserInRoleRepository>();
 
-    private readonly IMediator _mediator = EngineContext.Current.Resolve<Mediator>("cth");
+    private readonly IMediator _mediator = EngineContext.Current.Resolve<IMediator>("cth");
 
     public override async Task<GrpcResponse> GetUserSession(
         GetUserSessionRequest request,

@@ -1,4 +1,5 @@
-﻿using LinKit.Core.Cqrs;
+﻿using System.Text.Json.Serialization;
+using LinKit.Core.Cqrs;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.APIContracts.Models.CTH;
@@ -8,7 +9,8 @@ using O24OpenAPI.CMS.Domain.AggregateModels.FormAggregate;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
-using System.Text.Json.Serialization;
+using O24OpenAPI.Logging.Extensions;
+using O24OpenAPI.Logging.Helpers;
 
 namespace O24OpenAPI.CMS.API.Application.Features.Forms;
 
@@ -16,6 +18,7 @@ public class LoadFormCommand : BaseTransactionModel, ICommand<JToken>
 {
     [JsonPropertyName("form_id")]
     public string FormId { get; set; }
+
     [JsonPropertyName("application_code")]
     public string ApplicationCode { get; set; }
 }
@@ -35,11 +38,7 @@ public class LoadFormHandler(
     )
     {
         if (request.FormId == null)
-            return new JObject
-            {
-                ["success"] = false,
-                ["error"] = "FormId is required"
-            };
+            return new JObject { ["success"] = false, ["error"] = "FormId is required" };
 
         string formId = request.FormId;
 
@@ -66,8 +65,8 @@ public class LoadFormHandler(
             ["data"] = new JObject
             {
                 ["loadRoleTask"] = JToken.FromObject(roleTask),
-                ["form_design_detail"] = JToken.FromObject(configForm)
-            }
+                ["form_design_detail"] = JToken.FromObject(configForm),
+            },
         };
     }
 
@@ -80,9 +79,9 @@ public class LoadFormHandler(
 
         foreach (Dictionary<string, object> layout in configForm.ListLayout)
         {
-            List<Dictionary<string, object>> views = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(
-                layout.GetValueOrDefault("list_view")?.ToString() ?? "[]"
-            );
+            List<Dictionary<string, object>> views = JsonConvert.DeserializeObject<
+                List<Dictionary<string, object>>
+            >(layout.GetValueOrDefault("list_view")?.ToString() ?? "[]");
 
             foreach (Dictionary<string, object> view in views)
             {
@@ -98,9 +97,9 @@ public class LoadFormHandler(
 
                     view["name"] = string.IsNullOrEmpty(localizedValue) ? viewName : localizedValue;
                 }
-                List<Dictionary<string, object>> components = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(
-                    view.GetValueOrDefault("list_input")?.ToString() ?? "[]"
-                );
+                List<Dictionary<string, object>> components = JsonConvert.DeserializeObject<
+                    List<Dictionary<string, object>>
+                >(view.GetValueOrDefault("list_input")?.ToString() ?? "[]");
 
                 foreach (Dictionary<string, object> component in components)
                 {
@@ -146,7 +145,8 @@ public class LoadFormHandler(
         string userCode
     )
     {
-        List<CTHUserInRoleModel> rolesOfUser = await cTHGrpcClientService.GetListRoleByUserCodeAsync(userCode);
+        List<CTHUserInRoleModel> rolesOfUser =
+            await cTHGrpcClientService.GetListRoleByUserCodeAsync(userCode);
         List<int> listRoleId = rolesOfUser.Select(s => s.RoleId).ToList();
         Dictionary<string, object> roleTask = [];
         roleTask.MergeDictionary(await BuildRoleTaskOfForm(listRoleId, app, formId, form_config));
@@ -198,8 +198,8 @@ public class LoadFormHandler(
                 {
                     if (!string.IsNullOrEmpty(getMenuByFormCode.CommandId))
                     {
-                        List<CTHCommandIdInfoModel> getListCommandRight = getListParentID.FindAll(s =>
-                            s.RoleId == listRoleId[i]
+                        List<CTHCommandIdInfoModel> getListCommandRight = getListParentID.FindAll(
+                            s => s.RoleId == listRoleId[i]
                         );
 
                         foreach (CTHCommandIdInfoModel itemRight in getListCommandRight)
@@ -213,7 +213,9 @@ public class LoadFormHandler(
                         roleTaskRole[formCode] = new FormRoleModel { }.ToJToken();
                         System.Console.WriteLine("listRoleId[i]====" + listRoleId[i]);
 
-                        CTHCommandIdInfoModel getRightForm = getListMenuRight.Find(s => s.RoleId == listRoleId[i]);
+                        CTHCommandIdInfoModel getRightForm = getListMenuRight.Find(s =>
+                            s.RoleId == listRoleId[i]
+                        );
                         System.Console.WriteLine(
                             "getRightForm before====" + getRightForm.ToSerialize()
                         );
@@ -252,7 +254,10 @@ public class LoadFormHandler(
                                 { }.ToJToken();
 
                                 foreach (
-                                    Dictionary<string, object> component in JsonConvert.DeserializeObject<
+                                    Dictionary<
+                                        string,
+                                        object
+                                    > component in JsonConvert.DeserializeObject<
                                         List<Dictionary<string, object>>
                                     >(view.GetValueOrDefault("list_input").ToString())
                                 )
@@ -291,7 +296,10 @@ public class LoadFormHandler(
                                 roleTaskRole[view["codeHidden"].ToString()] = new ViewRoleModel()
                                 { }.ToJToken();
                                 foreach (
-                                    Dictionary<string, object> component in JsonConvert.DeserializeObject<
+                                    Dictionary<
+                                        string,
+                                        object
+                                    > component in JsonConvert.DeserializeObject<
                                         List<Dictionary<string, object>>
                                     >(view.GetValueOrDefault("list_input").ToString())
                                 )
@@ -326,7 +334,10 @@ public class LoadFormHandler(
                             roleTaskRole[view["codeHidden"].ToString()] = new ViewRoleModel()
                             { }.ToJToken();
                             foreach (
-                                Dictionary<string, object> component in JsonConvert.DeserializeObject<
+                                Dictionary<
+                                    string,
+                                    object
+                                > component in JsonConvert.DeserializeObject<
                                     List<Dictionary<string, object>>
                                 >(view.GetValueOrDefault("list_input").ToString())
                             )
@@ -350,6 +361,7 @@ public class LoadFormHandler(
         }
         catch (System.Exception ex)
         {
+            ex.WriteError();
             // TODO
             System.Console.WriteLine("ExceptionBuildRoleTask==" + ex.StackTrace);
         }
