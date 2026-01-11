@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using LinKit.Json.Runtime;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using O24OpenAPI.Client.Events;
@@ -123,7 +124,7 @@ public class QueueClient : MyConsole
     /// <summary>
     /// The obj lock setup
     /// </summary>
-    private readonly object objLockSetup = new object();
+    private readonly object objLockSetup = new();
 
     /// <summary>
     /// The connection
@@ -148,12 +149,12 @@ public class QueueClient : MyConsole
     /// <summary>
     /// The lockserviceinfoobject
     /// </summary>
-    private readonly object __lockServiceInfoObject = new object();
+    private readonly object __lockServiceInfoObject = new();
 
     /// <summary>
     /// The service info
     /// </summary>
-    private ServiceInfo __ServiceInfo = new ServiceInfo();
+    private ServiceInfo __ServiceInfo = new();
 
     /// <summary>
     /// The local ssl cert path
@@ -238,7 +239,8 @@ public class QueueClient : MyConsole
         else
         {
             ServiceInfo = new ServiceInfo();
-            var o24config = Singleton<O24OpenAPIClientConfiguration>.Instance;
+            O24OpenAPIClientConfiguration o24config =
+                Singleton<O24OpenAPIClientConfiguration>.Instance;
             ServiceInfo
                 .QueryServiceInfo(
                     o24config.YourServiceID,
@@ -356,10 +358,10 @@ public class QueueClient : MyConsole
             await Subscribe();
         }
         WriteLine("AutoConfigure() done.");
-        ThreadPool.GetMinThreads(out var workerThreads, out var completionPortThreads);
+        ThreadPool.GetMinThreads(out int workerThreads, out int completionPortThreads);
         WriteLine($"AutoConfigure(): minWorker={workerThreads}; minIOC={completionPortThreads}");
         ThreadPool.SetMinThreads(200, completionPortThreads);
-        ThreadPool.GetMaxThreads(out var workerThreads1, out var completionPortThreads1);
+        ThreadPool.GetMaxThreads(out int workerThreads1, out int completionPortThreads1);
         WriteLine($"AutoConfigure(): maxWorker={workerThreads1}; maxIOC={completionPortThreads1}");
         return true;
     }
@@ -387,7 +389,7 @@ public class QueueClient : MyConsole
         }
         catch { }
         __Factory.HostName = ServiceInfo.broker_hostname;
-        __Factory.Port = ((ServiceInfo.broker_port > 0) ? ServiceInfo.broker_port : __Factory.Port);
+        __Factory.Port = (ServiceInfo.broker_port > 0) ? ServiceInfo.broker_port : __Factory.Port;
         __Factory.VirtualHost = ServiceInfo.broker_virtual_host;
         __Factory.UserName = ServiceInfo.broker_user_name;
         __Factory.Password = ServiceInfo.broker_user_password;
@@ -462,18 +464,19 @@ public class QueueClient : MyConsole
             }
 
             if (
-                e.BasicProperties.Headers.TryGetValue("work_context", out var workContextObj)
+                e.BasicProperties.Headers.TryGetValue("work_context", out object? workContextObj)
                 && workContextObj is byte[] workContextBytes
             )
             {
-                var workContext = System.Text.Json.JsonSerializer.Deserialize<WorkContextTemplate>(
-                    workContextBytes
-                );
+                WorkContextTemplate? workContext =
+                    System.Text.Json.JsonSerializer.Deserialize<WorkContextTemplate>(
+                        workContextBytes
+                    );
                 EngineContext.Current.Resolve<WorkContext>().SetWorkContext(workContext);
             }
             else
             {
-                var loggerService = EngineContext.Current.Resolve<ILoggerService>();
+                ILoggerService? loggerService = EngineContext.Current.Resolve<ILoggerService>();
                 loggerService?.LogErrorAsync(
                     $"Missing or invalid 'WorkContext' header. Headers: {e.BasicProperties.Headers}"
                 );
@@ -491,7 +494,7 @@ public class QueueClient : MyConsole
                     );
                 }
 
-                var invocationList = this.WorkflowDelivering.GetInvocationList();
+                Delegate[] invocationList = this.WorkflowDelivering.GetInvocationList();
                 List<Task> tasks = new(invocationList.Length);
 
                 foreach (Delegate del in invocationList)
@@ -536,15 +539,15 @@ public class QueueClient : MyConsole
             byte[] bodyArray = e.Body.ToArray();
             string messageContent = Encoding.UTF8.GetString(bodyArray);
 
-            var eventData = System.Text.Json.JsonSerializer.Deserialize<O24OpenAPIEvent<object>>(
-                messageContent
-            );
+            O24OpenAPIEvent<object>? eventData = System.Text.Json.JsonSerializer.Deserialize<
+                O24OpenAPIEvent<object>
+            >(messageContent);
             if (eventData is null)
             {
                 return;
             }
 
-            var tasks = new List<Task>();
+            List<Task> tasks = new();
 
             switch (eventData.EventType)
             {
@@ -561,9 +564,10 @@ public class QueueClient : MyConsole
                 case O24OpenAPIWorkflowEventTypeEnum.EventWorkflowStepCompensated:
                     if (this.WorkflowExecutionEvent != null)
                     {
-                        var executionEvent = System.Text.Json.JsonSerializer.Deserialize<
-                            O24OpenAPIEvent<WorkflowExecutionEventData>
-                        >(messageContent);
+                        O24OpenAPIEvent<WorkflowExecutionEventData>? executionEvent =
+                            System.Text.Json.JsonSerializer.Deserialize<
+                                O24OpenAPIEvent<WorkflowExecutionEventData>
+                            >(messageContent);
                         if (executionEvent != null)
                         {
                             tasks.Add(this.WorkflowExecutionEvent(executionEvent));
@@ -574,9 +578,10 @@ public class QueueClient : MyConsole
                 case O24OpenAPIWorkflowEventTypeEnum.EventWorkflowsArchived:
                     if (this.WorkflowArchivingEvent != null)
                     {
-                        var archiveEvent = System.Text.Json.JsonSerializer.Deserialize<
-                            O24OpenAPIEvent<WorkflowArchivingEventData>
-                        >(messageContent);
+                        O24OpenAPIEvent<WorkflowArchivingEventData>? archiveEvent =
+                            System.Text.Json.JsonSerializer.Deserialize<
+                                O24OpenAPIEvent<WorkflowArchivingEventData>
+                            >(messageContent);
                         if (archiveEvent != null)
                         {
                             tasks.Add(this.WorkflowArchivingEvent(archiveEvent));
@@ -587,9 +592,10 @@ public class QueueClient : MyConsole
                 case O24OpenAPIWorkflowEventTypeEnum.EventWorkflowsPurged:
                     if (this.WorkflowPurgingEvent != null)
                     {
-                        var purgeEvent = System.Text.Json.JsonSerializer.Deserialize<
-                            O24OpenAPIEvent<WorkflowPurgingEventData>
-                        >(messageContent);
+                        O24OpenAPIEvent<WorkflowPurgingEventData>? purgeEvent =
+                            System.Text.Json.JsonSerializer.Deserialize<
+                                O24OpenAPIEvent<WorkflowPurgingEventData>
+                            >(messageContent);
                         if (purgeEvent != null)
                         {
                             tasks.Add(this.WorkflowPurgingEvent(purgeEvent));
@@ -600,9 +606,10 @@ public class QueueClient : MyConsole
                 case O24OpenAPIWorkflowEventTypeEnum.EventServiceToService:
                     if (this.ServiceToServiceEvent != null)
                     {
-                        var serviceEvent = System.Text.Json.JsonSerializer.Deserialize<
-                            O24OpenAPIEvent<ServiceToServiceEventData>
-                        >(messageContent);
+                        O24OpenAPIEvent<ServiceToServiceEventData>? serviceEvent =
+                            System.Text.Json.JsonSerializer.Deserialize<
+                                O24OpenAPIEvent<ServiceToServiceEventData>
+                            >(messageContent);
                         if (serviceEvent != null)
                         {
                             tasks.Add(this.ServiceToServiceEvent(serviceEvent));
@@ -612,9 +619,10 @@ public class QueueClient : MyConsole
                 case O24OpenAPIWorkflowEventTypeEnum.EventLog:
                     if (this.LogEvent != null)
                     {
-                        var logEvent = System.Text.Json.JsonSerializer.Deserialize<
-                            O24OpenAPIEvent<LogEventData>
-                        >(messageContent);
+                        O24OpenAPIEvent<LogEventData>? logEvent =
+                            System.Text.Json.JsonSerializer.Deserialize<
+                                O24OpenAPIEvent<LogEventData>
+                            >(messageContent);
                         if (logEvent != null)
                         {
                             tasks.Add(this.LogEvent(logEvent));
@@ -625,9 +633,10 @@ public class QueueClient : MyConsole
                 case O24OpenAPIWorkflowEventTypeEnum.EventMethodInvocation:
                     if (this.MethodInvocationEvent != null)
                     {
-                        var invocationEvent = System.Text.Json.JsonSerializer.Deserialize<
-                            O24OpenAPIEvent<MethodInvocationEventData>
-                        >(messageContent);
+                        O24OpenAPIEvent<MethodInvocationEventData>? invocationEvent =
+                            System.Text.Json.JsonSerializer.Deserialize<
+                                O24OpenAPIEvent<MethodInvocationEventData>
+                            >(messageContent);
                         if (invocationEvent != null)
                         {
                             tasks.Add(this.MethodInvocationEvent(invocationEvent));
@@ -637,9 +646,10 @@ public class QueueClient : MyConsole
                 case O24OpenAPIWorkflowEventTypeEnum.EntityAction:
                     if (this.EntityEvent != null)
                     {
-                        var entityEvent = System.Text.Json.JsonSerializer.Deserialize<
-                            O24OpenAPIEvent<EntityEvent>
-                        >(messageContent);
+                        O24OpenAPIEvent<EntityEvent>? entityEvent =
+                            System.Text.Json.JsonSerializer.Deserialize<
+                                O24OpenAPIEvent<EntityEvent>
+                            >(messageContent);
                         if (entityEvent != null)
                         {
                             tasks.Add(this.EntityEvent(entityEvent));
@@ -649,9 +659,10 @@ public class QueueClient : MyConsole
                 case O24OpenAPIWorkflowEventTypeEnum.EventCDC:
                     if (this.CdcEvent != null)
                     {
-                        var cdcEvent = System.Text.Json.JsonSerializer.Deserialize<
-                            O24OpenAPIEvent<CDCEvent>
-                        >(messageContent);
+                        O24OpenAPIEvent<CDCEvent>? cdcEvent =
+                            System.Text.Json.JsonSerializer.Deserialize<O24OpenAPIEvent<CDCEvent>>(
+                                messageContent
+                            );
                         if (cdcEvent != null)
                         {
                             tasks.Add(this.CdcEvent(cdcEvent));
@@ -661,9 +672,10 @@ public class QueueClient : MyConsole
                 case O24OpenAPIWorkflowEventTypeEnum.EventLogWorkflowStep:
                     if (this.StepEvent != null)
                     {
-                        var stepEvent = System.Text.Json.JsonSerializer.Deserialize<
-                            O24OpenAPIEvent<StepExecutionEvent>
-                        >(messageContent);
+                        O24OpenAPIEvent<StepExecutionEvent>? stepEvent =
+                            System.Text.Json.JsonSerializer.Deserialize<
+                                O24OpenAPIEvent<StepExecutionEvent>
+                            >(messageContent);
                         if (stepEvent != null)
                         {
                             tasks.Add(this.StepEvent(stepEvent));
@@ -743,7 +755,8 @@ public class QueueClient : MyConsole
                     string messageType = Encoding.UTF8.GetString(bytes);
                     if (!messageType.Equals("workflow", StringComparison.OrdinalIgnoreCase))
                     {
-                        var loggerService = EngineContext.Current.Resolve<ILoggerService>();
+                        ILoggerService? loggerService =
+                            EngineContext.Current.Resolve<ILoggerService>();
                         loggerService?.LogErrorAsync(
                             $"Missing or invalid 'message_type' header. MessageType: {messageType}"
                         );
@@ -753,7 +766,7 @@ public class QueueClient : MyConsole
                         !(
                             ea.BasicProperties.Headers.TryGetValue(
                                 "work_context",
-                                out var workContextObj
+                                out object? workContextObj
                             ) && workContextObj is byte[] workContextBytes
                         )
                     )
@@ -762,13 +775,13 @@ public class QueueClient : MyConsole
                             "Missing or invalid 'WorkContext' header."
                         );
                     }
-                    var workContextTemplate =
+                    WorkContextTemplate? workContextTemplate =
                         System.Text.Json.JsonSerializer.Deserialize<WorkContextTemplate>(
                             workContextBytes
                         );
                     workContext.SetWorkContext(workContextTemplate);
 
-                    using var scope = EngineContext.Current.CreateQueueScope(workContext);
+                    using IServiceScope scope = EngineContext.Current.CreateQueueScope(workContext);
 
                     await RabbitMqLogHelper.LogConsumeAsync(
                         serviceName: Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID,
@@ -814,7 +827,8 @@ public class QueueClient : MyConsole
                     string messageType = Encoding.UTF8.GetString(bytes);
                     if (!messageType.Equals("event", StringComparison.OrdinalIgnoreCase))
                     {
-                        var loggerService = EngineContext.Current.Resolve<ILoggerService>();
+                        ILoggerService? loggerService =
+                            EngineContext.Current.Resolve<ILoggerService>();
                         loggerService?.LogErrorAsync(
                             $"Missing or invalid 'message_type' header. MessageType: {messageType}"
                         );
@@ -825,7 +839,7 @@ public class QueueClient : MyConsole
                         !(
                             ea.BasicProperties.Headers.TryGetValue(
                                 "work_context",
-                                out var workContextObj
+                                out object? workContextObj
                             ) && workContextObj is byte[] workContextBytes
                         )
                     )
@@ -834,13 +848,13 @@ public class QueueClient : MyConsole
                             "Missing or invalid 'WorkContext' header."
                         );
                     }
-                    var workContextTemplate =
+                    WorkContextTemplate? workContextTemplate =
                         System.Text.Json.JsonSerializer.Deserialize<WorkContextTemplate>(
                             workContextBytes
                         );
                     workContext.SetWorkContext(workContextTemplate);
 
-                    using var scope = EngineContext.Current.CreateQueueScope(workContext);
+                    using IServiceScope scope = EngineContext.Current.CreateQueueScope(workContext);
                     await RabbitMqLogHelper.LogConsumeAsync(
                         serviceName: Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID,
                         source: $"Exchange: '{ea.Exchange}', Key: '{ea.RoutingKey}'",
@@ -899,8 +913,8 @@ public class QueueClient : MyConsole
         string messageType = "workflow"
     )
     {
-        var jsonWorkContext = EngineContext.Current.Resolve<WorkContext>()?.ToJson();
-        var basicProperties = new BasicProperties
+        string? jsonWorkContext = EngineContext.Current.Resolve<WorkContext>()?.ToJson();
+        BasicProperties basicProperties = new()
         {
             ContentType = "text/plain",
             DeliveryMode = DeliveryModes.Persistent,
@@ -933,7 +947,7 @@ public class QueueClient : MyConsole
     /// <param name="pContent">The content</param>
     public async Task SendWorkflow(string pQueueName, string pContent)
     {
-        var basicProperties = new BasicProperties
+        BasicProperties basicProperties = new()
         {
             ContentType = "text/plain",
             DeliveryMode = DeliveryModes.Persistent,
@@ -967,7 +981,7 @@ public class QueueClient : MyConsole
             return null;
         }
 
-        var settings = new JsonSerializerSettings
+        JsonSerializerSettings settings = new()
         {
             ContractResolver = new DefaultContractResolver
             {
@@ -991,7 +1005,7 @@ public class QueueClient : MyConsole
             return null;
         }
 
-        var options = new JsonSerializerOptions
+        JsonSerializerOptions options = new()
         {
             PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
             WriteIndented = false,
@@ -1014,10 +1028,14 @@ public class QueueClient : MyConsole
             if (workflow?.response?.data != null)
             {
                 string json = SerializeObjectWithSnakeCaseNaming(workflow.response.data);
+                //string json = workflow.response.data.ToJson(o => o.NamingConvention = NamingConvention.SnakeCaseLower);
                 workflow.response.data = JsonDocument.Parse(json).RootElement;
                 if (ServiceInfo.is_tracking)
                 {
-                    var txContext = workflow.request.request_header.tx_context;
+                    Dictionary<string, object> txContext = workflow
+                        .request
+                        .request_header
+                        .tx_context;
                     txContext[$"$$$$${txContext.Count}_Service_Sent_Message_To_Queue_At"] =
                         Utils.GetCurrentDateAsLongNumber();
                 }
@@ -1037,15 +1055,18 @@ public class QueueClient : MyConsole
 
                 if (ServiceInfo.is_tracking)
                 {
-                    var txContext = workflow.request.request_header.tx_context;
+                    Dictionary<string, object> txContext = workflow
+                        .request
+                        .request_header
+                        .tx_context;
                     txContext[$"$$$$${txContext.Count}_Service_Sent_Message_To_Queue_At"] =
                         Utils.GetCurrentDateAsLongNumber();
                 }
             }
 
-            var eventData = new StepExecutionEvent { WFScheme = workflow };
+            StepExecutionEvent eventData = new() { WFScheme = workflow };
 
-            var o24Event = new O24OpenAPIEvent<StepExecutionEvent>(
+            O24OpenAPIEvent<StepExecutionEvent> o24Event = new(
                 O24OpenAPIWorkflowEventTypeEnum.EventLogWorkflowStep
             );
             o24Event.EventData.data = eventData;
@@ -1058,7 +1079,7 @@ public class QueueClient : MyConsole
 
     private async Task FanoutMessage(string exchangeName, string message)
     {
-        var basicProperties = new BasicProperties
+        BasicProperties basicProperties = new()
         {
             ContentType = "text/plain",
             DeliveryMode = DeliveryModes.Persistent,
@@ -1075,10 +1096,10 @@ public class QueueClient : MyConsole
 
     private async Task RegisterFanout()
     {
-        var o24Config = Singleton<O24OpenAPIConfiguration>.Instance;
+        O24OpenAPIConfiguration o24Config = Singleton<O24OpenAPIConfiguration>.Instance;
         if (o24Config.FanoutExchanges != null && o24Config.FanoutExchanges.Count > 0)
         {
-            foreach (var exchange in o24Config.FanoutExchanges)
+            foreach (string exchange in o24Config.FanoutExchanges)
             {
                 await __CommandChannel.ExchangeDeclareAsync(exchange, "fanout", true, false, null);
                 await __CommandChannel.QueueBindAsync(
@@ -1100,7 +1121,7 @@ public class QueueClient : MyConsole
         await CreateFactory();
         await CreateConnection();
         await CreateChannel();
-        var o24Config = Singleton<O24OpenAPIConfiguration>.Instance;
+        O24OpenAPIConfiguration o24Config = Singleton<O24OpenAPIConfiguration>.Instance;
         await CreateQueue(ServiceInfo.broker_queue_name, o24Config.AutoDeleteCommandQueue);
         await CreateQueue(ServiceInfo.event_queue_name, o24Config.AutoDeleteEventQueue);
         await RegisterFanout();
