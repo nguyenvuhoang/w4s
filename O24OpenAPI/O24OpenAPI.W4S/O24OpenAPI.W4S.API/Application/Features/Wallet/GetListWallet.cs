@@ -5,6 +5,7 @@ using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Logging.Extensions;
 using O24OpenAPI.W4S.API.Application.Constants;
+using O24OpenAPI.W4S.API.Application.Helpers;
 using O24OpenAPI.W4S.API.Application.Models.Wallet;
 using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
@@ -58,6 +59,27 @@ public class GetListWalletHandler(IWalletProfileRepository walletProfileReposito
             );
 
 
+            var balanceByWallet = walletAccountList
+             .GroupBy(wa => wa.WalletId)
+             .ToDictionary(
+                 g => g.Key,
+                 g =>
+                 {
+                     var accounts = g.ToList();
+
+                     return accounts.Sum(a =>
+                     {
+                         var balance = walletAccountBalance
+                             .FirstOrDefault(b => b.AccountNumber == a.AccountNumber)
+                             ?.AvailableBalance ?? 0;
+
+                         return WalletAccountTypeHelper.GetSign(a.AccountType) * balance;
+                     });
+                 }
+             );
+
+
+
             var result = wallets
                 .Select(w => new ListWalletResponseModel
                 {
@@ -66,6 +88,7 @@ public class GetListWalletHandler(IWalletProfileRepository walletProfileReposito
                     UserCode = w.UserCode ?? string.Empty,
                     WalletName = w.WalletName,
                     WalletType = w.WalletType,
+                    AvailableBalance = balanceByWallet.TryGetValue(w.Id, out var available) ? available : 0,
                     DefaultCurrency = w.DefaultCurrency,
                     Status = w.Status,
                     Icon = w.Icon,

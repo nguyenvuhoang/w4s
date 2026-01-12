@@ -33,6 +33,7 @@ public class ListWalletResponseModel : BaseO24OpenAPIModel
     /// Wallet type: PERSONAL | SHARED | BUSINESS | DEFI | FIAT
     /// </summary>
     public string WalletType { get; set; } = default!;
+    public decimal? AvailableBalance { get; set; } = 0;
 
     /// <summary>
     /// Gets or sets the DefaultCurrency

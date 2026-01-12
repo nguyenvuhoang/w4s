@@ -3,6 +3,7 @@ using LinqToDB;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Data;
 using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
+using O24OpenAPI.W4S.Domain.Constants;
 
 namespace O24OpenAPI.W4S.Infrastructure.Repositories;
 
@@ -22,7 +23,7 @@ public class WalletAccountRepository(
         {
             new() {
                 WalletId = walletId,
-                AccountType = "01", // INCOME
+                AccountType = WalletAccountType.Income, // INCOME
                 CurrencyCode = "VND",
                 IsPrimary = true,
                 Status = "A",
@@ -31,7 +32,7 @@ public class WalletAccountRepository(
             new ()
             {
                 WalletId = walletId,
-                AccountType = "02", // EXPENSE
+                AccountType = WalletAccountType.Expense, // EXPENSE
                 CurrencyCode = "VND",
                 IsPrimary = false,
                 Status = "A",
@@ -40,7 +41,7 @@ public class WalletAccountRepository(
             new ()
             {
                 WalletId = walletId,
-                AccountType = "03", // LOAN
+                AccountType = WalletAccountType.Loan, // LOAN
                 CurrencyCode = "VND",
                 IsPrimary = false,
                 Status = "A",
@@ -65,21 +66,15 @@ public class WalletAccountRepository(
             .ToListAsync();
     }
 
-    public enum WalletAccountType
-    {
-        Income = 1,
-        Expense = 2,
-        Loan = 3
-    }
     public static string Generate(
-     WalletAccountType type,
+     string type,
      int sequence,
      DateTime? utcNow = null)
     {
         var time = (utcNow ?? DateTime.UtcNow)
             .ToString("yyyyMMddHHmmss");
 
-        var typeCode = ((int)type).ToString("D2");
+        var typeCode = type;
         var seq = sequence.ToString("D6");
 
         return $"{time}{typeCode}{seq}";
