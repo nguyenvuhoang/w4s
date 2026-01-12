@@ -47,10 +47,13 @@ public class GetWalletContractCategoryCommandHandler(
 
         foreach (var node in nodes.Values)
         {
-            if (node.ParentCategoryId == 0) continue;
+            var parentId = node.ParentCategoryId;
+            if (parentId == 0) continue;
 
-            if (nodes.TryGetValue(node.ParentCategoryId, out var parent))
+            if (nodes.TryGetValue(parentId, out var parent))
             {
+                parent.Children ??= [];
+
                 if (!parent.Children.Any(c => c.Id == node.Id))
                     parent.Children.Add(node);
             }
@@ -61,6 +64,7 @@ public class GetWalletContractCategoryCommandHandler(
             .ToList();
 
         return roots;
+
 
 
     }
