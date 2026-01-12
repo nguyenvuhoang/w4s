@@ -50,7 +50,7 @@ public class WorkflowStepRepository(
     {
         IQueryable<WorkflowStep> query =
             from d in Table
-            where !string.IsNullOrEmpty(workflowId) && d.WorkflowId.Equals(workflowId)
+            where !string.IsNullOrEmpty(workflowId) && d.WorkflowId == workflowId
             select d;
         return await query.ToPagedList(0, 10);
     }

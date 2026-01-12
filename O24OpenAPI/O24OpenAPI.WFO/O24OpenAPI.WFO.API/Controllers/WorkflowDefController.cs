@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.Client.Workflow;
-using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.WFO.API.Application.Features.Workflows;
 using O24OpenAPI.WFO.Domain.AggregateModels.WorkflowAggregate;
@@ -18,18 +17,8 @@ public class WorkflowDefController(
     [HttpPost]
     public async Task<IActionResult> SimpleSearch([FromBody] SimpleSearchModel request)
     {
-        string searchText = request.SearchText;
-        int pageIndex = request.PageIndex;
-        int pageSize = request.PageSize;
 
-        SimpleSearchModel model = new()
-        {
-            SearchText = searchText,
-            PageIndex = pageIndex.ToInt(),
-            PageSize = pageSize.ToInt(),
-        };
-
-        WorkflowResponse response = await searchWorkflowHandler.SimpleSearch(model);
+        PagedListModel<WorkflowDef, Application.Models.WorkflowDefSearchResponse> response = await searchWorkflowHandler.SimpleSearch(request);
 
         return Ok(response);
     }

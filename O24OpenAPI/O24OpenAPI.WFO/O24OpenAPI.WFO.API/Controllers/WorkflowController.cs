@@ -4,6 +4,7 @@ using O24OpenAPI.Framework.Controllers;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.WFO.API.Application.Features.WorkflowExecutions;
 using O24OpenAPI.WFO.API.Application.Features.Workflows;
+using O24OpenAPI.WFO.Domain.AggregateModels.WorkflowAggregate;
 using WorkflowInput = O24OpenAPI.WFO.API.Application.Models.WorkflowInput;
 
 namespace O24OpenAPI.WFO.API.Controllers;
@@ -33,7 +34,7 @@ public class WorkflowController(
     [HttpPost]
     public async Task<IActionResult> Search([FromBody] SimpleSearchModel request)
     {
-        WorkflowResponse r = await searchWorkflowHandler.SimpleSearch(request);
+        PagedListModel<WorkflowDef, Application.Models.WorkflowDefSearchResponse> r = await searchWorkflowHandler.SimpleSearch(request);
         return Ok(r);
     }
 

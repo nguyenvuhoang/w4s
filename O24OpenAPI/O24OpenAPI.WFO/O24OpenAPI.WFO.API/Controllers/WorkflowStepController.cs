@@ -1,18 +1,19 @@
+using LinKit.Core.Cqrs;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.Client.Workflow;
 using O24OpenAPI.Core;
-using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Framework.Models;
-using O24OpenAPI.WFO.API.Application.Models;
+using O24OpenAPI.WFO.API.Application.Features.WorkflowSteps;
+using O24OpenAPI.WFO.API.Application.Models.WorkflowStepModels;
 using O24OpenAPI.WFO.Domain.AggregateModels.WorkflowAggregate;
 using System.Reflection;
 using WorkflowInput = O24OpenAPI.WFO.API.Application.Models.WorkflowInput;
 
 namespace O24OpenAPI.WFO.API.Controllers;
 
-public class WorkflowStepController(IWorkflowStepRepository workflowStepRepository)
+public class WorkflowStepController(IWorkflowStepRepository workflowStepRepository, IMediator mediator)
     : WFOBaseController
 {
     [HttpPost]
@@ -25,47 +26,38 @@ public class WorkflowStepController(IWorkflowStepRepository workflowStepReposito
         return Ok(r.MappingResponse);
     }
 
+    //[HttpPost]
+    //public async Task<IActionResult> SimpleSearch([FromBody] WorkflowInput request)
+    //{
+    //    string searchText = request.Fields["searchtext"].ToString();
+    //    string pageIndex = request.Fields["pageindex"].ToString();
+    //    string pageSize = request.Fields["pagesize"].ToString();
+
+    //    SimpleSearchModel model = new()
+    //    {
+    //        SearchText = searchText,
+    //        PageIndex = pageIndex.ToInt(),
+    //        PageSize = pageSize.ToInt(),
+    //    };
+
+    //    IPagedList<WorkflowStep> r = await workflowStepRepository.SimpleSearch(model);
+
+    //    List<JObject> jObjects = r.Select(x => JObject.FromObject(x)).ToList();
+    //    PagedList<JObject> pagedJObjects = new(jObjects, r.PageIndex, r.PageSize, r.TotalCount);
+
+    //    PageListModel pageListModel = new(pagedJObjects, r.TotalCount);
+
+    //    JObject result = new() { ["data"] = JObject.FromObject(pageListModel) };
+
+    //    return Ok(result);
+    //}
+
     [HttpPost]
-    public async Task<IActionResult> SimpleSearch([FromBody] WorkflowInput request)
+    public async Task<IActionResult> GetByWorkflowId([FromBody] GetStepByWorkflowIdQuery request)
     {
-        string searchText = request.Fields["searchtext"].ToString();
-        string pageIndex = request.Fields["pageindex"].ToString();
-        string pageSize = request.Fields["pagesize"].ToString();
-
-        SimpleSearchModel model = new()
-        {
-            SearchText = searchText,
-            PageIndex = pageIndex.ToInt(),
-            PageSize = pageSize.ToInt(),
-        };
-
-        IPagedList<WorkflowStep> r = await workflowStepRepository.SimpleSearch(model);
-
-        List<JObject> jObjects = r.Select(x => JObject.FromObject(x)).ToList();
-        PagedList<JObject> pagedJObjects = new(jObjects, r.PageIndex, r.PageSize, r.TotalCount);
-
-        PageListModel pageListModel = new(pagedJObjects, r.TotalCount);
-
-        JObject result = new() { ["data"] = JObject.FromObject(pageListModel) };
-
-        return Ok(result);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> GetByWorkflowId([FromBody] WorkflowInput request)
-    {
-        string workflowid = request.Fields["workflowid"].ToString();
-
-        IPagedList<WorkflowStep> r = await workflowStepRepository.GetByWorkflowId(workflowid);
-
-        List<JObject> jObjects = r.Select(x => JObject.FromObject(x)).ToList();
-        PagedList<JObject> pagedJObjects = new(jObjects, r.PageIndex, r.PageSize, r.TotalCount);
-
-        PageListModel pageListModel = new(pagedJObjects, r.TotalCount);
-
-        JObject result = new() { ["data"] = JObject.FromObject(pageListModel) };
-
-        return Ok(result);
+        IPagedList<WorkflowStepModel> pagedList = await mediator.QueryAsync(request);
+        PagedListModel<WorkflowStepModel> resposne = new(pagedList);
+        return Ok(resposne);
     }
 
     [HttpPost]

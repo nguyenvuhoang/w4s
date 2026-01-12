@@ -1,6 +1,7 @@
 ﻿using LinKit.Core.Mapping;
 using LinKit.Json.Runtime;
 using O24OpenAPI.WFO.API.Application.Models;
+using O24OpenAPI.WFO.API.Application.Models.WorkflowStepModels;
 using O24OpenAPI.WFO.Domain.AggregateModels.WorkflowAggregate;
 
 namespace O24OpenAPI.WFO.API.Application.Mapping;
@@ -32,5 +33,8 @@ public class MappingConfiguration : IMappingConfigurator
 
         builder.CreateMap<WorkflowStep, WorkflowStep>().ForMember(d => d.Id, o => o.Ignore());
         builder.CreateMap<WorkflowDef, WorkflowDef>().ForMember(d => d.Id, o => o.Ignore());
+
+        builder.CreateMap<WorkflowStep, WorkflowStepModel>();
+        builder.CreateMap<WorkflowStepModel, WorkflowStep>();
     }
 }
