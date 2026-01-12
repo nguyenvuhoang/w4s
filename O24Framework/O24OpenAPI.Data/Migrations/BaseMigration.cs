@@ -58,9 +58,10 @@ public abstract class BaseMigration : Migration
     }
 
     public async Task SeedData<TEntity>(TEntity entity, List<string> conditionKeys = null)
+        where TEntity : BaseEntity
     {
-        var list = new List<TEntity>([entity]);
-        await SeedData(list, conditionKeys);
+        List<TEntity> list = new([entity]);
+        await SeedData<TEntity>(list, conditionKeys);
     }
 
     /// <summary>
@@ -93,7 +94,7 @@ public abstract class BaseMigration : Migration
         }
         else
         {
-            var keyProperties = typeof(TEntity)
+            List<PropertyInfo> keyProperties = typeof(TEntity)
                 .GetProperties()
                 .Where(prop => conditionKeys.Contains(prop.Name))
                 .ToList();
@@ -105,19 +106,22 @@ public abstract class BaseMigration : Migration
                 );
             }
 
-            foreach (var item in entities)
+            foreach (TEntity item in entities)
             {
-                var predicate = BuildPredicate(keyProperties, item);
+                Expression<Func<TEntity, bool>> predicate = BuildPredicate(keyProperties, item);
 
-                var old = await _dataProvider.GetTable<TEntity>().Where(predicate).ToListAsync();
+                List<TEntity> old = await _dataProvider
+                    .GetTable<TEntity>()
+                    .Where(predicate)
+                    .ToListAsync();
                 if (old != null && old.Count > 0)
                 {
                     try
                     {
-                        var oldItem = old.FirstOrDefault();
+                        TEntity oldItem = old.FirstOrDefault();
                         if (oldItem != null)
                         {
-                            var createdOnUtc = oldItem.GetProperty<DateTime>("CreatedOnUtc");
+                            DateTime createdOnUtc = oldItem.GetProperty<DateTime>("CreatedOnUtc");
                             if (createdOnUtc != default)
                             {
                                 item.SetPropertyDate("CreatedOnUtc", createdOnUtc);
@@ -171,14 +175,14 @@ public abstract class BaseMigration : Migration
         TEntity item
     )
     {
-        var parameter = Expression.Parameter(typeof(TEntity), "x");
+        ParameterExpression parameter = Expression.Parameter(typeof(TEntity), "x");
         Expression predicate = Expression.Constant(true);
 
-        foreach (var keyProperty in keyProperties)
+        foreach (PropertyInfo keyProperty in keyProperties)
         {
-            var left = Expression.Property(parameter, keyProperty);
-            var right = Expression.Constant(keyProperty.GetValue(item));
-            var equality = Expression.Equal(left, right);
+            MemberExpression left = Expression.Property(parameter, keyProperty);
+            ConstantExpression right = Expression.Constant(keyProperty.GetValue(item));
+            BinaryExpression equality = Expression.Equal(left, right);
 
             predicate = Expression.AndAlso(predicate, equality);
         }
@@ -196,7 +200,7 @@ public abstract class BaseMigration : Migration
     )
         where TEntity : BaseEntity
     {
-        var data = await FileUtils.ReadCSV<TEntity>(filePath);
+        List<TEntity> data = await FileUtils.ReadCSV<TEntity>(filePath);
 
         await SeedData(data, conditionKeys, isTruncate);
     }
@@ -213,10 +217,10 @@ public abstract class BaseMigration : Migration
     {
         string[] jsonFiles = Directory.GetFiles(folderPath, "*.json");
 
-        List<TEntity> data = new();
+        List<TEntity> data = [];
         foreach (var filePath in jsonFiles)
         {
-            var dataFile = await FileUtils.ReadJson<TEntity>(filePath);
+            List<TEntity> dataFile = await FileUtils.ReadJson<TEntity>(filePath);
             data.AddRange(dataFile);
         }
         await SeedData(data, conditionKeys, isTruncate);
@@ -232,7 +236,7 @@ public abstract class BaseMigration : Migration
     )
         where TEntity : BaseEntity
     {
-        var data = await FileUtils.ReadJson<TEntity>(filePath);
+        List<TEntity> data = await FileUtils.ReadJson<TEntity>(filePath);
         if (data.Count == 0)
         {
             throw new Exception("No data found in " + filePath);

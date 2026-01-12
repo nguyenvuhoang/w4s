@@ -1,7 +1,6 @@
 ﻿using FluentMigrator;
 using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Core.Domain.Localization;
-using O24OpenAPI.Data;
 using O24OpenAPI.Data.Migrations;
 using O24OpenAPI.W4S.API.Application.Constants;
 
@@ -17,24 +16,13 @@ namespace O24OpenAPI.W4S.API.Application.Migrations;
     MigrationProcessType.Update
 )]
 [Environment(EnvironmentType.All)]
-public class RequiredDataMigration(IO24OpenAPIDataProvider dataProvider) : BaseMigration
+public class RequiredDataMigration() : BaseMigration
 {
-    /// <summary>
-    /// The data provider
-    /// </summary>
-    private readonly IO24OpenAPIDataProvider _dataProvider = dataProvider;
-
-    /// <summary>
-    /// Ups this instance
-    /// </summary>
     public override void Up()
     {
         this.InstallInitialData();
     }
 
-    /// <summary>
-    /// Installs the initial data
-    /// </summary>
     protected void InstallInitialData()
     {
         SeedListData(
@@ -42,63 +30,45 @@ public class RequiredDataMigration(IO24OpenAPIDataProvider dataProvider) : BaseM
                     new LocaleStringResource()
                     {
                         Language = "en",
-                        ResourceName = O24W4SResourceCode
-                            .Validation
-                            .ContractPhoneExists,
+                        ResourceName = O24W4SResourceCode.Validation.ContractPhoneExists,
                         ResourceValue = "The phone number {0} already exists.",
                     },
                     new LocaleStringResource()
                     {
                         Language = "vi",
-                        ResourceName = O24W4SResourceCode
-                            .Validation
-                            .ContractPhoneExists,
+                        ResourceName = O24W4SResourceCode.Validation.ContractPhoneExists,
                         ResourceValue = "Số điện thoại {0} đã tồn tại.",
                     },
-                     new LocaleStringResource()
+                    new LocaleStringResource()
                     {
                         Language = "en",
-                        ResourceName = O24W4SResourceCode
-                            .Validation
-                            .WalletCategoryNotFound,
+                        ResourceName = O24W4SResourceCode.Validation.WalletCategoryNotFound,
                         ResourceValue = "The wallet category was not found.",
                     },
                     new LocaleStringResource()
                     {
                         Language = "vi",
-                        ResourceName = O24W4SResourceCode
-                            .Validation
-                            .WalletCategoryNotFound,
+                        ResourceName = O24W4SResourceCode.Validation.WalletCategoryNotFound,
                         ResourceValue = "Không tìm thấy danh mục ví.",
                     },
-                     new LocaleStringResource()
+                    new LocaleStringResource()
                     {
                         Language = "en",
-                        ResourceName = O24W4SResourceCode
-                            .Validation
-                            .WalletContractNotFound,
+                        ResourceName = O24W4SResourceCode.Validation.WalletContractNotFound,
                         ResourceValue = "The wallet contract was not found.",
                     },
-                     new LocaleStringResource()
+                    new LocaleStringResource()
                     {
                         Language = "vi",
-                        ResourceName = O24W4SResourceCode
-                            .Validation
-                            .WalletContractNotFound,
+                        ResourceName = O24W4SResourceCode.Validation.WalletContractNotFound,
                         ResourceValue = "Không tìm thấy ví hợp đồng",
                     },
-
-                     new LocaleStringResource()
+                    new LocaleStringResource()
                     {
                         Language = "vi",
-                        ResourceName = O24W4SResourceCode
-                            .Validation
-                            .WalletContractNotFound,
+                        ResourceName = O24W4SResourceCode.Validation.WalletContractNotFound,
                         ResourceValue = "Không tìm thấy danh mục hợp đồng ví.",
                     },
-
-
-
                 ],
                 [nameof(LocaleStringResource.Language), nameof(LocaleStringResource.ResourceName)]
             )
