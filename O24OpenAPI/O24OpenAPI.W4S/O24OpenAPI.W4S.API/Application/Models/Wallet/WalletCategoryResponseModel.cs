@@ -6,7 +6,8 @@ namespace O24OpenAPI.W4S.API.Application.Models.Wallet;
 public class WalletCategoryResponseModel : BaseO24OpenAPIModel
 {
     public WalletCategoryResponseModel() { }
-    public int CategoryId { get; set; }
+    public int Id { get; set; }
+    public string CategoryCode { get; set; }
     public int? WalletId { get; set; }
     public int ParentCategoryId { get; set; }
     public string? CategoryGroup { get; set; }
@@ -17,7 +18,8 @@ public class WalletCategoryResponseModel : BaseO24OpenAPIModel
     public string? WebIcon { get; set; }
     public WalletCategoryResponseModel(WalletCategory category)
     {
-        CategoryId = category.Id;
+        Id = category.Id;
+        CategoryCode = category.CategoryCode;
         WalletId = category.WalletId;
         ParentCategoryId = category.ParentCategoryId;
         CategoryGroup = category.CategoryGroup;

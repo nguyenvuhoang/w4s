@@ -28,6 +28,12 @@ public class WalletProfileRepository(
         return await Table.Where(wp => wp.ContractNumber == Contractnumber).ToListAsync();
     }
 
+    public Task<WalletProfile> GetByContractNumberAsync(string contractNumber)
+    {
+        var profile = Table.Where(wp => wp.ContractNumber == contractNumber).FirstOrDefaultAsync();
+        return profile;
+    }
+
     public async Task<WalletProfile> GetByWalletIdAsync(int walletId)
     {
         WalletProfile profile = await Table.Where(wp => wp.Id == walletId).FirstOrDefaultAsync();

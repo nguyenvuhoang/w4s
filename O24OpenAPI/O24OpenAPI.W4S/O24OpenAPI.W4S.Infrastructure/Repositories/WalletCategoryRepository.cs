@@ -37,4 +37,12 @@ public class WalletCategoryRepository(
 
         return await Table.Where(x => walletIds.Contains(x.WalletId)).ToListAsync();
     }
+
+    public async Task<List<WalletCategory>> GetWalletCategoryByWalletIdAsync(int walletid)
+    {
+        if (walletid <= 0)
+            return [];
+
+        return await Table.Where(x => x.WalletId == walletid).ToListAsync();
+    }
 }

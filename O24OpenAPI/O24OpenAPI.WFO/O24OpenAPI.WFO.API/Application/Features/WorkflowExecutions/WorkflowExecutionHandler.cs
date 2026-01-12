@@ -1,6 +1,4 @@
-﻿using System.Data;
-using System.Text.Json;
-using System.Text.Json.Nodes;
+﻿using Linh.JsonKit.Json;
 using LinKit.Core.Abstractions;
 using O24OpenAPI.Client.Events;
 using O24OpenAPI.Client.Events.EventData;
@@ -21,6 +19,9 @@ using O24OpenAPI.WFO.API.Application.Utils;
 using O24OpenAPI.WFO.Domain.AggregateModels.WorkflowAggregate;
 using O24OpenAPI.WFO.Infrastructure.Services;
 using O24OpenAPI.WFO.Infrastructure.Services.Queue;
+using System.Data;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using static O24OpenAPI.Client.Scheme.Workflow.WFScheme.REQUEST;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using WorkflowExecution = O24OpenAPI.WFO.API.Application.Models.WorkflowExecution;
@@ -547,26 +548,24 @@ public class WorkflowExecutionHandler(
 
     private static Task<object> SelectFromSource(object source, string path)
     {
-        string json = JsonSerializer.Serialize(source);
+        string json = source.ToJson();
         JsonNode node = JsonNode.Parse(json);
 
-        JsonNode value = node.GetValueByPath(path);
-
-        if (value == null)
+        if (node.TryGetValueByPath<JsonNode>(path, out var value))
         {
-            return Task.FromResult<object>(null);
+            if (value is JsonObject obj)
+            {
+                Dictionary<string, object> dict = obj.ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value?.Deserialize<object>()
+                );
+                return Task.FromResult((object)dict);
+            }
+
+            return Task.FromResult(value.Deserialize<object>());
         }
 
-        if (value is JsonObject obj)
-        {
-            Dictionary<string, object> dict = obj.ToDictionary(
-                kvp => kvp.Key,
-                kvp => kvp.Value?.Deserialize<object>()
-            );
-            return Task.FromResult((object)dict);
-        }
-
-        return Task.FromResult(value.Deserialize<object>());
+        return Task.FromResult<object>(null);
     }
 
     private async Task<Dictionary<string, object>> MapResponse(

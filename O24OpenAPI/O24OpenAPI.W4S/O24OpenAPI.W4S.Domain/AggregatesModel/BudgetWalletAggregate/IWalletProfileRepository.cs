@@ -8,4 +8,5 @@ public interface IWalletProfileRepository : IRepository<WalletProfile>
     Task<bool> ExistsByWalletIdAsync(int walletId);
     Task<WalletProfile> GetByWalletIdAsync(int walletId);
     Task<List<WalletProfile>> GetByContractNumber(string Contractnumber);
+    Task<WalletProfile> GetByContractNumberAsync(string contractNumber);
 }

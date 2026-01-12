@@ -25,4 +25,10 @@ public interface IWalletCategoryRepository : IRepository<WalletCategory>
     /// <param name="walletIds"></param>
     /// <returns></returns>
     Task<List<WalletCategory>> GetByWalletIdsAsync(List<int> walletIds);
+    /// <summary>
+    /// Get Wallet Category By Wallet Id Asynchronous.
+    /// </summary>
+    /// <param name="walletid"></param>
+    /// <returns></returns>
+    Task<List<WalletCategory>> GetWalletCategoryByWalletIdAsync(int walletid);
 }
