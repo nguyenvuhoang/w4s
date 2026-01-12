@@ -10,4 +10,9 @@ public interface IWalletAccountProfileRepository : IRepository<WalletAccount>
     /// <param name="walletId"></param>
     /// <returns></returns>
     Task<List<WalletAccount>> GetWalletAccountByWalletIdAsync(List<int> walletId);
+    /// <summary>
+    /// Create default account
+    /// </summary>
+    /// <returns></returns>
+    Task CreateDefaultAccount(int walletId);
 }

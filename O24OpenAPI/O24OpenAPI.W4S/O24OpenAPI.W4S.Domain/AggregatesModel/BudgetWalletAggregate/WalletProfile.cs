@@ -86,7 +86,9 @@ public partial class WalletProfile : BaseEntity
         string userCode,
         string walletName,
         string walletType,
-        string defaultCurrency
+        string defaultCurrency,
+        string icon,
+        string color
     )
     {
         return new WalletProfile
@@ -98,6 +100,8 @@ public partial class WalletProfile : BaseEntity
             WalletType = walletType,
             DefaultCurrency = defaultCurrency,
             Status = WalletProfileStatus.Active,
+            Icon = icon,
+            Color = color
         };
     }
 }

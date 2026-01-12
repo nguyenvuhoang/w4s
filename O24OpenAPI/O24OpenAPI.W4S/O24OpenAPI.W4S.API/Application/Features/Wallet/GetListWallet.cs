@@ -2,7 +2,6 @@
 using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Exceptions;
-using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Logging.Extensions;
 using O24OpenAPI.W4S.API.Application.Constants;
@@ -17,7 +16,11 @@ public class GetListWalletCommand : BaseTransactionModel, ICommand<List<ListWall
 }
 
 [CqrsHandler]
-public class GetListWalletHandler(IWalletProfileRepository walletProfileRepository)
+public class GetListWalletHandler(IWalletProfileRepository walletProfileRepository,
+    IWalletAccountProfileRepository walletAccountProfileRepository,
+     IWalletBalanceRepository walletBalanceRepository
+
+    )
     : ICommandHandler<GetListWalletCommand, List<ListWalletResponseModel>>
 {
     [WorkflowStep(WorkflowStepCode.W4S.WF_STEP_W4S_GET_LIST_WALLET)]
@@ -45,6 +48,16 @@ public class GetListWalletHandler(IWalletProfileRepository walletProfileReposito
                     contractNumber
                 );
 
+            var walletAccountList =
+                await walletAccountProfileRepository.GetWalletAccountByWalletIdAsync(
+                    [.. wallets.Select(w => w.Id)]
+                );
+
+            var walletAccountBalance = await walletBalanceRepository.GetByAccountNumbersAsync(
+                [.. walletAccountList.Select(wa => wa.AccountNumber)]
+            );
+
+
             var result = wallets
                 .Select(w => new ListWalletResponseModel
                 {
@@ -55,6 +68,30 @@ public class GetListWalletHandler(IWalletProfileRepository walletProfileReposito
                     WalletType = w.WalletType,
                     DefaultCurrency = w.DefaultCurrency,
                     Status = w.Status,
+                    Icon = w.Icon,
+                    Color = w.Color,
+                    Account = [.. walletAccountList
+                        .Where(wa => wa.WalletId == w.Id)
+                        .Select(wa => new WalletAccountWithBalanceResponseModel
+                        {
+                            Id = wa.Id,
+                            WalletId = wa.WalletId,
+                            AccountNumber = wa.AccountNumber,
+                            AccountType = wa.AccountType,
+                            CurrencyCode = wa.CurrencyCode,
+                            IsPrimary = wa.IsPrimary,
+                            Status = wa.Status,
+                            Balance = walletAccountBalance.Where(b => b.AccountNumber == wa.AccountNumber)
+                                .Select(b => new WalletBalanceResponseModel
+                                {
+                                    Balance = b.Balance,
+                                    AvailableBalance = b.AvailableBalance,
+                                    BonusBalance = b.BonusBalance,
+                                    LockedBalance = b.LockedBalance
+                                })
+                                .FirstOrDefault()
+
+                        })]
                 })
                 .ToList();
 

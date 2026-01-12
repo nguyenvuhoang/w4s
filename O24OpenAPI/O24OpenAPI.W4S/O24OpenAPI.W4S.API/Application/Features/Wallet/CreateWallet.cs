@@ -46,6 +46,7 @@ public class CreateWalletHandle(
     IWalletContractRepository walletContractRepository,
     IWalletCategoryDefaultRepository walletCategoryDefaultRepository,
     IWalletCategoryRepository walletCategoryRepository,
+    IWalletAccountProfileRepository walletAccountProfileRepository,
     W4SSetting w4SSetting
 ) : ICommandHandler<CreateWalletCommand, CreateWalletResponseModel>
 {
@@ -95,12 +96,16 @@ public class CreateWalletHandle(
                 userCode: request.Phone,
                 walletName: $"{request.FirstName} {request.MiddleName} {request.LastName}".Trim(),
                 walletType: Code.WalletType.TWDR,
-                defaultCurrency: w4SSetting.BaseCurrency
+                defaultCurrency: w4SSetting.BaseCurrency,
+                icon: w4SSetting.DefaultWalletIcon,
+                color: w4SSetting.DefaultWalletColor
             );
 
             profile = await walletProfileRepository.InsertAsync(profile);
 
             await CloneDefaultCategoriesToWalletAsync(profile.Id);
+
+            await walletAccountProfileRepository.CreateDefaultAccount(profile.Id);
 
             return new CreateWalletResponseModel
             {

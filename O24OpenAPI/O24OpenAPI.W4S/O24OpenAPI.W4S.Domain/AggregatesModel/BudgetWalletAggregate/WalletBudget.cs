@@ -10,7 +10,7 @@ public partial class WalletBudget : BaseEntity
     public int WalletId { get; set; }
     public int CategoryId { get; set; }
     public decimal Amount { get; set; }
-    public string? SourceBudget { get; set; }
+    public int SourceBudget { get; set; }
     public string? SouceTracker { get; set; }
     public string? PeriodType { get; set; }
     public DateTime StartDate { get; set; }
@@ -21,7 +21,7 @@ public partial class WalletBudget : BaseEntity
         int walletId,
         int categoryId,
         decimal amount,
-        string sourceBudget,
+        int sourceBudget,
         string? sourceTracker,
         string periodType,
         DateTime startDate,

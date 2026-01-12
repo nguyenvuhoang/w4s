@@ -15,7 +15,7 @@ public class CreateWalletBudgetCommand
     public int CategoryId { get; set; }
     public decimal Amount { get; set; }
 
-    public string SourceBudget { get; set; } = "DEFAULT_CATEGORY";
+    public int SourceBudget { get; set; }
     public string SourceTracker { get; set; }
 
     public string PeriodType { get; set; } = "MONTH";

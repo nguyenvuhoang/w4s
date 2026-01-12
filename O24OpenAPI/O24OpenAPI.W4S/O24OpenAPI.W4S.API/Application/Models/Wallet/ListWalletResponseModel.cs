@@ -45,4 +45,16 @@ public class ListWalletResponseModel : BaseO24OpenAPIModel
     /// Wallet status: A = Active, I = Inactive, C = Closed
     /// </summary>
     public string Status { get; set; }
+    /// <summary>
+    /// Icon
+    /// </summary>
+    public string Icon { get; set; }
+    /// <summary>
+    /// Color
+    /// </summary>
+    public string Color { get; set; }
+    /// <summary>
+    /// Account
+    /// </summary>
+    public List<WalletAccountWithBalanceResponseModel> Account { get; set; }
 }
