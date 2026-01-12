@@ -11,12 +11,14 @@ namespace O24OpenAPI.W4S.API.Application.Features.WalletCategorys;
 
 public class GetWalletContractCategoryCommand : BaseTransactionModel, ICommand<List<WalletCategoryResponseModel>>
 {
-    public string ContractNumber { get; set; }
+    public string ContractNumber { get; set; } = default!;
 }
 
 [CqrsHandler]
-public class GetWalletContractCategoryCommandHandler(IWalletProfileRepository walletProfileRepository, IWalletCategoryRepository walletCategoryRepository)
-    : ICommandHandler<GetWalletContractCategoryCommand, List<WalletCategoryResponseModel>>
+public class GetWalletContractCategoryCommandHandler(
+    IWalletProfileRepository walletProfileRepository,
+    IWalletCategoryRepository walletCategoryRepository
+) : ICommandHandler<GetWalletContractCategoryCommand, List<WalletCategoryResponseModel>>
 {
     [WorkflowStep(WorkflowStepCode.W4S.WF_STEP_W4S_WALLET_CONTRACT_CATEGORY)]
     public async Task<List<WalletCategoryResponseModel>> HandleAsync(
@@ -24,16 +26,42 @@ public class GetWalletContractCategoryCommandHandler(IWalletProfileRepository wa
         CancellationToken cancellationToken = default
     )
     {
-        var walletProfile = await walletProfileRepository.GetByContractNumberAsync(request.ContractNumber) ?? throw await O24Exception.CreateAsync(
+        var walletProfile =
+            await walletProfileRepository.GetByContractNumberAsync(request.ContractNumber)
+            ?? throw await O24Exception.CreateAsync(
                 O24W4SResourceCode.Validation.WalletContractNotFound,
                 request.Language
             );
 
-        var walletCategory = await walletCategoryRepository.GetWalletCategoryByWalletIdAsync(walletProfile.Id) ?? throw await O24Exception.CreateAsync(
+        var categories =
+            await walletCategoryRepository.GetWalletCategoryByWalletIdAsync(walletProfile.Id)
+            ?? throw await O24Exception.CreateAsync(
                 O24W4SResourceCode.Validation.WalletCategoryNotFound,
                 request.Language
             );
 
-        return [.. walletCategory.Select(x => x.ToWalletCategoryResponseModel())];
+
+        var nodes = categories
+        .Select(x => new WalletCategoryResponseModel(x))
+        .ToDictionary(x => x.Id);
+
+        foreach (var node in nodes.Values)
+        {
+            if (node.ParentCategoryId == 0) continue;
+
+            if (nodes.TryGetValue(node.ParentCategoryId, out var parent))
+            {
+                if (!parent.Children.Any(c => c.Id == node.Id))
+                    parent.Children.Add(node);
+            }
+        }
+
+        var roots = nodes.Values
+            .Where(x => x.ParentCategoryId == 0)
+            .ToList();
+
+        return roots;
+
+
     }
 }

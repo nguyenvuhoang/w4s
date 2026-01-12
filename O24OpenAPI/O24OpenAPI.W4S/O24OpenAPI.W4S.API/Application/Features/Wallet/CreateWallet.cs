@@ -214,7 +214,7 @@ public class CreateWalletHandle(
             WalletCategory entity = WalletCategory.Create(
                 categoryCode: GenerateCategoryCode(d.CategoryGroup),
                 walletId: walletId,
-                parentCategoryId: d.Id,
+                parentCategoryId: 0,
                 categoryGroup: d.CategoryGroup,
                 categoryType: d.CategoryType,
                 categoryName: d.CategoryName,

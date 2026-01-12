@@ -8,7 +8,7 @@ public partial class WalletCategory : BaseEntity
 {
     public string? CategoryCode { get; set; }
     public int WalletId { get; set; }
-    public int ParentCategoryId { get; set; }
+    public int ParentCategoryId { get; set; } = 0;
     public string? CategoryGroup { get; set; }
     public string? CategoryType { get; set; }
     public string? CategoryName { get; set; }
