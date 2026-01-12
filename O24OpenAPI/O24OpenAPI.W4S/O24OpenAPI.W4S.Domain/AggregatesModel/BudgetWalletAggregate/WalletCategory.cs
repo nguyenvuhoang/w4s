@@ -33,9 +33,6 @@ public partial class WalletCategory : BaseEntity
         if (walletId <= 0)
             throw new ArgumentException("WalletId is required.");
 
-        if (parentCategoryId == 0)
-            throw new ArgumentException("ParentCategoryCode is required.");
-
         return new WalletCategory
         {
             CategoryCode = categoryCode.Trim(),
