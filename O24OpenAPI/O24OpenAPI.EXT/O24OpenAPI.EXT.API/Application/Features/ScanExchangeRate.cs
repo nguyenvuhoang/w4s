@@ -36,13 +36,10 @@ public class ScanExchangeRateCommandHandler(
         if (string.IsNullOrWhiteSpace(vcbUrl))
             throw new InvalidOperationException("EXTSetting.VcbUrl is empty.");
 
-        // 1) GET XML (no body)
         var xml = await FetchXmlAsync(vcbUrl, cancellationToken);
 
-        // 2) Parse + map
         var parsed = ParseVietcombankXml(xml);
 
-        // 3) Upsert theo (RateDateUtc, CurrencyCode)
         var inserted = 0;
         var updated = 0;
 

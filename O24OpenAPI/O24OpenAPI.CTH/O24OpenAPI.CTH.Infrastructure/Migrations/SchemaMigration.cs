@@ -1,16 +1,16 @@
 using FluentMigrator;
 using O24OpenAPI.Core.Attributes;
+using O24OpenAPI.CTH.Domain.AggregatesModel.CalendarAggregate;
+using O24OpenAPI.CTH.Domain.AggregatesModel.ChannelAggregate;
+using O24OpenAPI.CTH.Domain.AggregatesModel.TransactionAggregate;
+using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Data;
 using O24OpenAPI.Data.Attributes;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.Migrations;
 using O24OpenAPI.Framework.Domain;
-using O24OpenAPI.CTH.Domain.AggregatesModel.ChannelAggregate;
-using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
-using O24OpenAPI.CTH.Domain.AggregatesModel.TransactionAggregate;
-using O24OpenAPI.CTH.Domain.AggregatesModel.CalendarAggregate;
 
-namespace O24OpenAPI.CTH.Migrations;
+namespace O24OpenAPI.CTH.Infrastructure.Migrations;
 
 /// <summary>
 /// The schema migration class
