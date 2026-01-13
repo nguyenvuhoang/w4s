@@ -17,10 +17,7 @@
     <PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
   <Target Name="SetGitVersion" BeforeTargets="BeforeBuild">
-    <Exec
-      Command="git rev-list --count HEAD &gt; githeight.txt"
-      WorkingDirectory="$(MSBuildProjectDirectory)"
-    />
+    <Exec Command="git rev-list --count HEAD &gt; githeight.txt" WorkingDirectory="$(MSBuildProjectDirectory)" />
     <ReadLinesFromFile File="githeight.txt">
       <Output TaskParameter="Lines" PropertyName="GitHeight" />
     </ReadLinesFromFile>
@@ -46,11 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Framework\O24OpenAPI.Framework.csproj" />
-    <ProjectReference
-      Include="..\..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj"
-      OutputItemType="Analyzer"
-      ReferenceOutputAssembly="false"
-    />
+    <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\O24OpenAPI.W4S.Domain\O24OpenAPI.W4S.Domain.csproj" />
     <ProjectReference Include="..\O24OpenAPI.W4S.Infrastructure\O24OpenAPI.W4S.Infrastructure.csproj" />
   </ItemGroup>
