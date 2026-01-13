@@ -19,8 +19,8 @@ public class CreateWalletBudgetCommand
     /// Nguồn gốc của “con số budget” (Amount) đến từ đâu
     /// 
     /// </summary>
-    public int SourceBudget { get; set; }
-    public string SourceTracker { get; set; }
+    public string SourceBudget { get; set; }
+    public int SourceTracker { get; set; }
 
     public string PeriodType { get; set; } = "MONTH";
     public DateTime StartDate { get; set; }

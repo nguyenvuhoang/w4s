@@ -10,8 +10,8 @@ public partial class WalletBudget : BaseEntity
     public int WalletId { get; set; }
     public int CategoryId { get; set; }
     public decimal Amount { get; set; }
-    public int SourceBudget { get; set; }
-    public string? SouceTracker { get; set; }
+    public string SourceBudget { get; set; } = string.Empty;
+    public int? SourceTracker { get; set; }
     public string? PeriodType { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
@@ -25,8 +25,8 @@ public partial class WalletBudget : BaseEntity
         int walletId,
         int categoryId,
         decimal amount,
-        int sourceBudget,
-        string? sourceTracker,
+        string sourceBudget,
+        int? sourceTracker,
         string periodType,
         DateTime startDate,
         DateTime endDate,
@@ -42,7 +42,7 @@ public partial class WalletBudget : BaseEntity
             CategoryId = categoryId,
             Amount = amount,
             SourceBudget = sourceBudget,
-            SouceTracker = sourceTracker,
+            SourceTracker = sourceTracker,
             PeriodType = periodType,
             StartDate = startDate,
             EndDate = endDate,

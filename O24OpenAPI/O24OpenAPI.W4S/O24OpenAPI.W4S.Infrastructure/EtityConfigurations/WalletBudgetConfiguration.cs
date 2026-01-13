@@ -27,11 +27,11 @@ public class WalletBudgetConfiguration : O24OpenAPIEntityBuilder<WalletBudget>
                 .WithDefaultValue(0)
 
             .WithColumn(nameof(WalletBudget.SourceBudget))
-                .AsInt32()
+                .AsString(200)
                 .Nullable()
 
-            .WithColumn(nameof(WalletBudget.SouceTracker))
-                .AsString(200)
+            .WithColumn(nameof(WalletBudget.SourceTracker))
+                .AsInt32()
                 .Nullable()
 
             .WithColumn(nameof(WalletBudget.PeriodType))

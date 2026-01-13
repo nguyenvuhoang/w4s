@@ -340,7 +340,7 @@ public class RetrieveWalletInformationHandler(
                                     CategoryId = x.CategoryId,
                                     Amount = x.Amount,
                                     SourceBudget = x.SourceBudget,
-                                    SouceTracker = x.SouceTracker,
+                                    SourceTracker = x.SourceTracker,
                                     PeriodType = x.PeriodType,
                                     StartDate = x.StartDate,
                                     EndDate = x.EndDate,
