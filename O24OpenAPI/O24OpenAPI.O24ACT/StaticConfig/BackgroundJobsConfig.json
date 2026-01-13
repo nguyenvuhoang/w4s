@@ -1,0 +1,24 @@
+{
+  "BackgroundJobConfig": {
+    "BackgroundJobs": [
+      {
+        "Name": "CDCJOb",
+        "AssemblyName": "O24OpenAPI.Framework",
+        "TimeIntervalSeconds": 5,
+        "MaxParallel": 1,
+        "CorrelationId": "CDCJOb",
+        "IsActive": true
+      },
+      {
+        "Name": "SyncGLEntriesJob",
+        "AssemblyName": "O24OpenAPI.O24ACT",
+        "RunOnStart": true,
+        "ScheduleType": "Daily",
+        "TimeOfDay": "17:00:00",
+        "MaxParallel": 1,
+        "CorrelationId": "SyncGLEntriesJob",
+        "IsActive": true
+      }
+    ]
+  }
+}

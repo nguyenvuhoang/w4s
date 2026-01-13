@@ -1,0 +1,67 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <VersionMajor>10</VersionMajor>
+    <VersionMinor>0</VersionMinor>
+    <AssemblyVersion>$(VersionMajor).$(VersionMinor).0.0</AssemblyVersion>
+    <InformationalVersion>$(Version)</InformationalVersion>
+    <Authors>O24</Authors>
+    <Company>JITS</Company>
+    <Copyright>© JITS 2025. All rights reserved.</Copyright>
+    <PackRelease>true</PackRelease>
+    <BuildDate>$([System.DateTime]::Now.ToString("yyyy-MM-dd HH:mm:ss"))</BuildDate>
+    <BuildUser>$(USERNAME)</BuildUser>
+    <BuildUser Condition="'$(BuildUser)' == ''">$(USER)</BuildUser>
+    <PublishTrimmed>false</PublishTrimmed>
+  </PropertyGroup>
+  <Target Name="SetGitVersion" BeforeTargets="BeforeBuild">
+    <Exec
+      Command="git rev-list --count HEAD &gt; githeight.txt"
+      WorkingDirectory="$(MSBuildProjectDirectory)"
+    />
+    <ReadLinesFromFile File="githeight.txt">
+      <Output TaskParameter="Lines" PropertyName="GitHeight" />
+    </ReadLinesFromFile>
+    <PropertyGroup>
+      <Version>$(VersionMajor).$(VersionMinor).$(GitHeight)</Version>
+      <FileVersion>$(VersionMajor).$(VersionMinor).$(GitHeight).0</FileVersion>
+    </PropertyGroup>
+  </Target>
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>BuildDate</_Parameter1>
+      <_Parameter2>$(BuildDate)</_Parameter2>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>BuildUser</_Parameter1>
+      <_Parameter2>$(BuildUser)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="LinKit.Core" Version="2.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.1" />
+    <PackageReference Include="Riok.Mapperly" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="App_Data\appsettings.json">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+    <Content Update="App_Data\appsettings.Development.json">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Core\O24OpenAPI.Core.csproj" />
+    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Data\O24OpenAPI.Data.csproj" />
+    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Client\O24OpenAPI.Client.csproj" />
+    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Framework\O24OpenAPI.Framework.csproj" />
+    <Content Include="NT.pfx" CopyToPublishDirectory="Always" />
+    <Content Include="App_Data\CreateDatabase.sql" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="StaticConfig\" />
+  </ItemGroup>
+</Project>
