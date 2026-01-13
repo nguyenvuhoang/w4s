@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using O24OpenAPI.Framework.Controllers;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.WFO.API.Application.Features.WorkflowLogs;
-using O24OpenAPI.WFO.API.Application.Models;
 
 namespace O24OpenAPI.WFO.API.Controllers;
 
@@ -19,11 +18,11 @@ public class WorkflowLogController(IMediator mediator) : BaseController
     }
 
     [HttpPost]
-    public async Task<IActionResult> GetWorkflowStepLogByWorkflowId(
-        [FromBody] GetWorkflowStepLogByExecutionIdQuery request
+    public async Task<IActionResult> GetWorkflowLogByWorkflowId(
+        [FromBody] GetWorkflowLogByExecutionIdQuery request
     )
     {
-        PagedListModel<WorkflowStepInfoModel> r = await mediator.QueryAsync(request);
+        GetWorkflowLogByExecutionIdResponse r = await mediator.QueryAsync(request);
         return Ok(r);
     }
 }
