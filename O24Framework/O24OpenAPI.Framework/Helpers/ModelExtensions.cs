@@ -22,4 +22,14 @@ public static class ModelExtensions
     {
         return new PagedListModel<TEntity, T>(items);
     }
+
+    public static PagedListModel<T> ToPagedListModel<T>(
+        this List<T> items,
+        int pageIndex,
+        int pageSize
+    )
+        where T : BaseO24OpenAPIModel
+    {
+        return new PagedListModel<T>(items, pageIndex, pageSize);
+    }
 }

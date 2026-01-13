@@ -14,6 +14,14 @@ public class WorkflowStepInfoRepository(
     : EntityRepository<WorkflowStepInfo>(dataProvider, staticCacheManager),
         IWorkflowStepInfoRepository
 {
+    public async Task<List<WorkflowStepInfo>> GetByExecutionId(string executionId)
+    {
+        return await Table
+            .Where(s => s.execution_id == executionId)
+            .OrderBy(s => s.step_order)
+            .ToListAsync();
+    }
+
     public async Task<WorkflowStepInfo?> GetByExecutionStep(
         string executionId,
         string stepExecutionId

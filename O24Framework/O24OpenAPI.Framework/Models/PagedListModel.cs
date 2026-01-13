@@ -3,22 +3,19 @@ using O24OpenAPI.Framework.Infrastructure.Mapper.Extensions;
 
 namespace O24OpenAPI.Framework.Models;
 
-/// <summary>
-/// The paged list model class
-/// </summary>
-/// <seealso cref="PagedModel"/>
 public class PagedListModel<TEntity, T> : PagedModel
     where T : BaseO24OpenAPIModel
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PagedListModel{TEntity,T}"/> class
-    /// </summary>
+    public int TotalCount { get; }
+    public int TotalPages { get; }
+    public bool HasPreviousPage { get; }
+    public bool HasNextPage { get; }
+    public List<T> Items { get; set; } = [];
+    public int? TotalSuccess { get; set; } = 0;
+    public int? TotalFailed { get; set; } = 0;
+
     public PagedListModel() { }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PagedListModel{TEntity,T}"/> class
-    /// </summary>
-    /// <param name="items">The items</param>
     public PagedListModel(IPagedList<TEntity> items)
     {
         PageIndex = items.PageIndex;
@@ -31,39 +28,8 @@ public class PagedListModel<TEntity, T> : PagedModel
         TotalSuccess = items.TotalSuccess;
         TotalFailed = items.TotalFailed;
     }
-
-    /// <summary>
-    /// Gets the value of the total count
-    /// </summary>
-    public int TotalCount { get; }
-
-    /// <summary>
-    /// Gets the value of the total pages
-    /// </summary>
-    public int TotalPages { get; }
-
-    /// <summary>
-    /// Gets the value of the has previous page
-    /// </summary>
-    public bool HasPreviousPage { get; }
-
-    /// <summary>
-    /// Gets the value of the has next page
-    /// </summary>
-    public bool HasNextPage { get; }
-
-    /// <summary>
-    /// Gets or sets the value of the items
-    /// </summary>
-    public List<T> Items { get; set; } = new List<T>();
-    public int? TotalSuccess { get; set; } = 0;
-    public int? TotalFailed { get; set; } = 0;
 }
 
-/// <summary>
-/// The paged list model class
-/// </summary>
-/// <seealso cref="PagedModel"/>
 public class PagedListModel<T> : PagedModel
 {
     public int TotalCount { get; set; } = 0;
@@ -87,5 +53,20 @@ public class PagedListModel<T> : PagedModel
         Items = [.. items];
         TotalSuccess = items.TotalSuccess;
         TotalFailed = items.TotalFailed;
+    }
+
+    public PagedListModel(List<T> items, int pageIndex, int pageSize)
+    {
+        PageIndex = pageIndex;
+        PageSize = pageSize;
+        TotalCount = items.Count;
+        this.TotalPages = items.Count / pageSize;
+        if (this.TotalCount % pageSize > 0)
+        {
+            this.TotalPages++;
+        }
+        HasPreviousPage = pageIndex + 1 < TotalPages;
+        HasNextPage = pageIndex > 0;
+        Items = [.. items];
     }
 }

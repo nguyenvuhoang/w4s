@@ -1,7 +1,7 @@
+using System.Linq.Expressions;
 using LinqToDB;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Domain;
-using System.Linq.Expressions;
 
 namespace O24OpenAPI.Data.System.Linq;
 
@@ -24,7 +24,6 @@ public static class AsyncIQueryableExtensions
     {
         return AsyncExtensions.AllAsync<TSource>(source, predicate);
     }
-
 
     /// <summary>
     /// Firsts the or default using the specified source
@@ -203,5 +202,22 @@ public static class AsyncIQueryableExtensions
             )
         );
         return query;
+    }
+
+    public static async Task<List<T>> ToListAsync<T>(
+        this IQueryable<T> query,
+        int pageIndex,
+        int pageSize,
+        CancellationToken ct = default
+    )
+    {
+        pageIndex = pageIndex <= 0 ? 1 : pageIndex;
+
+        if (pageSize <= 0)
+            return await query.ToListAsync(ct);
+
+        var skip = (pageIndex - 1) * pageSize;
+
+        return await query.Skip(skip).Take(pageSize).ToListAsync(ct);
     }
 }
