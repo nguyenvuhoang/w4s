@@ -2,6 +2,6 @@
 
 namespace O24OpenAPI.EXT.Infrastructure.Configurations;
 
-public class SampleConfig : IConfig
+public class EXTSettingConfig : IConfig
 {
 }

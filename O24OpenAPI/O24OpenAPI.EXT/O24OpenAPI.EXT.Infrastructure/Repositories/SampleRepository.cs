@@ -13,7 +13,6 @@ public class SampleRepository(
 {
     public void Add(SampleDomain sample)
     {
-        //viết linq;
-        //var sampale = await Table.Where(s=>s.Id == sample.Id).FirstOrDefaultAsync();
+
     }
 }
