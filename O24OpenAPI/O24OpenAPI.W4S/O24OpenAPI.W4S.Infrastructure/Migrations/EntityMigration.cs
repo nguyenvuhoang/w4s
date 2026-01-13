@@ -4,11 +4,12 @@ using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.Migrations;
 using O24OpenAPI.Framework.Domain;
 using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
+using O24OpenAPI.W4S.Domain.AggregatesModel.CommonAggregate;
 
 namespace O24OpenAPI.W4S.Infrastructure.Migrations;
 
 [O24OpenAPIMigration(
-    "2026/01/13 15:16:01:0000000",
+    "2026/01/13 21:16:01:0000000",
     "6. Create SchemeMigration (Business Table)",
     MigrationProcessType.Installation
 )]
@@ -222,6 +223,20 @@ public class EntityMigration : AutoReversingMigration
                     nameof(C_CODELIST.CodeGroup)
                 );
         }
+        if (!Schema.Table(nameof(Currency)).Exists())
+        {
+            Create.TableFor<Currency>();
 
+            Create
+                .UniqueConstraint("UC_CURRENCY_CURRENCYID")
+                .OnTable(nameof(Currency))
+                .Column(nameof(Currency.CurrencyId));
+
+            Create
+                .Index("IX_CURRENCY_DISPLAYORDER")
+                .OnTable(nameof(Currency))
+                .OnColumn(nameof(Currency.DisplayOrder))
+                .Ascending();
+        }
     }
 }

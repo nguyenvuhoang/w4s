@@ -144,6 +144,7 @@ public static class WorkflowStepCode
             "WF_STEP_W4S_GET_TRAN_BY_TRANSACTIONID";
         public const string WF_STEP_W4S_WALLET_CONTRACT_CATEGORY = "WF_STEP_W4S_WALLET_CONTRACT_CATEGORY";
         public const string WF_STEP_W4S_ADD_ON_WALLET = "WF_STEP_W4S_ADD_ON_WALLET";
+        public const string WF_STEP_W4S_SIMPLE_SEARCH_CURRENCY = "WF_STEP_W4S_SIMPLE_SEARCH_CURRENCY";
     }
     #endregion
 }
