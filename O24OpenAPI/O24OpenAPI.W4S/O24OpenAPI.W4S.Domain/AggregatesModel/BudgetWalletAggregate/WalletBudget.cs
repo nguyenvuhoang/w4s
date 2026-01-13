@@ -15,6 +15,10 @@ public partial class WalletBudget : BaseEntity
     public string? PeriodType { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
+    public bool? IncludeInReport { get; set; }
+    public bool? IsAutoRepeat { get; set; }
+    public string Note { get; set; } = string.Empty;
+
 
     public static WalletBudget Create(
         string budgetCode,
@@ -25,7 +29,10 @@ public partial class WalletBudget : BaseEntity
         string? sourceTracker,
         string periodType,
         DateTime startDate,
-        DateTime endDate
+        DateTime endDate,
+        bool? includeInReport = null,
+        bool? isAutoRepeat = null,
+        string note = ""
     )
     {
         return new WalletBudget
@@ -38,7 +45,10 @@ public partial class WalletBudget : BaseEntity
             SouceTracker = sourceTracker,
             PeriodType = periodType,
             StartDate = startDate,
-            EndDate = endDate
+            EndDate = endDate,
+            IncludeInReport = includeInReport,
+            IsAutoRepeat = isAutoRepeat,
+            Note = note
         };
     }
 }

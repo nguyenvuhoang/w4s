@@ -36,7 +36,7 @@
     </AssemblyAttribute>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="LinKit.Core" Version="2.1.3" />
+    <PackageReference Include="LinKit.Core" Version="2.1.4" />
     <PackageReference Include="LinKit.Json.Runtime" Version="1.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.1" />
   </ItemGroup>

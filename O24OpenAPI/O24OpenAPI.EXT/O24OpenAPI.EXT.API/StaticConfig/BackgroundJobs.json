@@ -1,0 +1,12 @@
+{
+  "BackgroundJobConfig": {
+    "BackgroundJobs": [
+      {
+        "Name": "CheckHeath",
+        "IsActive": true,
+        "ScheduleType": "Interval",
+        "TimeIntervalSeconds": 300
+      }
+    ]
+  }
+}

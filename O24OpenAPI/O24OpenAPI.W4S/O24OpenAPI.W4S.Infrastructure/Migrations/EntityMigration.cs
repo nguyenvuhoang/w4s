@@ -8,7 +8,7 @@ using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 namespace O24OpenAPI.W4S.Infrastructure.Migrations;
 
 [O24OpenAPIMigration(
-    "2026/10/01 11:16:01:0000000",
+    "2026/01/13 11:16:01:0000000",
     "6. Create SchemeMigration (Business Table)",
     MigrationProcessType.Installation
 )]

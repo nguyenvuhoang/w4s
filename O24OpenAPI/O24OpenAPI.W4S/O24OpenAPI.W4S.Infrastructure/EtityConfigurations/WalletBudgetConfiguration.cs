@@ -44,6 +44,17 @@ public class WalletBudgetConfiguration : O24OpenAPIEntityBuilder<WalletBudget>
 
             .WithColumn(nameof(WalletBudget.EndDate))
                 .AsDateTime()
-                .NotNullable();
+                .NotNullable()
+            .WithColumn(nameof(WalletBudget.IncludeInReport))
+                .AsBoolean()
+                .Nullable()
+                .WithDefaultValue(true)
+            .WithColumn(nameof(WalletBudget.IsAutoRepeat))
+                .AsBoolean()
+                .Nullable()
+                .WithDefaultValue(false)
+            .WithColumn(nameof(WalletBudget.Note))
+                .AsString(int.MaxValue)
+                .Nullable();
     }
 }

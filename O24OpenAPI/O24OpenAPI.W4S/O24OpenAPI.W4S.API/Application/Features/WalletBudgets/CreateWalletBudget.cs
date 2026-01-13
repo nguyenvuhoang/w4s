@@ -15,12 +15,19 @@ public class CreateWalletBudgetCommand
     public int CategoryId { get; set; }
     public decimal Amount { get; set; }
 
+    /// <summary>
+    /// Nguồn gốc của “con số budget” (Amount) đến từ đâu
+    /// 
+    /// </summary>
     public int SourceBudget { get; set; }
     public string SourceTracker { get; set; }
 
     public string PeriodType { get; set; } = "MONTH";
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
+    public bool? IncludeInReport { get; set; }
+    public bool? IsAutoRepeat { get; set; }
+    public string Note { get; set; } = string.Empty;
 }
 
 [CqrsHandler]
@@ -50,7 +57,10 @@ public class CreateWalletBudgetHandler(
             sourceTracker: request.SourceTracker,
             periodType: request.PeriodType,
             startDate: request.StartDate,
-            endDate: request.EndDate
+            endDate: request.EndDate,
+            includeInReport: request.IncludeInReport ?? true,
+            isAutoRepeat: request.IsAutoRepeat ?? false,
+            note: request.Note
         );
 
         await walletBudgetRepository.InsertAsync(entity);
