@@ -87,7 +87,7 @@ public class CreateWalletHandle(
                 await walletContractRepository.InsertAsync(contract);
             }
 
-            WalletProfile profile = WalletProfile.Create(
+            Domain.AggregatesModel.BudgetWalletAggregate.WalletProfile profile = Domain.AggregatesModel.BudgetWalletAggregate.WalletProfile.Create(
                 walletProfileCode: GenerateWalletProfileCode(
                     Code.WalletType.TWDR,
                     request.Classification

@@ -9,7 +9,7 @@ namespace O24OpenAPI.EXT.Infrastructure.Repositories;
 public class SampleRepository(
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-) : EntityRepository<SampleDomain>(dataProvider, staticCacheManager), ISampleRepository
+) : EntityRepository<SampleDomain>(dataProvider, staticCacheManager), IExchangeRateRepository
 {
     public void Add(SampleDomain sample)
     {

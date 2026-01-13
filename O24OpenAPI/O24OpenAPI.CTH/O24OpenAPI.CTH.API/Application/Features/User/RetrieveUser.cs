@@ -36,7 +36,8 @@ public class RetrieveUserHandle(IUserAccountRepository userAccountRepository)
 
         var userAccountModel = new RetrieveUserUserAccount
         {
-            ContractNumber = userAccount?.ContractNumber
+            ContractNumber = userAccount?.ContractNumber,
+            PhoneNumber = userAccount?.Phone
         };
 
         return userAccountModel;
