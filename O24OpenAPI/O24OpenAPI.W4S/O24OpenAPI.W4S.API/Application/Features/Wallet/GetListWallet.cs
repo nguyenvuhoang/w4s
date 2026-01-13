@@ -101,6 +101,7 @@ public class GetListWalletHandler(IWalletProfileRepository walletProfileReposito
                             WalletId = wa.WalletId,
                             AccountNumber = wa.AccountNumber,
                             AccountType = wa.AccountType,
+                            AccountTypeCaption = WalletAccountTypeHelper.GetDisplayName(wa.AccountType),
                             CurrencyCode = wa.CurrencyCode,
                             IsPrimary = wa.IsPrimary,
                             Status = wa.Status,

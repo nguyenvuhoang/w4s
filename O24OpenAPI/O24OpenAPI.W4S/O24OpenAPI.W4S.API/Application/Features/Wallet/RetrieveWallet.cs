@@ -94,11 +94,10 @@ public class RetrieveWalletInformationHandler(
 
             List<WalletAccount> accounts = accountsTask.Result ?? [];
 
-            List<string> accountNumbers = accounts
+            List<string> accountNumbers = [.. accounts
                 .Select(a => a.AccountNumber)
                 .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Distinct()
-                .ToList();
+                .Distinct()];
 
             Task<List<WalletBalance>> balancesTask =
                 walletBalanceRepository.GetByAccountNumbersAsync(accountNumbers);
@@ -109,7 +108,7 @@ public class RetrieveWalletInformationHandler(
             );
             Task<List<WalletGoal>> goalsTask = walletGoalRepository.GetByWalletIdsAsync(walletIds);
 
-            List<(int WalletId, Task<IList<WalletTransaction>> Task)> txTaskList = walletIds
+            List<(int WalletId, Task<IList<WalletTransaction>> Task)> txTaskList = [.. walletIds
                 .Distinct()
                 .Select(wid =>
                     (
@@ -123,8 +122,7 @@ public class RetrieveWalletInformationHandler(
                             cancellationToken: cancellationToken
                         )
                     )
-                )
-                .ToList();
+                )];
 
             try
             {
@@ -265,9 +263,7 @@ public class RetrieveWalletInformationHandler(
                         && accs.Count > 0
                     )
                     {
-                        List<WalletAccount> ordered = accs.OrderByDescending(a => a.IsPrimary)
-                            .ThenBy(a => a.Id)
-                            .ToList();
+                        List<WalletAccount> ordered = [.. accs.OrderByDescending(a => a.IsPrimary).ThenBy(a => a.Id)];
 
                         IEnumerable<Task<WalletAccountWithBalanceResponseModel>> accountTasks =
                             ordered.Select(async a =>
