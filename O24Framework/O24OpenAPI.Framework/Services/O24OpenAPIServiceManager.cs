@@ -317,6 +317,7 @@ public class O24OpenAPIServiceManager(
         }
         workflow.response.error_code = errorCode;
         workflow.response.error_message = errorMessage;
+        workflow.response.raw_error = e.ToString();
         try
         {
             var errorDict = ex.ToDictionary("ERROR_MESSAGE");
