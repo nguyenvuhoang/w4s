@@ -63,5 +63,10 @@
         /// Gets or sets the DisplayOrder
         /// </summary>
         public int? DisplayOrder { get; set; }
+        /// <summary>
+        /// Gets or sets the symbol identifier associated with the entity.
+        /// </summary>
+        public string Symbol { get; set; } = string.Empty;
+
     }
 }

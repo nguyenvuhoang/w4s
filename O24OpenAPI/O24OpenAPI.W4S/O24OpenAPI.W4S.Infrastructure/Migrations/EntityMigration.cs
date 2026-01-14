@@ -9,8 +9,8 @@ using O24OpenAPI.W4S.Domain.AggregatesModel.CommonAggregate;
 namespace O24OpenAPI.W4S.Infrastructure.Migrations;
 
 [O24OpenAPIMigration(
-    "2026/01/13 21:16:01:0000000",
-    "6. Create SchemeMigration (Business Table)",
+    "2026/01/14 11:58:01:0000000",
+    "6. Create SchemeMigration (Business Table) (Currency)",
     MigrationProcessType.Installation
 )]
 [Environment(EnvironmentType.All)]

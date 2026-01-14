@@ -54,6 +54,9 @@ public class CurrencyBuilder : O24OpenAPIEntityBuilder<Currency>
 
             .WithColumn(nameof(Currency.DisplayOrder))
                 .AsInt32()
+                .Nullable()
+            .WithColumn(nameof(Currency.Symbol))
+                .AsString(50)
                 .Nullable();
     }
 }

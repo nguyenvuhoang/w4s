@@ -28,6 +28,21 @@ public class PagedListModel<TEntity, T> : PagedModel
         TotalSuccess = items.TotalSuccess;
         TotalFailed = items.TotalFailed;
     }
+
+    public PagedListModel(List<T> items, int pageIndex, int pageSize, int totalCount)
+    {
+        PageIndex = pageIndex;
+        PageSize = pageSize;
+        TotalCount = items.Count;
+        this.TotalPages = items.Count / pageSize;
+        if (this.TotalCount % pageSize > 0)
+        {
+            this.TotalPages++;
+        }
+        HasPreviousPage = pageIndex + 1 < TotalPages;
+        HasNextPage = pageIndex > 0;
+        Items = [.. items];
+    }
 }
 
 public class PagedListModel<T> : PagedModel
@@ -55,12 +70,12 @@ public class PagedListModel<T> : PagedModel
         TotalFailed = items.TotalFailed;
     }
 
-    public PagedListModel(List<T> items, int pageIndex, int pageSize)
+    public PagedListModel(List<T> items, int pageIndex, int pageSize, int totalCount)
     {
         PageIndex = pageIndex;
         PageSize = pageSize;
-        TotalCount = items.Count;
-        this.TotalPages = items.Count / pageSize;
+        TotalCount = totalCount;
+        this.TotalPages = totalCount / pageSize;
         if (this.TotalCount % pageSize > 0)
         {
             this.TotalPages++;

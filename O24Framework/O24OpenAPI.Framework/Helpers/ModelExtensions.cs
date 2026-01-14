@@ -1,3 +1,4 @@
+using LinqToDB;
 using O24OpenAPI.Core;
 using O24OpenAPI.Framework.Models;
 
@@ -23,13 +24,48 @@ public static class ModelExtensions
         return new PagedListModel<TEntity, T>(items);
     }
 
-    public static PagedListModel<T> ToPagedListModel<T>(
-        this List<T> items,
+    /// <summary>
+    /// To the paged list model async
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TModel"></typeparam>
+    /// <param name="query"></param>
+    /// <param name="pageIndex"></param>
+    /// <param name="pageSize"></param>
+    /// <param name="mapper"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+
+    public static async Task<PagedListModel<TModel>> ToPagedListModelAsync<T, TModel>(
+        this IQueryable<T> query,
         int pageIndex,
-        int pageSize
+        int pageSize,
+        Func<IReadOnlyList<T>, List<TModel>> mapper,
+        CancellationToken cancellationToken = default
     )
-        where T : BaseO24OpenAPIModel
+    where TModel : BaseO24OpenAPIModel
     {
-        return new PagedListModel<T>(items, pageIndex, pageSize);
+        ArgumentNullException.ThrowIfNull(query);
+        ArgumentNullException.ThrowIfNull(mapper);
+
+        pageIndex = pageIndex <= 0 ? 1 : pageIndex;
+
+        const int DefaultPageSize = 50;
+        const int MaxPageSize = int.MaxValue;
+
+        pageSize = pageSize <= 0 ? DefaultPageSize : pageSize;
+        pageSize = Math.Min(pageSize, MaxPageSize);
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        var modelItems = mapper(items);
+
+        return new PagedListModel<TModel>(modelItems, pageIndex, pageSize, totalCount);
     }
+
 }

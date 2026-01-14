@@ -1,8 +1,6 @@
 ﻿using LinKit.Core.Cqrs;
-using LinqToDB;
 using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Extensions;
-using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.Framework.Helpers;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.WFO.Domain.AggregateModels.WorkflowAggregate;
@@ -63,25 +61,37 @@ public class AdvancedSearchWorkflowLogHandler(IWorkflowInfoRepository workflowIn
     )
     {
         IQueryable<WorkflowInfo> q = workflowInfoRepository.Table;
+
         if (!string.IsNullOrWhiteSpace(request.WorkflowId))
         {
-            q.Where(s => s.workflow_id == request.WorkflowId);
+            var wid = request.WorkflowId.Trim();
+            q = q.Where(s => s.workflow_id == wid);
         }
+
         if (!string.IsNullOrWhiteSpace(request.ExecutionId))
         {
-            q.Where(s => s.execution_id == request.ExecutionId);
+            var eid = request.ExecutionId.Trim();
+            q = q.Where(s => s.execution_id == eid);
         }
+
         if (request.FromDate.HasValue)
         {
-            q.Where(s => s.created_on >= request.FromDate.ToUnixTimeMilliseconds());
+            var fromMs = request.FromDate.Value.ToUnixTimeMilliseconds();
+            q = q.Where(s => s.created_on >= fromMs);
         }
+
         if (request.ToDate.HasValue)
         {
-            q.Where(s => s.created_on <= request.ToDate.ToUnixTimeMilliseconds());
+            var toMs = request.ToDate.Value.ToUnixTimeMilliseconds();
+            q = q.Where(s => s.created_on <= toMs);
         }
-        List<WorkflowInfo> list = await q.ToListAsync(request.PageIndex, request.PageSize);
-        List<AdvancedSearchWorkflowLogResponse> listWorkflowInfoModel =
-            list.ToAdvancedSearchWorkflowLogResponseList();
-        return listWorkflowInfoModel.ToPagedListModel(request.PageIndex, request.PageSize);
+
+        return await q.ToPagedListModelAsync(
+            request.PageIndex,
+            request.PageSize,
+            items => items.ToAdvancedSearchWorkflowLogResponseList(),
+            cancellationToken
+        );
+
     }
 }
