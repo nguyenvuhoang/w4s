@@ -6,9 +6,10 @@ internal static class ApplicationExtensions
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddLinKitCqrs();
+
+        services.AddLinKitCqrs("ext");
         services.AddKeyedSingleton<IWorkflowStepInvoker, Workflow.Generated.WorkflowStepInvoker>(
-            "sample"
+            "ext"
         );
         return services;
     }

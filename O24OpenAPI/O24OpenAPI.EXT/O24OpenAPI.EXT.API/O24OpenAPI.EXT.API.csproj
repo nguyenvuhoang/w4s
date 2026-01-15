@@ -22,7 +22,6 @@
     <ProjectReference Include="..\O24OpenAPI.EXT.Infrastructure\O24OpenAPI.EXT.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Application\Features\" />
     <Folder Include="Controllers\" />
     <Folder Include="StaticConfig\" />
   </ItemGroup>

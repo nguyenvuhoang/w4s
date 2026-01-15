@@ -14,7 +14,7 @@ namespace O24OpenAPI.EXT.Infrastructure.Migrations;
 /// </summary>
 /// <seealso cref="AutoReversingMigration"/>
 [O24OpenAPIMigration(
-    "2026/01/15 15:01:00:0000000",
+    "2026/01/15 22:01:00:0000000",
     "Table For ExchangeRate",
     MigrationProcessType.Installation
 )]
@@ -29,10 +29,9 @@ public class EntityMigration : AutoReversingMigration
             Create.TableFor<ExchangeRate>();
 
             Create
-                .UniqueConstraint("UX_EXCHANGERATE_RATEDATE_CURRENCY")
+                .UniqueConstraint("UX_EXCHANGERATE_CURRENCY")
                 .OnTable(nameof(ExchangeRate))
                 .Columns(
-                    nameof(ExchangeRate.RateDateUtc),
                     nameof(ExchangeRate.CurrencyCode)
                 );
 
@@ -41,14 +40,6 @@ public class EntityMigration : AutoReversingMigration
                 .OnTable(nameof(ExchangeRate))
                 .OnColumn(nameof(ExchangeRate.RateDateUtc))
                 .Descending()
-                .WithOptions()
-                .NonClustered();
-
-            Create
-                .Index("IX_EXCHANGERATE_CURRENCY")
-                .OnTable(nameof(ExchangeRate))
-                .OnColumn(nameof(ExchangeRate.CurrencyCode))
-                .Ascending()
                 .WithOptions()
                 .NonClustered();
         }

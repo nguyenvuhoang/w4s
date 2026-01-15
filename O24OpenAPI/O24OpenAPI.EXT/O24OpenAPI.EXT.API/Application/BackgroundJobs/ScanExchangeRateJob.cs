@@ -46,50 +46,22 @@ public class ScanExchangeRateJobHandler(
 
             var parsed = ParseVietcombankXml(xml);
 
-            var inserted = 0;
-            var updated = 0;
+            await exchangeRateRepository.Truncate(resetIdentity: true);
 
-            foreach (var item in parsed.Items)
+            var entities = parsed.Items.Select(item => new ExchangeRate
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                RateDateUtc = parsed.RateDateUtc,
+                CurrencyCode = item.CurrencyCode,
+                CurrencyName = item.CurrencyName,
+                Buy = item.Buy,
+                Transfer = item.Transfer,
+                Sell = item.Sell,
+                Source = parsed.Source,
+                CreatedOnUtc = DateTime.UtcNow,
+                UpdatedOnUtc = DateTime.UtcNow
+            }).ToList();
 
-                var existing = await exchangeRateRepository.GetByRateDateAndCurrencyAsync(
-                    parsed.RateDateUtc,
-                    item.CurrencyCode,
-                    cancellationToken
-                );
-
-                if (existing is null)
-                {
-                    var entity = new ExchangeRate
-                    {
-                        RateDateUtc = parsed.RateDateUtc,
-                        CurrencyCode = item.CurrencyCode,
-                        CurrencyName = item.CurrencyName,
-                        Buy = item.Buy,
-                        Transfer = item.Transfer,
-                        Sell = item.Sell,
-                        Source = parsed.Source,
-                        CreatedOnUtc = DateTime.UtcNow,
-                        UpdatedOnUtc = DateTime.UtcNow
-                    };
-
-                    await exchangeRateRepository.Insert(entity);
-                    inserted++;
-                }
-                else
-                {
-                    existing.CurrencyName = item.CurrencyName;
-                    existing.Buy = item.Buy;
-                    existing.Transfer = item.Transfer;
-                    existing.Sell = item.Sell;
-                    existing.Source = parsed.Source;
-                    existing.UpdatedOnUtc = DateTime.UtcNow;
-
-                    await exchangeRateRepository.Update(existing);
-                    updated++;
-                }
-            }
+            await exchangeRateRepository.BulkInsert(entities);
         }
         catch (Exception ex)
         {
