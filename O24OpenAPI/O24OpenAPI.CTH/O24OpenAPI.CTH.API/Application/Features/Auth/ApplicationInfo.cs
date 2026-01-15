@@ -14,7 +14,8 @@ namespace O24OpenAPI.CTH.API.Application.Features.Auth;
 
 public class ApplicationInfoCommand
     : BaseTransactionModel,
-        ICommand<ApplicationInfoResponseModel> { }
+        ICommand<ApplicationInfoResponseModel>
+{ }
 
 public class ApplicationInfoResponseModel(
     string userCode,
@@ -82,56 +83,11 @@ public class ApplicationInfoHandler(
             allMenus.AddRange(menus);
         }
 
-        List<CommandHierarchyModel> uniqueMenus = allMenus
+        List<CommandHierarchyModel> uniqueMenus = [.. allMenus
             .GroupBy(m => m.CommandId)
-            .Select(g => g.First())
-            .ToList();
+            .Select(g => g.First())];
 
-        List<UserCommandResponseModel> menuHierarchy = uniqueMenus
-            .Where(m => m.ParentId == "0")
-            .Select(parent => new UserCommandResponseModel
-            {
-                ParentId = parent.ParentId,
-                CommandId = parent.CommandId,
-                Label = parent.Label,
-                CommandType = parent.CommandType,
-                Href = parent.CommandUri,
-                RoleId = parent.RoleId,
-                RoleName = parent.RoleName,
-                Invoke = parent.Invoke ? "true" : "false",
-                Approve = parent.Approve ? "true" : "false",
-                Icon = parent.Icon,
-                GroupMenuVisible = parent.GroupMenuVisible,
-                Prefix = parent.GroupMenuId,
-                GroupMenuListAuthorizeForm = parent.GroupMenuListAuthorizeForm,
-                GroupMenuId = parent.GroupMenuId,
-                IsAgreement = parent.IsAgreement,
-                Children =
-                [
-                    .. uniqueMenus
-                        .Where(child => child.ParentId == parent.CommandId)
-                        .Select(child => new UserCommandResponseModel
-                        {
-                            ParentId = child.ParentId,
-                            CommandId = child.CommandId,
-                            Label = child.Label,
-                            CommandType = child.CommandType,
-                            Href = child.CommandUri,
-                            RoleId = child.RoleId,
-                            RoleName = child.RoleName,
-                            Invoke = child.Invoke ? "true" : "false",
-                            Approve = child.Approve ? "true" : "false",
-                            Icon = child.Icon,
-                            GroupMenuVisible = child.GroupMenuVisible,
-                            Prefix = child.GroupMenuId,
-                            GroupMenuListAuthorizeForm = child.GroupMenuListAuthorizeForm,
-                            GroupMenuId = child.GroupMenuId,
-                            IsAgreement = child.IsAgreement,
-                            Children = null,
-                        }),
-                ],
-            })
-            .ToList();
+        var menuHierarchy = BuildMenuHierarchy(uniqueMenus, "0");
 
         UserAccount userAccount = await userAccountService.GetByUserCodeAsync(
             command.CurrentUserCode
@@ -256,5 +212,34 @@ public class ApplicationInfoHandler(
             return true;
         }
         return false;
+    }
+
+    /// <summary>
+    /// Build menu hierarchy from flat list
+    /// </summary>
+    /// <param name="flatList"></param>
+    /// <param name="parentId"></param>
+    /// <returns></returns>
+    private static List<UserCommandResponseModel> BuildMenuHierarchy(List<CommandHierarchyModel> flatList, string parentId)
+    {
+        return [.. flatList
+                .Where(x => x.ParentId == parentId)
+                .Select(item => new UserCommandResponseModel
+                {
+                    ParentId = item.ParentId,
+                    CommandId = item.CommandId,
+                    Label = item.Label,
+                    CommandType = item.CommandType,
+                    Href = item.CommandUri,
+                    RoleId = item.RoleId,
+                    RoleName = item.RoleName,
+                    Invoke = item.Invoke ? "true" : "false",
+                    Approve = item.Approve ? "true" : "false",
+                    Icon = item.Icon,
+                    GroupMenuVisible = item.GroupMenuVisible,
+                    Prefix = item.GroupMenuId,
+                    GroupMenuListAuthorizeForm = item.GroupMenuListAuthorizeForm,
+                    Children = BuildMenuHierarchy(flatList, item.CommandId)
+                })];
     }
 }

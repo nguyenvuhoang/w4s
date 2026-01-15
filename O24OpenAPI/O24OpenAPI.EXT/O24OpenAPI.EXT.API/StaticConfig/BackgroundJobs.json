@@ -6,6 +6,16 @@
         "IsActive": true,
         "ScheduleType": "Interval",
         "TimeIntervalSeconds": 300
+      },
+      {
+        "Name": "ScanExchangeRate",
+        "AssemblyName": "O24OpenAPI.EXT.API",
+        "RunOnStart": true,
+        "ScheduleType": "Daily",
+        "TimeOfDay": "9:00:00",
+        "MaxParallel": 1,
+        "CorrelationId": "ScanExchangeRateJob",
+        "IsActive": true
       }
     ]
   }

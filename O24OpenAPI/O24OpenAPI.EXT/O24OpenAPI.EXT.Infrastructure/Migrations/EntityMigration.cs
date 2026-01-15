@@ -14,7 +14,7 @@ namespace O24OpenAPI.EXT.Infrastructure.Migrations;
 /// </summary>
 /// <seealso cref="AutoReversingMigration"/>
 [O24OpenAPIMigration(
-    "2025/01/01 00:01:00:0000000",
+    "2026/01/15 15:01:00:0000000",
     "Table For ExchangeRate",
     MigrationProcessType.Installation
 )]

@@ -1,101 +1,106 @@
-﻿using LinKit.Core.Cqrs;
+﻿using LinKit.Core.BackgroundJobs;
+using LinKit.Core.Cqrs;
 using O24OpenAPI.EXT.Domain.AggregatesModel.ExchangeRateAggregate;
 using O24OpenAPI.EXT.Infrastructure.Configurations;
-using O24OpenAPI.Framework.Models;
+using O24OpenAPI.Framework.Extensions;
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Xml.Linq;
 
-namespace O24OpenAPI.EXT.API.Application.Features;
+namespace O24OpenAPI.EXT.API.Application.BackgroundJobs;
 
-public class ScanExchangeRateCommand : BaseTransactionModel, ICommand<ScanExchangeRateResponse>
-{
-}
+[BackgroundJob("ScanExchangeRate")]
+public class ScanExchangeRateJob : BackgroundJobCommand { }
 
-public record ScanExchangeRateResponse(
-    int Total,
-    int Inserted,
-    int Updated,
-    DateTime? RateDateUtc
-);
 
 [CqrsHandler]
-public class ScanExchangeRateCommandHandler(
-    IHttpClientFactory httpClientFactory,
-    ILogger<ScanExchangeRateCommandHandler> logger,
-    EXTSetting extSetting,
-    IExchangeRateRepository exchangeRateRepository
-) : ICommandHandler<ScanExchangeRateCommand, ScanExchangeRateResponse>
+public class ScanExchangeRateJobHandler(
+        IHttpClientFactory httpClientFactory,
+        ILogger<ScanExchangeRateJobHandler> logger,
+        EXTSetting extSetting,
+        IExchangeRateRepository exchangeRateRepository
+    ) :
+    ICommandHandler<ScanExchangeRateJob>
 {
-    public async Task<ScanExchangeRateResponse> HandleAsync(
-        ScanExchangeRateCommand request,
+    public async Task<Unit> HandleAsync(
+        ScanExchangeRateJob request,
         CancellationToken cancellationToken = default
     )
     {
-        var vcbUrl = extSetting.VcbUrl;
-        if (string.IsNullOrWhiteSpace(vcbUrl))
-            throw new InvalidOperationException("EXTSetting.VcbUrl is empty.");
-
-        var xml = await FetchXmlAsync(vcbUrl, cancellationToken);
-
-        var parsed = ParseVietcombankXml(xml);
-
-        var inserted = 0;
-        var updated = 0;
-
-        foreach (var item in parsed.Items)
+        try
         {
-            cancellationToken.ThrowIfCancellationRequested();
 
-            var existing = await exchangeRateRepository.GetByRateDateAndCurrencyAsync(
-                parsed.RateDateUtc,
-                item.CurrencyCode,
-                cancellationToken
+            DateTime localTime = TimeZoneInfo.ConvertTimeFromUtc(
+                DateTime.UtcNow,
+                TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time")
             );
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("[DTS] ScanExchangeRateJob Starting::" + localTime);
+            Console.ForegroundColor = ConsoleColor.White;
 
-            if (existing is null)
+            var vcbUrl = extSetting.VcbUrl;
+            if (string.IsNullOrWhiteSpace(vcbUrl))
+                throw new InvalidOperationException("EXTSetting.VcbUrl is empty.");
+
+            var xml = await FetchXmlAsync(vcbUrl, cancellationToken);
+
+            var parsed = ParseVietcombankXml(xml);
+
+            var inserted = 0;
+            var updated = 0;
+
+            foreach (var item in parsed.Items)
             {
-                var entity = new ExchangeRate
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var existing = await exchangeRateRepository.GetByRateDateAndCurrencyAsync(
+                    parsed.RateDateUtc,
+                    item.CurrencyCode,
+                    cancellationToken
+                );
+
+                if (existing is null)
                 {
-                    RateDateUtc = parsed.RateDateUtc,
-                    CurrencyCode = item.CurrencyCode,
-                    CurrencyName = item.CurrencyName,
-                    Buy = item.Buy,
-                    Transfer = item.Transfer,
-                    Sell = item.Sell,
-                    Source = parsed.Source,
-                    CreatedOnUtc = DateTime.UtcNow,
-                    UpdatedOnUtc = DateTime.UtcNow
-                };
+                    var entity = new ExchangeRate
+                    {
+                        RateDateUtc = parsed.RateDateUtc,
+                        CurrencyCode = item.CurrencyCode,
+                        CurrencyName = item.CurrencyName,
+                        Buy = item.Buy,
+                        Transfer = item.Transfer,
+                        Sell = item.Sell,
+                        Source = parsed.Source,
+                        CreatedOnUtc = DateTime.UtcNow,
+                        UpdatedOnUtc = DateTime.UtcNow
+                    };
 
-                await exchangeRateRepository.Insert(entity);
-                inserted++;
-            }
-            else
-            {
-                existing.CurrencyName = item.CurrencyName;
-                existing.Buy = item.Buy;
-                existing.Transfer = item.Transfer;
-                existing.Sell = item.Sell;
-                existing.Source = parsed.Source;
-                existing.UpdatedOnUtc = DateTime.UtcNow;
+                    await exchangeRateRepository.Insert(entity);
+                    inserted++;
+                }
+                else
+                {
+                    existing.CurrencyName = item.CurrencyName;
+                    existing.Buy = item.Buy;
+                    existing.Transfer = item.Transfer;
+                    existing.Sell = item.Sell;
+                    existing.Source = parsed.Source;
+                    existing.UpdatedOnUtc = DateTime.UtcNow;
 
-                await exchangeRateRepository.Update(existing);
-                updated++;
+                    await exchangeRateRepository.Update(existing);
+                    updated++;
+                }
             }
         }
-
-        return new ScanExchangeRateResponse(
-            Total: parsed.Items.Count,
-            Inserted: inserted,
-            Updated: updated,
-            RateDateUtc: parsed.RateDateUtc
-        );
+        catch (Exception ex)
+        {
+            await ex.LogErrorAsync("ScanExchangeRateJob Exception:: " + ex.Message);
+        }
+        return Unit.Value;
     }
 
     private async Task<string> FetchXmlAsync(string url, CancellationToken ct)
     {
-        var client = httpClientFactory.CreateClient(nameof(ScanExchangeRateCommandHandler));
+        var client = httpClientFactory.CreateClient(nameof(ScanExchangeRateJobHandler));
         client.DefaultRequestHeaders.Accept.Clear();
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml"));
         client.Timeout = TimeSpan.FromSeconds(30);
@@ -123,8 +128,7 @@ public class ScanExchangeRateCommandHandler(
         var dateText = root.Element("DateTime")?.Value?.Trim();
         var source = root.Element("Source")?.Value?.Trim();
 
-        DateTime rateLocal;
-        if (!DateTime.TryParse(dateText, CultureInfo.InvariantCulture, DateTimeStyles.None, out rateLocal) &&
+        if (!DateTime.TryParse(dateText, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime rateLocal) &&
             !DateTime.TryParse(dateText, CultureInfo.CurrentCulture, DateTimeStyles.None, out rateLocal))
         {
             rateLocal = DateTime.Now;
