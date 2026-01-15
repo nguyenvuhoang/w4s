@@ -35,7 +35,7 @@ public class ScanExchangeRateJobHandler(
                 TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time")
             );
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("[DTS] ScanExchangeRateJob Starting::" + localTime);
+            Console.WriteLine("[EXT] ScanExchangeRateJob Starting::" + localTime);
             Console.ForegroundColor = ConsoleColor.White;
 
             var vcbUrl = extSetting.VcbUrl;

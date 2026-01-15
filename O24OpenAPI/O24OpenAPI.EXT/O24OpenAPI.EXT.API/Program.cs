@@ -16,6 +16,7 @@ if (!builder.Environment.IsDevelopment())
 {
     builder.ConfigureWebHost();
 }
+builder.AddBackgroundJobs("StaticConfig/BackgroundJobs.json");
 
 WebApplication app = builder.Build();
 

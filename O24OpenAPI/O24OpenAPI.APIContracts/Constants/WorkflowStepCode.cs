@@ -147,4 +147,12 @@ public static class WorkflowStepCode
         public const string WF_STEP_W4S_SIMPLE_SEARCH_CURRENCY = "WF_STEP_W4S_SIMPLE_SEARCH_CURRENCY";
     }
     #endregion
+
+    #region EXT
+    public static class EXT
+    {
+        public const string WF_STEP_EXT_SEARCH_EXCHANGE_RATE = "WF_STEP_EXT_SEARCH_EXCHANGE_RATE";
+    }
+    #endregion
+
 }
