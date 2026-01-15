@@ -5,7 +5,6 @@ using O24OpenAPI.APIContracts.Models.CTH;
 using O24OpenAPI.CMS.API.Application.Models;
 using O24OpenAPI.CMS.API.Application.Utils;
 using O24OpenAPI.CMS.Domain.AggregateModels.FormAggregate;
-using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
@@ -165,7 +164,7 @@ public class LoadFormHandler(
         formConfig ??= await formService.GetByIdAndApp(formCode, app);
         if (formConfig == null) return null;
 
-        var listLayout = formConfig.ListLayout ?? new List<Dictionary<string, object>>();
+        var listLayout = formConfig.ListLayout ?? [];
 
         try
         {
@@ -177,32 +176,19 @@ public class LoadFormHandler(
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
-            var menuRightAll = new List<CTHCommandIdInfoModel>();
-            var parentRightAll = new List<CTHCommandIdInfoModel>();
+            var rightsByCommand = new Dictionary<string, List<CTHCommandIdInfoModel>>(StringComparer.OrdinalIgnoreCase);
+            var childrenByCommand = new Dictionary<string, List<CTHCommandIdInfoModel>>(StringComparer.OrdinalIgnoreCase);
 
-            if (commandIds.Count > 0)
+            foreach (var cid in commandIds)
             {
-                foreach (var cid in commandIds)
-                {
-                    var r1 = await cTHGrpcClientService.GetInfoFromCommandIdAsync(app, cid);
-                    if (r1 != null && r1.Count > 0) menuRightAll.AddRange(r1);
+                var r1 = await cTHGrpcClientService.GetInfoFromCommandIdAsync(app, cid)
+                         ?? [];
+                rightsByCommand[cid] = r1;
 
-                    var r2 = await cTHGrpcClientService.GetInfoFromParentIdAsync(app, cid);
-                    if (r2 != null && r2.Count > 0) parentRightAll.AddRange(r2);
-                }
+                var r2 = await cTHGrpcClientService.GetInfoFromParentIdAsync(app, cid)
+                         ?? [];
+                childrenByCommand[cid] = r2;
             }
-
-            var roleSet = new HashSet<int>(listRoleId);
-
-            var menuRootByRole = menuRightAll
-                .Where(x => x != null && roleSet.Contains(x.RoleId) && !string.IsNullOrWhiteSpace(x.CommandId))
-                .GroupBy(x => x.RoleId)
-                .ToDictionary(g => g.Key, g => g.ToList());
-
-            var menuChildByRole = parentRightAll
-                .Where(x => x != null && roleSet.Contains(x.RoleId) && !string.IsNullOrWhiteSpace(x.CommandId))
-                .GroupBy(x => x.RoleId)
-                .ToDictionary(g => g.Key, g => g.ToList());
 
             var baseRoleTask = BuildBaseRoleTaskFromLayout(listLayout, formCode);
 
@@ -210,48 +196,41 @@ public class LoadFormHandler(
             {
                 var roleTaskRole = (JObject)baseRoleTask.DeepClone();
 
-                if (roleTaskRole[formCode] == null)
-                    roleTaskRole[formCode] = new FormRoleModel().ToJToken();
-
-                if (menuChildByRole.TryGetValue(roleId, out var childRights))
+                foreach (var cid in commandIds)
                 {
-                    foreach (var r in childRights)
-                    {
-                        var cid = r.CommandId;
-                        if (string.IsNullOrWhiteSpace(cid)) continue;
+                    if (!rightsByCommand.TryGetValue(cid, out var rights)) continue;
 
+                    var right = rights.FirstOrDefault(x => x.RoleId == roleId);
+                    if (right != null)
+                    {
                         roleTaskRole[cid] = new ComponentRoleModel
                         {
-                            component = new RoleTaskModel { install = r.Invoke == 1 }
+                            component = new RoleTaskModel { install = right.Invoke == 1 }
                         }.ToJToken();
                     }
-                }
-
-                bool acceptForm = false;
-
-                if (menuRootByRole.TryGetValue(roleId, out var rootRights))
-                {
-                    foreach (var r in rootRights)
+                    else
                     {
-                        var cid = r.CommandId;
-                        if (string.IsNullOrWhiteSpace(cid)) continue;
+                        if (roleTaskRole[cid] == null)
+                            roleTaskRole[cid] = new ComponentRoleModel().ToJToken();
+                    }
 
-                        var allow = r.Invoke == 1;
-                        acceptForm |= allow;
-
-                        roleTaskRole[cid] = new ComponentRoleModel
+                    if (childrenByCommand.TryGetValue(cid, out var childs))
+                    {
+                        foreach (var ch in childs.Where(x => x.RoleId == roleId))
                         {
-                            component = new RoleTaskModel { install = allow }
-                        }.ToJToken();
+                            if (string.IsNullOrWhiteSpace(ch.CommandId)) continue;
+
+                            roleTaskRole[ch.CommandId] = new ComponentRoleModel
+                            {
+                                component = new RoleTaskModel { install = ch.Invoke == 1 }
+                            }.ToJToken();
+                        }
                     }
                 }
-
-                roleTaskRole[formCode] = new FormRoleModel
-                {
-                    form = new FormRoleInfoModel { accept = acceptForm }
-                }.ToJToken();
+                roleTaskRole[formCode] ??= new FormRoleModel().ToJToken();
 
                 result[roleId.ToString()] = roleTaskRole;
+
             }
         }
         catch (Exception ex)
