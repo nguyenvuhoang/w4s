@@ -24,5 +24,6 @@ public class W4SMappingConfigurator : IMappingConfigurator
             .ForMember(d => d.BudgetId, o => o.MapFrom(s => s.Id));
         builder.CreateMap<WalletTransaction, WalletTransactionModel>();
         builder.CreateMap<Currency, CurrencyResponseModel>();
+        builder.CreateMap<WalletEvent, WalleEventResponseModel>();
     }
 }

@@ -45,4 +45,74 @@ public partial class WalletEvent : BaseEntity
     public string? ReferenceId { get; set; }
 
     public WalletEvent() { }
+
+    public static WalletEvent Create(
+        int walletId,
+        string title,
+        DateTime startOnUtc,
+        DateTime? endOnUtc = null,
+        bool isAllDay = false,
+        string? description = null,
+        string? location = null,
+        string? color = null,
+        string? icon = null,
+        string? eventType = null,
+        int? reminderMinutes = null,
+        bool isRecurring = false,
+        string? recurrenceRule = null,
+        string? referenceType = null,
+        string? referenceId = null
+    )
+    {
+        if (walletId <= 0)
+            throw new ArgumentException("WalletId must be greater than zero.", nameof(walletId));
+
+        if (string.IsNullOrWhiteSpace(title))
+            throw new ArgumentException("Title is required.", nameof(title));
+
+        if (endOnUtc.HasValue && endOnUtc < startOnUtc)
+            throw new ArgumentException("End time cannot be earlier than start time.");
+
+        var evt = new WalletEvent
+        {
+            WalletId = walletId,
+
+            // Identity
+            Title = title.Trim(),
+            Description = description?.Trim(),
+            Location = location?.Trim(),
+            Color = color,
+            Icon = icon,
+
+            // Time
+            StartOnUtc = DateTime.SpecifyKind(startOnUtc, DateTimeKind.Utc),
+            EndOnUtc = endOnUtc.HasValue
+                ? DateTime.SpecifyKind(endOnUtc.Value, DateTimeKind.Utc)
+                : null,
+            IsAllDay = isAllDay,
+
+            // Type & Status
+            EventType = eventType ?? WalletEventType.GENERAL,
+            Status = WalletEventStatus.ACTIVE,
+
+            // Reminder
+            ReminderMinutes = reminderMinutes,
+            ReminderOnUtc = reminderMinutes.HasValue
+                ? DateTime.SpecifyKind(startOnUtc, DateTimeKind.Utc)
+                    .AddMinutes(-reminderMinutes.Value)
+                : null,
+
+            // Recurrence
+            IsRecurring = isRecurring,
+            RecurrenceRule = isRecurring ? recurrenceRule : null,
+            RecurrenceGroupId = isRecurring ? Guid.NewGuid().ToString("N") : null,
+
+            // Reference
+            ReferenceType = referenceType,
+            ReferenceId = referenceId
+        };
+
+        return evt;
+    }
+
 }

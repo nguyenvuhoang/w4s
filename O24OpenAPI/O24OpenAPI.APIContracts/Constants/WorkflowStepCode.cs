@@ -145,6 +145,9 @@ public static class WorkflowStepCode
         public const string WF_STEP_W4S_WALLET_CONTRACT_CATEGORY = "WF_STEP_W4S_WALLET_CONTRACT_CATEGORY";
         public const string WF_STEP_W4S_ADD_ON_WALLET = "WF_STEP_W4S_ADD_ON_WALLET";
         public const string WF_STEP_W4S_SIMPLE_SEARCH_CURRENCY = "WF_STEP_W4S_SIMPLE_SEARCH_CURRENCY";
+        public const string WF_STEP_W4S_RETRIEVE_WALLET_EVENT = "WF_STEP_W4S_RETRIEVE_WALLET_EVENT";
+        public const string WF_STEP_W4S_CREATE_WALLET_EVENT = "WF_STEP_W4S_CREATE_WALLET_EVENT";
+        public const string WF_STEP_W4S_DELETE_WALLET_EVENT = "WF_STEP_W4S_DELETE_WALLET_EVENT";
     }
     #endregion
 
