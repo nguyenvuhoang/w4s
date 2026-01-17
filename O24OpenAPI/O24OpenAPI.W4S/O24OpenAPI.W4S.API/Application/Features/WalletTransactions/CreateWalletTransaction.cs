@@ -21,7 +21,7 @@ public class CreateWalletTransactionCommand
     public string AccountNumber { get; set; } = default!;
     public int CategoryId { get; set; } = default!;
     public string TransactionDescription { get; set; } = string.Empty;
-    public List<string> WithUsers { get; set; } = [];
+    public List<WalletCounterpartyRequestModel> WithUsers { get; set; } = [];
     public string Location { get; set; } = string.Empty;
     public string EventId { get; set; } = string.Empty;
     public DateTime? ReminderAt { get; set; }
@@ -35,7 +35,8 @@ public class CreateWalletTransactionCommand
 
 [CqrsHandler]
 public class CreateWalletTransactionCommandHandler(
-    IWalletTransactionRepository walletTransactionRepository
+    IWalletTransactionRepository walletTransactionRepository,
+    IWalletCounterpartyRepository counterpartyRepository
 ) : ICommandHandler<CreateWalletTransactionCommand, CreateWalletTransactionResponse>
 {
     [WorkflowStep(WorkflowStepCode.W4S.WF_STEP_W4S_CREATE_WALLET_TRANSACTION)]
@@ -47,7 +48,43 @@ public class CreateWalletTransactionCommandHandler(
         ValidateRequest(request);
 
         string transactionId = GenerateTransactionId();
+        List<int> counterpartyIds = [];
+        foreach (var input in request.WithUsers)
+        {
+            WalletCounterparty cp;
 
+            if (input.Id.HasValue)
+            {
+                cp = await counterpartyRepository.GetById(input.Id.Value);
+                if (cp == null || cp.WalletId != request.WalletId)
+                    throw new O24OpenAPIException("Invalid counterparty");
+            }
+            else
+            {
+                cp = await counterpartyRepository.FindByPhoneOrEmailAsync(
+                    request.WalletId,
+                    input.Phone,
+                    input.Email
+                );
+
+                if (cp == null)
+                {
+                    cp = WalletCounterparty.Create(
+                        request.WalletId,
+                        input.DisplayName!,
+                        input.Phone,
+                        input.Email,
+                        (WalletCounterpartyType)(input.CounterpartyType ?? 1),
+                        input.AvatarUrl
+                    );
+
+                    await counterpartyRepository.InsertAsync(cp);
+                }
+            }
+
+            cp.Touch();
+            counterpartyIds.Add(cp.Id);
+        }
         WalletTransaction entity = new()
         {
             TRANSACTIONID = transactionId,
@@ -76,7 +113,7 @@ public class CreateWalletTransactionCommandHandler(
             CHAR07 = request.IsLoanForFund.ToString(),
             CHAR08 = request.IsFunding.ToString(),
 
-            LISTUSERAPP = request.WithUsers.Count > 0 ? string.Join(",", request.WithUsers) : null,
+            LISTUSERAPP = counterpartyIds.Count > 0 ? string.Join(",", counterpartyIds) : null,
 
             NUM01 = request.Amount,
             NUM02 = request.Fee,

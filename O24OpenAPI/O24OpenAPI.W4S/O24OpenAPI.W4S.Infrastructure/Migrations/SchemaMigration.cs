@@ -14,8 +14,8 @@ namespace O24OpenAPI.W4S.Infrastructure.Migrations;
 /// </summary>
 /// <seealso cref="AutoReversingMigration"/>
 [O24OpenAPIMigration(
-    "2026/01/16 14:10:01:0000000",
-    "10. Init W4S table",
+    "2026/01/17 14:10:01:0000000",
+    "10. Init W4S table (WalletCounterparty)",
     MigrationProcessType.Installation
 )]
 [Environment(EnvironmentType.All)]
@@ -247,6 +247,44 @@ public class SchemaMigration : AutoReversingMigration
         {
             Create.TableFor<WalletCatalogGLs>();
             Create.UniqueConstraint("UC_WalletCatalogGLs").OnTable(nameof(WalletCatalogGLs)).Columns(nameof(WalletCatalogGLs.CatalogCode), nameof(WalletCatalogGLs.SysAccountName));
+        }
+
+        if (!Schema.Table(nameof(WalletCounterparty)).Exists())
+        {
+            Create.TableFor<WalletCounterparty>();
+
+            // ===== Unique (anti-duplicate in 1 wallet) =====
+            Create.UniqueConstraint("UC_WalletCounterparty_WalletId_Phone")
+                .OnTable(nameof(WalletCounterparty))
+                .Columns(
+                    nameof(WalletCounterparty.WalletId),
+                    nameof(WalletCounterparty.Phone)
+                );
+
+            Create.UniqueConstraint("UC_WalletCounterparty_WalletId_Email")
+                .OnTable(nameof(WalletCounterparty))
+                .Columns(
+                    nameof(WalletCounterparty.WalletId),
+                    nameof(WalletCounterparty.Email)
+                );
+
+            Create.Index("IX_WalletCounterparty_WalletId_Active_Fav_LastUsed")
+                .OnTable(nameof(WalletCounterparty))
+                .OnColumn(nameof(WalletCounterparty.WalletId)).Ascending()
+                .OnColumn(nameof(WalletCounterparty.IsActive)).Ascending()
+                .OnColumn(nameof(WalletCounterparty.IsFavorite)).Descending()
+                .OnColumn(nameof(WalletCounterparty.LastUsedOnUtc)).Descending();
+
+            Create.Index("IX_WalletCounterparty_WalletId_Active_UseCount")
+                .OnTable(nameof(WalletCounterparty))
+                .OnColumn(nameof(WalletCounterparty.WalletId)).Ascending()
+                .OnColumn(nameof(WalletCounterparty.IsActive)).Ascending()
+                .OnColumn(nameof(WalletCounterparty.UseCount)).Descending();
+
+            Create.Index("IX_WalletCounterparty_WalletId_SearchKey")
+                .OnTable(nameof(WalletCounterparty))
+                .OnColumn(nameof(WalletCounterparty.WalletId)).Ascending()
+                .OnColumn(nameof(WalletCounterparty.SearchKey)).Ascending();
         }
     }
 }
