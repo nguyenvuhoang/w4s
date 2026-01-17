@@ -87,7 +87,7 @@ public class CreateWalletHandle(
                 await walletContractRepository.InsertAsync(contract);
             }
 
-            Domain.AggregatesModel.BudgetWalletAggregate.WalletProfile profile = Domain.AggregatesModel.BudgetWalletAggregate.WalletProfile.Create(
+            WalletProfile profile = WalletProfile.Create(
                 walletProfileCode: GenerateWalletProfileCode(
                     Code.WalletType.TWDR,
                     request.Classification
@@ -105,7 +105,7 @@ public class CreateWalletHandle(
 
             await CloneDefaultCategoriesToWalletAsync(profile.Id);
 
-            await walletAccountProfileRepository.CreateDefaultAccount(profile.Id);
+            await walletAccountProfileRepository.CreateDefaultAccount(profile.Id, w4SSetting.BaseCurrency);
 
             return new CreateWalletResponseModel
             {

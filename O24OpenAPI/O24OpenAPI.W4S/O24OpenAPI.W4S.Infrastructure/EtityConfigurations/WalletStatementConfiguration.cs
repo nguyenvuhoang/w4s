@@ -35,7 +35,7 @@ public class WalletStatementConfiguration : O24OpenAPIEntityBuilder<WalletStatem
             .WithColumn(nameof(WalletStatement.EventId)).AsInt32().NotNullable().WithDefaultValue(0)
 
             // Source & refs
-            .WithColumn(nameof(WalletStatement.Source)).AsInt16().NotNullable() // enum -> smallint
+            .WithColumn(nameof(WalletStatement.Source)).AsString(50).Nullable()
             .WithColumn(nameof(WalletStatement.ReferenceType)).AsString(50).Nullable()
             .WithColumn(nameof(WalletStatement.ReferenceId)).AsString(100).Nullable()
             .WithColumn(nameof(WalletStatement.ExternalRef)).AsString(100).Nullable()

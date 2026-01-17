@@ -14,5 +14,11 @@ public interface IWalletAccountProfileRepository : IRepository<WalletAccount>
     /// Create default account
     /// </summary>
     /// <returns></returns>
-    Task CreateDefaultAccount(int walletId);
+    Task<List<WalletAccount>> CreateDefaultAccount(int walletId, string currencycode);
+    /// <summary>
+    /// Get default expense account
+    /// </summary>
+    /// <param name="walletId"></param>
+    /// <returns></returns>
+    Task<WalletAccount> GetDefaultExpenseAccountAsync(int walletId);
 }

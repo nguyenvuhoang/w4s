@@ -36,6 +36,7 @@ public partial class WalletProfile : BaseEntity
     /// Default currency (VND, USD, LAK, USDT...)
     /// </summary>
     public string DefaultCurrency { get; private set; } = default!;
+    public bool? IsPrimary { get; private set; }
 
     /// <summary>
     /// Wallet status: A = Active, I = Inactive, C = Closed
@@ -78,6 +79,10 @@ public partial class WalletProfile : BaseEntity
     public void ChangeDefaultCurrency(string currency)
     {
         DefaultCurrency = currency;
+    }
+    public void SetPrimary()
+    {
+        IsPrimary = true;
     }
 
     public static WalletProfile Create(

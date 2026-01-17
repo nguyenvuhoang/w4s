@@ -37,6 +37,10 @@ public class WalletProfileConfiguration : O24OpenAPIEntityBuilder<WalletProfile>
             .NotNullable()
             .WithColumn(nameof(WalletProfile.Color))
             .AsString(100)
-            .NotNullable();
+            .NotNullable()
+            .WithColumn(nameof(WalletProfile.IsPrimary))
+            .AsBoolean()
+            .Nullable()
+            ;
     }
 }

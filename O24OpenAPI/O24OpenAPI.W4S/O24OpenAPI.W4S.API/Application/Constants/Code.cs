@@ -34,4 +34,8 @@ public partial class Code
         public const string NORMAL = "N";
 
     }
+    public partial class WalletTranCode
+    {
+        public const string WALLET_OPENING = "WALLET_OPENING";
+    }
 }

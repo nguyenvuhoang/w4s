@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using O24OpenAPI.Core.Attributes;
+﻿using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Core.Domain;
+using System.ComponentModel.DataAnnotations;
 
 namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 
@@ -59,7 +59,7 @@ public partial class WalletTransaction : BaseEntity
     /// Gets or sets the SourceTranRef
     /// </summary>
     [Required]
-    [MaxLength(20)]
+    [MaxLength(100)]
     public string? SOURCETRANREF { get; set; }
 
     /// <summary>
@@ -426,4 +426,64 @@ public partial class WalletTransaction : BaseEntity
     /// Gets or sets the AuthenCode
     /// </summary>
     public string? AUTHENCODE { get; set; }
+
+    public static WalletTransaction Create(
+        string transactionId,
+        string transactionCode,
+        string sourceTranRef,
+        string userId,
+        string walletId,
+        string walletAccount,
+        decimal amount,
+        string currency,
+        string description,
+        string sourceId = "W4S",
+        string destId = "W4S",
+        string status = "C"
+    )
+    {
+        if (string.IsNullOrWhiteSpace(transactionCode))
+            throw new ArgumentNullException(nameof(transactionCode));
+
+        if (string.IsNullOrWhiteSpace(sourceTranRef))
+            throw new ArgumentNullException(nameof(sourceTranRef));
+
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(amount);
+
+        var now = DateTime.UtcNow;
+        return new WalletTransaction
+        {
+            TRANSACTIONID = transactionId,
+            TRANSACTIONDATE = now,
+            TRANSACTIONWORKDATE = now,
+
+            TRANSACTIONCODE = transactionCode,
+            TRANSACTIONNAME = description,
+            TRANDESC = description,
+            CCYID = currency,
+
+            SOURCEID = sourceId,
+            SOURCETRANREF = sourceTranRef,
+            DESTID = destId,
+
+            USERID = userId,
+
+            STATUS = status,
+            APPRSTS = 1,
+            OFFLSTS = "N",
+            ONLINE = true,
+            DELETED = false,
+
+            CHAR01 = walletId,           // WalletId
+            CHAR02 = walletAccount,      // Wallet Account Number
+            CHAR03 = "TRACKER",          // Wallet type / tracking marker
+
+            // ===== Amount =====
+            NUM01 = amount,
+
+            // ===== Error default =====
+            ERRORCODE = "0",
+            ERRORDESC = string.Empty
+        };
+    }
 }

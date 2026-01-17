@@ -11,8 +11,8 @@ namespace O24OpenAPI.W4S.API.Application.Migrations;
 /// </summary>
 /// <seealso cref="AutoReversingMigration"/>
 [O24OpenAPIMigration(
-    "2026/01/12 10:58:01:0000000",
-    "WalletContractNotFound",
+    "2026/01/16 10:58:01:0000000",
+    "AccountNumberIsNotDefined",
     MigrationProcessType.Update
 )]
 [Environment(EnvironmentType.All)]
@@ -68,6 +68,30 @@ public class RequiredDataMigration() : BaseMigration
                         Language = "vi",
                         ResourceName = O24W4SResourceCode.Validation.WalletContractNotFound,
                         ResourceValue = "Không tìm thấy danh mục hợp đồng ví.",
+                    },
+                    new LocaleStringResource()
+                    {
+                        Language = "en",
+                        ResourceName = O24W4SResourceCode.Accounting.AccountNumberIsNotDefined,
+                        ResourceValue = "The account {0} is not defined accounting yet",
+                    },
+                    new LocaleStringResource()
+                    {
+                        Language = "vi",
+                        ResourceName = O24W4SResourceCode.Accounting.AccountNumberIsNotDefined,
+                        ResourceValue = "Tài khoản {0} chưa được định nghĩa kế toán",
+                    },
+                      new LocaleStringResource()
+                    {
+                        Language = "en",
+                        ResourceName = O24W4SResourceCode.Accounting.CurrencyIsNotDefined,
+                        ResourceValue = "The currency {0} is not defined accounting yet",
+                    },
+                    new LocaleStringResource()
+                    {
+                        Language = "vi",
+                        ResourceName = O24W4SResourceCode.Accounting.CurrencyIsNotDefined,
+                        ResourceValue = "Mã tiền tệ {0} chưa được định nghĩa kế toán",
                     },
                 ],
                 [nameof(LocaleStringResource.Language), nameof(LocaleStringResource.ResourceName)]

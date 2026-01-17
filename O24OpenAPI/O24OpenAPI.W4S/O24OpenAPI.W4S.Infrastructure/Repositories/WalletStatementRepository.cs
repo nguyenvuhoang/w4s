@@ -13,4 +13,5 @@ public class WalletStatementRepository(
     : EntityRepository<WalletStatement>(dataProvider, staticCacheManager),
         IWalletStatementRepository
 {
+
 }

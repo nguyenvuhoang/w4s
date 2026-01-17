@@ -11,7 +11,9 @@ namespace O24OpenAPI.W4S.API.Application.Features.Currencys;
 public class SimpleSearchCurrencyCommand
     : SimpleSearchModel,
         ICommand<PagedListModel<CurrencyResponseModel>>
-{ }
+{
+    public string StatusOfCurrency { get; set; } = "";
+}
 
 [CqrsHandler]
 public class SimpleSearchCurrencyHandle(ICurrencyRepository currencyRepository)
@@ -31,7 +33,13 @@ public class SimpleSearchCurrencyHandle(ICurrencyRepository currencyRepository)
         if (!string.IsNullOrWhiteSpace(request.SearchText))
         {
             var st = request.SearchText.Trim();
+            var status = request.StatusOfCurrency;
             q = q.Where(s => s.CurrencyId == st);
+        }
+        if (!string.IsNullOrWhiteSpace(request.StatusOfCurrency))
+        {
+            var status = request.StatusOfCurrency.Trim();
+            q = q.Where(s => s.StatusOfCurrency == status);
         }
         q = q.OrderBy(x => x.DisplayOrder);
         return await q.ToPagedListModelAsync(

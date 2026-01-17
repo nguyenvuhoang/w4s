@@ -49,5 +49,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Application\Migrations\O24OpenAPIServiceMigrations\" />
+    <Folder Include="Application\Services\" />
   </ItemGroup>
 </Project>

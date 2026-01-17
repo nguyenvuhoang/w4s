@@ -15,7 +15,7 @@ public class WalletAccountRepository(
     : EntityRepository<WalletAccount>(dataProvider, staticCacheManager),
         IWalletAccountProfileRepository
 {
-    public async Task CreateDefaultAccount(int walletId)
+    public async Task<List<WalletAccount>> CreateDefaultAccount(int walletId, string currencycode)
     {
         var now = DateTime.UtcNow;
 
@@ -24,7 +24,7 @@ public class WalletAccountRepository(
             new() {
                 WalletId = walletId,
                 AccountType = WalletAccountType.Income, // INCOME
-                CurrencyCode = "VND",
+                CurrencyCode = currencycode,
                 IsPrimary = true,
                 Status = "A",
                 AccountNumber = Generate(WalletAccountType.Income, 1, now)
@@ -33,7 +33,7 @@ public class WalletAccountRepository(
             {
                 WalletId = walletId,
                 AccountType = WalletAccountType.Expense, // EXPENSE
-                CurrencyCode = "VND",
+                CurrencyCode = currencycode,
                 IsPrimary = false,
                 Status = "A",
                 AccountNumber = Generate(WalletAccountType.Expense, 1, now)
@@ -42,7 +42,7 @@ public class WalletAccountRepository(
             {
                 WalletId = walletId,
                 AccountType = WalletAccountType.Loan, // LOAN
-                CurrencyCode = "VND",
+                CurrencyCode = currencycode,
                 IsPrimary = false,
                 Status = "A",
                 AccountNumber = Generate( WalletAccountType.Loan, 1, now)
@@ -50,6 +50,7 @@ public class WalletAccountRepository(
         };
 
         await BulkInsert(accounts);
+        return accounts;
     }
 
 
@@ -80,4 +81,15 @@ public class WalletAccountRepository(
         return $"{time}{typeCode}{seq}";
     }
 
+    /// <summary>
+    /// Get Default Expense Account
+    /// </summary>
+    /// <param name="walletId"></param>
+    /// <returns></returns>
+    public Task<WalletAccount> GetDefaultExpenseAccountAsync(int walletId)
+    {
+        return Table
+            .Where(x => x.WalletId == walletId && x.AccountType == WalletAccountType.Expense)
+            .FirstOrDefaultAsync();
+    }
 }

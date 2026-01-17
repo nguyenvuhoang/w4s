@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Linh.CodeEngine.Core;
 using LinKit.Core.Abstractions;
 using LinKit.Core.Cqrs;
@@ -23,6 +22,7 @@ using O24OpenAPI.Framework.Services.Configuration;
 using O24OpenAPI.Framework.Services.Logging;
 using O24OpenAPI.Framework.Services.Queue;
 using O24OpenAPI.Logging.Helpers;
+using System.Text.Json;
 
 namespace O24OpenAPI.Framework.Services;
 
@@ -153,48 +153,42 @@ public class O24OpenAPIServiceManager(
                     );
                     return executionResult as WFScheme;
                 }
+
+                IWorkflowStepInvoker stepInvoker;
+                IMediator mediator;
+
                 try
                 {
-                    var stepInvoker =
+                    stepInvoker =
                         EngineContext.Current.Resolve<IWorkflowStepInvoker>(mapping.MediatorKey)
                         ?? throw new InvalidOperationException(
                             $"IWorkflowStepInvoker resolved null. Key='{mapping.MediatorKey}'"
                         );
 
-                    Task<WFScheme> scheme = BaseQueue.Invoke<BaseTransactionModel>(
-                        workflow,
-                        async () =>
-                        {
-                            return await stepInvoker.InvokeAsync(
-                                mapping.StepCode,
-                                workflow,
-                                EngineContext.Current.Resolve<IMediator>(mapping.MediatorKey),
-                                CancellationToken.None
-                            );
-                        }
-                    );
-                    return await scheme;
+                    mediator = EngineContext.Current.Resolve<IMediator>(mapping.MediatorKey);
                 }
                 catch (KeyNotFoundException ex)
                 {
-                    BusinessLogHelper.Error(
-                        ex,
-                        $"Error invoking workflow step invoker for step code '{mapping.StepCode}'."
-                    );
+                    BusinessLogHelper.Error(ex, $"Cannot resolve workflow services. Key='{mapping.MediatorKey}', Step='{mapping.StepCode}'.");
                     return await workflow.InvokeAsync(mapping.FullClassName, mapping.MethodName);
                 }
                 catch (InvalidOperationException ex)
                 {
-                    BusinessLogHelper.Error(
-                        ex,
-                        $"Error invoking workflow step invoker for step code '{mapping.StepCode}'."
-                    );
+                    BusinessLogHelper.Error(ex, $"Cannot resolve workflow services. Key='{mapping.MediatorKey}', Step='{mapping.StepCode}'.");
                     return await workflow.InvokeAsync(mapping.FullClassName, mapping.MethodName);
                 }
-                throw new O24OpenAPIException(
-                    $"Workflow step invoker could not be resolved for step code '{mapping.StepCode}'."
+
+                return await BaseQueue.Invoke<BaseTransactionModel>(
+                    workflow,
+                    () => stepInvoker.InvokeAsync(
+                        mapping.StepCode,
+                        workflow,
+                        mediator,
+                        CancellationToken.None
+                    )
                 );
             }
+
             else
             {
                 var entityAudits = await entityAuditRepository.GetByExecutionIdAsync(

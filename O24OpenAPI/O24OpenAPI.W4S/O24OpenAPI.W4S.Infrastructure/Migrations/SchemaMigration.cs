@@ -14,7 +14,7 @@ namespace O24OpenAPI.W4S.Infrastructure.Migrations;
 /// </summary>
 /// <seealso cref="AutoReversingMigration"/>
 [O24OpenAPIMigration(
-    "2026/01/10 12:10:01:0000000",
+    "2026/01/16 14:10:01:0000000",
     "10. Init W4S table",
     MigrationProcessType.Installation
 )]
@@ -218,6 +218,35 @@ public class SchemaMigration : AutoReversingMigration
                 .OnTable(nameof(WalletEvent))
                 .OnColumn(nameof(WalletEvent.ReferenceType)).Ascending()
                 .OnColumn(nameof(WalletEvent.ReferenceId)).Ascending();
+        }
+
+        if (!Schema.Table(nameof(WalletLedgerEntry)).Exists())
+        {
+            Create.TableFor<WalletLedgerEntry>();
+            Create.Index("IX_WalletLedgerEntry_AccountNumber_DrCr")
+                .OnTable(nameof(WalletLedgerEntry))
+                .OnColumn(nameof(WalletLedgerEntry.AccountNumber)).Ascending()
+                .OnColumn(nameof(WalletLedgerEntry.DrCr)).Descending();
+
+            Create.UniqueConstraint("UQ_WalletLedgerEntry_TransactionRef")
+                .OnTable(nameof(WalletLedgerEntry))
+                .Columns(nameof(WalletLedgerEntry.TRANSACTIONID),
+                         nameof(WalletLedgerEntry.Group),
+                         nameof(WalletLedgerEntry.Index),
+                         nameof(WalletLedgerEntry.DrCr),
+                         nameof(WalletLedgerEntry.AccountNumber));
+
+        }
+
+
+        if (!Schema.Table(nameof(WalletAccountGLs)).Exists())
+        {
+            Create.TableFor<WalletAccountGLs>();
+        }
+        if (!Schema.Table(nameof(WalletCatalogGLs)).Exists())
+        {
+            Create.TableFor<WalletCatalogGLs>();
+            Create.UniqueConstraint("UC_WalletCatalogGLs").OnTable(nameof(WalletCatalogGLs)).Columns(nameof(WalletCatalogGLs.CatalogCode), nameof(WalletCatalogGLs.SysAccountName));
         }
     }
 }

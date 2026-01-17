@@ -17,7 +17,7 @@ public class WalletTransactionConfiguration : O24OpenAPIEntityBuilder<WalletTran
             .WithColumn("TRANSACTIONCODE").AsString(100).NotNullable()
             .WithColumn("CCYID").AsString(10).Nullable()
             .WithColumn("SOURCEID").AsString(20).NotNullable()
-            .WithColumn("SOURCETRANREF").AsString(20).NotNullable()
+            .WithColumn("SOURCETRANREF").AsString(100).NotNullable()
             .WithColumn("USERID").AsString(50).NotNullable()
             .WithColumn("USERCURAPP").AsString(2000).Nullable()
             .WithColumn("NEXTUSERAPP").AsString(2000).Nullable()
