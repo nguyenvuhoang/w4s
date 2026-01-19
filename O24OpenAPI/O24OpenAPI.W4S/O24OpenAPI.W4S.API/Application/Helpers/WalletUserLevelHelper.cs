@@ -4,7 +4,7 @@ namespace O24OpenAPI.W4S.API.Application.Helpers;
 
 public static class WalletUserLevelHelper
 {
-    public static WalletUserLevel? Parse(string? value)
+    public static WalletUserLevel? Parse(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
             return WalletUserLevel.L0;
@@ -18,9 +18,7 @@ public static class WalletUserLevelHelper
             "2" or "L2" => WalletUserLevel.L2,
             "3" or "L3" => WalletUserLevel.L3,
 
-            _ => throw new ArgumentException(
-                $"Unsupported wallet user level: '{value}'"
-            )
+            _ => throw new ArgumentException($"Unsupported wallet user level: '{value}'"),
         };
     }
 }

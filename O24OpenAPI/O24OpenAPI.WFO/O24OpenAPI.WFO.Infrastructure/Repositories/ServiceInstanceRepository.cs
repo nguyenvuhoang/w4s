@@ -4,6 +4,7 @@ using LinKit.Core.Abstractions;
 using LinqToDB;
 using O24OpenAPI.Client.Lib.Encryption;
 using O24OpenAPI.Contracts.Configuration.Client;
+using O24OpenAPI.Core;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Extensions;
@@ -66,15 +67,18 @@ public class ServiceInstanceRepository(
             serviceInfo.event_queue_name = serviceInstance.EventQueueName;
             serviceInfo.concurrent_threads = serviceInstance.ConcurrentLimit;
         }
-        await BuildServiceInfo(serviceInfo);
+        BuildServiceInfo(serviceInfo);
 
         return serviceInfo;
     }
 
-    private async Task BuildServiceInfo(ServiceInfo serviceInfo)
+    private void BuildServiceInfo(ServiceInfo serviceInfo)
     {
-        ServiceInfoConfiguration wfoServiceInfo =
-            Singleton<AppSettings>.Instance.Get<ServiceInfoConfiguration>();
+        var wfoServiceInfo = Singleton<AppSettings>.Instance.Get<ServiceInfoConfiguration>();
+        if (wfoServiceInfo == null)
+        {
+            throw new O24OpenAPIException("WFO ServiceInfoConfiguration is not config.");
+        }
         serviceInfo.broker_hostname = wfoServiceInfo.BrokerHostname;
         serviceInfo.broker_port = wfoServiceInfo.BrokerPort;
         serviceInfo.broker_user_name = wfoServiceInfo.BrokerUsername;
@@ -93,7 +97,7 @@ public class ServiceInstanceRepository(
         serviceInfo.service_ping_interval_seconds = wfoSetting.ServerPingIntervalInSecond;
         serviceInfo.o24openapi_grpc_url = Singleton<AppSettings>
             .Instance.Get<O24OpenAPIConfiguration>()
-            .YourGrpcURL;
+            ?.YourGrpcURL;
         serviceInfo.o24openapi_grpc_timeout_seconds = wfoSetting.GrpcTimeoutInSeconds;
         serviceInfo.workflow_execution_timeout_seconds = wfoSetting.WorkflowTimeoutInSeconds;
         serviceInfo.ssl_active = wfoSetting.MessageBrokerSSLActive.ToString();
@@ -105,7 +109,7 @@ public class ServiceInstanceRepository(
 
     public async Task<ServiceInfo> GetServiceInstanceByServiceHandleName(string serviceHandleName)
     {
-        ServiceInstance serviceInstance =
+        var serviceInstance =
             await GetByServiceHanleNameAsync(serviceHandleName)
             ?? throw new Exception("Service for [" + serviceHandleName + "] does not exist.");
         ServiceInfo serviceInfo = new()
@@ -120,7 +124,7 @@ public class ServiceInstanceRepository(
             event_queue_name = serviceInstance.EventQueueName,
             concurrent_threads = serviceInstance.ConcurrentLimit,
         };
-        await BuildServiceInfo(serviceInfo);
+        BuildServiceInfo(serviceInfo);
         return serviceInfo;
     }
 

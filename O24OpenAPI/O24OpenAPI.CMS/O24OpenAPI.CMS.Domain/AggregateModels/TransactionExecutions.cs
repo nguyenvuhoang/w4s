@@ -8,5 +8,4 @@ public partial class TransactionExecutions : BaseEntity
     public int ExecOrder { get; set; } // Thứ tự thực thi
     public bool IsEnable { get; set; } // Trạng thái kích hoạt
     public string? Condition { get; set; } // Điều kiện thực thi
-    public DateTime? UpdatedOnUtc { get; set; } // Thời gian cập nhật (UTC)
 }

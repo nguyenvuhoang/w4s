@@ -14,13 +14,14 @@ public class Singleton<T> : BaseSingleton
     /// <summary>
     /// Gets or sets the value of the instance
     /// </summary>
-    public static T Instance
+    public static T? Instance
     {
         get => instance;
         set
         {
             instance = value;
-            AllSingletons[typeof(T).Name] = value;
+            if (value is not null)
+                AllSingletons[typeof(T).Name] = value;
         }
     }
 
@@ -35,7 +36,7 @@ public class Singleton<T> : BaseSingleton
     /// <summary>
     /// Retrieves an instance by name
     /// </summary>
-    public static T GetInstanceByName(string name)
+    public static T? GetInstanceByName(string name)
     {
         return AllSingletons.TryGetValue(name, out var instance) ? (T)instance : default;
     }

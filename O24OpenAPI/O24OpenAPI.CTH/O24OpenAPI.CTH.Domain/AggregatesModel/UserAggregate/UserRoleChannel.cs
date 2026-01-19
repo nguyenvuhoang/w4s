@@ -39,14 +39,4 @@ public partial class UserRoleChannel : BaseEntity
     /// Gets or sets the value of the status
     /// </summary>
     public bool Status { get; set; }
-
-    /// <summary>
-    /// Gets or sets the value of the updated on utc
-    /// </summary>
-    public DateTime? UpdatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Gets or sets the value of the created on utc
-    /// </summary>
-    public DateTime? CreatedOnUtc { get; set; }
 }

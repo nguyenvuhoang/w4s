@@ -14,7 +14,7 @@ public class DTSGrpcClientService : BaseGrpcClientService, IDTSGrpcClientService
     }
 
     private readonly IGrpcClient<DTSGrpcService.DTSGrpcServiceClient> _dtsGrpcClient =
-        EngineContext.Current.Resolve<IGrpcClient<DTSGrpcService.DTSGrpcServiceClient>>();
+        EngineContext.Current.ResolveRequired<IGrpcClient<DTSGrpcService.DTSGrpcServiceClient>>();
 
     public async Task<bool> VerifyUserAysnc(string contractNumber, string idCard)
     {
@@ -71,7 +71,7 @@ public class DTSGrpcClientService : BaseGrpcClientService, IDTSGrpcClientService
         {
             Type = type
         };
-        var grpcFactory = EngineContext.Current.Resolve<IGrpcClientFactory>();
+        var grpcFactory = EngineContext.Current.ResolveRequired<IGrpcClientFactory>();
 
         var streamClient = grpcFactory.GetServerStreamAsync<
             DTSGrpcService.DTSGrpcServiceClient,
@@ -82,7 +82,7 @@ public class DTSGrpcClientService : BaseGrpcClientService, IDTSGrpcClientService
         var response = new List<SMSLoanAlertModel>();
         await foreach (var reply in streamingCall.ResponseStream.ReadAllAsync())
         {
-            response.Add(reply.ToSMSLoanAlertModel());
+            response.Add(reply.ToSMSLoanAlertModel()!);
         }
         return response;
     }

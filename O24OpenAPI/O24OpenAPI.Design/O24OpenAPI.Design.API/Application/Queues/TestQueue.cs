@@ -28,5 +28,5 @@ public class TestQueue : BaseQueue
 
 public class TestModel : BaseTransactionModel
 {
-    public string DataTest { get; set; }
+    public string? DataTest { get; set; }
 }

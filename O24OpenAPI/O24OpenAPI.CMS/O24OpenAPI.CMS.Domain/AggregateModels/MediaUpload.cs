@@ -46,14 +46,4 @@ public partial class MediaUpload : BaseEntity
     /// </summary>
     /// <value></value>
     public bool AutoDeleteBySchedule { get; set; } = false;
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    public DateTime? UpdatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    public DateTime? CreatedOnUtc { get; set; }
 }

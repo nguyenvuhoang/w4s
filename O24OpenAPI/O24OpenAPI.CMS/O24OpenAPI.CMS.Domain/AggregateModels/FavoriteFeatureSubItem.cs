@@ -11,14 +11,4 @@ public partial class FavoriteFeatureSubItem : BaseEntity
     public string? Description { get; set; }
 
     public string? Url { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    public DateTime? CreatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    public DateTime? UpdatedOnUtc { get; set; }
 }

@@ -12,5 +12,4 @@ public partial class TransactionRules : BaseEntity
     public string? Spec { get; set; }
     public string? Example { get; set; }
     public string? Caption { get; set; }
-    public DateTime? UpdatedOnUtc { get; set; }
 }

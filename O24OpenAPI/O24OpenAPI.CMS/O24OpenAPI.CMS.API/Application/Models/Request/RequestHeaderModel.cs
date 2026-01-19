@@ -14,31 +14,31 @@ public class RequestHeaderModel : BaseO24OpenAPIModel
     ///
     /// </summary>
     /// <value></value>
-    public string? Domain { get; set; }
+    public string Domain { get; set; }
 
     /// <summary>
     ///
     /// </summary>
     /// <value></value>
-    public string? Url { get; set; }
+    public string Url { get; set; }
 
     /// <summary>
     ///
     /// </summary>
     /// <value></value>
-    public string? Token { get; set; }
+    public string Token { get; set; }
 
     /// <summary>
     ///
     /// </summary>
     /// <value></value>``
-    public string? Lang { get; set; }
+    public string Lang { get; set; }
 
     /// <summary>
     ///
     /// </summary>
     /// <value></value>
-    public string? App { get; set; }
+    public string App { get; set; }
 
     /// <summary>
     ///
@@ -56,13 +56,13 @@ public class RequestHeaderModel : BaseO24OpenAPIModel
     ///
     /// </summary>
     /// <value></value>
-    public string? UserId { get; set; } = "";
+    public string UserId { get; set; } = "";
 
     /// <summary>
     ///
     /// </summary>
     /// <value></value>
-    public string? PortalToken { get; set; }
+    public string PortalToken { get; set; }
 
     /// <summary>
     ///
@@ -70,24 +70,24 @@ public class RequestHeaderModel : BaseO24OpenAPIModel
     /// <value></value>
     public bool isDebug { get; set; } = false;
 
-    public string? Signature { get; set; }
-    public string? Timestamp { get; set; }
-    public string? Nonce { get; set; }
+    public string Signature { get; set; }
+    public string Timestamp { get; set; }
+    public string Nonce { get; set; }
 
-    public string? GetDeviceName()
+    public string GetDeviceName()
     {
-        return MyDevice.TryGetValue("device_name", out object? value)
+        return MyDevice.TryGetValue("device_name", out object value)
             ? value.ToString()
             : (
-                MyDevice.TryGetValue("browser", out object? value1)
+                MyDevice.TryGetValue("browser", out object value1)
                     ? value1.ToString()
                     : string.Empty
             );
     }
 
-    public string? GetDeviceId()
+    public string GetDeviceId()
     {
-        return MyDevice.TryGetValue("device_id", out object? value)
+        return MyDevice.TryGetValue("device_id", out object value)
             ? value.ToString()
             : string.Empty;
     }

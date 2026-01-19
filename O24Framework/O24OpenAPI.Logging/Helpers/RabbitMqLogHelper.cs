@@ -14,7 +14,7 @@ public static class RabbitMqLogHelper
         string serviceName,
         string destination,
         T message,
-        IDictionary<string, object> headers
+        IDictionary<string, object?> headers
     )
     {
         string correlationId = EngineContext.Current.ResolveRequired<WorkContext>().ExecutionLogId;
@@ -30,7 +30,9 @@ public static class RabbitMqLogHelper
                 .ForContext("Headers", headers.WriteIndentedJson())
                 .ForContext(
                     "Flow",
-                    headers.TryGetValue("Flow", out object? flowValue) ? flowValue.ToString() : null
+                    headers.TryGetValue("Flow", out object? flowValue)
+                        ? flowValue?.ToString()
+                        : null
                 )
                 .Information("RabbitMQ Publish Log");
         }
@@ -40,7 +42,7 @@ public static class RabbitMqLogHelper
         string serviceName,
         string source,
         byte[] body,
-        IDictionary<string, object>? headers,
+        IDictionary<string, object?>? headers,
         Func<Task> processAction
     )
     {

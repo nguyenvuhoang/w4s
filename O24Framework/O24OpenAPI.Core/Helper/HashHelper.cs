@@ -18,10 +18,10 @@ public class HashHelper
     /// <returns>The string</returns>
     public static string CreateHash(byte[] data, string hashAlgorithm, int trimByteCount = 0)
     {
-        HashAlgorithm hashAlgorithm1 =
+        var hashAlgorithm1 =
             (
                 !string.IsNullOrEmpty(hashAlgorithm)
-                    ? (HashAlgorithm)CryptoConfig.CreateFromName(hashAlgorithm)
+                    ? (HashAlgorithm?)CryptoConfig.CreateFromName(hashAlgorithm)
                     : throw new ArgumentNullException(nameof(hashAlgorithm))
             ) ?? throw new ArgumentException("Unrecognized hash name");
         if (trimByteCount <= 0 || data.Length <= trimByteCount)

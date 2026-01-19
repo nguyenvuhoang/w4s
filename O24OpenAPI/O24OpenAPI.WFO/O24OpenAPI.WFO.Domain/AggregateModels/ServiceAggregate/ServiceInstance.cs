@@ -5,9 +5,9 @@ namespace O24OpenAPI.WFO.Domain.AggregateModels.ServiceAggregate;
 public partial class ServiceInstance : BaseEntity
 {
     public string? InstanceID { get; set; }
-    public string? GrpcUrl { get; set; }
+    public string GrpcUrl { get; set; } = string.Empty;
     public long GrpcTimeout { get; set; }
-    public string? ServiceCode { get; set; }
+    public string ServiceCode { get; set; } = string.Empty;
     public string? ServiceHandleName { get; set; }
     public string? EventQueueName { get; set; }
     public string? CommandQueueName { get; set; }

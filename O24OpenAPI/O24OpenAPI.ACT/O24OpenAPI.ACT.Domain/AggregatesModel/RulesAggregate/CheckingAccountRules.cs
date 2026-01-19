@@ -40,16 +40,4 @@ public partial class CheckingAccountRules : BaseEntity
     /// </summary>
     [JsonProperty("account_categories")]
     public string? AccountCategories { get; set; }
-
-    /// <summary>
-    /// create
-    /// </summary>
-    [JsonProperty("created_on_utc")]
-    public DateTime? CreatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    [JsonProperty("updated_on_utc")]
-    public DateTime? UpdatedOnUtc { get; set; }
 }

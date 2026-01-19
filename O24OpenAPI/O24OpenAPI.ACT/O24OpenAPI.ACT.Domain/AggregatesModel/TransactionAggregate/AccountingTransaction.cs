@@ -54,16 +54,4 @@ public partial class AccountingTransaction : BaseEntity
     /// </summary>
     [JsonProperty("user_defined5")]
     public string UserDefined5 { get; set; }
-
-    /// <summary>
-    /// create
-    /// </summary>
-    [JsonProperty("created_on_utc")]
-    public DateTime? CreatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    [JsonProperty("updated_on_utc")]
-    public DateTime? UpdatedOnUtc { get; set; }
 }

@@ -15,12 +15,15 @@ public static class InfrastructureExtensions
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
         services.AddLinKitDependency();
-        QdrantSettingConfig qdrantSettingConfig =
-            Singleton<AppSettings>.Instance.Get<QdrantSettingConfig>();
-        services.AddSingleton(_ =>
-        {
-            return new QdrantClient(host: qdrantSettingConfig.Host, port: qdrantSettingConfig.Port);
-        });
+        var qdrantSettingConfig = Singleton<AppSettings>.Instance.Get<QdrantSettingConfig>();
+        if (qdrantSettingConfig is not null)
+            services.AddSingleton(_ =>
+            {
+                return new QdrantClient(
+                    host: qdrantSettingConfig.Host,
+                    port: qdrantSettingConfig.Port
+                );
+            });
         return services;
     }
 

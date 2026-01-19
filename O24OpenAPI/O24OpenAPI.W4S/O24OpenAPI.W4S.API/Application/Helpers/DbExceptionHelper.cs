@@ -70,7 +70,7 @@ public static class DbExceptionHelper
         return LooksLikeUniqueByMessage(msg);
     }
 
-    private static bool LooksLikeUniqueByMessage(string? message)
+    private static bool LooksLikeUniqueByMessage(string message)
     {
         if (string.IsNullOrWhiteSpace(message)) return false;
         var m = message.ToUpperInvariant();

@@ -7,10 +7,10 @@
 
         // Identity / Display
         public string Title { get; set; } = string.Empty;
-        public string? Description { get; set; }
-        public string? Location { get; set; }
-        public string? Color { get; set; }
-        public string? Icon { get; set; }
+        public string Description { get; set; }
+        public string Location { get; set; }
+        public string Color { get; set; }
+        public string Icon { get; set; }
 
         // Calendar time
         public DateTime StartOnUtc { get; set; }
@@ -20,6 +20,5 @@
         // Type & Status
         public string EventType { get; set; }
         public string Status { get; set; }
-
     }
 }

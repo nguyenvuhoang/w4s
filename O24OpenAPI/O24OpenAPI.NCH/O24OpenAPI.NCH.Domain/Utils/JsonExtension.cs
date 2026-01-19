@@ -66,7 +66,7 @@ public static class JsonExtension
         }
     }
 
-    public static JObject SafeParseJson(this string jsonString)
+    public static JObject? SafeParseJson(this string jsonString)
     {
         try
         {
@@ -77,6 +77,8 @@ public static class JsonExtension
             try
             {
                 var unescaped = JsonConvert.DeserializeObject<string>(jsonString);
+                if (string.IsNullOrWhiteSpace(unescaped))
+                    return null;
                 return JObject.Parse(unescaped);
             }
             catch

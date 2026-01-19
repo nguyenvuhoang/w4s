@@ -13,7 +13,7 @@ public class UpsertPointCommand : BaseTransactionModel, ICommand<UpsertPointResp
     public string DocType { get; set; } = "unknown";
     public new string Language { get; set; } = "en";
     public string DocId { get; set; } = default!;
-    public string? Title { get; set; }
+    public string Title { get; set; }
     public string Content { get; set; } = default!;
     public Dictionary<string, object>? Extra { get; set; }
 }

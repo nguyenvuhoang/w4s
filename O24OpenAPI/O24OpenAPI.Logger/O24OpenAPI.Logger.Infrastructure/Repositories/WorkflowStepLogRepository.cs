@@ -15,20 +15,22 @@ namespace O24OpenAPI.Logger.Infrastructure.Repositories;
 internal class WorkflowStepLogRepository(
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-)
-    : EntityRepository<WorkflowStepLog>(dataProvider, staticCacheManager),
-        IWorkflowStepLogRepository
+) : EntityRepository<WorkflowStepLog>(dataProvider, staticCacheManager), IWorkflowStepLogRepository
 {
     public async Task<List<WorkflowStepLog>> GetByExecutionIdAsync(string executionId)
     {
-        List<WorkflowStepLog> logs = await Table.Where(x => x.execution_id == executionId).ToListAsync();
+        List<WorkflowStepLog> logs = await Table
+            .Where(x => x.execution_id == executionId)
+            .ToListAsync();
         return logs;
     }
 
     public async Task<WorkflowStepLog?> GetByIdAsync(string stepExecutionId)
     {
         IQueryable<WorkflowStepLog> query = Table;
-        WorkflowStepLog? log = await query.FirstOrDefaultAsync(x => x.step_execution_id == stepExecutionId);
+        WorkflowStepLog? log = await query.FirstOrDefaultAsync(x =>
+            x.step_execution_id == stepExecutionId
+        );
         return log;
     }
 
@@ -40,14 +42,13 @@ internal class WorkflowStepLogRepository(
             WFScheme.RESPONSE response = wFScheme.response;
             bool isSuccess = response.IsSuccess();
 
-            WorkflowStepLog stepInfo = await GetByIdAsync(header.step_execution_id);
+            WorkflowStepLog? stepInfo = await GetByIdAsync(header.step_execution_id);
 
             string content = isSuccess
                 ? response.data.ToJson(o => o.WriteIndented = true)
-                : new Dictionary<string, object>
-                {
-                    { "error", response.error_message },
-                }.ToJson(o => o.WriteIndented = true);
+                : new Dictionary<string, object> { { "error", response.error_message } }.ToJson(o =>
+                    o.WriteIndented = true
+                );
 
             int status = isSuccess ? (int)Enum_STATUS.Completed : (int)Enum_STATUS.Exception;
 

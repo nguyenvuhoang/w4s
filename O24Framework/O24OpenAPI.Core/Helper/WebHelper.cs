@@ -41,7 +41,7 @@ public class WebHelper(
         return true;
     }
 
-    protected virtual bool IsIpAddressSet(IPAddress address)
+    protected virtual bool IsIpAddressSet(IPAddress? address)
     {
         return address != null && address.ToString() != IPAddress.IPv6Loopback.ToString();
     }
@@ -109,8 +109,9 @@ public class WebHelper(
         return !this.IsIpAddressSet(connection.RemoteIpAddress)
             || (
                 this.IsIpAddressSet(connection.LocalIpAddress)
-                    ? connection.RemoteIpAddress.Equals(connection.LocalIpAddress)
-                    : IPAddress.IsLoopback(connection.RemoteIpAddress)
+                    ? connection.RemoteIpAddress == connection.LocalIpAddress
+                    : connection.RemoteIpAddress is not null
+                        && IPAddress.IsLoopback(connection.RemoteIpAddress)
             );
     }
 

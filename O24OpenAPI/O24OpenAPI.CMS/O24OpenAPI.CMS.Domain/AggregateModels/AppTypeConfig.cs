@@ -9,6 +9,4 @@ public partial class AppTypeConfig : BaseEntity
     public int OrderIndex { get; set; }
     public string? RedirectPage { get; set; }
     public bool IsActive { get; set; } = true;
-    public DateTime CreatedOnUtc { get; set; }
-    public DateTime? UpdatedOnUtc { get; set; }
 }

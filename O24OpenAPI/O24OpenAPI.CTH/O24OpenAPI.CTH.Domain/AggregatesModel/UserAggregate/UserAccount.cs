@@ -84,16 +84,6 @@ public partial class UserAccount : BaseEntity
     public bool IsSuperAdmin { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the value of the updated on utc
-    /// </summary>
-    public DateTime? UpdatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Gets or sets the value of the created on utc
-    /// </summary>
-    public DateTime? CreatedOnUtc { get; set; }
-
-    /// <summary>
     /// Gets or sets the value of the is Biometric Supported
     /// </summary>
     public bool IsBiometricSupported { get; set; }

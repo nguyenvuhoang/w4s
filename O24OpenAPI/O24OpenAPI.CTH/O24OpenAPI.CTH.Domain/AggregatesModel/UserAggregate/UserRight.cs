@@ -37,14 +37,4 @@ public partial class UserRight : BaseEntity
     /// </summary>
     [JsonProperty("approve")]
     public int Approve { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    public DateTime? UpdatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    public DateTime? CreatedOnUtc { get; set; }
 }

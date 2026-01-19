@@ -11,5 +11,4 @@ public partial class TransactionRules : BaseEntity
     public string? Example { get; set; } // Ví dụ về quy tắc
     public string? Caption { get; set; } // Tiêu đề quy tắc
     public string? Condition { get; set; } // Điều kiện quy tắc
-    public DateTime? UpdatedOnUtc { get; set; } // Thời gian cập nhật (UTC)
 }

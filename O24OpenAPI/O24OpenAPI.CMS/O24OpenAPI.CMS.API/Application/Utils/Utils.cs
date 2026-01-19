@@ -1,4 +1,8 @@
-﻿using CsvHelper;
+﻿using System.Diagnostics;
+using System.Globalization;
+using System.Linq.Expressions;
+using System.Reflection;
+using CsvHelper;
 using CsvHelper.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -8,17 +12,13 @@ using O24OpenAPI.CMS.Domain.AggregateModels.Digital;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Data.Configuration;
 using O24OpenAPI.Data.System.Linq;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq.Expressions;
-using System.Reflection;
 using ILogger = O24OpenAPI.Framework.Services.Logging.ILogger;
 
 namespace O24OpenAPI.CMS.API.Application.Utils;
 
 public static class Utils
 {
-    private static AsyncLocal<string> _requestLanguage = new();
+    private static readonly AsyncLocal<string> _requestLanguage = new();
 
     /// <summary>
     ///
@@ -326,8 +326,8 @@ public static class Utils
     /// <returns></returns>
     public static JObject CreateFoQuick(string txcode, JObject foInput)
     {
-        JObject rs_ = new();
-        JArray listAction = new();
+        JObject rs_ = [];
+        JArray listAction = [];
         JObject foOne = new() { new JProperty("txcode", txcode), new JProperty("input", foInput) };
         listAction.Add(foOne);
         rs_.Add(new JProperty("fo", listAction));
@@ -360,7 +360,7 @@ public static class Utils
     /// <returns></returns>
     public static JObject ConvertToJObject(Dictionary<string, object> lst)
     {
-        JObject jsResult = new();
+        JObject jsResult = [];
         foreach (KeyValuePair<string, object> item in lst) { }
 
         return jsResult;
@@ -617,7 +617,11 @@ public static class Utils
     public static Dictionary<string, string> GetHeaders(HttpContext httpContext)
     {
         Dictionary<string, string> requestHeaders = [];
-        foreach (KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues> header in httpContext.Request.Headers)
+        foreach (
+            KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues> header in httpContext
+                .Request
+                .Headers
+        )
         {
             requestHeaders.Add(header.Key.ToLower(), header.Value);
             Console.WriteLine($"{header.Key}: {header.Value}");
@@ -650,7 +654,7 @@ public static class Utils
     /// <returns></returns>
     public static JArray BuildTableCodeForArray(JArray arr, string tableCode)
     {
-        JArray arrRes = new();
+        JArray arrRes = [];
         foreach (JToken itemArr in arr)
         {
             JObject obj = new() { new JProperty(tableCode, itemArr) };
@@ -743,9 +747,9 @@ public static class Utils
         where TEntity : BaseEntity
         where TRequestModel : BaseO24OpenAPIModel
     {
-        List<FileModel> listFiles = new List<FileModel>();
+        List<FileModel> listFiles = [];
         IRepository<TEntity> repo = EngineContext.Current.Resolve<IRepository<TEntity>>();
-        HashSet<string> requestFields = new HashSet<string>();
+        HashSet<string> requestFields = [];
         Func<TEntity, bool> conditionExport = s =>
         {
             bool result = false;
@@ -773,7 +777,7 @@ public static class Utils
         IEnumerable<TEntity> listData = repo.Table.Where(conditionExport);
         foreach (TEntity item in listData)
         {
-            JArray jArray = new();
+            JArray jArray = [];
             string header = $@"{{'type':'header','command':'Export data to Json'}}";
             jArray.Add(JToken.Parse(header));
 
@@ -808,7 +812,7 @@ public static class Utils
 
             // data
             // var jListData = JArray.FromObject(listData);
-            JArray jListData = new JArray { item.ToJObject() };
+            JArray jListData = [item.ToJObject()];
             JObject data = new()
             {
                 new JProperty(name: "type", "data"),
@@ -857,10 +861,12 @@ public static class Utils
             foreach (PropertyInfo propReq in typeof(TRequestModel).GetProperties())
             {
                 object value = propReq.GetValue(request);
-                if (value == null) continue;
+                if (value == null)
+                    continue;
 
                 PropertyInfo propEntity = typeof(TEntity).GetProperty(propReq.Name);
-                if (propEntity == null) continue;
+                if (propEntity == null)
+                    continue;
 
                 MemberExpression left = Expression.Property(param, propEntity);
                 ConstantExpression right = Expression.Constant(value);
@@ -880,7 +886,7 @@ public static class Utils
         if (listData.Count != 0)
         {
             // header
-            JArray jArray = new();
+            JArray jArray = [];
             string header = $@"{{'type':'header','command':'Export data to Json'}}";
             jArray.Add(JToken.Parse(header));
 
@@ -947,7 +953,7 @@ public static class Utils
         if (listData.Any())
         {
             // header
-            JArray jArray = new();
+            JArray jArray = [];
             string header = $@"{{'type':'header','command':'Export data to Json'}}";
             jArray.Add(JToken.Parse(header));
 
@@ -1040,7 +1046,7 @@ public static class Utils
         if (listData.Any())
         {
             // header
-            JArray jArray = new();
+            JArray jArray = [];
             string header = $@"{{'type':'header','command':'Export data to Json'}}";
             jArray.Add(JToken.Parse(header));
 
@@ -1103,12 +1109,12 @@ public static class Utils
     /// <typeparam name="TRequestModel"></typeparam>
     /// <returns></returns>
     public static async Task UploadData<TEntity, TRequestModel>(
-    string content,
-    int? skipValue = null,
-    int? maximunValue = null
-)
-    where TEntity : BaseEntity, new()
-    where TRequestModel : BaseO24OpenAPIModel
+        string content,
+        int? skipValue = null,
+        int? maximunValue = null
+    )
+        where TEntity : BaseEntity, new()
+        where TRequestModel : BaseO24OpenAPIModel
     {
         Stopwatch stopwatch = Stopwatch.StartNew();
 
@@ -1128,14 +1134,7 @@ public static class Utils
 
         HashSet<string> primaryKeyNames = requestProps.Select(p => p.Name).ToHashSet();
 
-        HashSet<string> ignoreFields = new HashSet<string>
-    {
-        "Id",
-        "CreatedOnUtc",
-        "UpdatedOnUtc"
-    };
-        foreach (string pk in primaryKeyNames)
-            ignoreFields.Add(pk);
+        HashSet<string> ignoreFields = ["Id", "CreatedOnUtc", "UpdatedOnUtc", .. primaryKeyNames];
 
         // 4. Resolve repository
         IRepository<TEntity> repo = EngineContext.Current.Resolve<IRepository<TEntity>>();
@@ -1144,19 +1143,18 @@ public static class Utils
         List<TEntity> dbData = repo.Table.ToList();
 
         // 5. Prepare result collections
-        List<TEntity> insertList = new List<TEntity>(uploadData);
-        List<TEntity> updateList = new List<TEntity>();
+        List<TEntity> insertList = new(uploadData);
+        List<TEntity> updateList = [];
 
         // 6. Build key selector (avoid reflection in inner loop)
         string BuildKey(object obj)
         {
-            return string.Join('|',
+            return string.Join(
+                '|',
                 requestProps.Select(p =>
-                    typeof(TEntity)
-                        .GetProperty(p.Name)?
-                        .GetValue(obj)?
-                        .ToString() ?? string.Empty
-                ));
+                    typeof(TEntity).GetProperty(p.Name)?.GetValue(obj)?.ToString() ?? string.Empty
+                )
+            );
         }
 
         // 7. Index DB data by key
@@ -1186,17 +1184,17 @@ public static class Utils
         Console.WriteLine($"==== ListInsert: Count: {insertList.Count}");
 
         // 9. Bulk insert new records
-        IO24OpenAPIDataProvider dataProvider = EngineContext.Current.Resolve<IO24OpenAPIDataProvider>();
+        IO24OpenAPIDataProvider dataProvider =
+            EngineContext.Current.Resolve<IO24OpenAPIDataProvider>();
         await dataProvider.BulkInsertEntities(insertList);
 
         stopwatch.Stop();
         Console.WriteLine($"--- Total time upload (ms): {stopwatch.ElapsedMilliseconds}");
 
-        await EngineContext.Current
-            .Resolve<ILogger>()
+        await EngineContext
+            .Current.Resolve<ILogger>()
             .Information($"{DateTime.Now} --- Upload completed");
     }
-
 
     /// <summary>
     /// UploadData
@@ -1211,7 +1209,8 @@ public static class Utils
         List<TEntity> listEntity = await GetListEntityFromJson<TEntity>(content);
         if (listEntity.Count > 0)
         {
-            IO24OpenAPIDataProvider neptuneDataProvider = EngineContext.Current.Resolve<IO24OpenAPIDataProvider>();
+            IO24OpenAPIDataProvider neptuneDataProvider =
+                EngineContext.Current.Resolve<IO24OpenAPIDataProvider>();
             if (isTruncate)
             {
                 await neptuneDataProvider.Truncate<TEntity>(true);
@@ -1245,12 +1244,12 @@ public static class Utils
                 return listData;
             }
 
-            return new List<TEntity>();
+            return [];
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
-            return new List<TEntity>();
+            return [];
         }
     }
 
@@ -1278,12 +1277,12 @@ public static class Utils
                 return listData;
             }
 
-            return new List<TEntity>();
+            return [];
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
-            return new List<TEntity>();
+            return [];
         }
     }
 
@@ -1334,7 +1333,7 @@ public static class Utils
     /// <returns></returns>
     public static async Task<Dictionary<string, string>> GetConnectionInfo()
     {
-        Dictionary<string, string> result = new();
+        Dictionary<string, string> result = [];
         // JObject jObject = JObject.Parse(File.ReadAllText(NeptuneConfigurationDefaults.AppSettingsFilePath));
         // var jToken = jObject.Value<JToken>("ConnectionStrings");
         // var connString = jToken.Value<string>("ConnectionString");
@@ -1467,11 +1466,13 @@ public static class Utils
         {
             IRepository<TEntity> repo = EngineContext.Current.Resolve<IRepository<TEntity>>();
             JObject jObject = jArray.Children<JObject>().FirstOrDefault(o => o["data"] != null);
-            JArray data = jObject?.Value<JArray>("data");
+            JArray data = jObject.Value<JArray>("data");
             if (data is not null && data.Count > 0)
             {
                 string strData = JsonConvert.SerializeObject(data);
-                List<TEntity> listUploadData = JsonConvert.DeserializeObject<List<TEntity>>(strData);
+                List<TEntity> listUploadData = JsonConvert.DeserializeObject<List<TEntity>>(
+                    strData
+                );
                 if (listUploadData.Count > 0)
                 {
                     return listUploadData;
@@ -1480,14 +1481,15 @@ public static class Utils
         }
 
         await Task.CompletedTask;
-        return new List<TEntity>();
+        return [];
     }
 
     public static string GetRequestLanguage()
     {
         if (_requestLanguage.Value == null)
         {
-            JWebUIObjectContextModel context = EngineContext.Current.Resolve<JWebUIObjectContextModel>();
+            JWebUIObjectContextModel context =
+                EngineContext.Current.Resolve<JWebUIObjectContextModel>();
             _requestLanguage.Value = context?.InfoRequest?.Language ?? "en";
         }
         return _requestLanguage.Value;
@@ -1496,11 +1498,11 @@ public static class Utils
     public static async Task<List<TEntity>> ReadDataCSV<TEntity>(string path)
         where TEntity : BaseEntity
     {
-        List<TEntity> listData = new List<TEntity>();
+        List<TEntity> listData = [];
 
-        using (StreamReader reader = new StreamReader(path))
+        using (StreamReader reader = new(path))
         using (
-            CsvReader csv = new CsvReader(
+            CsvReader csv = new(
                 reader,
                 new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
@@ -1530,11 +1532,11 @@ public static class Utils
     {
         try
         {
-            List<TEntity> listData = new List<TEntity>();
+            List<TEntity> listData = [];
 
-            using (StreamReader reader = new StreamReader(file.OpenReadStream()))
+            using (StreamReader reader = new(file.OpenReadStream()))
             using (
-                CsvReader csv = new CsvReader(
+                CsvReader csv = new(
                     reader,
                     new CsvConfiguration(CultureInfo.InvariantCulture)
                     {
@@ -1566,11 +1568,11 @@ public static class Utils
 
     public static async Task<List<C_CODELIST>> ReadCodeListCSV(string path, string appCode)
     {
-        List<C_CODELIST> listData = new List<C_CODELIST>();
+        List<C_CODELIST> listData = [];
 
-        using (StreamReader reader = new StreamReader(path))
+        using (StreamReader reader = new(path))
         using (
-            CsvReader csv = new CsvReader(
+            CsvReader csv = new(
                 reader,
                 new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
@@ -1588,7 +1590,7 @@ public static class Utils
             while (await csv.ReadAsync())
             {
                 TellerAppCdlist cdlist = csv.GetRecord<TellerAppCdlist>();
-                C_CODELIST entity = new C_CODELIST()
+                C_CODELIST entity = new()
                 {
                     CodeId = cdlist.CDID,
                     CodeName = cdlist.CDNAME,
@@ -1607,8 +1609,6 @@ public static class Utils
 
         return listData;
     }
-
-
 
     public static string GetGroupId(S_USRCMD record, Dictionary<string, string> values)
     {

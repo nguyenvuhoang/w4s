@@ -22,14 +22,4 @@ public partial class SupperAdmin : BaseEntity
     /// Gets or sets the value of the password hash
     /// </summary>
     public string? PasswordHash { get; set; }
-
-    /// <summary>
-    /// Gets or sets the value of the updated on utc
-    /// </summary>
-    public DateTime? UpdatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Gets or sets the value of the created on utc
-    /// </summary>
-    public DateTime? CreatedOnUtc { get; set; }
 }

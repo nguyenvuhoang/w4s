@@ -35,10 +35,10 @@ public class UserRightChannelRepository(
 
     public async Task<HashSet<string>> GetSetChannelInRoleAsync(int[] roleId)
     {
-        HashSet<string> result = new();
-        foreach (var role in roleId)
+        HashSet<string> result = [];
+        foreach (int role in roleId)
         {
-            var set = await Table
+            HashSet<string?> set = await Table
                 .Where(s => s.RoleId == role)
                 .Select(s => s.ChannelId)
                 .AsAsyncEnumerable()

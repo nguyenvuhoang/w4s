@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Cryptography;
+using Microsoft.AspNetCore.Mvc;
 using O24OpenAPI.CMS.API.Application.Models.Media;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces.Media;
@@ -8,7 +9,6 @@ using O24OpenAPI.Framework.Controllers;
 using O24OpenAPI.Framework.Models.JwtModels;
 using O24OpenAPI.Framework.Services;
 using O24OpenAPI.Framework.Utils;
-using System.Security.Cryptography;
 
 namespace O24OpenAPI.CMS.API.Controllers;
 
@@ -175,7 +175,7 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
         CancellationToken cancellationToken
     )
     {
-        (Stream? stream, string? contentType) = await _mediaService.ViewMedia(trackerCode);
+        (Stream stream, string contentType) = await _mediaService.ViewMedia(trackerCode);
 
         if (stream == Stream.Null || contentType == null)
             return NotFound();

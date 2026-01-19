@@ -31,16 +31,4 @@ public partial class AccountMappingDetail : BaseEntity
     /// </summary>
     [JsonProperty("bank_account_number")]
     public string BankAccountNumber { get; set; }
-
-    /// <summary>
-    /// create
-    /// </summary>
-    [JsonProperty("created_on_utc")]
-    public DateTime? CreatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    [JsonProperty("updated_on_utc")]
-    public DateTime? UpdatedOnUtc { get; set; }
 }

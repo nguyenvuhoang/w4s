@@ -1,6 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Protobuf_ProtoRoot>Protos</Protobuf_ProtoRoot>
@@ -10,8 +9,8 @@
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Logging\O24OpenAPI.Logging.csproj" />
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Core\O24OpenAPI.Core.csproj" />
     <ProjectReference Include="..\O24OpenAPI.APIContracts\O24OpenAPI.APIContracts.csproj" />
-    <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
-    <PackageReference Include="LinKit.Core" Version="2.1.5" />
+    <PackageReference Include="Grpc.AspNetCore" />
+    <PackageReference Include="LinKit.Core" />
   </ItemGroup>
   <ItemGroup>
     <Protobuf Include="Protos\Common\common.proto" GrpcServices="None" ProtoRoot="Protos" />
@@ -22,7 +21,6 @@
     <Protobuf Include="Protos\CTH\cth.proto" GrpcServices="Both" ProtoRoot="Protos" />
     <Protobuf Include="Protos\DTS\dts.proto" GrpcServices="Both" ProtoRoot="Protos" />
     <Protobuf Include="Protos\NCH\nch.proto" GrpcServices="Both" ProtoRoot="Protos" />
-    <Protobuf Include="Protos\TEL\tel.proto" GrpcServices="Both" ProtoRoot="Protos" />
     <Protobuf Include="Protos\RPT\rpt.proto" GrpcServices="Both" ProtoRoot="Protos" />
     <Protobuf Include="Protos\DWH\dwh.proto" GrpcServices="Both" ProtoRoot="Protos" />
     <Protobuf Include="Protos\LOG\log.proto" GrpcServices="Both" ProtoRoot="Protos" />

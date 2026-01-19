@@ -42,5 +42,5 @@ public interface ITypeFinder
     /// </summary>
     /// <param name="entityName">The entity name</param>
     /// <returns>The type</returns>
-    Type FindEntityTypeByName(string entityName);
+    Type? FindEntityTypeByName(string entityName);
 }

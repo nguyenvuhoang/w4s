@@ -27,10 +27,10 @@ public class GrpcExecutor
             using AsyncServiceScope scope = serviceProvider.CreateAsyncScope();
             AsyncScope.Scope = scope;
             Metadata header = context.RequestHeaders;
-            string stringWorkContext = header
+            var stringWorkContext = header
                 .FirstOrDefault(x => x.Key.EndsWithOrdinalIgnoreCase("work_context"))
                 ?.Value;
-            if (stringWorkContext.HasValue())
+            if (!string.IsNullOrWhiteSpace(stringWorkContext))
             {
                 WorkContextTemplate workContext =
                     stringWorkContext.ToObject<WorkContextTemplate>()
@@ -38,9 +38,9 @@ public class GrpcExecutor
                         nameof(stringWorkContext),
                         "Cannot parse work context from request headers."
                     );
-                EngineContext.Current.Resolve<WorkContext>().SetWorkContext(workContext);
+                EngineContext.Current.ResolveRequired<WorkContext>().SetWorkContext(workContext);
             }
-            object result = await operation();
+            var result = await operation();
             //if (result is null)
             //{
             //    throw new Exception("Notfound");

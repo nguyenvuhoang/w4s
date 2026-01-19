@@ -11,7 +11,6 @@ public partial class MediaStaging : BaseEntity
     public long? FileSize { get; set; }
     public string? FileHash { get; set; }
     public string Status { get; set; } = "PENDING"; // PENDING, LINKED, EXPIRED
-    public DateTime CreatedOnUtc { get; set; } = DateTime.UtcNow;
     public DateTime? ExpiredOnUtc { get; set; }
     public string? CreatedBy { get; set; }
 }

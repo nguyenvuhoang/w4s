@@ -10,8 +10,8 @@ public class AskCommand : BaseTransactionModel, ICommand<AskResponse>
 {
     public string TenantId { get; set; } = default!;
     public string Question { get; set; } = default!;
-    public string? DocType { get; set; }
-    public string? LanguageFilter { get; set; }
+    public string DocType { get; set; }
+    public string LanguageFilter { get; set; }
 
     public int TopK { get; set; } = 5;
     public float MinScore { get; set; } = 0.70f;
@@ -21,7 +21,7 @@ public class AskCommand : BaseTransactionModel, ICommand<AskResponse>
 
 public sealed record AskResponse(string Answer, IReadOnlyList<RagCitation> Citations);
 
-public sealed record RagCitation(string PointId, float Score, string? DocId, string? Title);
+public sealed record RagCitation(string PointId, float Score, string DocId, string Title);
 
 [CqrsHandler]
 public sealed class AskCommandHandler(QdrantClient qdrant)

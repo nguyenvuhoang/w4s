@@ -3,7 +3,7 @@
 public class RotateSecretRequestModel : BaseTransactionModel
 {
     public int Id { get; set; }
-    public string? ClientId { get; set; } = string.Empty;
-    public string? ClientSecretDescription { get; set; }
+    public string ClientId { get; set; } = string.Empty;
+    public string ClientSecretDescription { get; set; }
     public DateTime? ClientSecretExpiresOnUtc { get; set; }
 }

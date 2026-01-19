@@ -12,24 +12,19 @@ namespace O24OpenAPI.Core.Infrastructure;
 /// <seealso cref="PhysicalFileProvider"/>
 /// <seealso cref="IO24OpenAPIFileProvider"/>
 /// <seealso cref="IFileProvider"/>
-public class O24OpenAPIFileProvider : PhysicalFileProvider, IO24OpenAPIFileProvider, IFileProvider
+/// <remarks>
+/// Initializes a new instance of the <see cref="O24OpenAPIFileProvider"/> class
+/// </remarks>
+/// <param name="webHostEnvironment">The web host environment</param>
+public class O24OpenAPIFileProvider(IWebHostEnvironment webHostEnvironment)
+    : PhysicalFileProvider(
+        File.Exists(webHostEnvironment.ContentRootPath)
+            ? Path.GetDirectoryName(webHostEnvironment.ContentRootPath)!
+            : webHostEnvironment.ContentRootPath
+    ),
+        IO24OpenAPIFileProvider,
+        IFileProvider
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="O24OpenAPIFileProvider"/> class
-    /// </summary>
-    /// <param name="webHostEnvironment">The web host environment</param>
-    public O24OpenAPIFileProvider(IWebHostEnvironment webHostEnvironment)
-        : base(
-            File.Exists(webHostEnvironment.ContentRootPath)
-                ? Path.GetDirectoryName(webHostEnvironment.ContentRootPath)
-                : webHostEnvironment.ContentRootPath
-        )
-    {
-        this.WebRootPath = File.Exists(webHostEnvironment.WebRootPath)
-            ? Path.GetDirectoryName(webHostEnvironment.WebRootPath)
-            : webHostEnvironment.WebRootPath;
-    }
-
     /// <summary>
     /// Deletes the directory recursive using the specified path
     /// </summary>
@@ -57,7 +52,7 @@ public class O24OpenAPIFileProvider : PhysicalFileProvider, IO24OpenAPIFileProvi
     /// <returns>The bool</returns>
     protected static bool IsUncPath(string path)
     {
-        Uri result;
+        Uri? result;
         return Uri.TryCreate(path, UriKind.Absolute, out result) && result.IsUnc;
     }
 
@@ -174,7 +169,10 @@ public class O24OpenAPIFileProvider : PhysicalFileProvider, IO24OpenAPIFileProvi
     /// <summary>
     /// Gets the value of the web root path
     /// </summary>
-    protected string WebRootPath { get; }
+    protected string WebRootPath { get; } =
+        File.Exists(webHostEnvironment.WebRootPath)
+            ? Path.GetDirectoryName(webHostEnvironment.WebRootPath)!
+            : webHostEnvironment.WebRootPath;
 
     /// <summary>
     /// Describes whether this instance directory exists

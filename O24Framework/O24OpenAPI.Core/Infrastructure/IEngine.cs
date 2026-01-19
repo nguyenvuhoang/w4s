@@ -13,12 +13,12 @@ public interface IEngine
     void ConfigureRequestPipeline(IApplicationBuilder application);
     T? Resolve<T>(IServiceScope? scope = null);
     object? Resolve(Type type, IServiceScope? scope = null);
-    IEnumerable<T> ResolveAll<T>();
-    object ResolveUnregistered(Type type);
-    object ResolveInterfaceUnregistered(Type type);
+    IEnumerable<T>? ResolveAll<T>();
+    object? ResolveUnregistered(Type type);
+    object? ResolveInterfaceUnregistered(Type type);
     IServiceScope? CreateScope();
-    T Resolve<T>(object keyed, IServiceScope? scope = null);
-    object ResolveRequired(Type type, object keyed, IServiceScope? scope = null);
+    T? Resolve<T>(object keyed, IServiceScope? scope = null);
+    object? ResolveRequired(Type type, object keyed, IServiceScope? scope = null);
     T ResolveRequired<T>(object? keyed = null, IServiceScope? scope = null);
     object ResolveTypeInstance(Type type);
     IServiceScope CreateQueueScope(WorkContext workContext);

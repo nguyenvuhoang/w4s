@@ -29,7 +29,7 @@ public class WorkContext
         ExecutionId = workContext.ExecutionId;
     }
 
-    public void SetWorkContext(WorkContextTemplate workContext)
+    public void SetWorkContext(WorkContextTemplate? workContext)
     {
         if (workContext == null)
         {

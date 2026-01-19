@@ -1,10 +1,10 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 
 namespace O24OpenAPI.Generator;
 
@@ -52,7 +52,9 @@ public class LearnApiSourceGenerator : IIncrementalGenerator
         if (learnApiAttribute is null)
             return null;
 
-        string? learnApiId = learnApiAttribute.ConstructorArguments.FirstOrDefault().Value?.ToString();
+        string? learnApiId = learnApiAttribute
+            .ConstructorArguments.FirstOrDefault()
+            .Value?.ToString();
         if (string.IsNullOrEmpty(learnApiId))
             return null;
 
@@ -68,7 +70,7 @@ public class LearnApiSourceGenerator : IIncrementalGenerator
         bool isCommand = ImplementsInterface(requestType, "ICommand");
         bool isQuery = ImplementsInterface(requestType, "IQuery");
 
-        return new MethodInfo(learnApiId, requestTypeFullName, isCommand, isQuery);
+        return new MethodInfo(learnApiId!, requestTypeFullName, isCommand, isQuery);
     }
 
     private static bool ImplementsInterface(ITypeSymbol typeSymbol, string interfaceName)

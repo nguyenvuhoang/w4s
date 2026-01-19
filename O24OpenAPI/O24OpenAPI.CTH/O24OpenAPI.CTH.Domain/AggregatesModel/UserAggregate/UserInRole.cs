@@ -24,14 +24,4 @@ public partial class UserInRole : BaseEntity
     /// </summary>
     [JsonProperty("is_main")]
     public string? IsMain { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    public DateTime? UpdatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    public DateTime? CreatedOnUtc { get; set; }
 }

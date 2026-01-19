@@ -24,14 +24,4 @@ public partial class UserRightChannel : BaseEntity
     /// /// Gets or sets the value of the invoke
     /// </summary>
     public bool Invoke { get; set; }
-
-    /// <summary>
-    /// Gets or sets the value of the updated on utc
-    /// </summary>
-    public DateTime? UpdatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Gets or sets the value of the created on utc
-    /// </summary>
-    public DateTime? CreatedOnUtc { get; set; }
 }

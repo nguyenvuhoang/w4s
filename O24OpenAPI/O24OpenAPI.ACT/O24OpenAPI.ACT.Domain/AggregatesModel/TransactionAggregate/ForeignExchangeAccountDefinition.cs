@@ -45,16 +45,4 @@ public partial class ForeignExchangeAccountDefinition : BaseEntity
     /// </summary>
     [JsonProperty("account_number")]
     public string AccountNumber { get; set; }
-
-    /// <summary>
-    /// create
-    /// </summary>
-    [JsonProperty("created_on_utc")]
-    public DateTime? CreatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    [JsonProperty("updated_on_utc")]
-    public DateTime? UpdatedOnUtc { get; set; }
 }

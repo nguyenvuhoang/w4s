@@ -6,6 +6,7 @@ using O24OpenAPI.Data;
 
 namespace O24OpenAPI.CTH.Infrastructure.Repositories;
 
+using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Data.System.Linq;
 
 [RegisterService(Lifetime.Scoped)]
@@ -16,8 +17,6 @@ public class TransactionDefinitionRepository(
     : EntityRepository<TransactionDefinition>(dataProvider, staticCacheManager),
         ITransactionDefinitionRepository
 {
-    private static readonly StringComparison ICIC = StringComparison.InvariantCultureIgnoreCase;
-
     public async Task<List<TransactionDefinition>> GetAllAsync()
     {
         return await Table.ToListAsync();
@@ -36,19 +35,19 @@ public class TransactionDefinitionRepository(
         model.SearchText ??= string.Empty;
 
         var query = Table.Where(c =>
-            c.TransactionCode.Contains(model.SearchText, ICIC)
-            || c.WorkflowId.Contains(model.SearchText, ICIC)
-            || c.TransactionName.Contains(model.SearchText, ICIC)
-            || c.Description.Contains(model.SearchText, ICIC)
-            || c.TransactionType.Contains(model.SearchText, ICIC)
-            || c.ServiceId.Contains(model.SearchText, ICIC)
-            || c.MessageAccount.Contains(model.SearchText, ICIC)
-            || c.MessageAmount.Contains(model.SearchText, ICIC)
-            || c.MessageCurrency.Contains(model.SearchText, ICIC)
-            || c.Voucher.Contains(model.SearchText, ICIC)
-            || c.ApplicationCode.Contains(model.SearchText, ICIC)
-            || c.TransactionModel.Contains(model.SearchText, ICIC)
-            || c.Channel.Contains(model.SearchText, ICIC)
+            c.TransactionCode.ContainsInvariantCultureIgnoreCase(model.SearchText)
+            || c.WorkflowId.ContainsInvariantCultureIgnoreCase(model.SearchText)
+            || c.TransactionName.ContainsInvariantCultureIgnoreCase(model.SearchText)
+            || c.Description.ContainsInvariantCultureIgnoreCase(model.SearchText)
+            || c.TransactionType.ContainsInvariantCultureIgnoreCase(model.SearchText)
+            || c.ServiceId.ContainsInvariantCultureIgnoreCase(model.SearchText)
+            || c.MessageAccount.ContainsInvariantCultureIgnoreCase(model.SearchText)
+            || c.MessageAmount.ContainsInvariantCultureIgnoreCase(model.SearchText)
+            || c.MessageCurrency.ContainsInvariantCultureIgnoreCase(model.SearchText)
+            || c.Voucher.ContainsInvariantCultureIgnoreCase(model.SearchText)
+            || c.ApplicationCode.ContainsInvariantCultureIgnoreCase(model.SearchText)
+            || c.TransactionModel.ContainsInvariantCultureIgnoreCase(model.SearchText)
+            || c.Channel.ContainsInvariantCultureIgnoreCase(model.SearchText)
         );
 
         return await query.ToPagedList(model.PageIndex, model.PageSize);

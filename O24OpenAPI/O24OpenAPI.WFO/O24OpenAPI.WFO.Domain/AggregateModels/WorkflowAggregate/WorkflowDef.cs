@@ -31,10 +31,4 @@ public partial class WorkflowDef : BaseEntity
 
     [JsonProperty("workflow_event")]
     public string? WorkflowEvent { get; set; }
-
-    [JsonProperty("created_on_utc")]
-    public DateTime? CreatedOnUtc { get; set; }
-
-    [JsonProperty("updated_on_utc")]
-    public DateTime? UpdatedOnUtc { get; set; }
 }

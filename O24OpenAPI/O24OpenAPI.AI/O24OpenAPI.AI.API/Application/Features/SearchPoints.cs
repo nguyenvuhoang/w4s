@@ -12,8 +12,8 @@ public class SearchPointsCommand : BaseTransactionModel, ICommand<SearchPointsRe
     public string QueryText { get; set; } = default!;
     public string Collection { get; set; } = "o24_static_knowledge_v1";
     public int TopK { get; set; } = 5;
-    public string? DocType { get; set; }
-    public new string? Language { get; set; } = "en";
+    public string DocType { get; set; }
+    public new string Language { get; set; } = "en";
     public bool UseNamedVector { get; set; } = false;
     public string VectorName { get; set; } = "text";
     public int VectorSize { get; set; } = 1536;
@@ -24,9 +24,9 @@ public sealed record SearchPointsResponse(IReadOnlyList<SearchHit> Hits);
 public sealed record SearchHit(
     string PointId,
     float Score,
-    string? DocId,
-    string? Title,
-    string? Content
+    string DocId,
+    string Title,
+    string Content
 );
 
 [CqrsHandler]

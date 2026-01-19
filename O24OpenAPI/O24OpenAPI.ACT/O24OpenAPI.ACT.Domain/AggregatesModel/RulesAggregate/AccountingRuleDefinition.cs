@@ -141,14 +141,4 @@ public partial class AccountingRuleDefinition : BaseEntity
     /// defacno
     /// </summary>
     public string? DefAccountNumber { get; set; }
-
-    /// <summary>
-    /// create
-    /// </summary>
-    public DateTime? CreatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    public DateTime? UpdatedOnUtc { get; set; }
 }

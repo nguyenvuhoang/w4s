@@ -162,14 +162,4 @@ public partial class Calendar : BaseEntity
     /// </summary>
     [JsonProperty("currency_code")]
     public string CurrencyCode { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    public DateTime? UpdatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    public DateTime? CreatedOnUtc { get; set; }
 }

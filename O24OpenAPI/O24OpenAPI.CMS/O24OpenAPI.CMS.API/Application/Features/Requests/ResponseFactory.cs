@@ -5,9 +5,9 @@ namespace O24OpenAPI.CMS.API.Application.Features.Requests;
 public static class ResponseFactory
 {
     public static ResponseModel Success(
-        object? data = null,
+        object data = null,
         string message = "Success",
-        string? executionId = null
+        string executionId = null
     )
     {
         return new ResponseModel
@@ -23,8 +23,8 @@ public static class ResponseFactory
     public static ResponseModel Error(
         string message,
         string code = "failed",
-        List<ErrorInfoModel>? errors = null,
-        string? executionId = null
+        List<ErrorInfoModel> errors = null,
+        string executionId = null
     )
     {
         return new ResponseModel
@@ -37,7 +37,7 @@ public static class ResponseFactory
         };
     }
 
-    public static ResponseModel Error(List<ErrorInfoModel> errors, string? executionId = null)
+    public static ResponseModel Error(List<ErrorInfoModel> errors, string executionId = null)
     {
         return new ResponseModel
         {
@@ -49,7 +49,7 @@ public static class ResponseFactory
         };
     }
 
-    public static ResponseModel Error(Exception exception, string? executionId = null)
+    public static ResponseModel Error(Exception exception, string executionId = null)
     {
         return new ResponseModel
         {

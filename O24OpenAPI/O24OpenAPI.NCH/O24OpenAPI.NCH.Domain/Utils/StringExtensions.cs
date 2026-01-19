@@ -24,33 +24,32 @@ public static partial class StringExtensions
             if (_defaultLanguage == null)
             {
                 var nchSetting = EngineContext.Current.Resolve<O24NCHSetting>();
-                _defaultLanguage = nchSetting.DefaultLanguage;
+                _defaultLanguage = nchSetting?.DefaultLanguage ?? "en";
             }
             return _defaultLanguage;
         }
     }
 
-    public static string GetLangValue(this string input, string lang = null)
+    public static string GetLangValue(this string input, string? lang = null)
     {
         if (string.IsNullOrEmpty(lang))
         {
             lang = "en";
         }
-
-        if (input.TryParse(out JObject ob))
+        var ob = JObject.Parse(input);
+        if(ob is not null)
         {
             var langValue = ob[lang];
-            if (langValue.IsEmptyOrNull())
+            if (langValue?.IsEmptyOrNull() == true)
             {
                 langValue = ob[DefaultLanguage];
-                if (langValue.IsEmptyOrNull())
+                if (langValue?.IsEmptyOrNull() == true)
                 {
                     return string.Empty;
                 }
             }
-            return langValue.ToString();
+            return langValue!.ToString();
         }
-
         return string.Empty;
     }
 
@@ -58,7 +57,7 @@ public static partial class StringExtensions
         this string input,
         Dictionary<string, object> parameters,
         string language = "en",
-        IFormatProvider formatProvider = null
+        IFormatProvider? formatProvider = null
     )
     {
         if (string.IsNullOrWhiteSpace(input))

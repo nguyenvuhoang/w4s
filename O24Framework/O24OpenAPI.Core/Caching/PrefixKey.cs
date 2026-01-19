@@ -19,6 +19,6 @@ public class PrefixKey
     /// <param name="prefix">The prefix</param>
     public PrefixKey(string prefix)
     {
-        this.Key = Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID + "." + prefix;
+        this.Key = Singleton<O24OpenAPIConfiguration>.Instance?.YourServiceID + "." + prefix;
     }
 }

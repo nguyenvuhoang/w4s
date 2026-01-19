@@ -7,7 +7,7 @@ namespace O24OpenAPI.AI.API.Application.Features;
 
 public class CreateSampleCommand : BaseTransactionModel, ICommand<CreateSampleResponse>
 {
-    public string? SampleData { get; set; }
+    public string SampleData { get; set; }
 }
 
 public record CreateSampleResponse();

@@ -5,7 +5,7 @@ package dwh;
 // C# namespace khi generate
 option csharp_namespace = "O24OpenAPI.Grpc.DWH";
 
-import "Common/common.proto"; 
 
-service DWHGrpcService {
+service DWHGrpcService 
+{
 }

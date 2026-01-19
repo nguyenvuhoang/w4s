@@ -20,7 +20,7 @@ public partial class APIService : BaseEntity
     /// <summary>
     /// Gets or sets the Description
     /// </summary>
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     /// <summary>
     /// Gets or sets the ServiceType
@@ -35,17 +35,17 @@ public partial class APIService : BaseEntity
     /// <summary>
     /// Gets or sets the OwnerTeam
     /// </summary>
-    public string OwnerTeam { get; set; }
+    public string? OwnerTeam { get; set; }
 
     /// <summary>
     /// Gets or sets the ContactEmail
     /// </summary>
-    public string ContactEmail { get; set; }
+    public string? ContactEmail { get; set; }
 
     /// <summary>
     /// Gets or sets the Tags
     /// </summary>
-    public string Tags { get; set; }
+    public string? Tags { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether IsActive

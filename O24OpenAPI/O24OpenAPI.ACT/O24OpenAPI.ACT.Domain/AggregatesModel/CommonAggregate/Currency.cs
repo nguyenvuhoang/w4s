@@ -69,14 +69,4 @@ public partial class Currency : BaseEntity
     /// </summary>
     [JsonProperty("display_order")]
     public int? DisplayOrder { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    public DateTime? UpdatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    public DateTime? CreatedOnUtc { get; set; }
 }

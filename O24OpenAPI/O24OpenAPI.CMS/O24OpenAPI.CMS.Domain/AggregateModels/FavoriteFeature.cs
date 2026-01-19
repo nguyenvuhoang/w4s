@@ -14,14 +14,4 @@ public partial class FavoriteFeature : BaseEntity
     public string? CommandId { get; set; }
 
     public string? Description { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    public DateTime? CreatedOnUtc { get; set; }
-
-    /// <summary>
-    /// Last update date
-    /// </summary>
-    public DateTime? UpdatedOnUtc { get; set; }
 }

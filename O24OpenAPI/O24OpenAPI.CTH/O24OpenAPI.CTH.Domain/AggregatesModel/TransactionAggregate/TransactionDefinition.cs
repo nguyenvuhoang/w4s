@@ -21,6 +21,4 @@ public partial class TransactionDefinition : BaseEntity
     public string? MessageCurrency { get; set; }
     public string? TransactionModel { get; set; }
     public string? Channel { get; set; }
-    public DateTime? UpdatedOnUtc { get; set; }
-    public DateTime? CreatedOnUtc { get; set; }
 }

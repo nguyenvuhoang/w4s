@@ -1,9 +1,9 @@
-﻿using MimeKit;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using MimeKit;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace O24OpenAPI.NCH.API.Application.Utils;
 
@@ -16,7 +16,6 @@ public class Utility
         byte[] hash = sha256.ComputeHash(bytes);
         return Convert.ToBase64String(hash);
     }
-
 
     public static string? ReplaceData(string para, Dictionary<string, object>? data)
     {
@@ -39,7 +38,7 @@ public class Utility
                     {
                         para = para.Replace(
                             match.Groups[0].Value,
-                            value.SelectToken(text).ToString()
+                            value.SelectToken(text)?.ToString()
                         );
                     }
                 }
@@ -61,10 +60,10 @@ public class Utility
     }
 
     public static MimePart ConvertBase64ToMimeEntity(
-           string base64String,
-           string contentType,
-           string contentId
-       )
+        string base64String,
+        string contentType,
+        string contentId
+    )
     {
         byte[] fileBytes = Convert.FromBase64String(base64String);
         MemoryStream memoryStream = new(fileBytes);
@@ -81,8 +80,10 @@ public class Utility
 
     public static string FormatAmount(decimal amount, string currencyCode)
     {
-        if (string.Equals(currencyCode, "LAK", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(currencyCode, "VND", StringComparison.OrdinalIgnoreCase))
+        if (
+            string.Equals(currencyCode, "LAK", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(currencyCode, "VND", StringComparison.OrdinalIgnoreCase)
+        )
         {
             return $"{amount:N0} {currencyCode}";
         }
@@ -90,14 +91,17 @@ public class Utility
         return $"{amount:N2} {currencyCode}";
     }
 
-    public static string ReplaceTokens(string template, object data)
+    public static string ReplaceTokens(string template, object? data)
     {
         if (data is string s)
         {
             data = JsonConvert.DeserializeObject<Dictionary<string, object>>(s);
         }
 
-        var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(data)) ?? [];
+        var dict =
+            JsonConvert.DeserializeObject<Dictionary<string, object>>(
+                JsonConvert.SerializeObject(data)
+            ) ?? [];
         foreach (var kv in dict)
         {
             template = template.Replace($"{{{kv.Key}}}", kv.Value?.ToString() ?? "");

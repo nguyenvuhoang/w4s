@@ -250,7 +250,7 @@ public static class StringExtensions
         return str.StartsWith(value, StringComparison.Ordinal);
     }
 
-    public static bool StartsWithOrdinalIgnoreCase(this string str, string value)
+    public static bool StartsWithOrdinalIgnoreCase(this string? str, string value)
     {
         if (str == null)
         {
@@ -553,7 +553,7 @@ public static class StringExtensions
         return str.Contains(value, StringComparison.InvariantCulture);
     }
 
-    public static bool ContainsInvariantCultureIgnoreCase(this string str, string value)
+    public static bool ContainsInvariantCultureIgnoreCase(this string? str, string value)
     {
         if (str == null)
         {

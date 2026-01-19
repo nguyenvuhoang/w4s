@@ -7,16 +7,16 @@ namespace O24OpenAPI.WFO.Domain.AggregateModels.WorkflowAggregate;
 public partial class WorkflowStep : BaseEntity
 {
     [JsonProperty("workflow_id")]
-    public string? WorkflowId { get; set; }
+    public string WorkflowId { get; set; } = default!;
 
     [JsonProperty("step_order")]
     public int StepOrder { get; set; }
 
     [JsonProperty("step_code")]
-    public string? StepCode { get; set; }
+    public string StepCode { get; set; } = default!;
 
     [JsonProperty("service_id")]
-    public string? ServiceId { get; set; }
+    public string ServiceId { get; set; } = default!;
 
     [JsonProperty("status")]
     public bool Status { get; set; } = true;

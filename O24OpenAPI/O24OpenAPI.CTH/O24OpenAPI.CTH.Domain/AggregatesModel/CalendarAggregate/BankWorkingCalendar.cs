@@ -53,7 +53,4 @@ public partial class BankWorkingCalendar : BaseEntity
     public bool Status { get; set; } = true;
 
     public string? Notes { get; set; }
-
-    public DateTime CreatedOnUtc { get; set; }
-    public DateTime UpdatedOnUtc { get; set; }
 }

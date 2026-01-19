@@ -49,13 +49,5 @@ public partial class UserAuthen : BaseEntity
     /// Gets or sets the value of the Phone
     /// </summary>
     public string? Phone { get; set; }
-
-    /// <summary>
-    /// Gets or sets the value of the created on utc
-    /// </summary>
-    public DateTime? CreatedOnUtc { get; set; }
-
-    public DateTime? UpdatedOnUtc { get; set; }
-
     public bool? IsActive { get; set; }
 }
