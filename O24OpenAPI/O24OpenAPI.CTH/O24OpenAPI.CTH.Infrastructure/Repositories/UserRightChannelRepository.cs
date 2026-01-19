@@ -48,4 +48,9 @@ public class UserRightChannelRepository(
         }
         return result;
     }
+
+    public Task<List<UserRightChannel>> GetListByRoleIdAsync(int roleId)
+    {
+        return Table.Where(x => x.RoleId == roleId && x.Invoke).ToListAsync();
+    }
 }

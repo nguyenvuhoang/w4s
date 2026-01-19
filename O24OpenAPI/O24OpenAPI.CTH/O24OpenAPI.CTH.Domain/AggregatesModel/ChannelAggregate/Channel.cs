@@ -19,6 +19,8 @@ public partial class Channel : BaseEntity
 
     /// <summary>Múi giờ của kênh (IANA: "Asia/Ho_Chi_Minh").</summary>
     public string TimeZoneId { get; set; } = "Asia/Ho_Chi_Minh";
+    public bool? IsMaster { get; set; }
+    public string AppICon { get; set; } = string.Empty;
 
     public virtual ICollection<ChannelSchedule> Schedules { get; set; } = [];
     public virtual ICollection<ChannelOverride> Overrides { get; set; } = [];

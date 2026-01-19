@@ -1,11 +1,9 @@
 ﻿using LinKit.Core.Cqrs;
 using LinqToDB;
-using Newtonsoft.Json;
 using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.CTH.API.Application.Models.Roles;
-using O24OpenAPI.CTH.API.Application.Models.UserCommandModels;
+using O24OpenAPI.CTH.Domain.AggregatesModel.ChannelAggregate;
 using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Models;
@@ -20,7 +18,6 @@ public class ApplicationInfoCommand
 public class ApplicationInfoResponseModel(
     string userCode,
     string avatar,
-    object userCommand,
     string fullName,
     string loginName,
     DateTime? lastLoginTime,
@@ -30,12 +27,12 @@ public class ApplicationInfoResponseModel(
     bool? isLogin,
     string userBanner,
     List<UserInRole> role,
-    bool? isFirstLogin
+    bool? isFirstLogin,
+    List<UserRoleChannelModel> roleChannel
 )
 {
     public string UserCode { get; set; } = userCode;
     public string Avatar { get; set; } = avatar;
-    public object UserCommand { get; set; } = userCommand;
     public string Name { get; set; } = fullName;
     public string LoginName { get; set; } = loginName;
     public bool? IsFirstLogin { get; set; } = isFirstLogin;
@@ -46,19 +43,27 @@ public class ApplicationInfoResponseModel(
     public List<UserInRole> Role { get; set; } = role;
     public string UserBanner { get; set; } = userBanner;
     public DateTime LastLoginTime { get; set; } = lastLoginTime ?? DateTime.MinValue;
+    public List<UserRoleChannelModel> RoleChannel { get; set; } = roleChannel;
+}
+public class UserRoleChannelModel
+{
+    public int Id { get; set; }
+    public string ChannelId { get; set; }
+    public string ChannelName { get; set; }
+    public int SortOrder { get; set; }
+    public string AppIcon { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
 }
 
 [CqrsHandler]
 public class ApplicationInfoHandler(
     IUserInRoleRepository userInRoleRepository,
-    IUserRightRepository userRightRepository,
-    IUserCommandRepository userCommandRepository,
-    IUserRoleRepository userRoleRepository,
-    IUserAgreementRepository userAgreementRepository,
     IUserAccountRepository userAccountService,
     IUserAvatarRepository userAvatarRepository,
     IUserAuthenRepository userAuthenRepository,
-    IUserBannerRepository userBannerRepository
+    IUserBannerRepository userBannerRepository,
+    IUserRightChannelRepository userRightChannelRepository,
+    IChannelRepository channelRepository
 ) : ICommandHandler<ApplicationInfoCommand, ApplicationInfoResponseModel>
 {
     [WorkflowStep(WorkflowStepCode.CTH.WF_STEP_CTH_APP_INFO)]
@@ -71,23 +76,41 @@ public class ApplicationInfoHandler(
             command.CurrentUserCode
         );
 
-        List<CommandHierarchyModel> allMenus = [];
-
+        var allRoleChannelLinks = new List<UserRightChannel>();
         foreach (UserInRole role in listRoleofUser)
         {
-            List<CommandHierarchyModel> menus = await GetMenuInfoFromRoleId(
-                role.RoleId,
-                command.ChannelId,
-                command.Language ?? "en"
-            );
-            allMenus.AddRange(menus);
+            var roleChannels = await userRightChannelRepository.GetListByRoleIdAsync(role.RoleId);
+            allRoleChannelLinks.AddRange(roleChannels);
         }
 
-        List<CommandHierarchyModel> uniqueMenus = [.. allMenus
-            .GroupBy(m => m.CommandId)
-            .Select(g => g.First())];
+        var channelIds = allRoleChannelLinks
+        .Select(x => x.ChannelId)
+        .Distinct()
+        .ToList();
 
-        var menuHierarchy = BuildMenuHierarchy(uniqueMenus, "0");
+        var channels = await channelRepository.GetByChannelIdsAsync(channelIds, cancellationToken);
+        var channelMap = channels.ToDictionary(
+            x => x.ChannelId,
+            x => x
+        );
+
+        var roleChannelModels = allRoleChannelLinks
+        .Where(rc => channelMap.ContainsKey(rc.ChannelId))
+        .Select(rc =>
+        {
+            var ch = channelMap[rc.ChannelId];
+
+            return new UserRoleChannelModel
+            {
+                Id = rc.Id,
+                ChannelName = ch.ChannelName ?? "",
+                ChannelId = rc.ChannelId,
+                SortOrder = ch.SortOrder,
+                AppIcon = ch.AppICon ?? "",
+                Description = ch.Description ?? ""
+            };
+        })
+        .ToList();
 
         UserAccount userAccount = await userAccountService.GetByUserCodeAsync(
             command.CurrentUserCode
@@ -110,11 +133,12 @@ public class ApplicationInfoHandler(
 
         UserAuthen userAuthen = await userAuthenRepository.GetByUserCodeAsync(userAccount.UserCode);
         string userBanner = await userBannerRepository.GetUserBannerAsync(userAccount.UserCode);
+
+
         ApplicationInfoResponseModel responsedata = new(
             userCode: command.CurrentUserCode,
             fullName: $"{userAccount.FirstName ?? ""} {userAccount.MiddleName ?? ""} {userAccount.LastName ?? ""}".Trim(),
             avatar: avatarUrl,
-            userCommand: menuHierarchy,
             loginName: userAccount.LoginName,
             lastLoginTime: userAccount.LastLoginTime,
             contractNumber: userAccount.ContractNumber,
@@ -123,123 +147,9 @@ public class ApplicationInfoHandler(
             isLogin: userAccount.IsLogin,
             role: listRoleofUser,
             isFirstLogin: userAccount.IsFirstLogin,
-            userBanner: userBanner ?? ""
+            userBanner: userBanner ?? "",
+            roleChannel: roleChannelModels
         );
         return responsedata;
-    }
-
-    private async Task<List<CommandHierarchyModel>> GetMenuInfoFromRoleId(
-        int roleId,
-        string applicationCode,
-        string lang
-    )
-    {
-        List<UserRight> userRights = await userRightRepository
-            .Table.Where(ur => ur.RoleId == roleId && ur.Invoke == 1)
-            .ToListAsync();
-
-        List<string> commandIds = userRights.Select(ur => ur.CommandId).Distinct().ToList();
-
-        List<UserCommand> userCommands = await userCommandRepository
-            .Table.Where(uc =>
-                commandIds.Contains(uc.CommandId)
-                && uc.ApplicationCode == applicationCode
-                && uc.Enabled
-            )
-            .OrderBy(uc => uc.DisplayOrder)
-            .ToListAsync();
-
-        UserRole userRole = await userRoleRepository
-            .Table.Where(r => r.RoleId == roleId)
-            .FirstOrDefaultAsync();
-
-        List<CommandHierarchyModel> result = (
-            from uc in userCommands
-            join ur in userRights on uc.CommandId equals ur.CommandId
-            select new CommandHierarchyModel
-            {
-                ParentId = uc.ParentId,
-                CommandId = uc.CommandId,
-                Label = TryGetLabelFromJson(uc.CommandNameLanguage, lang),
-                CommandType = uc.CommandType,
-                CommandUri = uc.CommandURI,
-                RoleId = roleId,
-                RoleName = userRole?.RoleName,
-                Invoke = ur.Invoke == 1,
-                Approve = ur.Approve == 1,
-                Icon = uc.GroupMenuIcon,
-                GroupMenuVisible = uc.GroupMenuVisible,
-                GroupMenuId = uc.GroupMenuId,
-                GroupMenuListAuthorizeForm = uc.GroupMenuListAuthorizeForm,
-            }
-        ).ToList();
-
-        foreach (CommandHierarchyModel item in result)
-        {
-            item.IsAgreement = await IsUserAgreement(item.CommandId);
-        }
-
-        return result;
-    }
-
-    private static string TryGetLabelFromJson(string json, string lang)
-    {
-        if (string.IsNullOrWhiteSpace(json))
-        {
-            return "";
-        }
-
-        try
-        {
-            Dictionary<string, string> dict = JsonConvert.DeserializeObject<
-                Dictionary<string, string>
-            >(json);
-            return dict.TryGetValue(lang, out string value) ? value : "";
-        }
-        catch
-        {
-            return "";
-        }
-    }
-
-    private async Task<bool> IsUserAgreement(string commandid)
-    {
-        UserAgreement isAgreement = await userAgreementRepository
-            .Table.Where(ua => ua.TransactionCode.Contains(commandid) && ua.IsActive)
-            .FirstOrDefaultAsync();
-        if (isAgreement != null)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    /// <summary>
-    /// Build menu hierarchy from flat list
-    /// </summary>
-    /// <param name="flatList"></param>
-    /// <param name="parentId"></param>
-    /// <returns></returns>
-    private static List<UserCommandResponseModel> BuildMenuHierarchy(List<CommandHierarchyModel> flatList, string parentId)
-    {
-        return [.. flatList
-                .Where(x => x.ParentId == parentId)
-                .Select(item => new UserCommandResponseModel
-                {
-                    ParentId = item.ParentId,
-                    CommandId = item.CommandId,
-                    Label = item.Label,
-                    CommandType = item.CommandType,
-                    Href = item.CommandUri,
-                    RoleId = item.RoleId,
-                    RoleName = item.RoleName,
-                    Invoke = item.Invoke ? "true" : "false",
-                    Approve = item.Approve ? "true" : "false",
-                    Icon = item.Icon,
-                    GroupMenuVisible = item.GroupMenuVisible,
-                    Prefix = item.GroupMenuId,
-                    GroupMenuListAuthorizeForm = item.GroupMenuListAuthorizeForm,
-                    Children = BuildMenuHierarchy(flatList, item.CommandId)
-                })];
     }
 }

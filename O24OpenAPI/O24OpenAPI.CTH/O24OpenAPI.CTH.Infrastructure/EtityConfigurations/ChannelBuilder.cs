@@ -33,6 +33,9 @@ public class ChannelBuilder : O24OpenAPIEntityBuilder<Channel>
             .AsBoolean()
             .NotNullable()
             .WithColumn(nameof(Channel.IsAlwaysOpen)).AsBoolean().NotNullable()
-            .WithColumn(nameof(Channel.TimeZoneId)).AsString(100).Nullable(); ;
+            .WithColumn(nameof(Channel.TimeZoneId)).AsString(100).Nullable()
+            .WithColumn(nameof(Channel.IsMaster)).AsBoolean().Nullable()
+            .WithColumn(nameof(Channel.AppICon)).AsString(500).Nullable()
+            ;
     }
 }

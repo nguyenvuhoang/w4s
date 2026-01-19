@@ -24,4 +24,20 @@ public class ChannelRepository(
     {
         return await Table.FirstOrDefaultAsync(c => c.ChannelId == channelId, ct);
     }
+
+    public async Task<List<Channel>> GetByChannelIdsAsync(IEnumerable<string> channelIds, CancellationToken cancellationToken = default)
+    {
+        var ids = channelIds
+       .Where(x => !string.IsNullOrWhiteSpace(x))
+       .Distinct()
+       .ToList();
+
+        if (ids.Count == 0)
+            return [];
+
+        return await Table
+            .Where(c => ids.Contains(c.ChannelId) && c.IsMaster == false)
+            .OrderBy(c => c.SortOrder)
+            .ToListAsync(cancellationToken);
+    }
 }
