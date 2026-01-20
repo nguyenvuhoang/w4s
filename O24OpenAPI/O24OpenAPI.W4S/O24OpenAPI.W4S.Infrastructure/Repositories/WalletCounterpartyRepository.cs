@@ -14,10 +14,10 @@ public class WalletCounterpartyRepository(
     : EntityRepository<WalletCounterparty>(dataProvider, staticCacheManager),
         IWalletCounterpartyRepository
 {
-    public async Task<WalletCounterparty> FindByPhoneOrEmailAsync(int walletId, string phone, string email)
+    public async Task<WalletCounterparty> FindByPhoneOrEmailAsync(string userCode, string phone, string email)
     {
         return await Table.Where(x =>
-            x.WalletId == walletId &&
+            x.UserCode == userCode &&
             (x.Phone == phone || x.Email == email))
             .FirstOrDefaultAsync();
     }

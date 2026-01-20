@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.W4S.API.Application.Models.Wallet
 {
-    public class WalletCounterpartyRequestModel
+    public class WalletCounterpartyRequestModel : BaseO24OpenAPIModel
     {
         public int? Id { get; set; }
         public string DisplayName { get; set; }

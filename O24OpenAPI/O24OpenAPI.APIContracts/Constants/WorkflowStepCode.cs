@@ -148,6 +148,9 @@ public static class WorkflowStepCode
         public const string WF_STEP_W4S_RETRIEVE_WALLET_EVENT = "WF_STEP_W4S_RETRIEVE_WALLET_EVENT";
         public const string WF_STEP_W4S_CREATE_WALLET_EVENT = "WF_STEP_W4S_CREATE_WALLET_EVENT";
         public const string WF_STEP_W4S_DELETE_WALLET_EVENT = "WF_STEP_W4S_DELETE_WALLET_EVENT";
+        public const string WF_STEP_W4S_RETRIEVE_WALLET_BALANCE = "WF_STEP_W4S_RETRIEVE_WALLET_BALANCE";
+        public const string WF_STEP_W4S_WALLET_INCOME_EXPENSE_SUMMARY = "WF_STEP_W4S_WALLET_INCOME_EXPENSE_SUMMARY";
+        public const string WF_STEP_W4S_WALLET_NET_INCOME = "WF_STEP_W4S_WALLET_NET_INCOME";
     }
     #endregion
 
@@ -155,6 +158,7 @@ public static class WorkflowStepCode
     public static class EXT
     {
         public const string WF_STEP_EXT_SEARCH_EXCHANGE_RATE = "WF_STEP_EXT_SEARCH_EXCHANGE_RATE";
+        public const string WF_STEP_EXT_RETRIEVE_TRANSFER_RATE = "WF_STEP_EXT_RETRIEVE_TRANSFER_RATE";
     }
     #endregion
 

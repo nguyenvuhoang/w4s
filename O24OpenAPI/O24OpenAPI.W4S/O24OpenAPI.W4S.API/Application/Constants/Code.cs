@@ -38,4 +38,9 @@ public partial class Code
     {
         public const string WALLET_OPENING = "WALLET_OPENING";
     }
+    public partial class EntryType
+    {
+        public const string DEBIT = "DEBIT";
+        public const string CREDIT = "CREDIT";
+    }
 }

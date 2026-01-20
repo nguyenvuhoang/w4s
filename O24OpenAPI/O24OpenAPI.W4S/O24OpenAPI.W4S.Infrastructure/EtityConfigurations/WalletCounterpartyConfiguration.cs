@@ -10,8 +10,8 @@ public class WalletCounterpartyConfiguration : O24OpenAPIEntityBuilder<WalletCou
     {
         table
             // ===== Scope =====
-            .WithColumn(nameof(WalletCounterparty.WalletId))
-                .AsInt32()
+            .WithColumn(nameof(WalletCounterparty.UserCode))
+                .AsString(100)
                 .NotNullable()
 
             // ===== Identity / Display =====

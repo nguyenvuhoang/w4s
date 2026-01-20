@@ -16,10 +16,7 @@
     <PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
   <Target Name="SetGitVersion" BeforeTargets="BeforeBuild">
-    <Exec
-      Command="git rev-list --count HEAD &gt; githeight.txt"
-      WorkingDirectory="$(MSBuildProjectDirectory)"
-    />
+    <Exec Command="git rev-list --count HEAD &gt; githeight.txt" WorkingDirectory="$(MSBuildProjectDirectory)" />
     <ReadLinesFromFile File="githeight.txt">
       <Output TaskParameter="Lines" PropertyName="GitHeight" />
     </ReadLinesFromFile>
@@ -28,6 +25,12 @@
       <FileVersion>$(VersionMajor).$(VersionMinor).$(GitHeight).0</FileVersion>
     </PropertyGroup>
   </Target>
+  <ItemGroup>
+    <Compile Remove="Application\Services\**" />
+    <Content Remove="Application\Services\**" />
+    <EmbeddedResource Remove="Application\Services\**" />
+    <None Remove="Application\Services\**" />
+  </ItemGroup>
   <ItemGroup>
     <None Remove="__jits_com_vn.pfx" />
   </ItemGroup>
@@ -45,16 +48,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Framework\O24OpenAPI.Framework.csproj" />
-    <ProjectReference
-      Include="..\..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj"
-      OutputItemType="Analyzer"
-      ReferenceOutputAssembly="false"
-    />
+    <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\O24OpenAPI.W4S.Domain\O24OpenAPI.W4S.Domain.csproj" />
     <ProjectReference Include="..\O24OpenAPI.W4S.Infrastructure\O24OpenAPI.W4S.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Application\Migrations\O24OpenAPIServiceMigrations\" />
-    <Folder Include="Application\Services\" />
   </ItemGroup>
 </Project>

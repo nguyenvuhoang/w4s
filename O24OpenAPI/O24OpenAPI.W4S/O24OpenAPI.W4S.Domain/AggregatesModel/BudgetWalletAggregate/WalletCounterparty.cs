@@ -7,7 +7,7 @@ namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate
         public WalletCounterparty() { }
 
         // ===== Scope =====
-        public int WalletId { get; private set; }
+        public string UserCode { get; private set; }
 
         // ===== Identity / Display =====
         public string DisplayName { get; private set; } = string.Empty;
@@ -34,7 +34,7 @@ namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate
         /// Factory create a counterparty used for "from/to" in transactions.
         /// </summary>
         public static WalletCounterparty Create(
-            int walletId,
+            string userCode,
             string displayName,
             string? phone = null,
             string? email = null,
@@ -45,8 +45,8 @@ namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate
             DateTime? nowUtc = null
         )
         {
-            if (walletId <= 0)
-                throw new ArgumentOutOfRangeException(nameof(walletId));
+            if (string.IsNullOrWhiteSpace(userCode))
+                throw new ArgumentOutOfRangeException(nameof(userCode));
 
             displayName = (displayName ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(displayName))
@@ -57,7 +57,7 @@ namespace O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate
 
             var entity = new WalletCounterparty
             {
-                WalletId = walletId,
+                UserCode = userCode,
                 DisplayName = displayName,
                 Phone = phone,
                 Email = email,

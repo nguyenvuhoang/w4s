@@ -4,8 +4,10 @@ using O24OpenAPI.Core;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.W4S.API.Application.Constants;
+using O24OpenAPI.W4S.API.Application.Helpers;
 using O24OpenAPI.W4S.API.Application.Models.Wallet;
 using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
+using O24OpenAPI.W4S.Domain.AggregatesModel.WalletMasterAggregate;
 using System.Security.Cryptography;
 
 namespace O24OpenAPI.W4S.API.Application.Features.WalletTransactions;
@@ -31,11 +33,13 @@ public class CreateWalletTransactionCommand
     public bool IsLoanForFund { get; set; } = false;
     public bool IsFunding { get; set; } = false;
     public decimal Fee { get; set; }
+    public string UserCode { get; set; }
 }
 
 [CqrsHandler]
 public class CreateWalletTransactionCommandHandler(
     IWalletTransactionRepository walletTransactionRepository,
+    IWalletStatementRepository walletStatementRepository,
     IWalletCounterpartyRepository counterpartyRepository
 ) : ICommandHandler<CreateWalletTransactionCommand, CreateWalletTransactionResponse>
 {
@@ -47,6 +51,30 @@ public class CreateWalletTransactionCommandHandler(
     {
         ValidateRequest(request);
 
+        //Declare
+        var userCode = request.UserCode;
+        var currencycode = request.Currency;
+        var amount = request.Amount;
+        var fee = request.Fee;
+        var walletId = request.WalletId.ToString();
+        var walletIdInt = request.WalletId;
+        var accountNumber = request.AccountNumber;
+        var transactiontype = request.Type;
+        var transactiondate = request.TransactionDate;
+        var recordedAt = request.RecordedAt;
+        var currentUserCode = request.CurrentUserCode;
+        var transactionDescription = request.TransactionDescription ?? string.Empty;
+        var categoryId = request.CategoryId.ToString();
+        var location = request.Location ?? string.Empty;
+        var eventid = request.EventId ?? string.Empty;
+        var image = request.Images.Count > 0 ? string.Join(",", request.Images) : null;
+        var isCalculateReport = request.IsCalculateReport.ToString();
+        var isLoanForFund = request.IsLoanForFund.ToString();
+        var isFunding = request.IsFunding.ToString();
+        var refid = string.IsNullOrWhiteSpace(request.RefId) ? Guid.NewGuid().ToString("N") : request.RefId;
+
+        var now = DateTime.UtcNow;
+
         string transactionId = GenerateTransactionId();
         List<int> counterpartyIds = [];
         foreach (var input in request.WithUsers)
@@ -56,13 +84,13 @@ public class CreateWalletTransactionCommandHandler(
             if (input.Id.HasValue)
             {
                 cp = await counterpartyRepository.GetById(input.Id.Value);
-                if (cp == null || cp.WalletId != request.WalletId)
+                if (cp == null || cp.UserCode != request.UserCode)
                     throw new O24OpenAPIException("Invalid counterparty");
             }
             else
             {
                 cp = await counterpartyRepository.FindByPhoneOrEmailAsync(
-                    request.WalletId,
+                    request.UserCode,
                     input.Phone,
                     input.Email
                 );
@@ -70,8 +98,8 @@ public class CreateWalletTransactionCommandHandler(
                 if (cp == null)
                 {
                     cp = WalletCounterparty.Create(
-                        request.WalletId,
-                        input.DisplayName!,
+                        request.UserCode,
+                        input.DisplayName,
                         input.Phone,
                         input.Email,
                         (WalletCounterpartyType)(input.CounterpartyType ?? 1),
@@ -88,14 +116,14 @@ public class CreateWalletTransactionCommandHandler(
         WalletTransaction entity = new()
         {
             TRANSACTIONID = transactionId,
-            TRANSACTIONCODE = request.Type,
-            TRANSACTIONDATE = request.TransactionDate,
-            TRANSACTIONWORKDATE = request.RecordedAt,
-            CCYID = request.Currency,
-            SOURCEID = request.AccountNumber,
-            SOURCETRANREF = request.WalletId.ToString(),
-            USERID = request.CurrentUserCode,
-            TRANDESC = request.TransactionDescription ?? string.Empty,
+            TRANSACTIONCODE = transactiontype,
+            TRANSACTIONDATE = transactiondate,
+            TRANSACTIONWORKDATE = recordedAt,
+            CCYID = currencycode,
+            SOURCEID = walletId,
+            SOURCETRANREF = accountNumber,
+            USERID = currentUserCode,
+            TRANDESC = transactionDescription,
 
             STATUS = Code.Status.NORMAL,
             APPRSTS = 0,
@@ -104,24 +132,64 @@ public class CreateWalletTransactionCommandHandler(
             ONLINE = true,
             DESTID = "WALLET",
 
-            CHAR01 = request.WalletId.ToString(),
-            CHAR02 = request.CategoryId.ToString(),
-            CHAR03 = request.Location,
-            CHAR04 = request.EventId,
-            CHAR05 = request.Images.Count > 0 ? string.Join(",", request.Images) : null,
-            CHAR06 = request.IsCalculateReport.ToString(),
-            CHAR07 = request.IsLoanForFund.ToString(),
-            CHAR08 = request.IsFunding.ToString(),
+            CHAR01 = walletId,
+            CHAR02 = categoryId,
+            CHAR03 = location,
+            CHAR04 = eventid,
+            CHAR05 = image,
+            CHAR06 = isCalculateReport,
+            CHAR07 = isLoanForFund,
+            CHAR08 = isFunding,
 
             LISTUSERAPP = counterpartyIds.Count > 0 ? string.Join(",", counterpartyIds) : null,
 
             NUM01 = request.Amount,
             NUM02 = request.Fee,
 
-            CreatedOnUtc = DateTime.UtcNow,
+            CreatedOnUtc = now,
+            TRANSACTIONNAME = WalletAccountTypeHelper.GetDisplayName(transactiontype)
         };
 
+        var direction = entity.TRANSACTIONCODE switch
+        {
+            "INCOME" => DrCr.D,
+            "EXPENSE" => DrCr.C,
+            "LOAN" => DrCr.D,      // nếu tracker có loan
+            _ => DrCr.D
+        };
+
+        var lastClosing = await walletStatementRepository.GetLastClosingBalanceAsync(
+            walletId: walletIdInt,
+            accountNumber: accountNumber,
+            currencyCode: currencycode,
+            beforeUtc: now,
+            cancellationToken
+        );
+
+        var opening = lastClosing ?? 0m;
+
+        var statements = new List<WalletStatement>
+        {
+            WalletStatement.Create(
+                walletId: walletIdInt,
+                accountNumber: accountNumber,
+                statementOnUtc: now,
+                drCr: direction,
+                amount: amount,
+                currencyCode: currencycode,
+                openingBalance: opening,
+                description: transactionDescription ?? $"{entity.TRANSACTIONCODE} wallet {walletId}",
+                referenceType: "WalletTransaction",
+                referenceId: transactionId,
+                externalRef: refid,
+                source: walletId    ,
+                transactionOnUtc: now
+            )
+        };
+
+        await walletStatementRepository.BulkInsert(statements);
         await walletTransactionRepository.InsertAsync(entity);
+
 
         return new CreateWalletTransactionResponse { TransactionId = entity.TRANSACTIONID };
     }

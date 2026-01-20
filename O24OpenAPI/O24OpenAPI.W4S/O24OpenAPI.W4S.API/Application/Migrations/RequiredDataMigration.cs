@@ -11,8 +11,8 @@ namespace O24OpenAPI.W4S.API.Application.Migrations;
 /// </summary>
 /// <seealso cref="AutoReversingMigration"/>
 [O24OpenAPIMigration(
-    "2026/01/16 10:58:01:0000000",
-    "AccountNumberIsNotDefined",
+    "2026/01/20 15:58:01:0000000",
+    "ClosingBalance",
     MigrationProcessType.Update
 )]
 [Environment(EnvironmentType.All)]
@@ -93,6 +93,43 @@ public class RequiredDataMigration() : BaseMigration
                         ResourceName = O24W4SResourceCode.Accounting.CurrencyIsNotDefined,
                         ResourceValue = "Mã tiền tệ {0} chưa được định nghĩa kế toán",
                     },
+                     new LocaleStringResource()
+                    {
+                        Language = "en",
+                        ResourceName = O24W4SResourceCode.Validation.ExchangeRateNotFound,
+                        ResourceValue = "The exchange rate for currency {0} was not found.",
+                    },
+                    new LocaleStringResource()
+                    {
+                        Language = "vi",
+                        ResourceName = O24W4SResourceCode.Validation.ExchangeRateNotFound,
+                        ResourceValue = "Không tìm thấy tỷ giá hối đoái.",
+                    },
+                       new LocaleStringResource()
+                    {
+                        Language = "en",
+                        ResourceName = O24W4SResourceCode.WalletStatement.OpeningBalance,
+                        ResourceValue = "The opening balance",
+                    },
+                    new LocaleStringResource()
+                    {
+                        Language = "vi",
+                        ResourceName = O24W4SResourceCode.WalletStatement.OpeningBalance,
+                        ResourceValue = "Số dư đầu kỳ",
+                    },
+                    new LocaleStringResource()
+                    {
+                        Language = "en",
+                        ResourceName = O24W4SResourceCode.WalletStatement.ClosingBalance,
+                        ResourceValue = "The closing balance",
+                    },
+                    new LocaleStringResource()
+                    {
+                        Language = "vi",
+                        ResourceName = O24W4SResourceCode.WalletStatement.ClosingBalance,
+                        ResourceValue = "Số dư cuối kỳ",
+                    },
+
                 ],
                 [nameof(LocaleStringResource.Language), nameof(LocaleStringResource.ResourceName)]
             )
