@@ -146,35 +146,37 @@ Mục tiêu:
 ## 📁 Project Structure
 
 ```text
-src/
-├─ O24OpenAPI.AI.API/                      # Presentation Layer
-│  ├─ Controllers/
-│  ├─ Middleware/
-│  ├─ Extensions/
-│  └─ Program.cs
-│
-├─ O24OpenAPI.AI.Application/              # Application Layer (CQRS)
-│  ├─ Abstractions/
-│  ├─ Common/
-│  └─ Modules/
-│
-├─ O24OpenAPI.AI.Domain/                   # Domain Layer
-│  ├─ Aggregates/
-│  ├─ Entities/
-│  ├─ ValueObjects/
-│  ├─ Events/
-│  └─ Specifications/
-│
-├─ O24OpenAPI.AI.Infrastructure/           # Infrastructure Layer
-│  ├─ Persistence/
-│  ├─ Clients/
-│  ├─ Messaging/
-│  ├─ Caching/
-│  └─ DependencyInjection.cs
-│
-└─ O24OpenAPI.BuildingBlocks/              # Shared Libraries
-   ├─ Web.Framework/
-   ├─ Core/
-   ├─ Data/
-   ├─ Observability/
-   └─ Security/
+O24OpenAPI.TenService/
+├── O24OpenAPI.TenService.API/
+│   ├── Application/
+│   │   ├── BackgroundJobs/
+│   │   │   └── HealthCheckJob.cs
+│   │   ├── Features/
+│   │   │   └── CreateTenService.cs
+│   │   ├── Migrations/
+│   │   │   └── DataTenServiceMigration.cs
+│   │   └── ApplicationExtensions.cs
+│   ├── Controllers/
+│   ├── Properties/
+│   │   └── launchSettings.json
+│   ├── StaticConfig/
+│   │   └── BackgroundJobs.json
+│   ├── Program.cs
+│   ├── appsettings.json
+│   └── appsettings.Development.json
+├── O24OpenAPI.TenService.Domain/
+│   └── AggregatesModel/
+│       └── TenServiceAggregate/
+│           ├── TenServiceDomain.cs
+│           └── ITenServiceRepository.cs
+└── O24OpenAPI.TenService.Infrastructure/
+    ├── Configurations/
+    │   └── TenServiceConfig.cs
+    ├── EntityConfigurations/
+    │   └── TenServiceConfiguration.cs
+    ├── Migrations/
+    │   └── EntityMigration.cs
+    ├── Persistances/
+    ├── Repositories/
+    │   └── TenServiceRepository.cs
+    └── InfrastructureExtensions.cs
