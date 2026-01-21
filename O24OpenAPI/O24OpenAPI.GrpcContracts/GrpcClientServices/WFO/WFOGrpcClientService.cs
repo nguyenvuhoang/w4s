@@ -102,25 +102,6 @@ public class WFOGrpcClientService : BaseGrpcClientService, IWFOGrpcClientService
         return result;
     }
 
-    public async Task SayHelloAsync(string name)
-    {
-        var streamClient = _grpcClientFactory.GetServerStreamAsync<
-            WFOGrpcService.WFOGrpcServiceClient,
-            HelloRequest,
-            HelloReply
-        >(
-            (client, request, option) => client.SayHello(request, option),
-            new HelloRequest { Name = name }
-        );
-
-        using var streamingCall = await streamClient;
-
-        await foreach (var reply in streamingCall.ResponseStream.ReadAllAsync())
-        {
-            Console.WriteLine("Greeting: " + reply.Message);
-        }
-    }
-
     /// <summary>
     /// Ping Server
     /// </summary>

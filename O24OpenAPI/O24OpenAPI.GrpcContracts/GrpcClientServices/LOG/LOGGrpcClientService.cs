@@ -29,14 +29,15 @@ public class LOGGrpcClientService : BaseGrpcClientService, ILOGGrpcClientService
         return result;
     }
 
-    public Task SubmitLogAsync(LogEntryModel logEntry)
+    public async Task<bool> SubmitLogAsync(LogEntryModel logEntry)
     {
         var request = new GrpcRequest { Data = logEntry.ToJson() };
-        return InvokeAsync<string>(
+        await InvokeAsync<string>(
             async (header) =>
             {
                 return await _logGrpcClient.Client.SubmitLogAsync(request, header);
             }
         );
+        return true;
     }
 }

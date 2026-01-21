@@ -18,7 +18,5 @@ public interface IWFOGrpcClientService
         string instanceID
     );
     Task<ServiceInfo> GetServiceInstanceByServiceHandleNameAsync(string serviceHandleName);
-
-    Task SayHelloAsync(string name);
     Task<string> PingAsync(string name);
 }
