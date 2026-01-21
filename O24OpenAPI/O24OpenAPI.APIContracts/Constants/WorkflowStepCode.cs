@@ -159,6 +159,7 @@ public static class WorkflowStepCode
     {
         public const string WF_STEP_EXT_SEARCH_EXCHANGE_RATE = "WF_STEP_EXT_SEARCH_EXCHANGE_RATE";
         public const string WF_STEP_EXT_RETRIEVE_TRANSFER_RATE = "WF_STEP_EXT_RETRIEVE_TRANSFER_RATE";
+        public const string WF_STEP_EXT_VNPAY_PROCESS = "WF_STEP_EXT_VNPAY_PROCESS";
     }
     #endregion
 
