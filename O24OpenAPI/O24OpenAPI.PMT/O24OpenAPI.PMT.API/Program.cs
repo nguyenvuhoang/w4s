@@ -1,15 +1,19 @@
 ﻿using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Extensions;
+using O24OpenAPI.Framework.Infrastructure.Extensions;
+using O24OpenAPI.Logging.Extensions;
 using O24OpenAPI.PMT.API.Application;
 using O24OpenAPI.PMT.Infrastructure;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddApplicationServices();
+builder.Services.ConfigureApplicationServices(builder);
 builder.Services.AddInfrastructureServices();
+builder.Services.AddApplicationServices();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddHttpClient();
+builder.AddO24Logging();
 
 WebApplication app = builder.Build();
 
