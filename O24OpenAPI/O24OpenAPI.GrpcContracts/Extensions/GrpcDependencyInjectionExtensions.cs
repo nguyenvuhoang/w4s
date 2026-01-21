@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using LinKit.Core.Cqrs;
+using Microsoft.Extensions.DependencyInjection;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
+using O24OpenAPI.Generated.Mediator;
 using O24OpenAPI.Grpc.WFO;
 using O24OpenAPI.GrpcContracts.Configuration;
 using O24OpenAPI.GrpcContracts.Factory;
@@ -22,6 +24,7 @@ public static class GrpcDependencyInjectionExtensions
 {
     public static void AddGrpcContracts(this IServiceCollection services)
     {
+        services.AddKeyedScoped<IMediator, GrpcMediator>("grpc");
         services.AddSingleton<IGrpcClientFactory, GrpcClientFactory>();
         services.AddSingleton(typeof(IGrpcClient<>), typeof(ClientGrpc<>));
         services.AddLinKitDependency();

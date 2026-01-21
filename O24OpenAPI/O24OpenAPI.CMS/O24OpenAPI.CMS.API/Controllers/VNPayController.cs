@@ -7,7 +7,7 @@ using O24OpenAPI.Framework.Controllers;
 
 namespace O24OpenAPI.CMS.API.Controllers;
 
-public class VNPayController([FromKeyedServices(MediatorKey.CMS)] IMediator mediator) : BaseController
+public class VNPayController([FromKeyedServices(MediatorKey.Grpc)] IMediator mediator) : BaseController
 {
     [HttpPost("/api/vnpay/create")]
     public virtual async Task<IActionResult> Create(
@@ -15,7 +15,7 @@ public class VNPayController([FromKeyedServices(MediatorKey.CMS)] IMediator medi
         CancellationToken cancellationToken
     )
     {
-        var result = await mediator.SendAsync(request, cancellationToken);
+        var result = await mediator.SendAsync(request.ToWFOGrpcClientServiceExecuteWorkflowAsyncCommand(), cancellationToken);
         return Ok(result);
     }
 

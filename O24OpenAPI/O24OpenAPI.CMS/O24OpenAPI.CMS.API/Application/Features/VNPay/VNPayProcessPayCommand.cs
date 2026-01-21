@@ -14,6 +14,7 @@ public class VNPayProcessPayCommand
     public string TransactionDescription { get; set; } = default!;
     public string LanguageCode { get; set; } = "vn";
     public string VNPayTransactionDate { get; set; }
+    public string WorkflowInputJson { get; set; } = default!;
 }
 
 public class VNPayProcessPayResponseModel : BaseO24OpenAPIModel

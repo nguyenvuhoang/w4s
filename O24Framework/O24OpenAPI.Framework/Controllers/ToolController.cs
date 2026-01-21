@@ -664,19 +664,6 @@ public class ToolController(
     }
 
     /// <summary>
-    /// Say hello
-    /// </summary>
-    /// <param name="name"></param>
-    /// <returns></returns>
-    [HttpPost]
-    public virtual async Task<IActionResult> SayHello(string name)
-    {
-        IWFOGrpcClientService wfoGrpcClient = EngineContext.Current.Resolve<IWFOGrpcClientService>();
-        await wfoGrpcClient.SayHelloAsync(name);
-        return Ok();
-    }
-
-    /// <summary>
     /// Register Grpc
     /// </summary>
     /// <param name="yourServiceID"></param>

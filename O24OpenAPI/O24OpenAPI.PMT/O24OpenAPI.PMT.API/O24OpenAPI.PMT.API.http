@@ -1,0 +1,6 @@
+﻿@O24OpenAPI.PMT.API_HostAddress = http://localhost:5209
+
+GET {{O24OpenAPI.PMT.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

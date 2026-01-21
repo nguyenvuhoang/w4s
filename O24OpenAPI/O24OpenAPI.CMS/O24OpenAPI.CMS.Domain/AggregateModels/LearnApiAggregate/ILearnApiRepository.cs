@@ -2,7 +2,7 @@
 
 namespace O24OpenAPI.CMS.Domain.AggregateModels.LearnApiAggregate;
 
-public interface IVNPayTransactionStatusMapRepository : IRepository<LearnApi>
+public interface ILearnApiRepository : IRepository<LearnApi>
 {
     Task<LearnApi> GetByChannelAndLearnApiIdAsync(string channel, string learnApiId);
 }
