@@ -7,7 +7,7 @@ namespace O24OpenAPI.PMT.API.Application.Features;
 
 public class CreatePMTCommand : BaseTransactionModel, ICommand<CreatePMTResponse>
 {
-    public string? Data { get; set; }
+    public string Data { get; set; }
 }
 
 public record CreatePMTResponse();

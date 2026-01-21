@@ -1,4 +1,8 @@
-﻿using LinKit.Core.Abstractions;
+﻿using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
+using LinKit.Core.Abstractions;
 using LinKit.Core.Cqrs;
 using LinKit.Json.Runtime;
 using Microsoft.Extensions.Caching.Memory;
@@ -25,10 +29,6 @@ using O24OpenAPI.Framework.Utils;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using O24OpenAPI.Logging.Helpers;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 
 namespace O24OpenAPI.CMS.API.Application.Features.Requests;
 
@@ -114,7 +114,7 @@ public class RequestHandlerV1(
     IJwtTokenService jwtTokenService,
     WorkContext workContext,
     ICTHGrpcClientService cthGrpcClientService,
-    IVNPayTransactionStatusMapRepository learnApiRepository,
+    ILearnApiRepository learnApiRepository,
     IDataMapper dataMapper
 ) : IRequestHandler
 {
@@ -241,9 +241,9 @@ public class RequestHandlerV1(
                     CTHUserSessionModel currentSession;
                     try
                     {
-                        currentSession = await _cthGrpcClientService.GetUserSessionAsync(
-                            infoHeader.Token
-                        ) ?? throw new O24OpenAPIException("Invalid token.");
+                        currentSession =
+                            await _cthGrpcClientService.GetUserSessionAsync(infoHeader.Token)
+                            ?? throw new O24OpenAPIException("Invalid token.");
                         isValid = true;
                     }
                     catch (Exception ex)

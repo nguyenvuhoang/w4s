@@ -2,6 +2,4 @@
 
 namespace O24OpenAPI.PMT.Infrastructure.Configurations;
 
-public class PMTConfig : IConfig
-{
-}
+public class PMTConfig : IConfig { }
