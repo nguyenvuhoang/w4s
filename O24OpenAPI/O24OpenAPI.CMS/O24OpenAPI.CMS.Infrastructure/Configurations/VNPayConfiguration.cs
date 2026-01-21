@@ -1,8 +1,8 @@
 ﻿using O24OpenAPI.Core.Configuration;
 
-namespace O24OpenAPI.EXT.Infrastructure.Configurations;
+namespace O24OpenAPI.CMS.Infrastructure.Configurations;
 
-public class VNPayConfig : IConfig
+public class VNPayConfiguration : IConfig
 {
     public string TmnCode { get; set; } = string.Empty;
     public string HashSecret { get; set; } = string.Empty;
@@ -13,4 +13,5 @@ public class VNPayConfig : IConfig
     public string Command { get; set; } = string.Empty;
     public string CurrencyCode { get; set; } = string.Empty;
     public string Locale { get; set; } = string.Empty;
+    public string VnpApi { get; set; } = string.Empty;
 }

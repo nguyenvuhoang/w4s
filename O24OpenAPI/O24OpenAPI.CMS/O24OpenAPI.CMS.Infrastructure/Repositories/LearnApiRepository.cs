@@ -10,7 +10,7 @@ namespace O24OpenAPI.CMS.Infrastructure.Repositories;
 internal class LearnApiRepository(
     IO24OpenAPIDataProvider dataProvider,
     IStaticCacheManager staticCacheManager
-) : EntityRepository<LearnApi>(dataProvider, staticCacheManager), ILearnApiRepository
+) : EntityRepository<LearnApi>(dataProvider, staticCacheManager), IVNPayTransactionStatusMapRepository
 {
     private readonly IStaticCacheManager _staticCacheManager = staticCacheManager;
 

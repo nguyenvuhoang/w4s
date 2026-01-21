@@ -114,7 +114,7 @@ public class RequestHandlerV1(
     IJwtTokenService jwtTokenService,
     WorkContext workContext,
     ICTHGrpcClientService cthGrpcClientService,
-    ILearnApiRepository learnApiRepository,
+    IVNPayTransactionStatusMapRepository learnApiRepository,
     IDataMapper dataMapper
 ) : IRequestHandler
 {

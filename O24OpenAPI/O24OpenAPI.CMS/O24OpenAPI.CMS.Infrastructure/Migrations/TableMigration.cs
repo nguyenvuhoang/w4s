@@ -2,6 +2,7 @@ using FluentMigrator;
 using O24OpenAPI.CMS.Domain.AggregateModels;
 using O24OpenAPI.CMS.Domain.AggregateModels.FormAggregate;
 using O24OpenAPI.CMS.Domain.AggregateModels.LearnApiAggregate;
+using O24OpenAPI.CMS.Domain.AggregateModels.VNPayAggregate;
 using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.Migrations;
@@ -9,8 +10,8 @@ using O24OpenAPI.Data.Migrations;
 namespace O24OpenAPI.CMS.Infrastructure.Migrations;
 
 [O24OpenAPIMigration(
-    "2025/12/30 21:19:07:0000000",
-    "4. Init table CMS Form",
+    "2026/01/21 13:19:07:0000000",
+    "4. Init table CMS VNPayTransactionStatusMap",
     MigrationProcessType.Installation
 )]
 [Environment(EnvironmentType.All)]
@@ -173,6 +174,25 @@ public class TableMigration : AutoReversingMigration
                 .OnTable(nameof(FormFieldDefinition))
                 .OnColumn(nameof(FormFieldDefinition.FormId)).Ascending()
                 .OnColumn(nameof(FormFieldDefinition.FieldName)).Ascending()
+                .WithOptions().Unique();
+        }
+
+        if (!Schema.Table(nameof(VNPayTransactionStatusMap)).Exists())
+        {
+            Create.TableFor<VNPayTransactionStatusMap>();
+
+            Create.Index("UQ_VNPayTransactionStatusMap_StatusCode_StatusMessage")
+                .OnTable(nameof(VNPayTransactionStatusMap))
+                .OnColumn(nameof(VNPayTransactionStatusMap.StatusCode)).Ascending()
+                .WithOptions().Unique();
+        }
+        if (!Schema.Table(nameof(VNPayResponseCodeMap)).Exists())
+        {
+            Create.TableFor<VNPayResponseCodeMap>();
+
+            Create.Index("UQ_VNPayResponseCodeMap_ResponseCode_Description")
+                .OnTable(nameof(VNPayResponseCodeMap))
+                .OnColumn(nameof(VNPayResponseCodeMap.ResponseCode)).Ascending()
                 .WithOptions().Unique();
         }
     }

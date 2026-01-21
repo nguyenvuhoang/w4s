@@ -87,10 +87,10 @@
         }
 
         private static (DateTime thisFrom, DateTime thisTo, DateTime prevFrom, DateTime prevTo) BuildPeriodRangeUtc(
-    DateTime nowUtc,
-    string? periodType,
-    string? periodUnit
-)
+            DateTime nowUtc,
+            string? periodType,
+            string? periodUnit
+        )
         {
             periodType = string.IsNullOrWhiteSpace(periodType) ? "M" : periodType.Trim().ToUpperInvariant();
             periodUnit = string.IsNullOrWhiteSpace(periodUnit) ? null : periodUnit.Trim();
