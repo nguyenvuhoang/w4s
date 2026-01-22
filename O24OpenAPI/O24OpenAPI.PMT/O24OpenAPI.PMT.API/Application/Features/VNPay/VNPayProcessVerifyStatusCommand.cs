@@ -1,12 +1,16 @@
 ﻿using LinKit.Core.Cqrs;
-using O24OpenAPI.CMS.API.Application.Helpers;
-using O24OpenAPI.CMS.Infrastructure.Configurations;
+using O24OpenAPI.Core;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Configuration;
+using O24OpenAPI.Core.Infrastructure;
+using O24OpenAPI.Framework.Models;
+using O24OpenAPI.PMT.API.Application.Helpers;
+using O24OpenAPI.PMT.Infrastructure.Configurations;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
-namespace O24OpenAPI.CMS.API.Application.Features.VNPay;
+namespace O24OpenAPI.PMT.API.Application.Features.VNPay;
 
 public class VNPayProcessVerifyStatusCommand
     : BaseTransactionModel,

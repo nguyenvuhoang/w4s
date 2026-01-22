@@ -2,7 +2,6 @@ using FluentMigrator;
 using O24OpenAPI.CMS.Domain.AggregateModels;
 using O24OpenAPI.CMS.Domain.AggregateModels.FormAggregate;
 using O24OpenAPI.CMS.Domain.AggregateModels.LearnApiAggregate;
-using O24OpenAPI.CMS.Domain.AggregateModels.VNPayAggregate;
 using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.Migrations;
@@ -177,23 +176,5 @@ public class TableMigration : AutoReversingMigration
                 .WithOptions().Unique();
         }
 
-        if (!Schema.Table(nameof(VNPayTransactionStatusMap)).Exists())
-        {
-            Create.TableFor<VNPayTransactionStatusMap>();
-
-            Create.Index("UQ_VNPayTransactionStatusMap_StatusCode_StatusMessage")
-                .OnTable(nameof(VNPayTransactionStatusMap))
-                .OnColumn(nameof(VNPayTransactionStatusMap.StatusCode)).Ascending()
-                .WithOptions().Unique();
-        }
-        if (!Schema.Table(nameof(VNPayResponseCodeMap)).Exists())
-        {
-            Create.TableFor<VNPayResponseCodeMap>();
-
-            Create.Index("UQ_VNPayResponseCodeMap_ResponseCode_Description")
-                .OnTable(nameof(VNPayResponseCodeMap))
-                .OnColumn(nameof(VNPayResponseCodeMap.ResponseCode)).Ascending()
-                .WithOptions().Unique();
-        }
     }
 }

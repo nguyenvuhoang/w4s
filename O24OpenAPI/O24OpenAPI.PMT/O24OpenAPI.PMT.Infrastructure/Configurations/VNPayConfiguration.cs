@@ -1,6 +1,6 @@
 ﻿using O24OpenAPI.Core.Configuration;
 
-namespace O24OpenAPI.CMS.Infrastructure.Configurations;
+namespace O24OpenAPI.PMT.Infrastructure.Configurations;
 
 public class VNPayConfiguration : IConfig
 {
