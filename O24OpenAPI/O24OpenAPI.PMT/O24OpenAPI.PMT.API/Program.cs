@@ -1,6 +1,7 @@
 ﻿using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
+using O24OpenAPI.GrpcContracts.Extensions;
 using O24OpenAPI.Logging.Extensions;
 using O24OpenAPI.PMT.API.Application;
 using O24OpenAPI.PMT.Infrastructure;
@@ -14,6 +15,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddHttpClient();
 builder.AddO24Logging();
+builder.Services.AddGrpcContracts();
 
 WebApplication app = builder.Build();
 

@@ -1,6 +1,7 @@
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
+using O24OpenAPI.GrpcContracts.Extensions;
 using O24OpenAPI.NCH.API.Application.Extensions;
 using O24OpenAPI.NCH.Infrastructure.Extensions;
 using Telegram.Bot.AspNetCore;
@@ -19,6 +20,8 @@ builder.Services.ConfigureTelegramBotMvc();
 builder.Services.AddEndpointsApiExplorer();
 builder.AddBackgroundJobs("StaticConfig/BackgroundJobsConfig.json");
 builder.Services.AddInfrastructureServices().AddApplicationServices();
+builder.Services.AddGrpcContracts();
+
 if (!builder.Environment.IsDevelopment())
 {
     builder.ConfigureWebHost();

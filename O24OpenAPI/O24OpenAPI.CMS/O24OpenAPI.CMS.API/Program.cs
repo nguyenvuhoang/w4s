@@ -4,6 +4,7 @@ using O24OpenAPI.CMS.Infrastructure.Extensions;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
 using O24OpenAPI.Framework.Middlewares;
+using O24OpenAPI.GrpcContracts.Extensions;
 using O24OpenAPI.Logging.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.ConfigureApplicationServices(builder);
+builder.Services.AddGrpcContracts();
 
 builder.Services.AddSignalR();
 

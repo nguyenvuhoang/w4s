@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>1.0.1</Version>
+    <Version>2.0.0</Version>
     <PackageId>O24OpenAPI.Client</PackageId>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -18,8 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Core\O24OpenAPI.Core.csproj" />
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Data\O24OpenAPI.Data.csproj" />
-    <!--<ProjectReference Include="..\..\O24OpenAPI\O24OpenAPI.APIContracts\O24OpenAPI.APIContracts.csproj" />-->
-    <ProjectReference Include="..\..\O24OpenAPI\O24OpenAPI.GrpcContracts\O24OpenAPI.GrpcContracts.csproj" />
     <ProjectReference Include="..\O24OpenAPI.Contracts\O24OpenAPI.Contracts.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.Logging\O24OpenAPI.Logging.csproj" />
   </ItemGroup>
 </Project>

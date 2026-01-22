@@ -3,6 +3,7 @@ using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
 using O24OpenAPI.Framework.Middlewares;
+using O24OpenAPI.GrpcContracts.Extensions;
 using O24OpenAPI.GrpcContracts.Interceptors;
 using O24OpenAPI.WFO.API.Application.Extensions;
 using O24OpenAPI.WFO.API.GrpcServices;
@@ -31,6 +32,8 @@ if (!builder.Environment.IsDevelopment())
 {
     builder.ConfigureWebHost();
 }
+builder.Services.AddGrpcContracts();
+
 builder.Services.AddGrpc(options =>
 {
     options.Interceptors.Add<GrpcServerInboundInterceptor>();

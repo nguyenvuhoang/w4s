@@ -1,17 +1,18 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using O24OpenAPI.Contracts.Abstractions;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.Framework.Helpers;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Framework.Models.O24OpenAPI;
 using O24OpenAPI.Framework.Models.UtilityModels;
 using O24OpenAPI.Framework.Services;
 using O24OpenAPI.Framework.Services.Queue;
 using O24OpenAPI.Framework.Services.Security;
 using O24OpenAPI.Framework.Utils;
-using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using System.Data;
 using System.Text;
 
@@ -598,7 +599,7 @@ public class ToolController(
         }
 
         string utfString;
-        using (var ms = new MemoryStream())
+        using (MemoryStream ms = new())
         {
             await file.CopyToAsync(ms);
             utfString = Encoding.UTF8.GetString(ms.ToArray());
@@ -620,10 +621,10 @@ public class ToolController(
             return Ok(new List<string>());
         }
 
-        var result = new List<string>();
+        List<string> result = [];
         foreach (Type type in listType)
         {
-            var fullClassName = type.FullName;
+            string fullClassName = type.FullName;
             if (fullClassName != null && fullClassName.Contains(assemblyName))
             {
                 result.Add(fullClassName);
@@ -637,20 +638,20 @@ public class ToolController(
     public async Task<IActionResult> GetListMethod(string fullClassName, string assemblyName)
     {
         await Task.CompletedTask;
-        var typeName = $"{fullClassName}, {assemblyName}";
-        var type = Type.GetType(typeName);
-        var listModel = new List<MethodResponse>();
+        string typeName = $"{fullClassName}, {assemblyName}";
+        Type type = Type.GetType(typeName);
+        List<MethodResponse> listModel = [];
 
         if (type != null)
         {
-            var methods = type.GetMethods()
+            List<MethodResponse> methods = type.GetMethods()
                 .Where(m => m.IsPublic && !m.IsStatic)
                 .Select(m => new MethodResponse { MethodName = m.Name })
                 .ToList();
             listModel.AddRange(methods);
         }
         IPagedList<MethodResponse> pageList = await listModel.AsQueryable().ToPagedList(0, int.MaxValue);
-        var response = pageList.ToPagedListModel<MethodResponse, MethodResponse>();
+        PagedListModel<MethodResponse, MethodResponse> response = pageList.ToPagedListModel<MethodResponse, MethodResponse>();
 
         return Ok(response);
     }
@@ -658,7 +659,7 @@ public class ToolController(
     [HttpPost]
     public async Task<IActionResult> ExportFunction()
     {
-        var count = await _storeFunctionService.ExportToFile();
+        int count = await _storeFunctionService.ExportToFile();
 
         return Ok($"Exported: {count}");
     }
@@ -680,11 +681,11 @@ public class ToolController(
     {
         try
         {
-            IWFOGrpcClientService wfoGrpcClient = EngineContext.Current.Resolve<IWFOGrpcClientService>();
+            var wfoGrpcClient = EngineContext.Current.Resolve<IWFOGrpcClientBaseService>();
 
-            var grpcService = $"{yourServiceID}GrpcService";
+            string grpcService = $"{yourServiceID}GrpcService";
 
-            var result = await wfoGrpcClient.RegisterServiceGrpcEndpointAsync(
+            string result = await wfoGrpcClient.RegisterServiceGrpcEndpointAsync(
                 serviceCode: yourServiceID,
                 serviceHandleName: grpcService,
                 grpcEndpointURL: yourGrpcURL,

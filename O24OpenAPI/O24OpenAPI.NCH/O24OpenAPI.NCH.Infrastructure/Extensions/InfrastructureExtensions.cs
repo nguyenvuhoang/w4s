@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using O24OpenAPI.GrpcContracts.Interceptors;
-using O24OpenAPI.Logging.Interceptors;
 
 namespace O24OpenAPI.NCH.Infrastructure.Extensions;
 

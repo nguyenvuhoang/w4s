@@ -4,8 +4,6 @@ using O24OpenAPI.AI.Infrastructure.Configurations;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
-using O24OpenAPI.GrpcContracts.Interceptors;
-using O24OpenAPI.Logging.Interceptors;
 using Qdrant.Client;
 
 namespace O24OpenAPI.AI.Infrastructure;
@@ -15,7 +13,7 @@ public static class InfrastructureExtensions
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
         services.AddLinKitDependency();
-        var qdrantSettingConfig = Singleton<AppSettings>.Instance.Get<QdrantSettingConfig>();
+        QdrantSettingConfig? qdrantSettingConfig = Singleton<AppSettings>.Instance.Get<QdrantSettingConfig>();
         if (qdrantSettingConfig is not null)
             services.AddSingleton(_ =>
             {

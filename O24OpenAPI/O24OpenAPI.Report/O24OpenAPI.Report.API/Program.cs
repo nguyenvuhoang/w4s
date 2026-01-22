@@ -1,10 +1,11 @@
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
+using O24OpenAPI.GrpcContracts.Extensions;
 using O24OpenAPI.Report.API.GrpcServices;
 using O24OpenAPI.Report.Infrastructure.Extensions;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddEnvironmentVariables();
 builder.Services.ConfigureApplicationServices(builder);
@@ -12,10 +13,11 @@ builder.Services.ConfigureApplicationServices(builder);
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddGrpcContracts();
 
 builder.Services.AddCors(options =>
 {
-    var corsSettings = builder.Configuration.GetSection("Cors");
+    IConfigurationSection corsSettings = builder.Configuration.GetSection("Cors");
     options.AddPolicy(
         "AllowAll",
         policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
@@ -26,7 +28,7 @@ if (!builder.Environment.IsDevelopment())
     builder.ConfigureWebHost();
 }
 builder.Services.AddInfrastructureServices();
-var app = builder.Build();
+WebApplication app = builder.Build();
 app.UseRouting();
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
@@ -35,7 +37,7 @@ app.MapGrpcService<RPTGrpcService>();
 app.MapControllers();
 
 app.UseStaticFiles();
-using var scope = app.Services.CreateScope();
+using IServiceScope scope = app.Services.CreateScope();
 AsyncScope.Scope = scope;
 app.ConfigureRequestPipeline();
 

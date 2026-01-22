@@ -1,4 +1,4 @@
-﻿using O24OpenAPI.Logging.Abstractions;
+﻿using O24OpenAPI.Core.Abstractions;
 using Serilog.Events;
 using Serilog.Sinks.PeriodicBatching;
 

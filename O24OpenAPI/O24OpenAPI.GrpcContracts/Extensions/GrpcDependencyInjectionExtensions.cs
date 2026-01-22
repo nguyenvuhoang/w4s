@@ -1,5 +1,6 @@
 ﻿using LinKit.Core.Cqrs;
 using Microsoft.Extensions.DependencyInjection;
+using O24OpenAPI.Contracts.Abstractions;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
@@ -30,6 +31,7 @@ public static class GrpcDependencyInjectionExtensions
         services.AddLinKitDependency();
 
         services.AddScoped<IWFOGrpcClientService, WFOGrpcClientService>();
+        services.AddScoped<IWFOGrpcClientBaseService, WFOGrpcClientService>();
         services.AddScoped<ICTHGrpcClientService, CTHGrpcClientService>();
         services.AddScoped<IPMTGrpcClientService, PMTGrpcClientService>();
         services.AddScoped<ICTHGrpcClientService, CTHGrpcClientService>();
@@ -50,7 +52,7 @@ public static class GrpcDependencyInjectionExtensions
                 ?? throw new Exception(
                     "O24OpenAPIConfiguration is not initialized when regitry grpc."
                 );
-            var grpcClientsConfig = new GrpcClientsConfig
+            GrpcClientsConfig grpcClientsConfig = new()
             {
                 { typeof(WFOGrpcService).Name, o24Config.WFOGrpcURL },
             };

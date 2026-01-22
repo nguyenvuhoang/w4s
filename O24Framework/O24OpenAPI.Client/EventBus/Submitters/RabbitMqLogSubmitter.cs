@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using O24OpenAPI.APIContracts.Events;
 using O24OpenAPI.Client.EventBus.Abstractions;
-using O24OpenAPI.Logging.Abstractions;
-using O24OpenAPI.Logging.Extensions;
+using O24OpenAPI.Contracts.Events;
+using O24OpenAPI.Contracts.Extensions;
+using O24OpenAPI.Core.Abstractions;
 using Serilog.Events;
 
 namespace O24OpenAPI.Client.EventBus.Submitters;
@@ -20,9 +20,9 @@ public class RabbitMqLogSubmitter(IServiceProvider serviceProvider) : ILogSubmit
 
         try
         {
-            using var scope = _serviceProvider.CreateScope();
-            var eventBus = scope.ServiceProvider.GetRequiredService<IEventBus>();
-            foreach (var logEvent in logEvents)
+            using IServiceScope scope = _serviceProvider.CreateScope();
+            IEventBus eventBus = scope.ServiceProvider.GetRequiredService<IEventBus>();
+            foreach (LogEvent logEvent in logEvents)
             {
                 var dto = logEvent.ToLogEntryModel();
                 var @event = new LoggingEvent() { LogEntryModel = dto };

@@ -24,7 +24,7 @@
       <Output TaskParameter="Lines" PropertyName="GitHeight" />
     </ReadLinesFromFile>
     <PropertyGroup>
-      <Version>$(VersionMajor).$(VersionMinor).$(GitHeight)</Version>
+      <Version>2.0.0</Version>
       <FileVersion>$(VersionMajor).$(VersionMinor).$(GitHeight).0</FileVersion>
     </PropertyGroup>
   </Target>
@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Framework\O24OpenAPI.Framework.csproj" />
+    <ProjectReference Include="..\..\O24OpenAPI.GrpcContracts\O24OpenAPI.GrpcContracts.csproj" />
     <ProjectReference Include="..\O24OpenAPI.Logger.Domain\O24OpenAPI.Logger.Domain.csproj" />
     <ProjectReference Include="..\O24OpenAPI.Logger.Infrastructure\O24OpenAPI.Logger.Infrastructure.csproj" />
   </ItemGroup>

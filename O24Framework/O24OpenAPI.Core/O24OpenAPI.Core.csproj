@@ -3,7 +3,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PublishTrimmed>false</PublishTrimmed>
-    <Version>1.0.1</Version>
     <PackageId>O24OpenAPI.Core</PackageId>
   </PropertyGroup>
   <ItemGroup>
@@ -14,5 +13,6 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="StackExchange.Redis" />
+    <PackageReference Include="Serilog.AspNetCore" />
   </ItemGroup>
 </Project>

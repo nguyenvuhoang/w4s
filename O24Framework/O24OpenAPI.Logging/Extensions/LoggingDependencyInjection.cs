@@ -1,15 +1,16 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using O24OpenAPI.Contracts.Formatters;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Logging.Abstractions;
-using O24OpenAPI.Logging.Formatters;
 using O24OpenAPI.Logging.Handlers;
 using O24OpenAPI.Logging.Interceptors;
 using O24OpenAPI.Logging.Middlewares;
 using O24OpenAPI.Logging.Sinks;
 using Serilog;
+using Serilog.Events;
 using Serilog.Filters;
 using Serilog.Sinks.PeriodicBatching;
 
@@ -30,7 +31,7 @@ public static class LoggingDependencyInjection
                 string serviceName =
                     context.Configuration.GetValue<string>("O24Logging:ServiceName")
                     ?? Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID;
-                var sinkOptions = context
+                SinkOptions? sinkOptions = context
                     .Configuration.GetSection("O24Logging:Sink")
                     .Get<SinkOptions>();
                 if (sinkOptions == null)
@@ -75,7 +76,7 @@ public static class LoggingDependencyInjection
                                 {
                                     string? direction =
                                         (
-                                            logEvent.Properties.TryGetValue("Direction", out var d)
+                                            logEvent.Properties.TryGetValue("Direction", out LogEventPropertyValue? d)
                                             && d is Serilog.Events.ScalarValue svd
                                         )
                                             ? svd.Value?.ToString()
@@ -120,14 +121,14 @@ public static class LoggingDependencyInjection
                                 {
                                     string? logType =
                                         (
-                                            logEvent.Properties.TryGetValue("LogType", out var lt)
+                                            logEvent.Properties.TryGetValue("LogType", out LogEventPropertyValue? lt)
                                             && lt is Serilog.Events.ScalarValue svlt
                                         )
                                             ? svlt.Value?.ToString()
                                             : "business";
                                     string? direction =
                                         (
-                                            logEvent.Properties.TryGetValue("Direction", out var d)
+                                            logEvent.Properties.TryGetValue("Direction", out LogEventPropertyValue? d)
                                             && d is Serilog.Events.ScalarValue svd
                                         )
                                             ? svd.Value?.ToString()
@@ -157,7 +158,7 @@ public static class LoggingDependencyInjection
 
                 if (sendRemote && !string.IsNullOrEmpty(sinkOptions.Type))
                 {
-                    var submitter = serviceProvider.GetKeyedService<ILogSubmitter>(
+                    ILogSubmitter? submitter = serviceProvider.GetKeyedService<ILogSubmitter>(
                         sinkOptions.Type
                     );
                     if (submitter != null)

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <version>10.0.1</version>
+    <Version>2.0.0</Version>
     <FileVersion>10.0.1.1</FileVersion>
     <Authors>O24</Authors>
     <Company>JITS</Company>
@@ -44,6 +44,7 @@
     <Folder Include="GrpcServices\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\O24OpenAPI.GrpcContracts\O24OpenAPI.GrpcContracts.csproj" />
     <ProjectReference Include="..\O24OpenAPI.Report.Domain\O24OpenAPI.Report.Domain.csproj" />
     <ProjectReference Include="..\O24OpenAPI.Report.Infrastructure\O24OpenAPI.Report.Infrastructure.csproj" />
   </ItemGroup>

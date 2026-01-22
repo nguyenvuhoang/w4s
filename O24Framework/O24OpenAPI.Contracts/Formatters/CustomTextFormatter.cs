@@ -1,14 +1,14 @@
-﻿using System.Text;
-using Serilog.Events;
+﻿using Serilog.Events;
 using Serilog.Formatting;
+using System.Text;
 
-namespace O24OpenAPI.Logging.Formatters;
+namespace O24OpenAPI.Contracts.Formatters;
 
 public class CustomTextFormatter : ITextFormatter
 {
     public void Format(LogEvent logEvent, TextWriter output)
     {
-        var isBlockLog = logEvent.Properties.ContainsKey("Direction");
+        bool isBlockLog = logEvent.Properties.ContainsKey("Direction");
 
         if (isBlockLog)
         {
@@ -22,8 +22,8 @@ public class CustomTextFormatter : ITextFormatter
 
     private static void FormatSimpleLog(LogEvent logEvent, TextWriter output)
     {
-        var serviceName = GetPropertyValue(logEvent, "ServiceName");
-        var traceId = GetPropertyValue(logEvent, "CorrelationId");
+        string serviceName = GetPropertyValue(logEvent, "ServiceName");
+        string traceId = GetPropertyValue(logEvent, "CorrelationId");
 
         output.Write($"[{logEvent.Timestamp:yyyy-MM-dd HH:mm:ss.fff}] ");
         output.Write($"[{logEvent.Level.ToString().ToUpper()}] ");
@@ -47,14 +47,14 @@ public class CustomTextFormatter : ITextFormatter
         var sb = new StringBuilder();
         sb.AppendLine("----------------------------------------");
 
-        var serviceName = GetPropertyValue(logEvent, "ServiceName");
-        var action = GetPropertyValue(logEvent, "Action");
-        var traceId = GetPropertyValue(logEvent, "CorrelationId");
-        var request = GetPropertyValue(logEvent, "Request");
-        var response = GetPropertyValue(logEvent, "Response");
+        string serviceName = GetPropertyValue(logEvent, "ServiceName");
+        string action = GetPropertyValue(logEvent, "Action");
+        string traceId = GetPropertyValue(logEvent, "CorrelationId");
+        string request = GetPropertyValue(logEvent, "Request");
+        string response = GetPropertyValue(logEvent, "Response");
         var error = logEvent.Exception;
-        var duration = GetPropertyValue(logEvent, "Duration");
-        var headers = GetPropertyValue(logEvent, "Headers");
+        string duration = GetPropertyValue(logEvent, "Duration");
+        string headers = GetPropertyValue(logEvent, "Headers");
 
         sb.AppendLine($"[BEGIN] {serviceName} | {action}");
         sb.AppendLine($"[Time  ] {logEvent.Timestamp:yyyy-MM-dd HH:mm:ss.fff}");

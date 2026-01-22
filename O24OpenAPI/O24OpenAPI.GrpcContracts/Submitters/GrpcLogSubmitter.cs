@@ -1,6 +1,7 @@
-﻿using O24OpenAPI.GrpcContracts.GrpcClientServices.LOG;
-using O24OpenAPI.Logging.Abstractions;
-using O24OpenAPI.Logging.Extensions;
+﻿using O24OpenAPI.Contracts.Extensions;
+using O24OpenAPI.Contracts.Models;
+using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.GrpcContracts.GrpcClientServices.LOG;
 using Serilog.Events;
 
 namespace O24OpenAPI.GrpcContracts.Submitters;
@@ -18,9 +19,9 @@ public class GrpcLogSubmitter(ILOGGrpcClientService logGrpcClientService) : ILog
 
         try
         {
-            foreach (var logEvent in logEvents)
+            foreach (LogEvent logEvent in logEvents)
             {
-                var dto = logEvent.ToLogEntryModel();
+                LogEntryModel dto = logEvent.ToLogEntryModel();
                 await _logGrpcClientService.SubmitLogAsync(dto);
             }
         }

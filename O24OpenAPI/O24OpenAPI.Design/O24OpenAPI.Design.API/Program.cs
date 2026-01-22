@@ -1,6 +1,7 @@
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
+using O24OpenAPI.GrpcContracts.Extensions;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<RouteOptions>(options =>
@@ -10,6 +11,7 @@ builder.Services.Configure<RouteOptions>(options =>
 
 builder.Configuration.AddEnvironmentVariables();
 builder.Services.ConfigureApplicationServices(builder);
+builder.Services.AddGrpcContracts();
 
 builder.Services.AddControllers();
 

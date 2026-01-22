@@ -1,9 +1,9 @@
-﻿using O24OpenAPI.Contracts.Models;
-using O24OpenAPI.Logging.Formatters;
+﻿using O24OpenAPI.Contracts.Formatters;
+using O24OpenAPI.Contracts.Models;
 using Serilog.Events;
 using Serilog.Formatting;
 
-namespace O24OpenAPI.Logging.Extensions;
+namespace O24OpenAPI.Contracts.Extensions;
 
 public static class LogEventExtensions
 {
@@ -42,7 +42,7 @@ public static class LogEventExtensions
 
     private static string? GetStringValue(LogEvent logEvent, string key)
     {
-        return logEvent.Properties.TryGetValue(key, out var prop) && prop is ScalarValue scalar
+        return logEvent.Properties.TryGetValue(key, out LogEventPropertyValue? prop) && prop is ScalarValue scalar
             ? scalar.Value?.ToString()
             : null;
     }
@@ -50,7 +50,7 @@ public static class LogEventExtensions
     private static long? GetLongValue(LogEvent logEvent, string key)
     {
         if (
-            logEvent.Properties.TryGetValue(key, out var prop)
+            logEvent.Properties.TryGetValue(key, out LogEventPropertyValue? prop)
             && prop is ScalarValue scalar
             && scalar.Value is long longVal
         )

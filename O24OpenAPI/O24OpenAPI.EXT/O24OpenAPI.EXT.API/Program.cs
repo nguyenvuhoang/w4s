@@ -4,6 +4,7 @@ using O24OpenAPI.EXT.Infrastructure;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
 using O24OpenAPI.Framework.Middlewares;
+using O24OpenAPI.GrpcContracts.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureApplicationServices(builder);
@@ -12,6 +13,8 @@ builder.Services.AddApplicationServices();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddHttpClient();
+builder.Services.AddGrpcContracts();
+
 if (!builder.Environment.IsDevelopment())
 {
     builder.ConfigureWebHost();

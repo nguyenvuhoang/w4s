@@ -9,6 +9,7 @@
     <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Data\O24OpenAPI.Data.csproj" />
     <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Framework\O24OpenAPI.Framework.csproj" />
     <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj" />
+    <ProjectReference Include="..\..\O24OpenAPI.GrpcContracts\O24OpenAPI.GrpcContracts.csproj" />
     <ProjectReference Include="..\O24OpenAPI.Design.Domain\O24OpenAPI.Design.Domain.csproj" />
     <ProjectReference Include="..\O24OpenAPI.Design.Infrastructure\O24OpenAPI.Design.Infrastructure.csproj" />
   </ItemGroup>

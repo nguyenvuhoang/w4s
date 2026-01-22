@@ -2,7 +2,6 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>O24OpenAPI.Generator</PackageId>
-    <Version>1.0.3</Version>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <!-- Roslyn -->

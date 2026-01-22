@@ -5,7 +5,6 @@
     <!-- Bật build NuGet package -->
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>O24OpenAPI.Kit</PackageId>
-    <Version>1.0.0</Version>
     <Authors>JITS</Authors>
     <Company>JITS</Company>
     <Description>Bộ Kit cho O24OpenAPI (Keyvault, Signature, Models...)</Description>

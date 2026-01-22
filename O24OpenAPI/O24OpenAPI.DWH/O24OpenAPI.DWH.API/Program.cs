@@ -3,6 +3,7 @@ using O24OpenAPI.DWH.API.Application;
 using O24OpenAPI.DWH.Infrastructure;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
+using O24OpenAPI.GrpcContracts.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,7 @@ builder.Services.AddInfrastructureServices();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddHttpClient();
+builder.Services.AddGrpcContracts();
 
 if (!builder.Environment.IsDevelopment())
 {

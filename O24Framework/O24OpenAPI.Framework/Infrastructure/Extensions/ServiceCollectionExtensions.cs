@@ -15,8 +15,6 @@ using O24OpenAPI.Core.Helper;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Data.Configuration;
 using O24OpenAPI.Framework.Services;
-using O24OpenAPI.GrpcContracts.Extensions;
-using O24OpenAPI.Logging.Abstractions;
 using O24OpenAPI.Logging.Extensions;
 using StackExchange.Redis;
 using System.Reflection;
@@ -110,7 +108,6 @@ public static class ServiceCollectionExtensions
         builder.AddO24Logging();
         services.AddScoped<IStaticTokenService, StaticTokenService>();
         services.AddDynamicCodeEngineWithFileSystem(AppContext.BaseDirectory);
-        services.AddGrpcContracts();
         services.AddKeyedSingleton<ILogSubmitter, RabbitMqLogSubmitter>("rabbitmq");
         services.AddLinKitCqrs("fw");
         Assembly assembly = AppDomain

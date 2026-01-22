@@ -1,6 +1,6 @@
-﻿using O24OpenAPI.Contracts.Configuration.Client;
+﻿using O24OpenAPI.Contracts.Abstractions;
+using O24OpenAPI.Contracts.Configuration.Client;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 
 namespace O24OpenAPI.Client.Lib.Extensions;
 
@@ -13,7 +13,7 @@ public static class ServiceInfoExtension
         string pInstanceID
     )
     {
-        var wfoGrpcClientService = EngineContext.Current.Resolve<IWFOGrpcClientService>();
+        IWFOGrpcClientBaseService? wfoGrpcClientService = EngineContext.Current.Resolve<IWFOGrpcClientBaseService>();
 
         ServiceInfo serviceInfoResult = await wfoGrpcClientService.QueryServiceInfoAsync(
             fromServiceCode: pFromServiceCode,
