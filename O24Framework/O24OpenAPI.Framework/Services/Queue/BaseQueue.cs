@@ -14,15 +14,12 @@ using O24OpenAPI.Framework.Domain;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.Framework.Services.Configuration;
-using O24OpenAPI.Framework.Services.Logging;
 using O24OpenAPI.Logging.Helpers;
 
 namespace O24OpenAPI.Framework.Services.Queue;
 
 public abstract class BaseQueue
 {
-    private static readonly SemaphoreSlim _semaphore = new(1, 1);
-
     public static async Task<WFScheme> Invoke<TModel>(
         WFScheme workflow,
         Func<Task<object>> acquire,
@@ -33,6 +30,10 @@ public abstract class BaseQueue
     )
         where TModel : BaseTransactionModel
     {
+        ArgumentNullException.ThrowIfNull(workflow);
+        ArgumentNullException.ThrowIfNull(acquire);
+        ArgumentNullException.ThrowIfNull(workflow.request?.request_header);
+
         object returnObject = null;
         O24OpenAPIService stepConfig = null;
 
@@ -52,59 +53,23 @@ public abstract class BaseQueue
 
             if (singleThread && stepConfig != null && !stepConfig.IsInquiry)
             {
-                await _semaphore.WaitAsync();
                 useTransactionScope = true;
             }
             else if (stepConfig == null || stepConfig.IsInquiry)
             {
                 useTransactionScope = false;
             }
-            try
-            {
-                returnObject = await DoTransaction(
-                    workflow,
-                    acquire,
-                    workflow.request.request_header.IsReversal(),
-                    null,
-                    removeSensitive,
-                    IsCompensated: false,
-                    useTransactionScope,
-                    stepConfig?.IsInquiry ?? true
-                );
-            }
-            catch (SqlException ex) when (ex.Number == 1205)
-            {
-                var logger = EngineContext.Current.Resolve<ILogger>();
-                if (logger != null)
-                {
-                    await logger.Error(
-                        ex.Message ?? "Deadlock occurred",
-                        ex,
-                        null,
-                        workflow.request.request_header.execution_id
-                    );
-                }
-                BusinessLogHelper.Error(ex, ex.Message);
-                throw new O24OpenAPIException(
-                    "system_busy",
-                    "System is busy now, please try again later"
-                );
-            }
-            catch (Exception ex)
-            {
-                var logger = EngineContext.Current.Resolve<ILogger>();
-                if (logger != null)
-                {
-                    await logger.Error(
-                        "Unexpected error in Invoke method",
-                        ex,
-                        null,
-                        workflow.request.request_header.execution_id
-                    );
-                }
-                BusinessLogHelper.Error(ex, ex.Message);
-                throw;
-            }
+            returnObject = await DoTransaction(
+                workflow,
+                acquire,
+                workflow.request.request_header.IsReversal(),
+                null,
+                removeSensitive,
+                IsCompensated: false,
+                useTransactionScope,
+                stepConfig?.IsInquiry ?? true
+            );
+
             if (returnObject is not null)
             {
                 if (returnObject is JsonNode jsonNode)
@@ -116,12 +81,18 @@ public abstract class BaseQueue
                 ? Success(workflow, returnObject)
                 : Success(workflow, keyName, returnObject);
         }
-        finally
+        catch (SqlException ex) when (ex.Number == 1205)
         {
-            if (singleThread && !stepConfig?.IsInquiry == true)
-            {
-                _semaphore.Release();
-            }
+            BusinessLogHelper.Error(ex, ex.Message);
+            throw new O24OpenAPIException(
+                "system_busy",
+                "System is busy now, please try again later"
+            );
+        }
+        catch (Exception ex)
+        {
+            BusinessLogHelper.Error(ex, ex.Message);
+            throw;
         }
     }
 
@@ -307,36 +278,17 @@ public abstract class BaseQueue
                 workflow = await addInformation();
             }
 
-            if (!isReverse)
-            {
-                workflow = await AddBusinessInformation(workflow);
-            }
-
             tx?.Complete();
             return result;
+        }
+        catch
+        {
+            throw;
         }
         finally
         {
             tx?.Dispose();
         }
-    }
-
-    private static async Task<WFScheme> AddBusinessInformation(WFScheme workflow)
-    {
-        if (!workflow.request.request_header.tx_context.ContainsKey("transaction_date"))
-        {
-            IWorkContext workContext = EngineContext.Current.Resolve<IWorkContext>();
-            DateTime tranDt = await workContext.GetWorkingDate(
-                reload: true,
-                inBatch: false,
-                workflow.request.request_header.channel_id
-            );
-            workflow.request.request_header.tx_context.Add(
-                "transaction_date",
-                tranDt.Date.ToString("o")
-            );
-        }
-        return workflow;
     }
 
     private static WFScheme Success(WFScheme workflow, string name, object content)
