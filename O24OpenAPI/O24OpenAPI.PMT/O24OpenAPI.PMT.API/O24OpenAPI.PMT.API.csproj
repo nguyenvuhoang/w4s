@@ -4,15 +4,19 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="App_Data\CreateDatabase.sql">
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </Content>
+    <Content Include="__jits_com_vn.pfx">
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="LinKit.Core" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference
-      Include="..\..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj"
-      OutputItemType="Analyzer"
-      ReferenceOutputAssembly="false"
-    />
+    <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\O24OpenAPI.PMT.Infrastructure\O24OpenAPI.PMT.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>

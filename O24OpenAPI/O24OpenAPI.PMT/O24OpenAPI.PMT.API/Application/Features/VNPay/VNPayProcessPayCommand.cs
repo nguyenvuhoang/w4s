@@ -1,10 +1,14 @@
 ﻿using LinKit.Core.Cqrs;
-using O24OpenAPI.CMS.API.Application.Helpers;
-using O24OpenAPI.CMS.Infrastructure.Configurations;
+using O24OpenAPI.Core;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Configuration;
+using O24OpenAPI.Core.Infrastructure;
+using O24OpenAPI.Framework.Models;
+using O24OpenAPI.PMT.API.Application.Helpers;
+using O24OpenAPI.PMT.Infrastructure.Configurations;
 using System.Globalization;
 
-namespace O24OpenAPI.CMS.API.Application.Features.VNPay;
+namespace O24OpenAPI.PMT.API.Application.Features.VNPay;
 
 public class VNPayProcessPayCommand
     : BaseTransactionModel,
@@ -14,7 +18,6 @@ public class VNPayProcessPayCommand
     public string TransactionDescription { get; set; } = default!;
     public string LanguageCode { get; set; } = "vn";
     public string VNPayTransactionDate { get; set; }
-    public string WorkflowInputJson { get; set; } = default!;
 }
 
 public class VNPayProcessPayResponseModel : BaseO24OpenAPIModel

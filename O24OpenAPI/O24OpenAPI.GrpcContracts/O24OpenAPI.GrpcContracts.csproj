@@ -9,17 +9,16 @@
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Logging\O24OpenAPI.Logging.csproj" />
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Core\O24OpenAPI.Core.csproj" />
     <ProjectReference Include="..\O24OpenAPI.APIContracts\O24OpenAPI.APIContracts.csproj" />
-    <ProjectReference
-      Include="..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj"
-      OutputItemType="Analyzer"
-      ReferenceOutputAssembly="false"
-    />
+    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <PackageReference Include="Grpc.AspNetCore" />
     <PackageReference Include="LinKit.Core" />
   </ItemGroup>
   <ItemGroup>
     <Protobuf Include="Protos\Common\common.proto" GrpcServices="None" ProtoRoot="Protos" />
     <Protobuf Include="Protos\LOG\log.proto" GrpcServices="Both" ProtoRoot="Protos" />
+    <Protobuf Include="Protos\PMT\pmt.proto" GrpcServices="Both">
+      <ProtoRoot>Protos</ProtoRoot>
+    </Protobuf>
     <Protobuf Include="Protos\WFO\wfo.proto" GrpcServices="Both" ProtoRoot="Protos" />
     <Protobuf Include="Protos\CBG\cbg.proto" GrpcServices="Both" ProtoRoot="Protos" />
     <Protobuf Include="Protos\CMS\cms.proto" GrpcServices="Both" ProtoRoot="Protos" />

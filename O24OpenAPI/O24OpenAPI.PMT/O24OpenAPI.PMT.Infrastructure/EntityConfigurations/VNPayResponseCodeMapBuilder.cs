@@ -1,8 +1,8 @@
 using FluentMigrator.Builders.Create.Table;
-using O24OpenAPI.CMS.Domain.AggregateModels.VNPayAggregate;
 using O24OpenAPI.Data.Mapping.Builders;
+using O24OpenAPI.PMT.Domain.AggregatesModel.VNPayAggregate;
 
-namespace O24OpenAPI.CMS.Infrastructure.EntityConfigurations;
+namespace O24OpenAPI.PMT.Infrastructure.EntityConfigurations;
 
 public class VNPayResponseCodeMapBuilder : O24OpenAPIEntityBuilder<VNPayResponseCodeMap>
 {

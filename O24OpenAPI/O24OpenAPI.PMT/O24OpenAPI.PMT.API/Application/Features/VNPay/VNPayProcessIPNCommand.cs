@@ -1,19 +1,23 @@
 ﻿using LinKit.Core.Cqrs;
-using O24OpenAPI.CMS.API.Application.Helpers;
-using O24OpenAPI.CMS.Domain.AggregateModels.VNPayAggregate;
-using O24OpenAPI.CMS.Infrastructure.Configurations;
+using O24OpenAPI.Core;
+using O24OpenAPI.Core.Abstractions;
 using O24OpenAPI.Core.Configuration;
+using O24OpenAPI.Core.Infrastructure;
+using O24OpenAPI.Framework.Models;
+using O24OpenAPI.PMT.API.Application.Helpers;
+using O24OpenAPI.PMT.Domain.AggregatesModel.VNPayAggregate;
+using O24OpenAPI.PMT.Infrastructure.Configurations;
 
-namespace O24OpenAPI.CMS.API.Application.Features.VNPay;
+namespace O24OpenAPI.PMT.API.Application.Features.VNPay;
 
-public class VNPayProcessReturnCommand
+public class VNPayProcessIPNCommand
     : BaseTransactionModel,
-        ICommand<VNPayProcessReturnResponseModel>
+        ICommand<VNPayProcessIPNResponseModel>
 {
     public Dictionary<string, string> Query { get; set; } = [];
 }
 
-public class VNPayProcessReturnResponseModel : BaseO24OpenAPIModel
+public class VNPayProcessIPNResponseModel : BaseO24OpenAPIModel
 {
     public string TransactionStatus { get; set; }
     public string TransactionRef { get; set; } = default!;
@@ -24,14 +28,14 @@ public class VNPayProcessReturnResponseModel : BaseO24OpenAPIModel
 }
 
 [CqrsHandler]
-public class VNPayProcessReturnHandler(
+public class VNPayProcessIPNHandler(
     IVNPayResponseCodeMapRepository vNPayResponseCodeMapRepository,
     IVNPayTransactionStatusMapRepository vNPayTransactionStatusMapRepository
 )
-: ICommandHandler<VNPayProcessReturnCommand, VNPayProcessReturnResponseModel>
+: ICommandHandler<VNPayProcessIPNCommand, VNPayProcessIPNResponseModel>
 {
-    public async Task<VNPayProcessReturnResponseModel> HandleAsync(
-        VNPayProcessReturnCommand request,
+    public async Task<VNPayProcessIPNResponseModel> HandleAsync(
+        VNPayProcessIPNCommand request,
         CancellationToken cancellationToken = default
     )
 
@@ -74,7 +78,7 @@ public class VNPayProcessReturnHandler(
         var transactionRef = request.Query.GetValueOrDefault("vnp_TxnRef")?.Trim();
         var transactionDate = request.Query.GetValueOrDefault("vnp_PayDate")?.Trim();
 
-        return new VNPayProcessReturnResponseModel
+        return new VNPayProcessIPNResponseModel
         {
             TransactionRef = transactionRef,
             TransactionStatus = transactionStatus,

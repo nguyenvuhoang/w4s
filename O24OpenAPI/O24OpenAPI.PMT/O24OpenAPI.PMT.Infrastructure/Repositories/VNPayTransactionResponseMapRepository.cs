@@ -1,10 +1,10 @@
 ﻿using LinKit.Core.Abstractions;
 using LinqToDB;
-using O24OpenAPI.CMS.Domain.AggregateModels.VNPayAggregate;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Data;
+using O24OpenAPI.PMT.Domain.AggregatesModel.VNPayAggregate;
 
-namespace O24OpenAPI.CMS.Infrastructure.Repositories;
+namespace O24OpenAPI.PMT.Infrastructure.Repositories;
 
 [RegisterService(Lifetime.Scoped)]
 public class VNPayTransactionResponseMapRepository(

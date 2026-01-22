@@ -9,12 +9,12 @@ using O24OpenAPI.GrpcContracts.Configuration;
 using O24OpenAPI.GrpcContracts.Factory;
 using O24OpenAPI.GrpcContracts.GrpcClient;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CBG;
-using O24OpenAPI.GrpcContracts.GrpcClientServices.CMS;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.DTS;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.DWH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.LOG;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.NCH;
+using O24OpenAPI.GrpcContracts.GrpcClientServices.PMT;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using O24OpenAPI.Logging.Helpers;
 
@@ -31,7 +31,7 @@ public static class GrpcDependencyInjectionExtensions
 
         services.AddScoped<IWFOGrpcClientService, WFOGrpcClientService>();
         services.AddScoped<ICTHGrpcClientService, CTHGrpcClientService>();
-        services.AddScoped<ICMSGrpcClientService, CMSGrpcClientService>();
+        services.AddScoped<IPMTGrpcClientService, PMTGrpcClientService>();
         services.AddScoped<ICTHGrpcClientService, CTHGrpcClientService>();
         services.AddScoped<ICBGGrpcClientService, CBGGrpcClientService>();
         services.AddScoped<IDTSGrpcClientService, DTSGrpcClientService>();

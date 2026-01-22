@@ -3,7 +3,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace O24OpenAPI.CMS.API.Application.Helpers
+namespace O24OpenAPI.PMT.API.Application.Helpers
 {
     public class VnPayLibrary
     {

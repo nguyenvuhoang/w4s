@@ -1,4 +1,4 @@
-﻿namespace O24OpenAPI.CMS.API.Application.Helpers;
+﻿namespace O24OpenAPI.PMT.API.Application.Helpers;
 
 public class SnowflakeTransactionNumberGenerator
 {

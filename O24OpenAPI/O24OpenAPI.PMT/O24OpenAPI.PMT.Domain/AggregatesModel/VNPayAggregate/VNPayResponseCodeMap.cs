@@ -1,4 +1,6 @@
-﻿namespace O24OpenAPI.CMS.Domain.AggregateModels.VNPayAggregate
+﻿using O24OpenAPI.Core.Domain;
+
+namespace O24OpenAPI.PMT.Domain.AggregatesModel.VNPayAggregate
 {
     public class VNPayResponseCodeMap : BaseEntity
     {
