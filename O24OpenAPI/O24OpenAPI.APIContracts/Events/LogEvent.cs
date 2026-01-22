@@ -1,5 +1,5 @@
 ﻿using O24OpenAPI.Contracts.Events;
-using O24OpenAPI.Contracts.Models.Log;
+using O24OpenAPI.Contracts.Models;
 
 namespace O24OpenAPI.APIContracts.Events;
 

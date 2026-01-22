@@ -1,5 +1,5 @@
 ﻿using LinKit.Core.Mapping;
-using O24OpenAPI.Contracts.Models.Log;
+using O24OpenAPI.Contracts.Models;
 using O24OpenAPI.Framework.Domain.Logging;
 using O24OpenAPI.Logger.API.Application.Features;
 using O24OpenAPI.Logger.Domain.AggregateModels.ServiceLogAggregate;

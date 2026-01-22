@@ -1,4 +1,4 @@
-﻿using O24OpenAPI.Contracts.Models.Log;
+﻿using O24OpenAPI.Contracts.Models;
 using O24OpenAPI.Logging.Formatters;
 using Serilog.Events;
 using Serilog.Formatting;
@@ -9,10 +9,10 @@ public static class LogEventExtensions
 {
     public static LogEntryModel ToLogEntryModel(this LogEvent logEvent)
     {
-        var formatter = new CustomTextFormatter();
+        CustomTextFormatter formatter = new();
 
-        var renderedText = logEvent.RenderWithFormatter(formatter);
-        var logEntry = new LogEntryModel()
+        string renderedText = logEvent.RenderWithFormatter(formatter);
+        LogEntryModel logEntry = new()
         {
             LogTimestamp = logEvent.Timestamp,
             LogLevel = logEvent.Level.ToString(),
@@ -35,7 +35,7 @@ public static class LogEventExtensions
 
     public static string RenderWithFormatter(this LogEvent logEvent, ITextFormatter formatter)
     {
-        using var sw = new StringWriter();
+        using StringWriter sw = new();
         formatter.Format(logEvent, sw);
         return sw.ToString();
     }

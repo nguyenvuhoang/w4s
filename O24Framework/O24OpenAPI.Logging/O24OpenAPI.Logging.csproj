@@ -1,5 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Version>1.0.3</Version>
+    <PackageId>O24OpenAPI.Logging</PackageId>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -16,7 +18,7 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\O24OpenAPI\O24OpenAPI.APIContracts\O24OpenAPI.APIContracts.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.Contracts\O24OpenAPI.Contracts.csproj" />
     <ProjectReference Include="..\O24OpenAPI.Core\O24OpenAPI.Core.csproj" />
   </ItemGroup>
 </Project>

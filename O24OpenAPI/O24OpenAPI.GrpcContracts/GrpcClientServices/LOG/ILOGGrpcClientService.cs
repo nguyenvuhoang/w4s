@@ -1,4 +1,4 @@
-﻿using O24OpenAPI.Contracts.Models.Log;
+﻿using O24OpenAPI.Contracts.Models;
 
 namespace O24OpenAPI.GrpcContracts.GrpcClientServices.LOG;
 

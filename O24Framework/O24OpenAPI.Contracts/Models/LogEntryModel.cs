@@ -1,4 +1,4 @@
-﻿namespace O24OpenAPI.Contracts.Models.Log;
+namespace O24OpenAPI.Contracts.Models;
 
 public class LogEntryModel
 {

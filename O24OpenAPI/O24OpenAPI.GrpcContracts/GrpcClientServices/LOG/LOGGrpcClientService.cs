@@ -1,5 +1,5 @@
 ﻿using LinKit.Json.Runtime;
-using O24OpenAPI.Contracts.Models.Log;
+using O24OpenAPI.Contracts.Models;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Grpc.Common;
 using O24OpenAPI.Grpc.LOG;
@@ -19,7 +19,7 @@ public class LOGGrpcClientService : BaseGrpcClientService, ILOGGrpcClientService
 
     public async Task<string> TestAsync(string name)
     {
-        var executeWorkflowRequest = new TestRequest { Message = name };
+        TestRequest executeWorkflowRequest = new() { Message = name };
         var result = await InvokeAsync<string>(
             async (header) =>
             {
@@ -31,7 +31,7 @@ public class LOGGrpcClientService : BaseGrpcClientService, ILOGGrpcClientService
 
     public async Task<bool> SubmitLogAsync(LogEntryModel logEntry)
     {
-        var request = new GrpcRequest { Data = logEntry.ToJson() };
+        GrpcRequest request = new() { Data = logEntry.ToJson() };
         await InvokeAsync<string>(
             async (header) =>
             {
