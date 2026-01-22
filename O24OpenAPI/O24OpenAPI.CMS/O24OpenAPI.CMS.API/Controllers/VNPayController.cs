@@ -13,7 +13,7 @@ public class VNPayController([FromKeyedServices(MediatorKey.Grpc)] IMediator med
         CancellationToken cancellationToken
     )
     {
-        var result = await mediator.SendAsync(request.ToCMSGrpcClientServiceVNPayProcessPayCommand(), cancellationToken);
+        var result = await mediator.SendAsync(request.ToPMTGrpcClientServiceVNPayProcessPayCommand(), cancellationToken);
         return Ok(result);
     }
 
@@ -28,7 +28,7 @@ public class VNPayController([FromKeyedServices(MediatorKey.Grpc)] IMediator med
         };
 
 
-        var request = cmd.ToCMSGrpcClientServiceVNPayProcessReturnCommand();
+        var request = cmd.ToPMTGrpcClientServiceVNPayProcessReturnCommand();
         var result = await mediator.SendAsync(request, cancellationToken);
         return Ok(result);
     }

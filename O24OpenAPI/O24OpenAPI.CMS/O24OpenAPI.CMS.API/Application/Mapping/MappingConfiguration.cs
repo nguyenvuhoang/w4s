@@ -14,11 +14,11 @@ public class MappingConfiguration : IMappingConfigurator
     {
         builder.CreateMap<LearnApi, LearnApiModel>();
         builder.CreateMap<AddLearnApiCommand, LearnApi>();
-        builder.CreateMap<VNPayProcessPayModel, CMSGrpcClientServiceVNPayProcessPayCommand>()
+        builder.CreateMap<VNPayProcessPayModel, PMTGrpcClientServiceVNPayProcessPayCommand>()
          .ForMember(
             d => d.Amount,
             opt => opt.MapFrom(s => s.Amount.ToString())
         );
-        builder.CreateMap<VNPayProcessReturnModel, CMSGrpcClientServiceVNPayProcessReturnCommand>();
+        builder.CreateMap<VNPayProcessReturnModel, PMTGrpcClientServiceVNPayProcessReturnCommand>();
     }
 }

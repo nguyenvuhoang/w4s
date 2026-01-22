@@ -49,7 +49,7 @@ public class PMTGrpcClientService : BaseGrpcClientService, IPMTGrpcClientService
         };
         var pmtGrpcClient =
             await _grpcClientFactory.GetClientAsync<PMTGrpcService.PMTGrpcServiceClient>();
-        return await cmsGrpcClient
+        return await pmtGrpcClient
             .VNPayProcessReturnAsync(request, _defaultHeader)
             .CallAsync<VNPayProcessReturnModel>();
     }
