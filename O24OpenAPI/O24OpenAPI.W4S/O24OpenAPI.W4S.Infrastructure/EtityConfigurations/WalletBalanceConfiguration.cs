@@ -27,6 +27,9 @@ public class WalletBalanceConfiguration : O24OpenAPIEntityBuilder<WalletBalance>
             .WithColumn(nameof(WalletBalance.AvailableBalance))
             .AsDecimal(18, 2)
             .NotNullable()
-            .WithDefaultValue(0);
+            .WithDefaultValue(0)
+            .WithColumn(nameof(WalletBalance.CurrencyCode))
+            .AsString(10)
+            .Nullable();
     }
 }

@@ -8,6 +8,7 @@ using O24OpenAPI.W4S.API.Application.Constants;
 using O24OpenAPI.W4S.API.Application.Helpers;
 using O24OpenAPI.W4S.API.Application.Models.Wallet;
 using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
+using O24OpenAPI.W4S.Infrastructure.Configurations;
 
 namespace O24OpenAPI.W4S.API.Application.Features.Wallet;
 
@@ -19,7 +20,8 @@ public class GetListWalletCommand : BaseTransactionModel, ICommand<List<ListWall
 [CqrsHandler]
 public class GetListWalletHandler(IWalletProfileRepository walletProfileRepository,
     IWalletAccountProfileRepository walletAccountProfileRepository,
-     IWalletBalanceRepository walletBalanceRepository
+    IWalletBalanceRepository walletBalanceRepository,
+    W4SSetting w4SSettings
 
     )
     : ICommandHandler<GetListWalletCommand, List<ListWalletResponseModel>>
@@ -58,27 +60,28 @@ public class GetListWalletHandler(IWalletProfileRepository walletProfileReposito
                 [.. walletAccountList.Select(wa => wa.AccountNumber)]
             );
 
+            var baseCurrency = string.IsNullOrWhiteSpace(w4SSettings.BaseCurrency)
+                ? "VND"
+                : w4SSettings.BaseCurrency.Trim();
+
+            var balanceByAccount = walletAccountBalance
+            .GroupBy(b => b.AccountNumber)
+            .ToDictionary(g => g.Key, g => g.First());
+
 
             var balanceByWallet = walletAccountList
              .GroupBy(wa => wa.WalletId)
              .ToDictionary(
                  g => g.Key,
-                 g =>
+                 g => g.Sum(a =>
                  {
-                     var accounts = g.ToList();
+                     var bal = balanceByAccount.TryGetValue(a.AccountNumber, out var b)
+                         ? b.AvailableBalance
+                         : 0m;
 
-                     return accounts.Sum(a =>
-                     {
-                         var balance = walletAccountBalance
-                             .FirstOrDefault(b => b.AccountNumber == a.AccountNumber)
-                             ?.AvailableBalance ?? 0;
-
-                         return WalletAccountTypeHelper.GetSign(a.AccountType) * balance;
-                     });
-                 }
+                     return bal;
+                 })
              );
-
-
 
             var result = wallets
                 .Select(w => new ListWalletResponseModel

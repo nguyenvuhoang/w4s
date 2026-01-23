@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="LinKit.Core" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Framework\O24OpenAPI.Framework.csproj" />
+    <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\..\O24OpenAPI.GrpcContracts\O24OpenAPI.GrpcContracts.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.IPS.Domain\O24OpenAPI.IPS.Domain.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.IPS.Infrastructure\O24OpenAPI.IPS.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Application\Features\" />
+    <Folder Include="Controllers\" />
+    <Folder Include="StaticConfig\" />
+  </ItemGroup>
+</Project>

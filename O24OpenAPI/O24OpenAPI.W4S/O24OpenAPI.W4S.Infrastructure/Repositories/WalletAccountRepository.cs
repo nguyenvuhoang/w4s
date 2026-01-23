@@ -92,4 +92,17 @@ public class WalletAccountRepository(
             .Where(x => x.WalletId == walletId && x.AccountType == WalletAccountType.Expense)
             .FirstOrDefaultAsync();
     }
+
+    /// <summary>
+    /// Is Expense Account
+    /// </summary>
+    /// <param name="accountnumber"></param>
+    /// <returns></returns>
+    public async Task<bool> IsAllowNegativeBalanceAsync(string accountnumber)
+    {
+        var walletAccount = await Table.Where(x => x.AccountNumber == accountnumber && (x.AccountType == WalletAccountType.Expense || x.AccountType == WalletAccountType.Loan))
+                                .FirstOrDefaultAsync();
+        return walletAccount != null;
+    }
+
 }

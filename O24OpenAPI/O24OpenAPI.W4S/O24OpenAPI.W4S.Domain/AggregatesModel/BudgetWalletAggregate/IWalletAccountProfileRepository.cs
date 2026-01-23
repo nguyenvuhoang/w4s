@@ -21,4 +21,10 @@ public interface IWalletAccountProfileRepository : IRepository<WalletAccount>
     /// <param name="walletId"></param>
     /// <returns></returns>
     Task<WalletAccount> GetDefaultExpenseAccountAsync(int walletId);
+    /// <summary>
+    /// Is expense account
+    /// </summary>
+    /// <param name="accountnumber"></param>
+    /// <returns></returns>
+    Task<bool> IsAllowNegativeBalanceAsync(string accountnumber);
 }

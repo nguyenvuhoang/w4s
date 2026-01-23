@@ -40,7 +40,8 @@ public class CreateWalletTransactionCommand
 public class CreateWalletTransactionCommandHandler(
     IWalletTransactionRepository walletTransactionRepository,
     IWalletStatementRepository walletStatementRepository,
-    IWalletCounterpartyRepository counterpartyRepository
+    IWalletCounterpartyRepository counterpartyRepository,
+    IWalletBalanceRepository walletBalanceRepository
 ) : ICommandHandler<CreateWalletTransactionCommand, CreateWalletTransactionResponse>
 {
     [WorkflowStep(WorkflowStepCode.W4S.WF_STEP_W4S_CREATE_WALLET_TRANSACTION)]
@@ -186,6 +187,21 @@ public class CreateWalletTransactionCommandHandler(
                 transactionOnUtc: now
             )
         };
+
+        if (direction == DrCr.D)
+        {
+            // EXPENSE / LOAN
+            await walletBalanceRepository.DebitBalanceAsync(accountNumber, amount, currencycode);
+
+            if (fee > 0)
+                await walletBalanceRepository.DebitBalanceAsync(accountNumber, fee, currencycode);
+        }
+        else if (direction == DrCr.C)
+        {
+            var totalDebit = amount + fee;
+            await walletBalanceRepository.CreditBalanceAsync(accountNumber, totalDebit, currencycode);
+        }
+
 
         await walletStatementRepository.BulkInsert(statements);
         await walletTransactionRepository.InsertAsync(entity);

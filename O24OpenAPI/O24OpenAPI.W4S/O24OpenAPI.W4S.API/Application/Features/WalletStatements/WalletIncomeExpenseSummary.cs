@@ -130,7 +130,7 @@ public class WalletIncomeExpenseSummaryHandler(
                 .ToListAsync(cancellationToken);
 
             // Build rate map from request.TransferRates
-            var rateMap = BuildRateMapFromRequest(request.TransferRates, baseCurrency);
+            var rateMap = RateHelper.BuildRateMapFromRequest(request.TransferRates, baseCurrency);
 
             // Sum after conversion to base
             decimal thisIncomeBase = 0m, thisExpenseBase = 0m;
@@ -175,65 +175,6 @@ public class WalletIncomeExpenseSummaryHandler(
         }
     }
 
-    /// <summary>
-    /// Build rate map from request.TransferRates.
-    /// Expected: amountBase = amount * rate
-    /// baseCurrency is always 1.
-    /// </summary>
-    private static Dictionary<string, decimal> BuildRateMapFromRequest(
-        IList<TransferRateResponseModel>? transferRates,
-        string baseCurrency
-    )
-    {
-        var map = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase)
-        {
-            [baseCurrency] = 1m
-        };
-
-        if (transferRates == null || transferRates.Count == 0)
-            return map;
-
-        foreach (var r in transferRates)
-        {
-            if (r == null) continue;
-
-            var ccy = r.CurrencyCode?.Trim();
-            if (string.IsNullOrWhiteSpace(ccy)) continue;
-
-            if (ccy.Equals(baseCurrency, StringComparison.OrdinalIgnoreCase))
-            {
-                map[ccy] = 1m;
-                continue;
-            }
-
-            var rate = r.Transfer;
-            if (!rate.HasValue || rate.Value <= 0m)
-                continue;
-
-            map[ccy] = rate.Value;
-        }
-
-        return map;
-    }
-
-    /// <summary>
-    /// Find rate from request-provided map.
-    /// </summary>
-    private static decimal GetRateToBase(
-        string fromCurrency,
-        string baseCurrency,
-        IReadOnlyDictionary<string, decimal> rateMap
-    )
-    {
-        if (fromCurrency.Equals(baseCurrency, StringComparison.OrdinalIgnoreCase))
-            return 1m;
-
-        if (!rateMap.TryGetValue(fromCurrency, out var rate) || rate <= 0m)
-            throw new InvalidOperationException($"Missing exchange rate for {fromCurrency}->{baseCurrency}");
-
-        return rate;
-    }
-
     private static decimal ConvertToBase(
         decimal amount,
         string? currencyCode,
@@ -246,7 +187,7 @@ public class WalletIncomeExpenseSummaryHandler(
         if (ccy.Equals(baseCurrency, StringComparison.OrdinalIgnoreCase))
             return amount;
 
-        var rate = GetRateToBase(ccy, baseCurrency, rateMap);
+        var rate = RateHelper.GetRateToBase(ccy, baseCurrency, rateMap);
         return amount * rate;
     }
 

@@ -1,0 +1,6 @@
+﻿@O24OpenAPI.IPS.API_HostAddress = http://localhost:5697
+
+GET {{O24OpenAPI.IPS.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

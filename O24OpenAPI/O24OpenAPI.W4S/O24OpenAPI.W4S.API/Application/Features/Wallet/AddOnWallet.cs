@@ -81,12 +81,16 @@ public class AddOnWalletHandler(
             );
 
             profile = await walletProfileRepository.InsertAsync(profile);
-            var entriesInitBalance = new List<WalletLedgerEntry>();
+
             if (request.WalletType == "TWCR")
             {
                 await CloneDefaultCategoriesToWalletAsync(profile.Id);
-                var listAccount = await walletAccountProfileRepository.CreateDefaultAccount(profile.Id, request.BaseCurrency);
 
+                var listAccount = await walletAccountProfileRepository.CreateDefaultAccount(profile.Id, request.BaseCurrency);
+                foreach (var acc in listAccount)
+                {
+                    await walletBalanceRepository.EnsureBalanceAsync(acc.AccountNumber!, request.BaseCurrency);
+                }
                 var accountIncome = listAccount?.FirstOrDefault(x => x.AccountType == WalletAccountType.Income);
 
                 if (accountIncome != null && request.Amount > 0)
@@ -96,21 +100,20 @@ public class AddOnWalletHandler(
                         : request.RefId;
 
                     await InitBalanceAsync(
-                     refid: refid,
-                     walletId: profile.Id.ToString(),
-                     phone: request.Phone,
-                     accountNumber: accountIncome.AccountNumber!,
-                     currency: request.BaseCurrency,
-                     amount: request.Amount
-                 );
+                         refid: refid,
+                         walletId: profile.Id.ToString(),
+                         phone: request.Phone,
+                         accountNumber: accountIncome.AccountNumber!,
+                         currency: request.BaseCurrency,
+                         amount: request.Amount
+                    );
                 }
             }
 
             return new AddOnWalletResponseModel
             {
                 WalletId = profile.Id,
-                ContractNumber = contractInfo.ContractNumber,
-                WalletLedgerEntries = entriesInitBalance
+                ContractNumber = contractInfo.ContractNumber
 
             };
         }
@@ -219,7 +222,8 @@ public class AddOnWalletHandler(
         var tran = WalletTransaction.Create(
             transactionId: transactionId,
             transactionCode: WalletTranCode.WALLET_OPENING,
-            sourceTranRef: refid,
+            sourceTranRef: accountNumber,
+            sourceId: walletId,
             userId: phone,
             walletId: walletId,
             walletAccount: accountNumber,
@@ -231,7 +235,7 @@ public class AddOnWalletHandler(
 
         var opening = 0m;
 
-        await walletBalanceRepository.CreditBalanceAsync(accountNumber, amount);
+        await walletBalanceRepository.CreditBalanceAsync(accountNumber, amount, currency);
 
         var statements = new List<WalletStatement>
         {
@@ -255,6 +259,7 @@ public class AddOnWalletHandler(
         await walletStatementRepository.BulkInsert(statements);
 
     }
+
 
     // ===== Helpers =====
 

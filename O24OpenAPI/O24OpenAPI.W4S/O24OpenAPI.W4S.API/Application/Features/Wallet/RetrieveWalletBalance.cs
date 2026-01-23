@@ -7,14 +7,16 @@ using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.W4S.API.Application.Constants;
+using O24OpenAPI.W4S.API.Application.Models.Currency;
 using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
-using O24OpenAPI.W4S.Domain.Constants;
+using O24OpenAPI.W4S.Infrastructure.Configurations;
 
 namespace O24OpenAPI.W4S.API.Application.Features.Wallet;
 
 public class RetrieveWalletBalanceCommand : BaseTransactionModel, ICommand<RetrieveWalletBalanceResponseModel>
 {
     public string ContractNumber { get; set; }
+    public List<TransferRateResponseModel> TransferRates { get; set; } = [];
 }
 
 public class RetrieveWalletBalanceResponseModel : BaseO24OpenAPIModel
@@ -28,7 +30,8 @@ public class RetrieveWalletBalanceResponseModel : BaseO24OpenAPIModel
 public class RetrieveWalletBalanceHandler(
     IWalletProfileRepository walletProfileRepository,
     IWalletAccountProfileRepository walletAccountProfileRepository,
-    IWalletBalanceRepository walletBalanceRepository
+    IWalletBalanceRepository walletBalanceRepository,
+    W4SSetting w4SSetting
 ) : ICommandHandler<RetrieveWalletBalanceCommand, RetrieveWalletBalanceResponseModel>
 {
     [WorkflowStep(WorkflowStepCode.W4S.WF_STEP_W4S_RETRIEVE_WALLET_BALANCE)]
@@ -63,22 +66,67 @@ public class RetrieveWalletBalanceHandler(
                     CurrencyCode = string.Empty
                 };
 
-            var totalAvailableBalance = await (
-                from wa in walletAccountProfileRepository.Table
-                join wb in walletBalanceRepository.Table
-                    on wa.AccountNumber equals wb.AccountNumber
-                where walletIds.Contains(wa.WalletId)
-                select
-                    (wa.AccountType == WalletAccountType.Income ? 1m : -1m)
-                    * wb.AvailableBalance
-            ).SumAsync(cancellationToken);
+            var baseCurrency = w4SSetting.BaseCurrency?.Trim().ToUpperInvariant() ?? string.Empty;
+
+            var rateMap = (request.TransferRates ?? [])
+            .Where(x => !string.IsNullOrWhiteSpace(x.CurrencyCode))
+            .GroupBy(x => x.CurrencyCode.Trim().ToUpperInvariant())
+            .ToDictionary(
+                g => g.Key,
+                g => g.First().Transfer
+            );
+
+            var accountNumbers = walletAccounts
+            .Select(x => x.AccountNumber!)
+            .Distinct()
+            .ToList();
+
+            var rows = await walletBalanceRepository.Table
+                .Where(wb => accountNumbers.Contains(wb.AccountNumber))
+                .Select(wb => new
+                {
+                    Amount = wb.AvailableBalance,
+                    Currency = wb.CurrencyCode ?? baseCurrency
+                })
+                .ToListAsync(cancellationToken);
+
+
+            decimal totalAvailableBalance = 0m;
+
+            foreach (var x in rows)
+            {
+                var currency = (x.Currency ?? baseCurrency).Trim().ToUpperInvariant();
+
+                decimal rate;
+                if (string.IsNullOrWhiteSpace(baseCurrency) || currency == baseCurrency)
+                {
+                    rate = 1m;
+                }
+                else
+                {
+                    if (!rateMap.TryGetValue(currency, out var r) || r == null)
+                    {
+                        throw await O24Exception.CreateAsync(
+                            O24W4SResourceCode.Validation.ExchangeRateNotFound,
+                            request.Language,
+                            $"{currency}->{baseCurrency}"
+                        );
+                    }
+
+                    rate = r.Value;
+                }
+
+                totalAvailableBalance += x.Amount * rate;
+            }
+
 
             return new RetrieveWalletBalanceResponseModel
             {
                 WalletId = walletProfiles.First().Id,
                 AvailableBalance = totalAvailableBalance,
-                CurrencyCode = walletAccounts.First().CurrencyCode
+                CurrencyCode = baseCurrency
             };
+
         }
         catch (Exception ex)
         {

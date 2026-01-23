@@ -11,4 +11,5 @@ public partial class WalletBalance : BaseEntity
     public decimal BonusBalance { get; set; }
     public decimal LockedBalance { get; set; }
     public decimal AvailableBalance { get; set; }
+    public string CurrencyCode { get; set; } = string.Empty;
 }
