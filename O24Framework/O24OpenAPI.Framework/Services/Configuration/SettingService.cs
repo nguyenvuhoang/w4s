@@ -1,8 +1,3 @@
-using System.ComponentModel;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text.Json;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Core.Configuration;
@@ -11,6 +6,11 @@ using O24OpenAPI.Core.Helper;
 using O24OpenAPI.Core.SeedWork;
 using O24OpenAPI.Data.System.Linq;
 using O24OpenAPI.Framework.Models;
+using System.ComponentModel;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
 
 namespace O24OpenAPI.Framework.Services.Configuration;
 
@@ -873,5 +873,19 @@ public class SettingService(
         // await _staticCacheManager.RemoveByPrefix(allSettingKey.Key);
         // await _settingService.ClearCache();
         return getSetting;
+    }
+
+    /// <summary>
+    /// Get by name
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    public virtual async Task<Setting> GetByNameAsync(string name)
+    {
+        Setting setting = await _settingRepository
+            .Table
+            .Where(s => s.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase))
+            .FirstOrDefaultAsync();
+        return setting;
     }
 }

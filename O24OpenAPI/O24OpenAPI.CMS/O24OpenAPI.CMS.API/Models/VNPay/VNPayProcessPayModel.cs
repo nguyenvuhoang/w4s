@@ -1,6 +1,6 @@
 ﻿namespace O24OpenAPI.CMS.API.Models.VNPay
 {
-    public class VNPayProcessPayModel : BaseTransactionModel
+    public class VNPayProcessPayModel : BaseO24OpenAPIModel
     {
         public decimal Amount { get; set; }
         public string TransactionDescription { get; set; } = default!;

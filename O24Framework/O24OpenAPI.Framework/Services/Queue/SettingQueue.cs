@@ -120,4 +120,23 @@ public class SettingQueue : BaseQueue
             }
         );
     }
+
+    /// <summary>
+    /// View
+    /// </summary>
+    /// <param name="workflow"></param>
+    /// <returns></returns>View
+    public async Task<WFScheme> GetByName(WFScheme workflow)
+    {
+        var model = await workflow.ToModel<SettingViewByPrimaryKey>();
+        return await Invoke<SettingViewByPrimaryKey>(
+            workflow,
+            async () =>
+            {
+                var setting = await _service.GetByPrimaryKey(model.Name);
+                return setting;
+            }
+        );
+    }
+
 }
