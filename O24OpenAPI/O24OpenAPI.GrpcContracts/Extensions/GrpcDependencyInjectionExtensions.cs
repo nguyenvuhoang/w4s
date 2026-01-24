@@ -4,7 +4,7 @@ using O24OpenAPI.Contracts.Abstractions;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Generated.Mediator;
+using O24OpenAPI.Grpc.Mediator.Generated;
 using O24OpenAPI.Grpc.WFO;
 using O24OpenAPI.GrpcContracts.Configuration;
 using O24OpenAPI.GrpcContracts.Factory;
@@ -15,7 +15,6 @@ using O24OpenAPI.GrpcContracts.GrpcClientServices.DTS;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.DWH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.LOG;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.NCH;
-using O24OpenAPI.GrpcContracts.GrpcClientServices.PMT;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 using O24OpenAPI.Logging.Helpers;
 
@@ -33,7 +32,7 @@ public static class GrpcDependencyInjectionExtensions
         services.AddScoped<IWFOGrpcClientService, WFOGrpcClientService>();
         services.AddScoped<IWFOGrpcClientBaseService, WFOGrpcClientService>();
         services.AddScoped<ICTHGrpcClientService, CTHGrpcClientService>();
-        services.AddScoped<IPMTGrpcClientService, PMTGrpcClientService>();
+        //services.AddScoped<IPMTGrpcClientService, PMTGrpcClientService>();
         services.AddScoped<ICTHGrpcClientService, CTHGrpcClientService>();
         services.AddScoped<ICBGGrpcClientService, CBGGrpcClientService>();
         services.AddScoped<IDTSGrpcClientService, DTSGrpcClientService>();
@@ -64,7 +63,7 @@ public static class GrpcDependencyInjectionExtensions
                 AsyncScope.Scope = scope;
                 IWFOGrpcClientService wfoGrpcClientService =
                     serviceProvider.GetRequiredService<IWFOGrpcClientService>();
-                var grpcService = $"{o24Config.YourServiceID}GrpcService";
+                string grpcService = $"{o24Config.YourServiceID}GrpcService";
                 wfoGrpcClientService
                     .RegisterServiceGrpcEndpointAsync(
                         serviceCode: o24Config.YourServiceID,

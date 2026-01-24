@@ -3,7 +3,7 @@ using O24OpenAPI.CMS.API.Application.LearnApis;
 using O24OpenAPI.CMS.API.Application.Models;
 using O24OpenAPI.CMS.API.Models.VNPay;
 using O24OpenAPI.CMS.Domain.AggregateModels.LearnApiAggregate;
-using O24OpenAPI.GrpcClient.Generated;
+using O24OpenAPI.GrpcContracts.Models.PMTModels;
 
 namespace O24OpenAPI.CMS.API.Application.Mapping;
 
@@ -14,11 +14,11 @@ public class MappingConfiguration : IMappingConfigurator
     {
         builder.CreateMap<LearnApi, LearnApiModel>();
         builder.CreateMap<AddLearnApiCommand, LearnApi>();
-        builder.CreateMap<VNPayProcessPayModel, PMTGrpcClientServiceVNPayProcessPayCommand>()
+        builder.CreateMap<VNPayProcessPayModel, VNPayProcessPayCommand>()
          .ForMember(
             d => d.Amount,
             opt => opt.MapFrom(s => s.Amount.ToString())
         );
-        builder.CreateMap<VNPayProcessReturnModel, PMTGrpcClientServiceVNPayProcessReturnCommand>();
+        //builder.CreateMap<VNPayProcessReturnModel, PMTGrpcClientServiceVNPayProcessReturnCommand>();
     }
 }

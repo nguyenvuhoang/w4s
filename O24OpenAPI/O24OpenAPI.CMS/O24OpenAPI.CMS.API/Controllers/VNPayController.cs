@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.CMS.API.Models.VNPay;
 using O24OpenAPI.Framework.Controllers;
+using O24OpenAPI.GrpcContracts.Models.PMTModels;
 namespace O24OpenAPI.CMS.API.Controllers;
 
 public class VNPayController([FromKeyedServices(MediatorKey.Grpc)] IMediator mediator) : BaseController
@@ -13,23 +14,21 @@ public class VNPayController([FromKeyedServices(MediatorKey.Grpc)] IMediator med
         CancellationToken cancellationToken
     )
     {
-        var result = await mediator.SendAsync(request.ToPMTGrpcClientServiceVNPayProcessPayCommand(), cancellationToken);
+        APIContracts.Models.PMT.VNPayProcessPayResponseModel result = await mediator.SendAsync(request.ToVNPayProcessPayCommand(), cancellationToken);
         return Ok(result);
     }
 
     [HttpGet("/api/vnpay/return")]
     public async Task<IActionResult> Return(CancellationToken cancellationToken)
     {
-        var rawQuery = Request.QueryString.Value ?? string.Empty;
+        string rawQuery = Request.QueryString.Value ?? string.Empty;
 
-        var cmd = new VNPayProcessReturnModel
+        VNPayProcessReturnCommand cmd = new()
         {
             RawQuery = rawQuery
         };
 
-
-        var request = cmd.ToPMTGrpcClientServiceVNPayProcessReturnCommand();
-        var result = await mediator.SendAsync(request, cancellationToken);
+        VNPayProcessReturnResponseModel result = await mediator.SendAsync(cmd, cancellationToken);
         return Ok(result);
     }
 

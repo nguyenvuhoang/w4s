@@ -15,10 +15,11 @@ service PMTGrpcService {
 
 message VNPayProcessPayRequest {
 	string amount = 1;
-	string transactiondescription = 2;
-	string languagecode = 3;
-	string vnpaytransactiondate = 4;
+	string transaction_description = 2;
+	string language_code = 3;
+	string vnpay_transaction_date = 4;
 }
+
 message VNPayProcessReturnRequest {
-	string rawquery = 1;
+	string raw_query = 1;
 }

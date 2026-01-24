@@ -1,6 +1,7 @@
 ﻿using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Infrastructure.Extensions;
+using O24OpenAPI.Grpc.PMT;
 using O24OpenAPI.GrpcContracts.Extensions;
 using O24OpenAPI.Logging.Extensions;
 using O24OpenAPI.PMT.API.Application;
@@ -34,5 +35,6 @@ AsyncScope.Scope = scope;
 
 await app.ConfigureInfrastructure();
 app.ShowStartupBanner();
+app.MapGrpcService<LinKitPMTGrpcService>();
 
 app.Run();

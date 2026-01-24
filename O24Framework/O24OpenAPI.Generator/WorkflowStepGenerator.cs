@@ -1,71 +1,164 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Text;
 using Microsoft.CodeAnalysis;
-using O24OpenAPI.Generator.Infrastructure;
-using O24OpenAPI.Generator.Models;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 
 [Generator]
-public sealed class WorkflowStepGenerator : ISourceGenerator
+public sealed class WorkflowStepGenerator : IIncrementalGenerator
 {
     private const string IQueryInterfaceName = "LinKit.Core.Cqrs.IQuery";
 
-    public void Initialize(GeneratorInitializationContext context)
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        context.RegisterForSyntaxNotifications(() => new MethodSyntaxReceiver());
-    }
-
-    public void Execute(GeneratorExecutionContext context)
-    {
-        if (context.SyntaxReceiver is not MethodSyntaxReceiver receiver)
-            return;
-
-        var compilation = context.Compilation;
-
-        // Lấy Type Symbol của các Attribute và Interface cần thiết
-        var workflowStepAttr = compilation.GetTypeByMetadataName(
-            "O24OpenAPI.Framework.Attributes.WorkflowStepAttribute"
+        // Giai đoạn 1: Lọc các syntax là Method có Attribute (thay thế MethodSyntaxReceiver)
+        var methodDeclarations = context.SyntaxProvider.CreateSyntaxProvider(
+            predicate: static (s, _) =>
+                s is MethodDeclarationSyntax m && m.AttributeLists.Count > 0,
+            transform: static (ctx, _) => (MethodDeclarationSyntax)ctx.Node
         );
 
-        if (workflowStepAttr is null)
-            return;
+        // Gom tất cả các method và kết hợp với Compilation
+        var compilationAndMethods = context.CompilationProvider.Combine(
+            methodDeclarations.Collect()
+        );
 
-        var steps = new List<WorkflowStepInfo>();
+        // Giai đoạn 2: Xử lý logic (tương đương hàm Execute cũ)
+        context.RegisterSourceOutput(
+            compilationAndMethods,
+            static (spc, source) =>
+            {
+                var compilation = source.Left;
+                var methods = source.Right;
 
-        foreach (var methodSyntax in receiver.CandidateMethods)
-        {
-            var semanticModel = compilation.GetSemanticModel(methodSyntax.SyntaxTree);
-
-            if (semanticModel.GetDeclaredSymbol(methodSyntax) is not IMethodSymbol method)
-                continue;
-
-            var attr = method
-                .GetAttributes()
-                .FirstOrDefault(a =>
-                    SymbolEqualityComparer.Default.Equals(a.AttributeClass, workflowStepAttr)
+                // --- GIỮ NGUYÊN LOGIC CŨ ---
+                INamedTypeSymbol? workflowStepAttr = compilation.GetTypeByMetadataName(
+                    "O24OpenAPI.Framework.Attributes.WorkflowStepAttribute"
                 );
 
-            if (attr is null || method.Parameters.Length == 0)
-                continue;
+                if (workflowStepAttr is null)
+                    return;
 
-            var stepCode = attr.ConstructorArguments[0].Value?.ToString();
-            if (string.IsNullOrWhiteSpace(stepCode))
-                continue;
+                List<WorkflowStepInfo> steps = new();
 
-            var inputTypeSymbol = method.Parameters[0].Type;
-            var inputTypeName = inputTypeSymbol.ToDisplayString(
-                SymbolDisplayFormat.FullyQualifiedFormat
-            );
+                foreach (MethodDeclarationSyntax methodSyntax in methods)
+                {
+                    SemanticModel semanticModel = compilation.GetSemanticModel(
+                        methodSyntax.SyntaxTree
+                    );
 
-            // Kiểm tra xem inputType có thực thi IQuery hay không
-            bool isQuery = false;
-            isQuery = inputTypeSymbol.AllInterfaces.Any(i =>
-                i.OriginalDefinition.ToDisplayString().Contains(IQueryInterfaceName)
-            );
+                    if (semanticModel.GetDeclaredSymbol(methodSyntax) is not IMethodSymbol method)
+                        continue;
 
-            steps.Add(new WorkflowStepInfo(stepCode!, inputTypeName, isQuery));
+                    AttributeData? attr = method
+                        .GetAttributes()
+                        .FirstOrDefault(a =>
+                            SymbolEqualityComparer.Default.Equals(
+                                a.AttributeClass,
+                                workflowStepAttr
+                            )
+                        );
+
+                    if (attr is null || method.Parameters.Length == 0)
+                        continue;
+
+                    string? stepCode = attr.ConstructorArguments[0].Value?.ToString();
+                    if (string.IsNullOrWhiteSpace(stepCode))
+                        continue;
+
+                    ITypeSymbol inputTypeSymbol = method.Parameters[0].Type;
+                    string inputTypeName = inputTypeSymbol.ToDisplayString(
+                        SymbolDisplayFormat.FullyQualifiedFormat
+                    );
+
+                    // Kiểm tra xem inputType có thực thi IQuery hay không (Giữ nguyên logic cũ)
+                    bool isQuery = inputTypeSymbol.AllInterfaces.Any(i =>
+                        i.OriginalDefinition.ToDisplayString().Contains(IQueryInterfaceName)
+                    );
+
+                    steps.Add(new WorkflowStepInfo(stepCode!, inputTypeName, isQuery));
+                }
+
+                // Sinh source code
+                string generatedSource = WorkflowInvokerEmitter.Emit(steps);
+                spc.AddSource(
+                    "WorkflowStepInvoker.g.cs",
+                    SourceText.From(generatedSource, Encoding.UTF8)
+                );
+            }
+        );
+    }
+}
+
+internal record WorkflowStepInfo(string StepCode, string InputType, bool IsQuery);
+
+internal static class WorkflowInvokerEmitter
+{
+    public static string Emit(IReadOnlyList<WorkflowStepInfo> steps)
+    {
+        StringBuilder sb = new();
+
+        sb.AppendLine("// <auto-generated />");
+        sb.AppendLine("#nullable enable");
+        sb.AppendLine("using System;");
+        sb.AppendLine("using System.Collections.Generic;");
+        sb.AppendLine("using System.Threading;");
+        sb.AppendLine("using System.Threading.Tasks;");
+        sb.AppendLine("using LinKit.Core.Abstractions;");
+        sb.AppendLine("using O24OpenAPI.Client.Scheme.Workflow;");
+        sb.AppendLine("using O24OpenAPI.Framework.Extensions;");
+        sb.AppendLine("using O24OpenAPI.Framework.Abstractions;");
+        sb.AppendLine("using LinKit.Core.Cqrs;");
+        sb.AppendLine();
+        sb.AppendLine("namespace Workflow.Generated");
+        sb.AppendLine("{");
+        sb.AppendLine("    internal sealed class WorkflowStepInvoker : IWorkflowStepInvoker");
+        sb.AppendLine("    {");
+        sb.AppendLine(
+            "        private readonly Dictionary<string, Func<WFScheme, IMediator, CancellationToken, Task<object>>> _handlers ="
+        );
+        sb.AppendLine("            new(StringComparer.OrdinalIgnoreCase)");
+
+        if (steps.Count == 0)
+        {
+            sb.AppendLine("            { };");
+        }
+        else
+        {
+            sb.AppendLine("            {");
+            foreach (WorkflowStepInfo step in steps)
+            {
+                string mediatorMethod = step.IsQuery ? "QueryAsync" : "SendAsync";
+
+                sb.AppendLine(
+                    $@"
+                [""{step.StepCode}""] = static async (scheme, mediator, token) =>
+                {{
+                    var request = await scheme.ToModel<{step.InputType}>() ?? new {step.InputType}();
+                    return await mediator.{mediatorMethod}(request, token);
+                }},"
+                );
+            }
+            sb.AppendLine("            };");
         }
 
-        var source = WorkflowInvokerEmitter.Emit(steps);
-        context.AddSource("WorkflowStepInvoker.g.cs", source);
+        sb.AppendLine();
+        sb.AppendLine(
+            "        public async Task<object> InvokeAsync(string stepCode, WFScheme scheme, IMediator mediator, CancellationToken cancellationToken)"
+        );
+        sb.AppendLine("        {");
+        sb.AppendLine("            if (!_handlers.TryGetValue(stepCode, out var handler))");
+        sb.AppendLine(
+            "                throw new KeyNotFoundException($\"Workflow step '{{stepCode}}' handler not found.\");"
+        );
+        sb.AppendLine();
+        sb.AppendLine("            return await handler(scheme, mediator, cancellationToken);");
+        sb.AppendLine("        }");
+        sb.AppendLine("    }");
+        sb.AppendLine("}");
+
+        return sb.ToString();
     }
 }
