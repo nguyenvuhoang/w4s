@@ -1,11 +1,11 @@
-﻿using System.Diagnostics;
-using LinKit.Json.Runtime;
+﻿using LinKit.Json.Runtime;
 using Microsoft.AspNetCore.Http;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Logging.Enums;
 using Serilog;
+using System.Diagnostics;
 
 namespace O24OpenAPI.Logging.Middlewares;
 
@@ -18,26 +18,30 @@ public class RestApiLoggingMiddleware(RequestDelegate next)
 
     public async Task InvokeAsync(HttpContext context)
     {
-        if (!context.Request.Path.StartsWithSegments("/api"))
+        if (
+            !context.Request.Path.StartsWithSegments("/api")
+            || context.Request.Path.StartsWithSegments("/api/chat")
+            || context.Response.ContentType?.Contains("text/event-stream") == true
+        )
         {
             await _next(context);
             return;
         }
 
-        var correlationId =
+        string correlationId =
             context.Request.Headers["X-Correlation-ID"].FirstOrDefault()
             ?? EngineContext.Current.ResolveRequired<WorkContext>().ExecutionLogId;
         context.Items["CorrelationId"] = correlationId;
 
-        var stopwatch = Stopwatch.StartNew();
+        Stopwatch stopwatch = Stopwatch.StartNew();
         context.Request.EnableBuffering();
-        var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
+        string requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
         context.Request.Body.Position = 0;
         var originalBodyStream = context.Response.Body;
-        using var responseBodyStream = new MemoryStream();
+        using MemoryStream responseBodyStream = new();
         context.Response.Body = responseBodyStream;
         Exception? exception = null;
-        var headers = context.Request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString());
+        Dictionary<string, string> headers = context.Request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString());
         try
         {
             await _next(context);
@@ -50,7 +54,7 @@ public class RestApiLoggingMiddleware(RequestDelegate next)
         {
             stopwatch.Stop();
             responseBodyStream.Seek(0, SeekOrigin.Begin);
-            var responseBody = await new StreamReader(responseBodyStream).ReadToEndAsync();
+            string responseBody = await new StreamReader(responseBodyStream).ReadToEndAsync();
             responseBodyStream.Seek(0, SeekOrigin.Begin);
             await responseBodyStream.CopyToAsync(originalBodyStream);
             LogApiCall(
@@ -79,9 +83,9 @@ public class RestApiLoggingMiddleware(RequestDelegate next)
     {
         var request = context.Request;
 
-        var fullUrl = $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
-        var prettyRequest = TryPrettifyJson(requestBody);
-        var prettyResponse = TryPrettifyJson(responseBody);
+        string fullUrl = $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
+        string? prettyRequest = TryPrettifyJson(requestBody);
+        string? prettyResponse = TryPrettifyJson(responseBody);
 
         var logger = Log.ForContext("LogType", LogType.RestApi)
             .ForContext("Direction", LogDirection.In)
@@ -93,7 +97,7 @@ public class RestApiLoggingMiddleware(RequestDelegate next)
             .ForContext("Headers", headers.WriteIndentedJson())
             .ForContext(
                 "Flow",
-                headers is not null && headers.TryGetValue("Flow", out var flowValue)
+                headers is not null && headers.TryGetValue("Flow", out string? flowValue)
                     ? flowValue.ToString()
                     : null
             );
@@ -116,7 +120,7 @@ public class RestApiLoggingMiddleware(RequestDelegate next)
 
         try
         {
-            var dataObject = jsonString.FromJson<object>();
+            object? dataObject = jsonString.FromJson<object>();
             return dataObject.WriteIndentedJson();
         }
         catch

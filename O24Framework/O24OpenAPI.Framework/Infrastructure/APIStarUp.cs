@@ -28,14 +28,15 @@ public class APIStarUp : IO24OpenAPIStartup
     {
         services.AddMemoryCache();
         services.AddSingleton<IMemoryCacheService, MemoryCacheManager>();
-        services.AddControllers()
-                .AddJsonOptions(opts =>
-                {
-                    opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
-                    opts.JsonSerializerOptions.Converters.Add(
-                        new System.Text.Json.Serialization.JsonStringEnumConverter()
-                    );
-                });
+        services
+            .AddControllers()
+            .AddJsonOptions(opts =>
+            {
+                opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+                opts.JsonSerializerOptions.Converters.Add(
+                    new System.Text.Json.Serialization.JsonStringEnumConverter()
+                );
+            });
 
         services.AddGrpc(options =>
         {
@@ -189,7 +190,6 @@ public class APIStarUp : IO24OpenAPIStartup
     /// <param name="application">The application</param>
     public void Configure(IApplicationBuilder application)
     {
-        application.UseHttpsRedirection();
         application.UseRouting();
         application.UseCors(policyName: "CorsPolicy");
         application.UseAuthorization();

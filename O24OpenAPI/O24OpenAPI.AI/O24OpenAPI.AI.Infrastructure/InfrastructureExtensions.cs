@@ -13,7 +13,8 @@ public static class InfrastructureExtensions
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
         services.AddLinKitDependency();
-        QdrantSettingConfig? qdrantSettingConfig = Singleton<AppSettings>.Instance.Get<QdrantSettingConfig>();
+        QdrantSettingConfig? qdrantSettingConfig =
+            Singleton<AppSettings>.Instance?.Get<QdrantSettingConfig>();
         if (qdrantSettingConfig is not null)
             services.AddSingleton(_ =>
             {

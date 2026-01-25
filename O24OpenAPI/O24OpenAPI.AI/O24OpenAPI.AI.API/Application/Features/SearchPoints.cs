@@ -1,5 +1,6 @@
 ﻿using LinKit.Core.Cqrs;
 using O24OpenAPI.AI.API.Application.Utils;
+using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Models;
 using Qdrant.Client;
 using Qdrant.Client.Grpc;
@@ -30,10 +31,10 @@ public sealed record SearchHit(
 );
 
 [CqrsHandler]
-public sealed class SearchPointsCommandHandler(QdrantClient qdrant)
+public sealed class SearchPointsCommandHandler()
     : ICommandHandler<SearchPointsCommand, SearchPointsResponse>
 {
-    private readonly QdrantClient _qdrant = qdrant;
+    private readonly QdrantClient _qdrant = EngineContext.Current.Resolve<QdrantClient>();
 
     public async Task<SearchPointsResponse> HandleAsync(
         SearchPointsCommand request,
@@ -47,7 +48,7 @@ public sealed class SearchPointsCommandHandler(QdrantClient qdrant)
             throw new ArgumentException("QueryText is required.", nameof(request.QueryText));
 
         // 1) embedding fake inline
-        var vector = Embedding.BuildFakeEmbedding(request.QueryText, request.VectorSize);
+        float[] vector = Embedding.BuildFakeEmbedding(request.QueryText, request.VectorSize);
 
         // 2) build filter: tenant_id must match, doc_type/language optional
         var must = new List<Condition>
@@ -122,7 +123,7 @@ public sealed class SearchPointsCommandHandler(QdrantClient qdrant)
         var hits = results
             .Select(p =>
             {
-                var id = p.Id?.Uuid ?? p.Id?.Num.ToString() ?? "";
+                string id = p.Id?.Uuid ?? p.Id?.Num.ToString() ?? "";
                 var payload = p.Payload;
 
                 var docIdVal = payload?.GetValueOrDefault("doc_id");

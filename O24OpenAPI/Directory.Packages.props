@@ -23,5 +23,6 @@
     <PackageVersion Include="FirebaseAdmin" Version="3.4.0" />
     <PackageVersion Include="Telegram.Bot" Version="22.7.7-dev.3" />
     <PackageVersion Include="Telegram.Bot.AspNetCore" Version="22.5.0" />
+    <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0" />
   </ItemGroup>
 </Project>

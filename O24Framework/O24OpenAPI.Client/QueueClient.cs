@@ -282,7 +282,7 @@ public class QueueClient : MyConsole
                 {
                     lock (objLockSetup)
                     {
-                        Console.WriteLine("Connection status == " + IsConnected);
+                        Console.WriteLine("Queue Connection status == " + IsConnected);
                         if (!IsConnected)
                         {
                             WriteLine(

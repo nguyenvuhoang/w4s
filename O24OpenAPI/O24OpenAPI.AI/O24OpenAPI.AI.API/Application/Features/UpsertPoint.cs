@@ -1,5 +1,6 @@
 ﻿using LinKit.Core.Cqrs;
 using O24OpenAPI.AI.API.Application.Utils;
+using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Models;
 using Qdrant.Client;
 using Qdrant.Client.Grpc;
@@ -26,12 +27,12 @@ public record UpsertPointResponse(
 );
 
 [CqrsHandler]
-public class UpsertPointCommandHandler(QdrantClient qdrant)
+public class UpsertPointCommandHandler
     : ICommandHandler<UpsertPointCommand, UpsertPointResponse>
 {
     private const string Collection = "o24_static_knowledge_v1";
     private const int VectorSize = 1536;
-    private readonly QdrantClient _qdrant = qdrant;
+    private readonly QdrantClient _qdrant = EngineContext.Current.Resolve<QdrantClient>();
 
     public async Task<UpsertPointResponse> HandleAsync(
         UpsertPointCommand request,
@@ -47,12 +48,12 @@ public class UpsertPointCommandHandler(QdrantClient qdrant)
         if (string.IsNullOrWhiteSpace(request.Content))
             throw new ArgumentException("Content is required.", nameof(request.Content));
 
-        var vector = Embedding.BuildFakeEmbedding(request.Content, VectorSize);
+        float[] vector = Embedding.BuildFakeEmbedding(request.Content, VectorSize);
 
         if (vector.Length != VectorSize)
             throw new InvalidOperationException($"Embedding must be length {VectorSize}.");
 
-        var pointId = string.IsNullOrWhiteSpace(request.PointId)
+        string pointId = string.IsNullOrWhiteSpace(request.PointId)
             ? Guid.NewGuid().ToString("N")
             : request.PointId.Trim();
 

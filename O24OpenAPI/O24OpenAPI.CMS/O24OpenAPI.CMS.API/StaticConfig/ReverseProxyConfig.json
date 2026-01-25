@@ -1,0 +1,27 @@
+{
+  "ReverseProxy": {
+    "Routes": {
+      "chat-sse": {
+        "ClusterId": "AIService",
+        "Match": {
+          "Path": "/api/chat"
+        }
+      }
+    },
+    "Clusters": {
+      "AIService": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://localhost:5080/"
+          }
+        },
+        "HttpRequest": {
+          "ActivityTimeout": "00:10:00",
+          "Version": "1.1",
+          "VersionPolicy": "RequestVersionExact",
+          "AllowResponseBuffering": false
+        }
+      }
+    }
+  }
+}

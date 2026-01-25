@@ -1,5 +1,6 @@
 ﻿using LinKit.Core.Cqrs;
 using O24OpenAPI.AI.API.Application.Utils;
+using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Models;
 using Qdrant.Client;
 using Qdrant.Client.Grpc;
@@ -24,17 +25,13 @@ public sealed record AskResponse(string Answer, IReadOnlyList<RagCitation> Citat
 public sealed record RagCitation(string PointId, float Score, string DocId, string Title);
 
 [CqrsHandler]
-public sealed class AskCommandHandler(QdrantClient qdrant)
-    : ICommandHandler<AskCommand, AskResponse>
+public sealed class AskCommandHandler() : ICommandHandler<AskCommand, AskResponse>
 {
     private const int VectorSize = 1536;
 
-    private readonly QdrantClient _qdrant = qdrant;
+    private readonly QdrantClient _qdrant = EngineContext.Current.Resolve<QdrantClient>();
 
-    public async Task<AskResponse> HandleAsync(
-        AskCommand request,
-        CancellationToken ct = default
-    )
+    public async Task<AskResponse> HandleAsync(AskCommand request, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(request.TenantId))
             throw new ArgumentException("TenantId is required.", nameof(request.TenantId));
@@ -43,10 +40,10 @@ public sealed class AskCommandHandler(QdrantClient qdrant)
             throw new ArgumentException("Question is required.", nameof(request.Question));
 
         // 1) Embed (fake deterministic)
-        var vector = Embedding.BuildFakeEmbedding(request.Question, VectorSize);
+        float[] vector = Embedding.BuildFakeEmbedding(request.Question, VectorSize);
 
         // 2) Build filter
-        var filter = new Filter();
+        Filter filter = new();
         filter.Must.Add(
             new Condition
             {
@@ -96,7 +93,7 @@ public sealed class AskCommandHandler(QdrantClient qdrant)
         );
 
         // 4) Apply threshold + map citations
-        var filtered = results.Where(x => x.Score >= request.MinScore).ToList();
+        List<ScoredPoint> filtered = results.Where(x => x.Score >= request.MinScore).ToList();
 
         if (filtered.Count == 0)
         {
@@ -106,10 +103,10 @@ public sealed class AskCommandHandler(QdrantClient qdrant)
             );
         }
 
-        var citations = filtered
+        List<RagCitation> citations = filtered
             .Select(p =>
             {
-                var id = p.Id?.Uuid ?? p.Id?.Num.ToString() ?? "";
+                string id = p.Id?.Uuid ?? p.Id?.Num.ToString() ?? "";
 
                 Value? docIdVal = null;
                 Value? titleVal = null;
@@ -143,13 +140,13 @@ public sealed class AskCommandHandler(QdrantClient qdrant)
             top.Payload.TryGetValue("doc_id", out topDocIdVal);
         }
 
-        var content = contentVal?.StringValue ?? "";
-        var title = topTitleVal?.StringValue;
-        var docId = topDocIdVal?.StringValue;
+        string content = contentVal?.StringValue ?? "";
+        string title = topTitleVal?.StringValue;
+        string docId = topDocIdVal?.StringValue;
 
-        var snippet = TrimTo(content, 800);
+        string snippet = TrimTo(content, 800);
 
-        var answer =
+        string answer =
             $"{snippet}\n\nNguồn: {(string.IsNullOrWhiteSpace(title) ? "Tài liệu" : title)}"
             + (string.IsNullOrWhiteSpace(docId) ? "" : $" ({docId})")
             + $" | score={top.Score:0.###}";
