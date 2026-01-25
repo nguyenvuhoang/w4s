@@ -84,7 +84,7 @@ public sealed class AskCommandHandler() : ICommandHandler<AskCommand, AskRespons
         }
 
         // 3) Search
-        var results = await _qdrant.SearchAsync(
+        IReadOnlyList<ScoredPoint> results = await _qdrant.SearchAsync(
             collectionName: request.Collection,
             vector: vector,
             filter: filter,
@@ -108,8 +108,8 @@ public sealed class AskCommandHandler() : ICommandHandler<AskCommand, AskRespons
             {
                 string id = p.Id?.Uuid ?? p.Id?.Num.ToString() ?? "";
 
-                Value? docIdVal = null;
-                Value? titleVal = null;
+                Value docIdVal = null;
+                Value titleVal = null;
 
                 if (p.Payload is not null)
                 {
@@ -127,11 +127,11 @@ public sealed class AskCommandHandler() : ICommandHandler<AskCommand, AskRespons
             .ToList();
 
         // 5) Compose answer (rule-based)
-        var top = filtered[0];
+        ScoredPoint top = filtered[0];
 
-        Value? contentVal = null;
-        Value? topTitleVal = null;
-        Value? topDocIdVal = null;
+        Value contentVal = null;
+        Value topTitleVal = null;
+        Value topDocIdVal = null;
 
         if (top.Payload is not null)
         {

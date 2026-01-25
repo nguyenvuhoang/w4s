@@ -16,19 +16,13 @@ public class UpsertPointCommand : BaseTransactionModel, ICommand<UpsertPointResp
     public string DocId { get; set; } = default!;
     public string Title { get; set; }
     public string Content { get; set; } = default!;
-    public Dictionary<string, object>? Extra { get; set; }
+    public Dictionary<string, object> Extra { get; set; }
 }
 
-public record UpsertPointResponse(
-    string PointId,
-    string Collection,
-    int VectorSize,
-    bool QdrantOk
-);
+public record UpsertPointResponse(string PointId, string Collection, int VectorSize, bool QdrantOk);
 
 [CqrsHandler]
-public class UpsertPointCommandHandler
-    : ICommandHandler<UpsertPointCommand, UpsertPointResponse>
+public class UpsertPointCommandHandler : ICommandHandler<UpsertPointCommand, UpsertPointResponse>
 {
     private const string Collection = "o24_static_knowledge_v1";
     private const int VectorSize = 1536;
@@ -57,7 +51,7 @@ public class UpsertPointCommandHandler
             ? Guid.NewGuid().ToString("N")
             : request.PointId.Trim();
 
-        var payload = new Dictionary<string, Value>
+        Dictionary<string, Value> payload = new()
         {
             ["tenant_id"] = request.TenantId,
             ["doc_id"] = request.DocId,
@@ -70,7 +64,7 @@ public class UpsertPointCommandHandler
             ["user_code"] = request.CurrentUserCode ?? "",
         };
 
-        UpdateResult? result = await _qdrant.UpsertAsync(
+        UpdateResult result = await _qdrant.UpsertAsync(
             collectionName: Collection,
             points:
             [

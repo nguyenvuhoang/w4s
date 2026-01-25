@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using O24OpenAPI.CMS.API.Application.Models.Media;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces;
 using O24OpenAPI.CMS.API.Application.Services.Interfaces.Media;
@@ -9,6 +8,7 @@ using O24OpenAPI.Framework.Controllers;
 using O24OpenAPI.Framework.Models.JwtModels;
 using O24OpenAPI.Framework.Services;
 using O24OpenAPI.Framework.Utils;
+using System.Security.Cryptography;
 
 namespace O24OpenAPI.CMS.API.Controllers;
 
@@ -95,7 +95,7 @@ public class MediaController(IMediaService mediaService, CMSSetting cmsSetting) 
         //  UPLOAD TO S3
         // ============================
 
-        IFileStorageService? storage = EngineContext.Current.Resolve<IFileStorageService>();
+        IFileStorageService storage = EngineContext.Current.Resolve<IFileStorageService>();
         string category = string.IsNullOrWhiteSpace(folder) ? "general" : folder.Trim();
 
         using MemoryStream stream = new(fileBytes);

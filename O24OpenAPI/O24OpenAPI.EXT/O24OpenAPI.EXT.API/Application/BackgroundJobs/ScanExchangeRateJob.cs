@@ -12,15 +12,13 @@ namespace O24OpenAPI.EXT.API.Application.BackgroundJobs;
 [BackgroundJob("ScanExchangeRate")]
 public class ScanExchangeRateJob : BackgroundJobCommand { }
 
-
 [CqrsHandler]
 public class ScanExchangeRateJobHandler(
-        IHttpClientFactory httpClientFactory,
-        ILogger<ScanExchangeRateJobHandler> logger,
-        EXTSetting extSetting,
-        IExchangeRateRepository exchangeRateRepository
-    ) :
-    ICommandHandler<ScanExchangeRateJob>
+    IHttpClientFactory httpClientFactory,
+    ILogger<ScanExchangeRateJobHandler> logger,
+    EXTSetting extSetting,
+    IExchangeRateRepository exchangeRateRepository
+) : ICommandHandler<ScanExchangeRateJob>
 {
     public async Task<Unit> HandleAsync(
         ScanExchangeRateJob request,
@@ -29,7 +27,6 @@ public class ScanExchangeRateJobHandler(
     {
         try
         {
-
             DateTime localTime = TimeZoneInfo.ConvertTimeFromUtc(
                 DateTime.UtcNow,
                 TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time")
@@ -38,28 +35,30 @@ public class ScanExchangeRateJobHandler(
             Console.WriteLine("[EXT] ScanExchangeRateJob Starting::" + localTime);
             Console.ForegroundColor = ConsoleColor.White;
 
-            var vcbUrl = extSetting.VcbUrl;
+            string vcbUrl = extSetting.VcbUrl;
             if (string.IsNullOrWhiteSpace(vcbUrl))
                 throw new InvalidOperationException("EXTSetting.VcbUrl is empty.");
 
-            var xml = await FetchXmlAsync(vcbUrl, cancellationToken);
+            string xml = await FetchXmlAsync(vcbUrl, cancellationToken);
 
             var parsed = ParseVietcombankXml(xml);
 
             await exchangeRateRepository.Truncate(resetIdentity: true);
 
-            var entities = parsed.Items.Select(item => new ExchangeRate
-            {
-                RateDateUtc = parsed.RateDateUtc,
-                CurrencyCode = item.CurrencyCode,
-                CurrencyName = item.CurrencyName,
-                Buy = item.Buy,
-                Transfer = item.Transfer,
-                Sell = item.Sell,
-                Source = parsed.Source,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow
-            }).ToList();
+            var entities = parsed
+                .Items.Select(item => new ExchangeRate
+                {
+                    RateDateUtc = parsed.RateDateUtc,
+                    CurrencyCode = item.CurrencyCode,
+                    CurrencyName = item.CurrencyName,
+                    Buy = item.Buy,
+                    Transfer = item.Transfer,
+                    Sell = item.Sell,
+                    Source = parsed.Source,
+                    CreatedOnUtc = DateTime.UtcNow,
+                    UpdatedOnUtc = DateTime.UtcNow,
+                })
+                .ToList();
 
             await exchangeRateRepository.BulkInsert(entities);
         }
@@ -74,18 +73,25 @@ public class ScanExchangeRateJobHandler(
     {
         var client = httpClientFactory.CreateClient(nameof(ScanExchangeRateJobHandler));
         client.DefaultRequestHeaders.Accept.Clear();
-        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml"));
+        client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/xml")
+        );
         client.Timeout = TimeSpan.FromSeconds(30);
 
         using var resp = await client.GetAsync(url, ct);
         resp.EnsureSuccessStatusCode();
 
-        var xml = await resp.Content.ReadAsStringAsync(ct);
+        string xml = await resp.Content.ReadAsStringAsync(ct);
 
-        if (string.IsNullOrWhiteSpace(xml) ||
-            !xml.Contains("<ExrateList", StringComparison.OrdinalIgnoreCase))
+        if (
+            string.IsNullOrWhiteSpace(xml)
+            || !xml.Contains("<ExrateList", StringComparison.OrdinalIgnoreCase)
+        )
         {
-            logger.LogWarning("Vietcombank returned unexpected content. Length={Length}", xml?.Length ?? 0);
+            logger.LogWarning(
+                "Vietcombank returned unexpected content. Length={Length}",
+                xml?.Length ?? 0
+            );
             throw new InvalidOperationException("Exchange rate XML is empty or invalid.");
         }
 
@@ -97,11 +103,23 @@ public class ScanExchangeRateJobHandler(
         var doc = XDocument.Parse(xml);
         var root = doc.Root ?? throw new InvalidOperationException("XML root not found.");
 
-        var dateText = root.Element("DateTime")?.Value?.Trim();
-        var source = root.Element("Source")?.Value?.Trim();
+        string dateText = root.Element("DateTime")?.Value?.Trim();
+        string source = root.Element("Source")?.Value?.Trim();
 
-        if (!DateTime.TryParse(dateText, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime rateLocal) &&
-            !DateTime.TryParse(dateText, CultureInfo.CurrentCulture, DateTimeStyles.None, out rateLocal))
+        if (
+            !DateTime.TryParse(
+                dateText,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out DateTime rateLocal
+            )
+            && !DateTime.TryParse(
+                dateText,
+                CultureInfo.CurrentCulture,
+                DateTimeStyles.None,
+                out rateLocal
+            )
+        )
         {
             rateLocal = DateTime.Now;
         }
@@ -110,11 +128,11 @@ public class ScanExchangeRateJobHandler(
 
         var items = root.Elements("Exrate")
             .Select(x => new VcbRateItem(
-                CurrencyCode: (string?)x.Attribute("CurrencyCode") ?? "",
-                CurrencyName: (string?)x.Attribute("CurrencyName") ?? "",
-                Buy: ParseDecimalNullable((string?)x.Attribute("Buy")),
-                Transfer: ParseDecimalNullable((string?)x.Attribute("Transfer")),
-                Sell: ParseDecimalNullable((string?)x.Attribute("Sell"))
+                CurrencyCode: (string)x.Attribute("CurrencyCode") ?? "",
+                CurrencyName: (string)x.Attribute("CurrencyName") ?? "",
+                Buy: ParseDecimalNullable((string)x.Attribute("Buy")),
+                Transfer: ParseDecimalNullable((string)x.Attribute("Transfer")),
+                Sell: ParseDecimalNullable((string)x.Attribute("Sell"))
             ))
             .Where(x => !string.IsNullOrWhiteSpace(x.CurrencyCode))
             .ToList();
@@ -122,31 +140,50 @@ public class ScanExchangeRateJobHandler(
         return new VcbParsedResult(rateUtc, source, items);
     }
 
-    private static decimal? ParseDecimalNullable(string? s)
+    private static decimal? ParseDecimalNullable(string s)
     {
         if (string.IsNullOrWhiteSpace(s) || s.Trim() == "-")
             return null;
 
         s = s.Trim();
 
-        if (decimal.TryParse(
+        if (
+            decimal.TryParse(
                 s,
-                NumberStyles.AllowThousands | NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign,
+                NumberStyles.AllowThousands
+                    | NumberStyles.AllowDecimalPoint
+                    | NumberStyles.AllowLeadingSign,
                 CultureInfo.InvariantCulture,
-                out var value))
+                out decimal value
+            )
+        )
             return value;
 
-        var normalized = s.Replace(",", "");
-        if (decimal.TryParse(
+        string normalized = s.Replace(",", "");
+        if (
+            decimal.TryParse(
                 normalized,
                 NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign,
                 CultureInfo.InvariantCulture,
-                out value))
+                out value
+            )
+        )
             return value;
 
         return null;
     }
 
-    private sealed record VcbParsedResult(DateTime RateDateUtc, string? Source, List<VcbRateItem> Items);
-    private sealed record VcbRateItem(string CurrencyCode, string CurrencyName, decimal? Buy, decimal? Transfer, decimal? Sell);
+    private sealed record VcbParsedResult(
+        DateTime RateDateUtc,
+        string Source,
+        List<VcbRateItem> Items
+    );
+
+    private sealed record VcbRateItem(
+        string CurrencyCode,
+        string CurrencyName,
+        decimal? Buy,
+        decimal? Transfer,
+        decimal? Sell
+    );
 }

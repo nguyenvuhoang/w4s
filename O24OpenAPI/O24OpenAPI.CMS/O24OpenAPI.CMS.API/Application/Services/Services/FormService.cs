@@ -40,7 +40,7 @@ public partial class FormService(IRepository<Form> FormRepository) : IFormServic
 
     public virtual async Task<FormModel> GetByIdAndApp(string formCode, string app)
     {
-        FormModel? getForm = await _formRepository
+        FormModel getForm = await _formRepository
             .Table.Where(s => s.App.Equals(app.Trim()) && s.FormId.Equals(formCode.Trim()))
             .Select(s => new FormModel
             {
@@ -78,7 +78,7 @@ public partial class FormService(IRepository<Form> FormRepository) : IFormServic
     public async Task FeedDataRequestMapping()
     {
         List<Form> forms = await GetAll();
-        ITypeFinder? _typeFinder = EngineContext.Current.Resolve<ITypeFinder>();
+        ITypeFinder _typeFinder = EngineContext.Current.Resolve<ITypeFinder>();
         foreach (Form form in forms)
         {
             if (form.MasterData.NullOrEmpty())

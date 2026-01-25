@@ -5,6 +5,7 @@ using O24OpenAPI.APIContracts.Models.CTH;
 using O24OpenAPI.CMS.API.Application.Models;
 using O24OpenAPI.CMS.API.Application.Utils;
 using O24OpenAPI.CMS.Domain.AggregateModels.FormAggregate;
+using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Framework.Attributes;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
@@ -152,60 +153,64 @@ public class LoadFormHandler(
         return roleTask;
     }
 
-    private async Task<Dictionary<string, object>?> BuildRoleTaskOfForm(
-    List<int> listRoleId,
-    string app,
-    string formCode,
-    FormModel? formConfig
-)
+    private async Task<Dictionary<string, object>> BuildRoleTaskOfForm(
+        List<int> listRoleId,
+        string app,
+        string formCode,
+        FormModel formConfig
+    )
     {
-        var result = new Dictionary<string, object>();
+        Dictionary<string, object> result = [];
 
         formConfig ??= await formService.GetByIdAndApp(formCode, app);
-        if (formConfig == null) return null;
+        if (formConfig == null)
+            return null;
 
-        var listLayout = formConfig.ListLayout ?? [];
+        List<Dictionary<string, object>> listLayout = formConfig.ListLayout ?? [];
 
         try
         {
-            var menuByFormList = await cTHGrpcClientService.GetInfoFromFormCodeAsync(app, formCode);
+            List<CTHUserCommandModel> menuByFormList = await cTHGrpcClientService.GetInfoFromFormCodeAsync(app, formCode);
 
-            var commandIds = menuByFormList
+            List<string> commandIds = menuByFormList
                 .Select(x => x?.CommandId)
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
-            var rightsByCommand = new Dictionary<string, List<CTHCommandIdInfoModel>>(StringComparer.OrdinalIgnoreCase);
-            var childrenByCommand = new Dictionary<string, List<CTHCommandIdInfoModel>>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, List<CTHCommandIdInfoModel>> rightsByCommand = new(
+                StringComparer.OrdinalIgnoreCase
+            );
+            Dictionary<string, List<CTHCommandIdInfoModel>> childrenByCommand = new(
+                StringComparer.OrdinalIgnoreCase
+            );
 
-            foreach (var cid in commandIds)
+            foreach (string cid in commandIds)
             {
-                var r1 = await cTHGrpcClientService.GetInfoFromCommandIdAsync(app, cid)
-                         ?? [];
+                List<CTHCommandIdInfoModel> r1 = await cTHGrpcClientService.GetInfoFromCommandIdAsync(app, cid) ?? [];
                 rightsByCommand[cid] = r1;
 
-                var r2 = await cTHGrpcClientService.GetInfoFromParentIdAsync(app, cid)
-                         ?? [];
+                List<CTHCommandIdInfoModel> r2 = await cTHGrpcClientService.GetInfoFromParentIdAsync(app, cid) ?? [];
                 childrenByCommand[cid] = r2;
             }
 
-            var baseRoleTask = BuildBaseRoleTaskFromLayout(listLayout, formCode);
+            JObject baseRoleTask = BuildBaseRoleTaskFromLayout(listLayout, formCode);
 
-            foreach (var roleId in listRoleId)
+            foreach (int roleId in listRoleId)
             {
-                var roleTaskRole = (JObject)baseRoleTask.DeepClone();
+                JObject roleTaskRole = (JObject)baseRoleTask.DeepClone();
 
-                foreach (var cid in commandIds)
+                foreach (string cid in commandIds)
                 {
-                    if (!rightsByCommand.TryGetValue(cid, out var rights)) continue;
+                    if (!rightsByCommand.TryGetValue(cid, out List<CTHCommandIdInfoModel> rights))
+                        continue;
 
-                    var right = rights.FirstOrDefault(x => x.RoleId == roleId);
+                    CTHCommandIdInfoModel right = rights.FirstOrDefault(x => x.RoleId == roleId);
                     if (right != null)
                     {
                         roleTaskRole[cid] = new ComponentRoleModel
                         {
-                            component = new RoleTaskModel { install = right.Invoke == 1 }
+                            component = new RoleTaskModel { install = right.Invoke == 1 },
                         }.ToJToken();
                     }
                     else
@@ -214,15 +219,16 @@ public class LoadFormHandler(
                             roleTaskRole[cid] = new ComponentRoleModel().ToJToken();
                     }
 
-                    if (childrenByCommand.TryGetValue(cid, out var childs))
+                    if (childrenByCommand.TryGetValue(cid, out List<CTHCommandIdInfoModel> childs))
                     {
-                        foreach (var ch in childs.Where(x => x.RoleId == roleId))
+                        foreach (CTHCommandIdInfoModel ch in childs.Where(x => x.RoleId == roleId))
                         {
-                            if (string.IsNullOrWhiteSpace(ch.CommandId)) continue;
+                            if (string.IsNullOrWhiteSpace(ch.CommandId))
+                                continue;
 
                             roleTaskRole[ch.CommandId] = new ComponentRoleModel
                             {
-                                component = new RoleTaskModel { install = ch.Invoke == 1 }
+                                component = new RoleTaskModel { install = ch.Invoke == 1 },
                             }.ToJToken();
                         }
                     }
@@ -230,7 +236,6 @@ public class LoadFormHandler(
                 roleTaskRole[formCode] ??= new FormRoleModel().ToJToken();
 
                 result[roleId.ToString()] = roleTaskRole;
-
             }
         }
         catch (Exception ex)
@@ -246,44 +251,46 @@ public class LoadFormHandler(
         string formCode
     )
     {
-        var roleTaskRole = new JObject
-        {
-            [formCode] = new FormRoleModel().ToJToken()
-        };
+        JObject roleTaskRole = new() { [formCode] = new FormRoleModel().ToJToken() };
 
-        foreach (var layout in listLayout)
+        foreach (Dictionary<string, object> layout in listLayout)
         {
-            var layoutCode = layout.GetValueOrDefault("codeHidden")?.ToString();
+            string layoutCode = layout.GetValueOrDefault("codeHidden")?.ToString();
             if (!string.IsNullOrWhiteSpace(layoutCode))
                 roleTaskRole[layoutCode] = new LayoutRoleModel().ToJToken();
 
-            var viewsJson = layout.GetValueOrDefault("list_view")?.ToString();
-            if (string.IsNullOrWhiteSpace(viewsJson)) continue;
+            string viewsJson = layout.GetValueOrDefault("list_view")?.ToString();
+            if (string.IsNullOrWhiteSpace(viewsJson))
+                continue;
 
-            var views = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(viewsJson)
-                        ?? [];
+            List<Dictionary<string, object>> views =
+                JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(viewsJson) ?? [];
 
-            foreach (var view in views)
+            foreach (Dictionary<string, object> view in views)
             {
-                var viewCode = view.GetValueOrDefault("codeHidden")?.ToString();
+                string viewCode = view.GetValueOrDefault("codeHidden")?.ToString();
                 if (!string.IsNullOrWhiteSpace(viewCode))
                     roleTaskRole[viewCode] = new ViewRoleModel().ToJToken();
 
-                var inputsJson = view.GetValueOrDefault("list_input")?.ToString();
-                if (string.IsNullOrWhiteSpace(inputsJson)) continue;
+                string inputsJson = view.GetValueOrDefault("list_input")?.ToString();
+                if (string.IsNullOrWhiteSpace(inputsJson))
+                    continue;
 
-                var inputs = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(inputsJson)
-                            ?? [];
+                List<Dictionary<string, object>> inputs =
+                    JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(inputsJson)
+                    ?? [];
 
-                foreach (var component in inputs)
+                foreach (Dictionary<string, object> component in inputs)
                 {
-                    var defObj = component.GetValueOrDefault("default");
-                    if (defObj == null) continue;
+                    object defObj = component.GetValueOrDefault("default");
+                    if (defObj == null)
+                        continue;
 
-                    var def = JObject.FromObject(defObj);
-                    var commandId = def["codeHidden"]?.ToString();
+                    JObject def = JObject.FromObject(defObj);
+                    string commandId = def["codeHidden"]?.ToString();
 
-                    if (string.IsNullOrWhiteSpace(commandId)) continue;
+                    if (string.IsNullOrWhiteSpace(commandId))
+                        continue;
 
                     if (roleTaskRole[commandId] == null)
                         roleTaskRole[commandId] = new ComponentRoleModel().ToJToken();
@@ -293,5 +300,4 @@ public class LoadFormHandler(
 
         return roleTaskRole;
     }
-
 }

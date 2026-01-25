@@ -8,14 +8,14 @@ namespace O24OpenAPI.W4S.Domain.AggregatesModel.WalletMasterAggregate;
 public partial class WalletStatement : BaseEntity
 {
     public int WalletId { get; set; }
-    public string? AccountNumber { get; set; }
+    public string AccountNumber { get; set; }
 
     // ===== Statement time =====
     public DateTime StatementOnUtc { get; set; } // posting time (ledger time)
     public DateTime? TransactionOnUtc { get; set; } // original tx time (bank/payment/manual)
 
     // ===== Ledger entry =====
-    public string? EntryType { get; set; } // Debit/Credit/Adjustment
+    public string EntryType { get; set; } // Debit/Credit/Adjustment
     public decimal Amount { get; set; }
     public string CurrencyCode { get; set; } = "VND";
 
@@ -30,22 +30,22 @@ public partial class WalletStatement : BaseEntity
     public int EventId { get; set; } // link to wallet event/calendar item
 
     // ===== Source & References =====
-    public string? Source { get; set; } // Manual/Payment/BankImport/Sync/Adjustment...
-    public string? ReferenceType { get; set; } // e.g. "WalletTransaction", "Payment", "BankImportLine"
-    public string? ReferenceId { get; set; } // reference key from other system/module
-    public string? ExternalRef { get; set; } // bank trace id, gateway txn id, etc.
+    public string Source { get; set; } // Manual/Payment/BankImport/Sync/Adjustment...
+    public string ReferenceType { get; set; } // e.g. "WalletTransaction", "Payment", "BankImportLine"
+    public string ReferenceId { get; set; } // reference key from other system/module
+    public string ExternalRef { get; set; } // bank trace id, gateway txn id, etc.
 
     // Reconciliation / matching
     public bool IsReconciled { get; set; } = true;
     public DateTime? ReconciledOnUtc { get; set; }
-    public string? ReconciledBy { get; set; }
+    public string ReconciledBy { get; set; }
 
     // ===== Status =====
     public string Status { get; set; } = WalletStatementStatus.POSTED;
 
     // ===== Audit / Integrity (Phase 4: blockchain/audit hash) =====
-    public string? EntryHash { get; set; }
-    public string? BlockchainTxHash { get; set; } // on-chain tx hash if anchored
+    public string EntryHash { get; set; }
+    public string BlockchainTxHash { get; set; } // on-chain tx hash if anchored
     public DateTime? AnchoredOnUtc { get; set; }
 
 
@@ -60,10 +60,10 @@ public partial class WalletStatement : BaseEntity
          string description,
          int categoryId = 0,
          int eventId = 0,
-         string? source = null,
-         string? referenceType = null,
-         string? referenceId = null,
-         string? externalRef = null,
+         string source = null,
+         string referenceType = null,
+         string referenceId = null,
+         string externalRef = null,
          DateTime? transactionOnUtc = null,
          string status = WalletStatementStatus.POSTED
      )
@@ -74,11 +74,11 @@ public partial class WalletStatement : BaseEntity
         if (amount <= 0) throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be > 0");
 
         // Statement entry type: Debit/Credit/Adjustment (string)
-        var entryType = drCr == DrCr.C ? "Credit" : "Debit";
+        string entryType = drCr == DrCr.C ? "Credit" : "Debit";
 
         // Ledger rule: Credit => +, Debit => -
-        var signed = drCr == DrCr.C ? amount : -amount;
-        var closing = openingBalance + signed;
+        decimal signed = drCr == DrCr.C ? amount : -amount;
+        decimal closing = openingBalance + signed;
 
         return new WalletStatement
         {

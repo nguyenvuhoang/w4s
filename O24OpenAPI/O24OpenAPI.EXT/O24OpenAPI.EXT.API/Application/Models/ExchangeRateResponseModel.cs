@@ -37,6 +37,6 @@ namespace O24OpenAPI.EXT.API.Application.Models
         /// <summary>
         /// Nguồn dữ liệu (Vietcombank)
         /// </summary>
-        public string? Source { get; set; }
+        public string Source { get; set; }
     }
 }

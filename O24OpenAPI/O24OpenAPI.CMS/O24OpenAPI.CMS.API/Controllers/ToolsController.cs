@@ -34,7 +34,6 @@ public class ToolsController(
         return Ok("Successfully");
     }
 
-
     [HttpPost]
     public virtual async Task<IActionResult> ExportCodeListToFile(
         List<ExportCodeListModel> listFields,
@@ -179,21 +178,20 @@ public class ToolsController(
         return Ok("Successful");
     }
 
-
     [HttpPost]
     public async Task<IActionResult> UpdateAllFormForNewWorkflow()
     {
-        var response = new List<UpdateFormForNewWorkflowResponse>();
+        List<UpdateFormForNewWorkflowResponse> response = [];
         try
         {
-            IFormService? service = EngineContext.Current.Resolve<IFormService>();
+            IFormService service = EngineContext.Current.Resolve<IFormService>();
             List<Form> forms = await service.GetAll();
             foreach (Form form in forms)
             {
-                var update = new UpdateFormForNewWorkflowResponse { FormId = form.FormId };
+                UpdateFormForNewWorkflowResponse update = new() { FormId = form.FormId };
                 try
                 {
-                    var layoutArray = JArray.Parse(form.ListLayout);
+                    JArray layoutArray = JArray.Parse(form.ListLayout);
                     foreach (JToken layout in layoutArray)
                     {
                         if (layout["list_view"] is JArray listViewArray)
@@ -242,7 +240,9 @@ public class ToolsController(
                                                         }
 
                                                         JObject fieldsObject = [];
-                                                        foreach (JProperty prop in inputObj.Properties())
+                                                        foreach (
+                                                            JProperty prop in inputObj.Properties()
+                                                        )
                                                         {
                                                             if (
                                                                 prop.Name != "learn_api"
@@ -374,9 +374,9 @@ public class ToolsController(
     {
         try
         {
-            IFormService? service = EngineContext.Current.Resolve<IFormService>();
-            var form = await service.GetByIdAndApp(formId, app);
-            var layoutArray = JArray.Parse(form.ListLayout.ToSerialize());
+            IFormService service = EngineContext.Current.Resolve<IFormService>();
+            FormModel form = await service.GetByIdAndApp(formId, app);
+            JArray layoutArray = JArray.Parse(form.ListLayout.ToSerialize());
             foreach (JToken layout in layoutArray)
             {
                 if (layout["list_view"] is JArray listViewArray)
@@ -473,7 +473,7 @@ public class ToolsController(
         string queueEncoded = Uri.EscapeDataString(queueName);
         string url = $"{baseUrl}queues/{vhostEncoded}/{queueEncoded}";
 
-        using var client = new HttpClient();
+        using HttpClient client = new();
 
         string raw = $"{username}:{password}";
         byte[] bytes = Encoding.ASCII.GetBytes(raw);
@@ -499,10 +499,11 @@ public class ToolsController(
             }
 
             string json = await response.Content.ReadAsStringAsync();
-            RabbitQueueDetail? queue = System.Text.Json.JsonSerializer.Deserialize<RabbitQueueDetail>(
-                json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-            );
+            RabbitQueueDetail queue =
+                System.Text.Json.JsonSerializer.Deserialize<RabbitQueueDetail>(
+                    json,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                );
 
             int consumerCount = queue?.Consumers ?? 0;
 

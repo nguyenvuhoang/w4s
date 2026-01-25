@@ -11,8 +11,8 @@ public static class ChatEndpoints
     {
         app.MapGet("api/chat", async (
             HttpContext context,
-            [FromQuery] string? message,
-            [FromQuery] string? conversationId,
+            [FromQuery] string message,
+            [FromQuery] string conversationId,
             ILogger<Program> logger) =>
         {
             // 1. Validate UID header
@@ -24,7 +24,7 @@ public static class ChatEndpoints
                 return;
             }
 
-            var jwtToken = uidHeader.ToString();
+            string jwtToken = uidHeader.ToString();
             logger.LogInformation("Received request - Message: {Message}, ConvId: {ConvId}, Token: {Token}",
                 message, conversationId, jwtToken.Substring(0, 50) + "...");
 
@@ -88,7 +88,7 @@ public static class ChatEndpoints
 
     private static async Task SendSseCommentAsync(HttpContext context, string comment)
     {
-        var data = Encoding.UTF8.GetBytes($": {comment}\n\n");
+        byte[] data = Encoding.UTF8.GetBytes($": {comment}\n\n");
         await context.Response.Body.WriteAsync(data);
         await context.Response.Body.FlushAsync();
     }
@@ -96,8 +96,8 @@ public static class ChatEndpoints
     private static async Task SendSseDataAsync(
         HttpContext context,
         object data,
-        string? eventId = null,
-        string? eventName = null)
+        string eventId = null,
+        string eventName = null)
     {
         var sb = new StringBuilder();
 
@@ -111,14 +111,14 @@ public static class ChatEndpoints
             sb.Append($"event: {eventName}\n");
         }
 
-        var json = System.Text.Json.JsonSerializer.Serialize(data, new System.Text.Json.JsonSerializerOptions
+        string json = System.Text.Json.JsonSerializer.Serialize(data, new System.Text.Json.JsonSerializerOptions
         {
             PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
         });
 
         sb.Append($"data: {json}\n\n");
 
-        var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+        byte[] bytes = Encoding.UTF8.GetBytes(sb.ToString());
         await context.Response.Body.WriteAsync(bytes);
         await context.Response.Body.FlushAsync();
     }
@@ -132,7 +132,7 @@ public static class ChatEndpoints
         sb.Append($"event: {eventName}\n");
         sb.Append($"data: {message}\n\n");
 
-        var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+        byte[] bytes = Encoding.UTF8.GetBytes(sb.ToString());
         await context.Response.Body.WriteAsync(bytes);
         await context.Response.Body.FlushAsync();
     }

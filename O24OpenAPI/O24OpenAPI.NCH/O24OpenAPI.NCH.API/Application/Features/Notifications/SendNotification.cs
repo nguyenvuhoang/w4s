@@ -107,7 +107,7 @@ public class SendNotificationHandler(
         catch (Exception ex)
         {
             _ = ex.LogErrorAsync(
-                new Dictionary<string, object?>
+                new Dictionary<string, object>
                 {
                     ["RuntimeType"] = request?.GetType().FullName,
                     ["NotificationType"] = request?.NotificationType,
