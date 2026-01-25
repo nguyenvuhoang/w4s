@@ -329,7 +329,7 @@ public class QueueClient : MyConsole
             RequestedHeartbeat = TimeSpan.FromSeconds(30.0),
             ClientProvidedName = "QueueClient:" + ServiceInfo.service_code,
         };
-        if (ServiceInfo.ssl_active.ToUpper().Equals("Y"))
+        if (ServiceInfo.ssl_active?.Equals("Y", StringComparison.OrdinalIgnoreCase) == true)
         {
             __Factory.Ssl.Enabled = true;
             __Factory.Ssl.CertPath = Local_SSL_CERT_PATH;
