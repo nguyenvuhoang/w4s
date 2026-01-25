@@ -13,7 +13,7 @@ public partial class WalletTransaction : BaseEntity
     /// <summary>
     /// Gets or sets the TransactionId
     /// </summary>
-    public string? TRANSACTIONID { get; set; }
+    public string TRANSACTIONID { get; set; }
 
     /// <summary>
     /// Gets or sets the TransactionDate
@@ -40,65 +40,65 @@ public partial class WalletTransaction : BaseEntity
     /// </summary>
     [Required]
     [MaxLength(20)]
-    public string? TRANSACTIONCODE { get; set; }
+    public string TRANSACTIONCODE { get; set; }
 
     /// <summary>
     /// Gets or sets the CcyId
     /// </summary>
     [MaxLength(10)]
-    public string? CCYID { get; set; }
+    public string CCYID { get; set; }
 
     /// <summary>
     /// Gets or sets the SourceId
     /// </summary>
     [Required]
     [MaxLength(20)]
-    public string? SOURCEID { get; set; }
+    public string SOURCEID { get; set; }
 
     /// <summary>
     /// Gets or sets the SourceTranRef
     /// </summary>
     [Required]
     [MaxLength(100)]
-    public string? SOURCETRANREF { get; set; }
+    public string SOURCETRANREF { get; set; }
 
     /// <summary>
     /// Gets or sets the UserId
     /// </summary>
     [Required]
     [MaxLength(50)]
-    public string? USERID { get; set; }
+    public string USERID { get; set; }
 
     /// <summary>
     /// Gets or sets the UserCurApp
     /// </summary>
     [MaxLength(2000)]
-    public string? USERCURAPP { get; set; }
+    public string USERCURAPP { get; set; }
 
     /// <summary>
     /// Gets or sets the NextUserApp
     /// </summary>
     [MaxLength(2000)]
-    public string? NEXTUSERAPP { get; set; }
+    public string NEXTUSERAPP { get; set; }
 
     /// <summary>
     /// Gets or sets the ListUserApp
     /// </summary>
-    public string? LISTUSERAPP { get; set; }
+    public string LISTUSERAPP { get; set; }
 
     /// <summary>
     /// Gets or sets the TranDesc
     /// </summary>
     [Required]
     [MaxLength(400)]
-    public string? TRANDESC { get; set; }
+    public string TRANDESC { get; set; }
 
     /// <summary>
     /// Gets or sets the Status
     /// </summary>
     [Required]
     [MaxLength(10)]
-    public string? STATUS { get; set; }
+    public string STATUS { get; set; }
 
     /// <summary>
     /// Gets or sets the ApprSts
@@ -110,7 +110,7 @@ public partial class WalletTransaction : BaseEntity
     /// </summary>
     [Required]
     [MaxLength(1)]
-    public string? OFFLSTS { get; set; }
+    public string OFFLSTS { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether Deleted
@@ -122,19 +122,19 @@ public partial class WalletTransaction : BaseEntity
     /// </summary>
     [Required]
     [MaxLength(20)]
-    public string? DESTID { get; set; }
+    public string DESTID { get; set; }
 
     /// <summary>
     /// Gets or sets the DestTranRef
     /// </summary>
     [MaxLength(20)]
-    public string? DESTTRANREF { get; set; }
+    public string DESTTRANREF { get; set; }
 
     /// <summary>
     /// Gets or sets the DestErrorCode
     /// </summary>
     [MaxLength(50)]
-    public string? DESTERRORCODE { get; set; }
+    public string DESTERRORCODE { get; set; }
 
     /// <summary>
     /// Gets or sets the ErrorCode
@@ -158,154 +158,154 @@ public partial class WalletTransaction : BaseEntity
     /// <summary>
     /// Gets or sets the Char01
     /// </summary>
-    public string? CHAR01 { get; set; }
+    public string CHAR01 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char02
     /// </summary>
-    public string? CHAR02 { get; set; }
+    public string CHAR02 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char03
     /// </summary>
-    public string? CHAR03 { get; set; }
+    public string CHAR03 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char04
     /// </summary>
-    public string? CHAR04 { get; set; }
+    public string CHAR04 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char05
     /// </summary>
-    public string? CHAR05 { get; set; }
+    public string CHAR05 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char06
     /// </summary>
-    public string? CHAR06 { get; set; }
+    public string CHAR06 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char07
     /// </summary>
-    public string? CHAR07 { get; set; }
+    public string CHAR07 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char08
     /// </summary>
-    public string? CHAR08 { get; set; }
+    public string CHAR08 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char09
     /// </summary>
-    public string? CHAR09 { get; set; }
+    public string CHAR09 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char10
     /// </summary>
-    public string? CHAR10 { get; set; }
+    public string CHAR10 { get; set; }
 
     /// <summary>
     /// <summary>
     /// Gets or sets the Char11
     /// </summary>
-    public string? CHAR11 { get; set; }
+    public string CHAR11 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char12
     /// </summary>
-    public string? CHAR12 { get; set; }
+    public string CHAR12 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char13
     /// </summary>
-    public string? CHAR13 { get; set; }
+    public string CHAR13 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char14
     /// </summary>
-    public string? CHAR14 { get; set; }
+    public string CHAR14 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char15
     /// </summary>
-    public string? CHAR15 { get; set; }
+    public string CHAR15 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char16
     /// </summary>
-    public string? CHAR16 { get; set; }
+    public string CHAR16 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char17
     /// </summary>
-    public string? CHAR17 { get; set; }
+    public string CHAR17 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char20
     /// <summary>
     /// Gets or sets the Char18
     /// </summary>
-    public string? CHAR18 { get; set; }
+    public string CHAR18 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char19
     /// </summary>
-    public string? CHAR19 { get; set; }
+    public string CHAR19 { get; set; }
 
     /// </summary>
-    public string? CHAR20 { get; set; }
+    public string CHAR20 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char21
     /// </summary>
-    public string? CHAR21 { get; set; }
+    public string CHAR21 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char22
     /// </summary>
-    public string? CHAR22 { get; set; }
+    public string CHAR22 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char23
     /// </summary>
-    public string? CHAR23 { get; set; }
+    public string CHAR23 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char24
     /// </summary>
-    public string? CHAR24 { get; set; }
+    public string CHAR24 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char25
     /// </summary>
-    public string? CHAR25 { get; set; }
+    public string CHAR25 { get; set; }
 
     /// <summary>
     /// <summary>
     /// Gets or sets the Char26
     /// </summary>
-    public string? CHAR26 { get; set; }
+    public string CHAR26 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char27
     /// </summary>
-    public string? CHAR27 { get; set; }
+    public string CHAR27 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char28
     /// </summary>
-    public string? CHAR28 { get; set; }
+    public string CHAR28 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char29
     /// </summary>
-    public string? CHAR29 { get; set; }
+    public string CHAR29 { get; set; }
 
     /// <summary>
     /// Gets or sets the Char30
     /// </summary>
-    public string? CHAR30 { get; set; }
+    public string CHAR30 { get; set; }
 
     /// <summary>
     /// Gets or sets the Num01
@@ -415,17 +415,17 @@ public partial class WalletTransaction : BaseEntity
     /// <summary>
     /// Gets or sets the BatchRef
     /// </summary>
-    public string? BATCHREF { get; set; }
+    public string BATCHREF { get; set; }
 
     /// <summary>
     /// Gets or sets the AuthenType
     /// </summary>
-    public string? AUTHENTYPE { get; set; }
+    public string AUTHENTYPE { get; set; }
 
     /// <summary>
     /// Gets or sets the AuthenCode
     /// </summary>
-    public string? AUTHENCODE { get; set; }
+    public string AUTHENCODE { get; set; }
 
     public static WalletTransaction Create(
         string transactionId,
@@ -450,7 +450,7 @@ public partial class WalletTransaction : BaseEntity
 
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(amount);
 
-        var now = DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow;
         return new WalletTransaction
         {
             TRANSACTIONID = transactionId,

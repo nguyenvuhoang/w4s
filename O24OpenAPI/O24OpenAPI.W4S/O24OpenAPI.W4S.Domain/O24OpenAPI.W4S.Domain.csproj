@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>disable</Nullable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Core\O24OpenAPI.Core.csproj" />

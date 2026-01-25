@@ -1,6 +1,4 @@
-﻿using System.Text;
-using System.Text.Json;
-using LinKit.Json.Runtime;
+﻿using LinKit.Json.Runtime;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -18,6 +16,8 @@ using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Logging.Helpers;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Text;
+using System.Text.Json;
 
 namespace O24OpenAPI.Client;
 
@@ -340,7 +340,7 @@ public class QueueClient : MyConsole
         {
             await CreateConnection();
         }
-        __CommandChannel = await __Connection.CreateChannelAsync();
+        __CommandChannel = await __Connection!.CreateChannelAsync();
         __EventChannel = await __Connection.CreateChannelAsync();
         return true;
     }
@@ -356,8 +356,8 @@ public class QueueClient : MyConsole
         {
             return;
         }
-
-        await __CommandSemaphore.WaitAsync();
+        if (__CommandSemaphore is not null)
+            await __CommandSemaphore.WaitAsync();
         try
         {
             WFScheme workflow =
@@ -382,7 +382,7 @@ public class QueueClient : MyConsole
                     System.Text.Json.JsonSerializer.Deserialize<WorkContextTemplate>(
                         workContextBytes
                     );
-                EngineContext.Current.Resolve<WorkContext>().SetWorkContext(workContext);
+                EngineContext.Current.ResolveRequired<WorkContext>().SetWorkContext(workContext);
             }
             else
             {
@@ -415,18 +415,18 @@ public class QueueClient : MyConsole
                     }
                 }
 
-                __CommandSemaphore.Release();
+                __CommandSemaphore?.Release();
                 await Task.WhenAll(tasks);
             }
             else
             {
-                __CommandSemaphore.Release();
+                __CommandSemaphore?.Release();
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"[Error] {ex}");
-            __CommandSemaphore.Release();
+            __CommandSemaphore?.Release();
             throw;
         }
     }
@@ -440,7 +440,8 @@ public class QueueClient : MyConsole
     {
         try
         {
-            await __EventSemaphore.WaitAsync();
+            if (__EventSemaphore is not null)
+                await __EventSemaphore.WaitAsync();
             if (this.WorkflowExecutionEvent == null)
             {
                 return;
@@ -605,7 +606,7 @@ public class QueueClient : MyConsole
         }
         finally
         {
-            __EventSemaphore.Release();
+            __EventSemaphore?.Release();
         }
     }
 
@@ -616,7 +617,11 @@ public class QueueClient : MyConsole
     /// <returns>A task containing the bool</returns>
     public async Task<bool> CreateQueue(string pQueueName, bool autoDelete = false)
     {
-        await __CommandChannel.QueueDeclareAsync(
+        if (__CommandChannel == null)
+        {
+            await CreateChannel();
+        }
+        await __CommandChannel!.QueueDeclareAsync(
             pQueueName,
             durable: true,
             exclusive: false,
