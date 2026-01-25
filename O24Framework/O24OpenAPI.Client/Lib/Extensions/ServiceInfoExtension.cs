@@ -38,7 +38,7 @@ public static class ServiceInfoExtension
         serviceInfo.broker_port = serviceInfoResult.broker_port;
         serviceInfo.concurrent_threads = serviceInfoResult.concurrent_threads;
         serviceInfo.ssl_active = serviceInfoResult.ssl_active;
-        if (serviceInfo.ssl_active.ToUpper().Equals("Y"))
+        if (serviceInfo.ssl_active?.Equals("Y", StringComparison.OrdinalIgnoreCase) == true)
         {
             serviceInfo.ssl_cert_pass_pharse = serviceInfoResult.ssl_cert_pass_pharse;
             serviceInfo.ssl_cert_servername = serviceInfoResult.ssl_cert_servername;
@@ -58,7 +58,6 @@ public static class ServiceInfoExtension
         serviceInfo.redis_server_name = serviceInfoResult.redis_server_name;
         serviceInfo.redis_server_port = serviceInfoResult.redis_server_port;
         serviceInfo.is_tracking = serviceInfoResult.is_tracking;
-        serviceInfo.props = serviceInfoResult.props;
         serviceInfo.workflow_execution_timeout_seconds =
             serviceInfoResult.workflow_execution_timeout_seconds;
     }

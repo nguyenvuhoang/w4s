@@ -9,8 +9,8 @@ public static class KeyvaultExtension
 
     public static string GetSecretKey()
     {
-        var json = InfisicalManager.GetSecretByKey<SecretVaultModel>(key);
-        string vaultKey = json.SecretKey;
+        SecretVaultModel? secretVaultModel = InfisicalManager.GetSecretByKey<SecretVaultModel>(key);
+        string? vaultKey = secretVaultModel?.SecretKey;
         return vaultKey;
     }
 }

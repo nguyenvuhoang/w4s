@@ -256,7 +256,7 @@ public class O24OpenAPIFileProvider(IWebHostEnvironment webHostEnvironment)
     /// <returns>The string</returns>
     public virtual string GetAbsolutePath(params string[] paths)
     {
-        List<string> stringList = new List<string>();
+        List<string> stringList = [];
         if (
             paths.Any<string>()
             && !paths[0].Contains(this.WebRootPath, StringComparison.InvariantCulture)
@@ -317,7 +317,7 @@ public class O24OpenAPIFileProvider(IWebHostEnvironment webHostEnvironment)
     /// </summary>
     /// <param name="path">The path</param>
     /// <returns>The string</returns>
-    public virtual string GetDirectoryName(string path) => Path.GetDirectoryName(path);
+    public virtual string? GetDirectoryName(string path) => Path.GetDirectoryName(path);
 
     /// <summary>
     /// Gets the directory name only using the specified path
@@ -406,9 +406,9 @@ public class O24OpenAPIFileProvider(IWebHostEnvironment webHostEnvironment)
     /// </summary>
     /// <param name="directoryPath">The directory path</param>
     /// <returns>The string</returns>
-    public virtual string GetParentDirectory(string directoryPath)
+    public virtual string? GetParentDirectory(string directoryPath)
     {
-        return Directory.GetParent(directoryPath).FullName;
+        return Directory.GetParent(directoryPath)?.FullName;
     }
 
     /// <summary>
@@ -416,7 +416,7 @@ public class O24OpenAPIFileProvider(IWebHostEnvironment webHostEnvironment)
     /// </summary>
     /// <param name="path">The path</param>
     /// <returns>The string</returns>
-    public virtual string GetVirtualPath(string path)
+    public virtual string? GetVirtualPath(string? path)
     {
         if (string.IsNullOrEmpty(path))
         {
@@ -428,7 +428,7 @@ public class O24OpenAPIFileProvider(IWebHostEnvironment webHostEnvironment)
             path = new FileInfo(path).DirectoryName;
         }
 
-        string str;
+        string? str;
         if (path == null)
         {
             str = null;
@@ -494,12 +494,7 @@ public class O24OpenAPIFileProvider(IWebHostEnvironment webHostEnvironment)
     {
         StreamReader streamReader;
         await using (
-            FileStream fileStream = new FileStream(
-                path,
-                FileMode.Open,
-                FileAccess.Read,
-                FileShare.ReadWrite
-            )
+            FileStream fileStream = new(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
         )
         {
             streamReader = new StreamReader(fileStream, encoding);
@@ -526,15 +521,10 @@ public class O24OpenAPIFileProvider(IWebHostEnvironment webHostEnvironment)
     public virtual string ReadAllText(string path, Encoding encoding)
     {
         using (
-            FileStream fileStream = new FileStream(
-                path,
-                FileMode.Open,
-                FileAccess.Read,
-                FileShare.ReadWrite
-            )
+            FileStream fileStream = new(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
         )
         {
-            using (StreamReader streamReader = new StreamReader(fileStream, encoding))
+            using (StreamReader streamReader = new(fileStream, encoding))
             {
                 return streamReader.ReadToEnd();
             }

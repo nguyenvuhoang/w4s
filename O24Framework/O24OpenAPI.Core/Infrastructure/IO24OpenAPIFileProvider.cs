@@ -132,7 +132,7 @@ public interface IO24OpenAPIFileProvider : IFileProvider
     /// </summary>
     /// <param name="path">The path</param>
     /// <returns>The string</returns>
-    string GetDirectoryName(string path);
+    string? GetDirectoryName(string path);
 
     /// <summary>
     /// Gets the directory name only using the specified path
@@ -201,14 +201,14 @@ public interface IO24OpenAPIFileProvider : IFileProvider
     /// </summary>
     /// <param name="directoryPath">The directory path</param>
     /// <returns>The string</returns>
-    string GetParentDirectory(string directoryPath);
+    string? GetParentDirectory(string directoryPath);
 
     /// <summary>
     /// Gets the virtual path using the specified path
     /// </summary>
     /// <param name="path">The path</param>
     /// <returns>The string</returns>
-    string GetVirtualPath(string path);
+    string? GetVirtualPath(string path);
 
     /// <summary>
     /// Describes whether this instance is directory

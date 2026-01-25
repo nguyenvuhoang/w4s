@@ -24,7 +24,7 @@ public class UserRightChannelRepository(
         return await Table.Where(s => s.ChannelId == channelId).Select(s => s.RoleId).ToListAsync();
     }
 
-    public async Task<HashSet<string>> GetSetChannelInRoleAsync(int roleId)
+    public async Task<HashSet<string?>> GetSetChannelInRoleAsync(int roleId)
     {
         return await Table
             .Where(s => s.RoleId == roleId)
@@ -38,13 +38,13 @@ public class UserRightChannelRepository(
         HashSet<string> result = [];
         foreach (int role in roleId)
         {
-            HashSet<string?> set = await Table
+            HashSet<string> set = await Table
                 .Where(s => s.RoleId == role)
                 .Select(s => s.ChannelId)
                 .AsAsyncEnumerable()
                 .ToHashSetAsync();
-
-            result.UnionWith(set);
+            if (set.Count > 0)
+                result.UnionWith(set);
         }
         return result;
     }

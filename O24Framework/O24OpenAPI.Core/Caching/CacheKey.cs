@@ -80,7 +80,7 @@ public class CacheKey
     /// /// Gets or sets the value of the cache time
     /// </summary>
     public int CacheTime { get; set; } =
-        Singleton<AppSettings>.Instance.Get<CacheConfig>().DefaultCacheTime;
+        Singleton<AppSettings>.Instance?.Get<CacheConfig>()?.DefaultCacheTime ?? 60;
 
     /// <summary>
     /// Gets or sets the value of the is forever
@@ -149,7 +149,7 @@ public class CacheKey
         }
         else if (_prefixes?.Count > 0)
         {
-            var parts = new List<string>(_prefixes);
+            List<string> parts = new(_prefixes);
             if (keyObjects.Length > 0)
             {
                 var partsToAdd = keyObjects

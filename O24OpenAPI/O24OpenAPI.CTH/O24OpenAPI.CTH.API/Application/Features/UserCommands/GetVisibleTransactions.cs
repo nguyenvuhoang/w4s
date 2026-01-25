@@ -11,9 +11,7 @@ namespace O24OpenAPI.CTH.API.Application.Features.UserCommands;
 public class GetVisibleTransactionsCommand
     : BaseTransactionModel,
         ICommand<List<VisibleTransactionResponse>>
-{
-    public string ChannelId { get; set; } = default!;
-}
+{ }
 
 [CqrsHandler]
 public class GetVisibleTransactionsHandle(IUserCommandRepository userCommandRepository)
@@ -30,7 +28,7 @@ public class GetVisibleTransactionsHandle(IUserCommandRepository userCommandRepo
 
     public async Task<List<VisibleTransactionResponse>> GetVisibleTransactions(string channelId)
     {
-        var q =
+        IQueryable<VisibleTransactionResponse> q =
             from userCommand in userCommandRepository.Table.Where(s =>
                 s.ApplicationCode == channelId
                 && s.Enabled

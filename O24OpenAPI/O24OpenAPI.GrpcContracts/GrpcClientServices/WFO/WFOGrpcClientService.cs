@@ -22,7 +22,7 @@ public class WFOGrpcClientService : BaseGrpcClientService, IWFOGrpcClientService
         {
             {
                 "flow",
-                $"{Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID} -> {ServerId}"
+                $"{Singleton<O24OpenAPIConfiguration>.Instance?.YourServiceID} -> {ServerId}"
             },
         };
     }
@@ -32,7 +32,7 @@ public class WFOGrpcClientService : BaseGrpcClientService, IWFOGrpcClientService
         ExecuteWorkflowRequest request = new() { WorkflowInputJson = workflowInputJson };
         WFOGrpcService.WFOGrpcServiceClient wfoGrpcClient =
             await _grpcClientFactory.GetClientAsync<WFOGrpcService.WFOGrpcServiceClient>();
-        var result = await wfoGrpcClient
+        string result = await wfoGrpcClient
             .ExecuteWorkflowAsync(request, _defaultHeader)
             .CallAsync<string>();
         if (string.IsNullOrWhiteSpace(result))
@@ -60,7 +60,7 @@ public class WFOGrpcClientService : BaseGrpcClientService, IWFOGrpcClientService
         };
         WFOGrpcService.WFOGrpcServiceClient wfoGrpcClient =
             await _grpcClientFactory.GetClientAsync<WFOGrpcService.WFOGrpcServiceClient>();
-        var result = await wfoGrpcClient
+        string result = await wfoGrpcClient
             .RegisterServiceGrpcEndpointAsync(request, _defaultHeader)
             .CallAsync<string>();
         return result;
@@ -112,7 +112,7 @@ public class WFOGrpcClientService : BaseGrpcClientService, IWFOGrpcClientService
         HelloRequest request = new() { Name = name };
         WFOGrpcService.WFOGrpcServiceClient wfoGrpcClient =
             await _grpcClientFactory.GetClientAsync<WFOGrpcService.WFOGrpcServiceClient>();
-        var result = await wfoGrpcClient.PingAsync(request, _defaultHeader).CallAsync<string>();
+        string result = await wfoGrpcClient.PingAsync(request, _defaultHeader).CallAsync<string>();
         return result;
     }
 }

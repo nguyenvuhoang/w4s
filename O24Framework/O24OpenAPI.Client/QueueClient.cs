@@ -27,168 +27,64 @@ namespace O24OpenAPI.Client;
 /// <seealso cref="MyConsole"/>
 public class QueueClient : MyConsole
 {
-    /// <summary>
-    /// The message delivering delegate
-    /// </summary>
     public delegate Task MessageDeliveringDelegate(string content);
 
-    /// <summary>
-    /// The workflow delivering delegate
-    /// </summary>
     public delegate Task WorkflowDeliveringDelegate(WFScheme workflow);
 
-    /// <summary>
-    /// The workflow execution event delegate
-    /// </summary>
     public delegate Task WorkflowExecutionEventDelegate(
         O24OpenAPIEvent<WorkflowExecutionEventData> pWorkflowExecutionEvent
     );
 
-    /// <summary>
-    /// The archiving event delegate
-    /// </summary>
     public delegate Task ArchivingEventDelegate(
         O24OpenAPIEvent<WorkflowArchivingEventData> pWorkflowArchiveEvent
     );
 
-    /// <summary>
-    /// The purging event delegate
-    /// </summary>
     public delegate Task PurgingEventDelegate(
         O24OpenAPIEvent<WorkflowPurgingEventData> pWorkflowPurgeEvent
     );
 
-    /// <summary>
-    /// The service to service event delegate
-    /// </summary>
     public delegate Task ServiceToServiceEventDelegate(
         O24OpenAPIEvent<ServiceToServiceEventData> pServiceToServiceEvent
     );
 
-    /// <summary>
-    /// The method invocation event delegate
-    /// </summary>
     public delegate Task MethodInvocationEventDelegate(
         O24OpenAPIEvent<MethodInvocationEventData> pMethodInvocationEvent
     );
 
-    /// <summary>
-    /// The log event delegate
-    /// </summary>
     public delegate Task LogEventDelegate(O24OpenAPIEvent<LogEventData> pServiceToServiceEvent);
 
-    /// <summary>
-    /// The entity event delegate
-    /// </summary>
     public delegate Task EntityEventDelegate(O24OpenAPIEvent<EntityEvent> pServiceToServiceEvent);
 
-    /// <summary>
-    /// The cdc event delegate
-    /// </summary>
     public delegate Task CDCEventDelegate(O24OpenAPIEvent<CDCEvent> cdcEvent);
 
     public delegate Task LogWorkflowStepDelegate(O24OpenAPIEvent<StepExecutionEvent> stepEvent);
 
-    /// <summary>
-    /// The enum internal step code enum
-    /// </summary>
-    private enum EnumInternalStepCode
-    {
-        /// <summary>
-        /// The 24 open api client enum internal step code
-        /// </summary>
-        O24OpenAPIClient,
-
-        /// <summary>
-        /// The 24 open api client echo enum internal step code
-        /// </summary>
-        O24OpenAPIClientEcho,
-    }
-
-    // /// <summary>
-    // /// The ping encryption scheme class
-    // /// </summary>
-    // private class PingEncryptionScheme
-    // {
-    //     /// <summary>
-    //     /// The data
-    //     /// </summary>
-    //     public string data;
-    // }
-
-    /// <summary>
-    /// The is connected
-    /// </summary>
     private bool IsConnected;
 
-    /// <summary>
-    /// The obj lock setup
-    /// </summary>
     private readonly object objLockSetup = new();
 
-    /// <summary>
-    /// The connection
-    /// </summary>
-    private IConnection __Connection;
+    private IConnection? __Connection;
 
-    /// <summary>
-    /// The commandchannel
-    /// </summary>
-    private IChannel __CommandChannel;
+    private IChannel? __CommandChannel;
 
-    /// <summary>
-    /// The eventchannel
-    /// </summary>
-    private IChannel __EventChannel;
+    private IChannel? __EventChannel;
 
-    /// <summary>
-    /// The factory
-    /// </summary>
     private ConnectionFactory __Factory;
 
-    /// <summary>
-    /// The lockserviceinfoobject
-    /// </summary>
     private readonly object __lockServiceInfoObject = new();
 
-    /// <summary>
-    /// The service info
-    /// </summary>
     private ServiceInfo __ServiceInfo = new();
 
-    /// <summary>
-    /// The local ssl cert path
-    /// </summary>
     public string Local_SSL_CERT_PATH = "";
 
-    /// <summary>
-    /// The command queue consumer
-    /// </summary>
     private AsyncEventingBasicConsumer CommandQueueConsumer;
 
-    /// <summary>
-    /// The event queue consumer
-    /// </summary>
     private AsyncEventingBasicConsumer EventQueueConsumer;
 
-    /// <summary>
-    /// Gets or sets the value of the   command semaphore
-    /// </summary>
     private static SemaphoreSlim? __CommandSemaphore { get; set; }
 
-    /// <summary>
-    /// Gets or sets the value of the   event semaphore
-    /// </summary>
     private static SemaphoreSlim? __EventSemaphore { get; set; }
 
-    /// <summary>
-    /// Gets the value of the instance id
-    /// </summary>
-    private string InstanceID { get; } = Guid.NewGuid().ToString();
-
-    /// <summary>
-    /// Gets or sets the value of the service info
-    /// </summary>
     public ServiceInfo ServiceInfo
     {
         get
@@ -230,16 +126,24 @@ public class QueueClient : MyConsole
     /// </summary>
     public QueueClient()
     {
-        if (Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID == "WFO")
-        {
-            ServiceInfo = new ServiceInfo(
-                Singleton<AppSettings>.Instance.Get<ServiceInfoConfiguration>()
+        O24OpenAPIClientConfiguration o24Config =
+            Singleton<O24OpenAPIClientConfiguration>.Instance
+            ?? throw new InvalidOperationException(
+                "O24OpenAPIClientConfiguration is not configured."
             );
+        if (o24Config.YourServiceID == "WFO")
+        {
+            ServiceInfoConfiguration? wfoServiceInfo =
+                (Singleton<AppSettings>.Instance?.Get<ServiceInfoConfiguration>())
+                ?? throw new InvalidOperationException(
+                    "ServiceInfoConfiguration for WFO is not configured."
+                );
+            ServiceInfo = new ServiceInfo(wfoServiceInfo);
         }
         else
         {
             ServiceInfo = new ServiceInfo();
-            O24OpenAPIClientConfiguration o24config =
+            O24OpenAPIClientConfiguration? o24config =
                 Singleton<O24OpenAPIClientConfiguration>.Instance;
             ServiceInfo
                 .QueryServiceInfo(
@@ -247,7 +151,8 @@ public class QueueClient : MyConsole
                     o24config.YourServiceID,
                     o24config.YourInstanceID
                 )
-                .GetAsyncResult();
+                .GetAwaiter()
+                .GetResult();
         }
 
         Console.WriteLine(
@@ -255,9 +160,13 @@ public class QueueClient : MyConsole
                 + JsonConvert.SerializeObject(ServiceInfo, Formatting.Indented)
         );
 
-        if (ServiceInfo.ssl_active.ToUpper().Equals("Y"))
+        if (ServiceInfo.ssl_active?.Equals("Y", StringComparison.OrdinalIgnoreCase) == true)
         {
             Local_SSL_CERT_PATH = Directory.GetCurrentDirectory() + "/queue-client-cert.pfx";
+            if (string.IsNullOrWhiteSpace(ServiceInfo.ssl_cert_base64))
+            {
+                throw new InvalidOperationException("SSL is active but ssl_cert_base64 is empty.");
+            }
             byte[] bytes = Convert.FromBase64String(ServiceInfo.ssl_cert_base64);
             File.WriteAllBytes(Local_SSL_CERT_PATH, bytes);
         }
@@ -274,7 +183,7 @@ public class QueueClient : MyConsole
             (int)ServiceInfo.concurrent_threads
         );
         SchedulerService.IntervalInSeconds(
-            InstanceID,
+            o24Config.YourInstanceID,
             ServiceInfo.broker_reconnect_interval_in_seconds,
             delegate
             {
@@ -314,7 +223,7 @@ public class QueueClient : MyConsole
         {
             if (__Connection != null)
             {
-                await __Connection?.CloseAsync();
+                await __Connection.CloseAsync();
             }
 
             __Connection?.Dispose();
@@ -548,7 +457,7 @@ public class QueueClient : MyConsole
                 return;
             }
 
-            List<Task> tasks = new();
+            List<Task> tasks = [];
 
             switch (eventData.EventType)
             {

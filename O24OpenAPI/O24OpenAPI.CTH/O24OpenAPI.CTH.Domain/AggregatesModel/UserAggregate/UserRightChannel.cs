@@ -18,7 +18,7 @@ public partial class UserRightChannel : BaseEntity
     /// <summary>
     /// Gets or sets the value of the channel id
     /// </summary>
-    public string? ChannelId { get; set; }
+    public string ChannelId { get; set; } = string.Empty;
 
     /// <summary>
     /// /// Gets or sets the value of the invoke

@@ -29,7 +29,7 @@ public class CDCMigration : BaseMigration
 
         #region add table LastProcessedLSN
 
-        string cdcSchema = Singleton<O24OpenAPIConfiguration>.Instance.YourCDCSchema;
+        string? cdcSchema = Singleton<O24OpenAPIConfiguration>.Instance?.YourCDCSchema;
 
         if (
             !string.IsNullOrEmpty(cdcSchema)
@@ -50,12 +50,12 @@ public class CDCMigration : BaseMigration
 
         #region add schedule job to process cdc
 
-        if (string.IsNullOrEmpty(Singleton<O24OpenAPIConfiguration>.Instance.YourCDCSchema))
+        if (string.IsNullOrEmpty(Singleton<O24OpenAPIConfiguration>.Instance?.YourCDCSchema))
         {
             throw new Exception("YourCDCSchema is null");
         }
 
-        var task = new ScheduleTask()
+        ScheduleTask task = new()
         {
             Name = "CheckCDC",
             Seconds = 10,
