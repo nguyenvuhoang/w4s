@@ -21,15 +21,15 @@ public class CTHGrpcClientService : BaseGrpcClientService, ICTHGrpcClientService
         {
             {
                 "flow",
-                $"{Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID} -> {ServerId}"
+                $"{Singleton<O24OpenAPIConfiguration>.Instance?.YourServiceID} -> {ServerId}"
             },
         };
     }
 
     public async Task<CTHUserSessionModel> GetUserSessionAsync(string token)
     {
-        var request = new GetUserSessionRequest { Token = token };
-        var cthGrpcClient =
+        GetUserSessionRequest request = new() { Token = token };
+        CTHGrpcService.CTHGrpcServiceClient cthGrpcClient =
             await _grpcClientFactory.GetClientAsync<CTHGrpcService.CTHGrpcServiceClient>();
         return await cthGrpcClient
             .GetUserSessionAsync(request, _defaultHeader)
@@ -38,8 +38,8 @@ public class CTHGrpcClientService : BaseGrpcClientService, ICTHGrpcClientService
 
     public async Task<HashSet<string>> GetChannelRolesAsync(int roleId)
     {
-        var request = new GetChannelRolesRequest { RoleId = roleId };
-        var cthGrpcClient =
+        GetChannelRolesRequest request = new() { RoleId = roleId };
+        CTHGrpcService.CTHGrpcServiceClient cthGrpcClient =
             await _grpcClientFactory.GetClientAsync<CTHGrpcService.CTHGrpcServiceClient>();
         return await cthGrpcClient
             .GetChannelRolesAsync(request, _defaultHeader)
@@ -48,8 +48,8 @@ public class CTHGrpcClientService : BaseGrpcClientService, ICTHGrpcClientService
 
     public async Task<string> GetUserPushIdAsync(string userCode)
     {
-        var request = new GetUserPushIdRequest { UserCode = userCode };
-        var cthGrpcClient =
+        GetUserPushIdRequest request = new() { UserCode = userCode };
+        CTHGrpcService.CTHGrpcServiceClient cthGrpcClient =
             await _grpcClientFactory.GetClientAsync<CTHGrpcService.CTHGrpcServiceClient>();
         return await cthGrpcClient.GetUserPushIdAsync(request, _defaultHeader).CallAsync<string>();
     }
@@ -59,12 +59,12 @@ public class CTHGrpcClientService : BaseGrpcClientService, ICTHGrpcClientService
         string roleCommand
     )
     {
-        var request = new LoadUserCommandsRequest
+        LoadUserCommandsRequest request = new()
         {
             ApplicationCode = applicationCode,
             RoleCommand = roleCommand,
         };
-        var cthGrpcClient =
+        CTHGrpcService.CTHGrpcServiceClient cthGrpcClient =
             await _grpcClientFactory.GetClientAsync<CTHGrpcService.CTHGrpcServiceClient>();
         return await cthGrpcClient
             .LoadUserCommandsAsync(request, _defaultHeader)
@@ -76,12 +76,12 @@ public class CTHGrpcClientService : BaseGrpcClientService, ICTHGrpcClientService
         string formCode
     )
     {
-        var request = new GetInfoFromFormCodeRequest
+        GetInfoFromFormCodeRequest request = new()
         {
             ApplicationCode = applicationCode,
             FormCode = formCode,
         };
-        var cthGrpcClient =
+        CTHGrpcService.CTHGrpcServiceClient cthGrpcClient =
             await _grpcClientFactory.GetClientAsync<CTHGrpcService.CTHGrpcServiceClient>();
         return await cthGrpcClient
             .GetInfoFromFormCodeAsync(request)
@@ -90,8 +90,8 @@ public class CTHGrpcClientService : BaseGrpcClientService, ICTHGrpcClientService
 
     public async Task<List<CTHUserInRoleModel>> GetListRoleByUserCodeAsync(string userCode)
     {
-        var request = new GetListRoleByUserCodeRequest { UserCode = userCode };
-        var cthGrpcClient =
+        GetListRoleByUserCodeRequest request = new() { UserCode = userCode };
+        CTHGrpcService.CTHGrpcServiceClient cthGrpcClient =
             await _grpcClientFactory.GetClientAsync<CTHGrpcService.CTHGrpcServiceClient>();
         return await cthGrpcClient
             .GetListRoleByUserCodeAsync(request, _defaultHeader)
@@ -103,12 +103,12 @@ public class CTHGrpcClientService : BaseGrpcClientService, ICTHGrpcClientService
         string commandId
     )
     {
-        var request = new GetInfoFromCommandIdRequest
+        GetInfoFromCommandIdRequest request = new()
         {
             ApplicationCode = applicationCode,
             CommandId = commandId,
         };
-        var cthGrpcClient =
+        CTHGrpcService.CTHGrpcServiceClient cthGrpcClient =
             await _grpcClientFactory.GetClientAsync<CTHGrpcService.CTHGrpcServiceClient>();
         return await cthGrpcClient
             .GetInfoFromCommandIdAsync(request, _defaultHeader)
@@ -120,12 +120,12 @@ public class CTHGrpcClientService : BaseGrpcClientService, ICTHGrpcClientService
         string parentId
     )
     {
-        var request = new GetInfoFromParentIdRequest
+        GetInfoFromParentIdRequest request = new()
         {
             ApplicationCode = applicationCode,
             ParentId = parentId,
         };
-        var cthGrpcClient =
+        CTHGrpcService.CTHGrpcServiceClient cthGrpcClient =
             await _grpcClientFactory.GetClientAsync<CTHGrpcService.CTHGrpcServiceClient>();
         return await cthGrpcClient
             .GetInfoFromParentIdAsync(request, _defaultHeader)
@@ -134,8 +134,8 @@ public class CTHGrpcClientService : BaseGrpcClientService, ICTHGrpcClientService
 
     public async Task<CTHUserAccountModel> GetUserInfoByUserCodeAsync(string userCode)
     {
-        var request = new GetUserInfoByUserCodeRequest { UserCode = userCode };
-        var cthGrpcClient =
+        GetUserInfoByUserCodeRequest request = new() { UserCode = userCode };
+        CTHGrpcService.CTHGrpcServiceClient cthGrpcClient =
             await _grpcClientFactory.GetClientAsync<CTHGrpcService.CTHGrpcServiceClient>();
         return await cthGrpcClient
             .GetUserInfoByUserCodeAsync(request, _defaultHeader)
@@ -144,8 +144,8 @@ public class CTHGrpcClientService : BaseGrpcClientService, ICTHGrpcClientService
 
     public async Task<CTHUserPushModel> GetUserPushIdByContractNumberAsync(string contractNumber)
     {
-        var request = new GetUserPushIdByContractNumberRequest { ContractNumber = contractNumber };
-        var cthGrpcClient =
+        GetUserPushIdByContractNumberRequest request = new() { ContractNumber = contractNumber };
+        CTHGrpcService.CTHGrpcServiceClient cthGrpcClient =
             await _grpcClientFactory.GetClientAsync<CTHGrpcService.CTHGrpcServiceClient>();
         return await cthGrpcClient
             .GetUserPushIdByContractNumberAsync(request, _defaultHeader)
@@ -158,16 +158,16 @@ public class CTHGrpcClientService : BaseGrpcClientService, ICTHGrpcClientService
     /// <returns></returns>
     public async Task<List<CTHUserNotificationModel?>> GetUserNotificationAsync()
     {
-        var request = new GetUserNotificationRequest { };
-        var streamClient = _grpcClientFactory.GetServerStreamAsync<
+        GetUserNotificationRequest request = new() { };
+        Task<AsyncServerStreamingCall<GetUserNotificationReply>> streamClient = _grpcClientFactory.GetServerStreamAsync<
             CTHGrpcService.CTHGrpcServiceClient,
             GetUserNotificationRequest,
             GetUserNotificationReply
         >((client, request, option) => client.GetUserNotification(request, option), request);
 
-        using var streamingCall = await streamClient;
-        var response = new List<CTHUserNotificationModel?>();
-        await foreach (var reply in streamingCall.ResponseStream.ReadAllAsync())
+        using AsyncServerStreamingCall<GetUserNotificationReply> streamingCall = await streamClient;
+        List<CTHUserNotificationModel?> response = [];
+        await foreach (GetUserNotificationReply? reply in streamingCall.ResponseStream.ReadAllAsync())
         {
             response.Add(reply?.ToCTHUserNotificationModel());
         }
@@ -180,16 +180,16 @@ public class CTHGrpcClientService : BaseGrpcClientService, ICTHGrpcClientService
     /// <returns></returns>
     public async Task<List<CTHUserCommandModel?>> LoadFullUserCommandAsync()
     {
-        var request = new LoadFullUserCommandRequest { };
-        var streamClient = _grpcClientFactory.GetServerStreamAsync<
+        LoadFullUserCommandRequest request = new() { };
+        Task<AsyncServerStreamingCall<UserCommandReply>> streamClient = _grpcClientFactory.GetServerStreamAsync<
             CTHGrpcService.CTHGrpcServiceClient,
             LoadFullUserCommandRequest,
             UserCommandReply
         >((client, request, option) => client.LoadFullUserCommands(request, option), request);
 
-        using var streamingCall = await streamClient;
-        var response = new List<CTHUserCommandModel?>();
-        await foreach (var reply in streamingCall.ResponseStream.ReadAllAsync())
+        using AsyncServerStreamingCall<UserCommandReply> streamingCall = await streamClient;
+        List<CTHUserCommandModel?> response = [];
+        await foreach (UserCommandReply? reply in streamingCall.ResponseStream.ReadAllAsync())
         {
             response.Add(reply?.ToCTHUserCommandModel());
         }

@@ -1,8 +1,4 @@
-﻿using System.Diagnostics;
-using System.Globalization;
-using System.Linq.Expressions;
-using System.Reflection;
-using CsvHelper;
+﻿using CsvHelper;
 using CsvHelper.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -12,6 +8,10 @@ using O24OpenAPI.CMS.Domain.AggregateModels.Digital;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Data.Configuration;
 using O24OpenAPI.Data.System.Linq;
+using System.Diagnostics;
+using System.Globalization;
+using System.Linq.Expressions;
+using System.Reflection;
 using ILogger = O24OpenAPI.Framework.Services.Logging.ILogger;
 
 namespace O24OpenAPI.CMS.API.Application.Utils;
@@ -1143,7 +1143,7 @@ public static class Utils
         List<TEntity> dbData = repo.Table.ToList();
 
         // 5. Prepare result collections
-        List<TEntity> insertList = new(uploadData);
+        List<TEntity> insertList = [.. uploadData];
         List<TEntity> updateList = [];
 
         // 6. Build key selector (avoid reflection in inner loop)
@@ -1175,7 +1175,7 @@ public static class Utils
             if (!IsModelEqual(entity, dbEntity, ignoreFields.ToArray()))
             {
                 entity.Id = dbEntity.Id;
-                repo.Update(entity);
+                await repo.Update(entity);
                 updateList.Add(entity);
             }
         }

@@ -18,7 +18,7 @@ public class CMSGrpcClientService : BaseGrpcClientService, ICMSGrpcClientService
         {
             {
                 "flow",
-                $"{Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID} -> {ServerId}"
+                $"{Singleton<O24OpenAPIConfiguration>.Instance?.YourServiceID} -> {ServerId}"
             },
         };
     }

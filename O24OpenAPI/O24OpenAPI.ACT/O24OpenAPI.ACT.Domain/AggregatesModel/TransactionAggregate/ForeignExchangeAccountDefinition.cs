@@ -6,11 +6,6 @@ namespace O24OpenAPI.ACT.Domain.AggregatesModel.TransactionAggregate;
 public partial class ForeignExchangeAccountDefinition : BaseEntity
 {
     /// <summary>
-    /// ForeignExchangeClearing
-    /// </summary>
-    public ForeignExchangeAccountDefinition() { }
-
-    /// <summary>
     /// BranchCode
     /// </summary>
     [JsonProperty("branch_code")]

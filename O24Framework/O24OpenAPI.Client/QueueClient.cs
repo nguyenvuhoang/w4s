@@ -69,7 +69,7 @@ public class QueueClient : MyConsole
 
     private IChannel? __EventChannel;
 
-    private ConnectionFactory __Factory;
+    private ConnectionFactory? __Factory;
 
     private readonly object __lockServiceInfoObject = new();
 
@@ -77,9 +77,9 @@ public class QueueClient : MyConsole
 
     public string Local_SSL_CERT_PATH = "";
 
-    private AsyncEventingBasicConsumer CommandQueueConsumer;
+    private AsyncEventingBasicConsumer? CommandQueueConsumer;
 
-    private AsyncEventingBasicConsumer EventQueueConsumer;
+    private AsyncEventingBasicConsumer? EventQueueConsumer;
 
     private static SemaphoreSlim? __CommandSemaphore { get; set; }
 
@@ -103,23 +103,23 @@ public class QueueClient : MyConsole
         }
     }
 
-    public event MessageDeliveringDelegate MessageDelivering;
+    public event MessageDeliveringDelegate? MessageDelivering;
 
-    public event WorkflowDeliveringDelegate WorkflowDelivering;
+    public event WorkflowDeliveringDelegate? WorkflowDelivering;
 
-    public event WorkflowExecutionEventDelegate WorkflowExecutionEvent;
+    public event WorkflowExecutionEventDelegate? WorkflowExecutionEvent;
 
-    public event ArchivingEventDelegate WorkflowArchivingEvent;
+    public event ArchivingEventDelegate? WorkflowArchivingEvent;
 
-    public event PurgingEventDelegate WorkflowPurgingEvent;
+    public event PurgingEventDelegate? WorkflowPurgingEvent;
 
-    public event ServiceToServiceEventDelegate ServiceToServiceEvent;
+    public event ServiceToServiceEventDelegate? ServiceToServiceEvent;
 
-    public event MethodInvocationEventDelegate MethodInvocationEvent;
-    public event LogEventDelegate LogEvent;
-    public event EntityEventDelegate EntityEvent;
-    public event CDCEventDelegate CdcEvent;
-    public event LogWorkflowStepDelegate StepEvent;
+    public event MethodInvocationEventDelegate? MethodInvocationEvent;
+    public event LogEventDelegate? LogEvent;
+    public event EntityEventDelegate? EntityEvent;
+    public event CDCEventDelegate? CdcEvent;
+    public event LogWorkflowStepDelegate? StepEvent;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="QueueClient"/> class
@@ -240,6 +240,12 @@ public class QueueClient : MyConsole
         };
         if (ServiceInfo.ssl_active?.Equals("Y", StringComparison.OrdinalIgnoreCase) == true)
         {
+            if (ServiceInfo.ssl_cert_servername == null)
+            {
+                throw new InvalidOperationException(
+                    "SSL is active but ssl_cert_servername is null."
+                );
+            }
             __Factory.Ssl.Enabled = true;
             __Factory.Ssl.CertPath = Local_SSL_CERT_PATH;
             __Factory.Ssl.CertPassphrase = ServiceInfo.ssl_cert_pass_pharse;
@@ -298,7 +304,7 @@ public class QueueClient : MyConsole
             __Connection?.Dispose();
         }
         catch { }
-        __Factory.HostName = ServiceInfo.broker_hostname;
+        __Factory!.HostName = ServiceInfo.broker_hostname;
         __Factory.Port = (ServiceInfo.broker_port > 0) ? ServiceInfo.broker_port : __Factory.Port;
         __Factory.VirtualHost = ServiceInfo.broker_virtual_host;
         __Factory.UserName = ServiceInfo.broker_user_name;
@@ -318,7 +324,8 @@ public class QueueClient : MyConsole
     {
         try
         {
-            await __Connection?.CloseAsync();
+            if (__Connection != null)
+                await __Connection.CloseAsync();
             __Connection?.Dispose();
         }
         catch { }
@@ -365,7 +372,11 @@ public class QueueClient : MyConsole
                 ?? throw new InvalidOperationException("Failed to deserialize JSON to WFScheme.");
 
             if (
-                !e.BasicProperties.Headers.TryGetValue("message_type", out object messageTypeObj)
+                e.BasicProperties.Headers is null
+                || !e.BasicProperties.Headers.TryGetValue(
+                    "message_type",
+                    out object? messageTypeObj
+                )
                 || messageTypeObj is not byte[] bytes
             )
             {
@@ -638,7 +649,11 @@ public class QueueClient : MyConsole
     /// <returns>A task containing the bool</returns>
     public async Task<bool> DeleteQueue(string pQueueName)
     {
-        await __CommandChannel.QueueDeleteAsync(pQueueName, ifUnused: true, ifEmpty: true);
+        if (__CommandChannel == null)
+        {
+            await CreateChannel();
+        }
+        await __CommandChannel!.QueueDeleteAsync(pQueueName, ifUnused: true, ifEmpty: true);
         return true;
     }
 
@@ -649,17 +664,23 @@ public class QueueClient : MyConsole
     {
         if (ServiceInfo.broker_queue_name.Length != 0)
         {
-            CommandQueueConsumer = new AsyncEventingBasicConsumer(__CommandChannel);
+            if (__CommandChannel == null || __EventChannel == null)
+            {
+                await CreateChannel();
+            }
+            CommandQueueConsumer = new AsyncEventingBasicConsumer(__CommandChannel!);
             CommandQueueConsumer.ReceivedAsync += async (model, ea) =>
             {
                 WorkContext workContext = new();
                 try
                 {
                     if (
-                        !ea.BasicProperties.Headers.TryGetValue(
+                        ea.BasicProperties.Headers == null
+                        || !ea.BasicProperties.Headers.TryGetValue(
                             "message_type",
-                            out object messageTypeObj
-                        ) || messageTypeObj is not byte[] bytes
+                            out object? messageTypeObj
+                        )
+                        || messageTypeObj is not byte[] bytes
                     )
                     {
                         Console.WriteLine("Missing or invalid 'message_type' header.");
@@ -675,7 +696,7 @@ public class QueueClient : MyConsole
                         loggerService?.LogErrorAsync(
                             $"Missing or invalid 'message_type' header. MessageType: {messageType}"
                         );
-                        await __EventChannel.BasicAckAsync(ea.DeliveryTag, multiple: false);
+                        await __EventChannel!.BasicAckAsync(ea.DeliveryTag, multiple: false);
                     }
                     if (
                         !(
@@ -699,39 +720,41 @@ public class QueueClient : MyConsole
                     using IServiceScope scope = EngineContext.Current.CreateQueueScope(workContext);
 
                     await RabbitMqLogHelper.LogConsumeAsync(
-                        serviceName: Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID,
+                        serviceName: Singleton<O24OpenAPIConfiguration>.Instance!.YourServiceID,
                         source: $"Exchange: '{ea.Exchange}', Key: '{ea.RoutingKey}'",
                         body: ea.Body.ToArray(),
                         headers: ea.BasicProperties.Headers,
                         processAction: async () => await CommandMessageComingHandler(model, ea)
                     );
-                    await __CommandChannel.BasicAckAsync(ea.DeliveryTag, multiple: false);
+                    await __CommandChannel!.BasicAckAsync(ea.DeliveryTag, multiple: false);
                 }
                 catch
                 {
-                    await __CommandChannel.BasicNackAsync(ea.DeliveryTag, false, true);
+                    await __CommandChannel!.BasicNackAsync(ea.DeliveryTag, false, true);
                 }
                 finally
                 {
                     AsyncScope.Clear();
                 }
             };
-            await __CommandChannel.BasicConsumeAsync(
+            await __CommandChannel!.BasicConsumeAsync(
                 ServiceInfo.broker_queue_name,
                 autoAck: false,
                 CommandQueueConsumer
             );
-            EventQueueConsumer = new AsyncEventingBasicConsumer(__EventChannel);
+            EventQueueConsumer = new AsyncEventingBasicConsumer(__EventChannel!);
             EventQueueConsumer.ReceivedAsync += async (model, ea) =>
             {
                 WorkContext workContext = new();
                 try
                 {
                     if (
-                        !ea.BasicProperties.Headers.TryGetValue(
+                        ea.BasicProperties.Headers == null
+                        || !ea.BasicProperties.Headers.TryGetValue(
                             "message_type",
-                            out object messageTypeObj
-                        ) || messageTypeObj is not byte[] bytes
+                            out object? messageTypeObj
+                        )
+                        || messageTypeObj is not byte[] bytes
                     )
                     {
                         Console.WriteLine("Missing or invalid 'message_type' header.");
@@ -747,7 +770,7 @@ public class QueueClient : MyConsole
                         loggerService?.LogErrorAsync(
                             $"Missing or invalid 'message_type' header. MessageType: {messageType}"
                         );
-                        await __EventChannel.BasicAckAsync(ea.DeliveryTag, multiple: false);
+                        await __EventChannel!.BasicAckAsync(ea.DeliveryTag, multiple: false);
                     }
 
                     if (
@@ -771,25 +794,25 @@ public class QueueClient : MyConsole
 
                     using IServiceScope scope = EngineContext.Current.CreateQueueScope(workContext);
                     await RabbitMqLogHelper.LogConsumeAsync(
-                        serviceName: Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID,
+                        serviceName: Singleton<O24OpenAPIConfiguration>.Instance!.YourServiceID,
                         source: $"Exchange: '{ea.Exchange}', Key: '{ea.RoutingKey}'",
                         body: ea.Body.ToArray(),
                         headers: ea.BasicProperties.Headers,
                         processAction: async () => await __EventMessageComingHandler(model, ea)
                     );
 
-                    await __EventChannel.BasicAckAsync(ea.DeliveryTag, multiple: false);
+                    await __EventChannel!.BasicAckAsync(ea.DeliveryTag, multiple: false);
                 }
                 catch
                 {
-                    await __EventChannel.BasicNackAsync(ea.DeliveryTag, false, true);
+                    await __EventChannel!.BasicNackAsync(ea.DeliveryTag, false, true);
                 }
                 finally
                 {
                     AsyncScope.Clear();
                 }
             };
-            await __EventChannel.BasicConsumeAsync(
+            await __EventChannel!.BasicConsumeAsync(
                 ServiceInfo.event_queue_name,
                 autoAck: false,
                 EventQueueConsumer
@@ -833,26 +856,26 @@ public class QueueClient : MyConsole
         {
             ContentType = "text/plain",
             DeliveryMode = DeliveryModes.Persistent,
-            Headers = new Dictionary<string, object>
+            Headers = new Dictionary<string, object?>
             {
                 { "message_type", messageType },
                 { "work_context", jsonWorkContext },
                 {
                     "flow",
-                    $"{Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID} -> {pQueueName}"
+                    $"{Singleton<O24OpenAPIConfiguration>.Instance?.YourServiceID} -> {pQueueName}"
                 },
             },
         };
         byte[] bytes = Encoding.UTF8.GetBytes(pContent);
 
         RabbitMqLogHelper.LogPublish(
-            serviceName: Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID,
+            serviceName: Singleton<O24OpenAPIConfiguration>.Instance!.YourServiceID,
             destination: $"{pQueueName}", // Mô tả đích đến
             message: pContent,
             headers: basicProperties.Headers
         );
 
-        await __CommandChannel.BasicPublishAsync("", pQueueName, false, basicProperties, bytes);
+        await __CommandChannel!.BasicPublishAsync("", pQueueName, false, basicProperties, bytes);
     }
 
     /// <summary>
@@ -866,7 +889,7 @@ public class QueueClient : MyConsole
         {
             ContentType = "text/plain",
             DeliveryMode = DeliveryModes.Persistent,
-            Headers = new Dictionary<string, object>
+            Headers = new Dictionary<string, object?>
             {
                 { "message_type", "workflow" },
                 { "work_context", EngineContext.Current.Resolve<WorkContext>()?.ToJson() },
@@ -876,12 +899,12 @@ public class QueueClient : MyConsole
         byte[] bytes = Encoding.UTF8.GetBytes(pContent);
 
         RabbitMqLogHelper.LogPublish(
-            serviceName: Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID,
+            serviceName: Singleton<O24OpenAPIConfiguration>.Instance!.YourServiceID,
             destination: $"{pQueueName}", // Mô tả đích đến
             message: pContent,
             headers: basicProperties.Headers
         );
-        await __CommandChannel.BasicPublishAsync("", pQueueName, false, basicProperties, bytes);
+        await __CommandChannel!.BasicPublishAsync("", pQueueName, false, basicProperties, bytes);
     }
 
     /// <summary>
@@ -889,7 +912,7 @@ public class QueueClient : MyConsole
     /// </summary>
     /// <param name="obj">The obj</param>
     /// <returns>The string</returns>
-    private static string SerializeObjectWithSnakeCaseNaming(object obj)
+    private static string? SerializeObjectWithSnakeCaseNaming(object obj)
     {
         if (obj == null)
         {
@@ -909,27 +932,6 @@ public class QueueClient : MyConsole
     }
 
     /// <summary>
-    /// Serializes the with snake case naming using the specified obj
-    /// </summary>
-    /// <param name="obj">The obj</param>
-    /// <returns>The string</returns>
-    private static string SerializeWithSnakeCaseNaming(object obj)
-    {
-        if (obj == null)
-        {
-            return null;
-        }
-
-        JsonSerializerOptions options = new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-            WriteIndented = false,
-        };
-
-        return System.Text.Json.JsonSerializer.Serialize(obj, options);
-    }
-
-    /// <summary>
     /// Replies the workflow using the specified workflow
     /// </summary>
     /// <param name="workflow">The workflow</param>
@@ -937,12 +939,18 @@ public class QueueClient : MyConsole
     {
         workflow.request.request_header.service_instance_id = Singleton<O24OpenAPIConfiguration>
             .Instance
-            .YourInstanceID;
-        if (workflow?.request?.request_header?.step_mode.EqualsOrdinalIgnoreCase("TWOWAY") == true)
+            !.YourInstanceID;
+        if (workflow.request?.request_header?.step_mode.EqualsOrdinalIgnoreCase("TWOWAY") == true)
         {
-            if (workflow?.response?.data != null)
+            if (workflow.response?.data != null)
             {
-                string json = SerializeObjectWithSnakeCaseNaming(workflow.response.data);
+                string? json = SerializeObjectWithSnakeCaseNaming(workflow.response.data);
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    throw new InvalidOperationException(
+                        "ReplyWorkflow: Serialized response data is null or whitespace."
+                    );
+                }
                 //string json = workflow.response.data.ToJson(o => o.NamingConvention = NamingConvention.SnakeCaseLower);
                 workflow.response.data = JsonDocument.Parse(json).RootElement;
                 if (ServiceInfo.is_tracking)
@@ -961,11 +969,18 @@ public class QueueClient : MyConsole
                 System.Text.Json.JsonSerializer.Serialize(workflow)
             );
         }
-        else if (!string.IsNullOrEmpty(workflow?.request?.request_header?.fanout_exchange))
+        else if (!string.IsNullOrEmpty(workflow.request?.request_header?.fanout_exchange))
         {
-            if (workflow?.response?.data != null)
+            if (workflow.response?.data != null)
             {
-                string json = SerializeObjectWithSnakeCaseNaming(workflow.response.data);
+                string? json = SerializeObjectWithSnakeCaseNaming(workflow.response.data);
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    BusinessLogHelper.Warning(
+                        "ReplyWorkflow: Serialized response data is null or whitespace."
+                    );
+                    return;
+                }
                 workflow.response.data = JsonDocument.Parse(json).RootElement;
 
                 if (ServiceInfo.is_tracking)
@@ -994,11 +1009,16 @@ public class QueueClient : MyConsole
 
     private async Task FanoutMessage(string exchangeName, string message)
     {
+        if (__CommandChannel is null)
+        {
+            BusinessLogHelper.Info("Command channel is null when fanout.");
+            return;
+        }
         BasicProperties basicProperties = new()
         {
             ContentType = "text/plain",
             DeliveryMode = DeliveryModes.Persistent,
-            Headers = new Dictionary<string, object>
+            Headers = new Dictionary<string, object?>
             {
                 { "message_type", "event" },
                 { "work_context", EngineContext.Current.Resolve<WorkContext>()?.ToJson() },
@@ -1011,12 +1031,16 @@ public class QueueClient : MyConsole
 
     private async Task RegisterFanout()
     {
-        O24OpenAPIConfiguration o24Config = Singleton<O24OpenAPIConfiguration>.Instance;
-        if (o24Config.FanoutExchanges != null && o24Config.FanoutExchanges.Count > 0)
+        O24OpenAPIConfiguration? o24Config = Singleton<O24OpenAPIConfiguration>.Instance;
+        if (
+            o24Config is not null
+            && o24Config.FanoutExchanges != null
+            && o24Config.FanoutExchanges.Count > 0
+        )
         {
             foreach (string exchange in o24Config.FanoutExchanges)
             {
-                await __CommandChannel.ExchangeDeclareAsync(exchange, "fanout", true, false, null);
+                await __CommandChannel!.ExchangeDeclareAsync(exchange, "fanout", true, false, null);
                 await __CommandChannel.QueueBindAsync(
                     ServiceInfo.event_queue_name,
                     exchange,
@@ -1036,7 +1060,11 @@ public class QueueClient : MyConsole
         await CreateFactory();
         await CreateConnection();
         await CreateChannel();
-        O24OpenAPIConfiguration o24Config = Singleton<O24OpenAPIConfiguration>.Instance;
+        O24OpenAPIConfiguration? o24Config = Singleton<O24OpenAPIConfiguration>.Instance;
+        if (o24Config == null)
+        {
+            throw new InvalidOperationException("O24OpenAPIConfiguration instance is null.");
+        }
         await CreateQueue(ServiceInfo.broker_queue_name, o24Config.AutoDeleteCommandQueue);
         await CreateQueue(ServiceInfo.event_queue_name, o24Config.AutoDeleteEventQueue);
         await RegisterFanout();
@@ -1060,9 +1088,5 @@ public class QueueClient : MyConsole
         __CommandChannel?.Dispose();
         __EventChannel?.Dispose();
         __Connection?.Dispose();
-        if (__Factory != null)
-        {
-            __CommandChannel.Dispose();
-        }
     }
 }

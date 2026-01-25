@@ -22,7 +22,7 @@ public class NCHGrpcClientService : BaseGrpcClientService, INCHGrpcClientService
         {
             {
                 "flow",
-                $"{Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID} -> {ServerId}"
+                $"{Singleton<O24OpenAPIConfiguration>.Instance?.YourServiceID} -> {ServerId}"
             },
         };
     }
@@ -39,7 +39,7 @@ public class NCHGrpcClientService : BaseGrpcClientService, INCHGrpcClientService
         string message = ""
     )
     {
-        var request = new SendNotificationRequest
+        SendNotificationRequest request = new()
         {
             UserCode = userCode,
             LoginName = loginName,

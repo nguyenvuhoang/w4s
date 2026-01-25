@@ -36,7 +36,7 @@ public class UserContext
         LoginName = userContext.LoginName;
     }
 
-    public void SetUserId(string userId)
+    public void SetUserId(string? userId)
     {
         UserId = userId ?? UserId;
     }

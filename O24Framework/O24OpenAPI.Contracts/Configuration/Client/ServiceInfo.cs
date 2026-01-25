@@ -1,19 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace O24OpenAPI.Contracts.Configuration.Client;
+﻿namespace O24OpenAPI.Contracts.Configuration.Client;
 
 public class ServiceInfo
 {
     public readonly long WFO_GRPC_TIMEOUT_IN_SECONDS = 60L;
 
-    [Key]
-    public string service_code { get; set; }
+    public string service_code { get; set; } = default!;
 
-    public string service_name { get; set; }
+    public string service_name { get; set; } = default!;
 
-    public string service_grpc_url { get; set; }
+    public string service_grpc_url { get; set; } = default!;
 
-    public string service_status { get; set; }
+    public string service_status { get; set; } = default!;
 
     public string? service_grpc_active { get; set; } = "active";
 
@@ -23,9 +20,9 @@ public class ServiceInfo
 
     public string? service_static_token { get; set; }
 
-    public string broker_virtual_host { get; set; }
+    public string broker_virtual_host { get; set; } = default!;
 
-    private string _brokerHostname;
+    private string _brokerHostname = default!;
 
     public string broker_hostname
     {
@@ -33,13 +30,13 @@ public class ServiceInfo
         set => _brokerHostname = value;
     }
 
-    public string? broker_user_name { get; set; }
+    public string broker_user_name { get; set; } = default!;
 
-    public string? broker_user_password { get; set; }
+    public string broker_user_password { get; set; } = default!;
 
-    public string? broker_queue_name { get; set; }
+    public string broker_queue_name { get; set; } = default!;
 
-    public string? event_queue_name { get; set; }
+    public string event_queue_name { get; set; } = default!;
 
     public int broker_port { get; set; }
 

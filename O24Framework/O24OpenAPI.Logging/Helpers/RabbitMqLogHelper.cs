@@ -1,10 +1,10 @@
-﻿using System.Diagnostics;
-using System.Text;
-using O24OpenAPI.Core.Domain;
+﻿using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Logging.Enums;
 using Serilog;
+using System.Diagnostics;
+using System.Text;
 
 namespace O24OpenAPI.Logging.Helpers;
 

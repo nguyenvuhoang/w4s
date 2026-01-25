@@ -30,13 +30,13 @@ public static class StringExtensions
         {
             if (typeof(T) == typeof(JObject))
             {
-                var jObject = JObject.Parse(s);
+                JObject jObject = JObject.Parse(s);
                 result = (T)(object)jObject;
                 return true;
             }
             else if (typeof(T) == typeof(JArray))
             {
-                var jArray = JArray.Parse(s);
+                JArray jArray = JArray.Parse(s);
                 result = (T)(object)jArray;
                 return true;
             }
@@ -77,24 +77,6 @@ public static class StringExtensions
         return string.Empty;
     }
 
-    public static string TryGetLabelFromJson(string json, string lang)
-    {
-        if (string.IsNullOrWhiteSpace(json))
-        {
-            return "";
-        }
-
-        try
-        {
-            var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-            return dict.TryGetValue(lang, out var value) ? value : "";
-        }
-        catch
-        {
-            return "";
-        }
-    }
-
     public static byte[] GenerateQRCodeBytes(string content)
     {
         if (string.IsNullOrWhiteSpace(content))
@@ -102,9 +84,9 @@ public static class StringExtensions
             throw new ArgumentException("Content cannot be null or empty.", nameof(content));
         }
 
-        using var qrGenerator = new QRCodeGenerator();
+        using QRCodeGenerator qrGenerator = new();
         var qrData = qrGenerator.CreateQrCode(content, QRCodeGenerator.ECCLevel.Q);
-        var qrCode = new PngByteQRCode(qrData);
+        PngByteQRCode qrCode = new(qrData);
         return qrCode.GetGraphic(20);
     }
 }
