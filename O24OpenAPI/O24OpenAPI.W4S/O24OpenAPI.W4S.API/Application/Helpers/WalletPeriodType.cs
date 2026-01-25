@@ -11,10 +11,12 @@
         /// <param name="nowUtc">The nowUtc<see cref="DateTime"/></param>
         /// <param name="periodType">The periodType<see cref="string"/></param>
         /// <returns>The <see cref="(DateTime thisFrom, DateTime thisTo, DateTime prevFrom, DateTime prevTo)"/></returns>
-        public static (DateTime thisFrom, DateTime thisTo, DateTime prevFrom, DateTime prevTo) BuildPeriodRangeUtc(
-            DateTime nowUtc,
-            string periodType
-        )
+        public static (
+            DateTime thisFrom,
+            DateTime thisTo,
+            DateTime prevFrom,
+            DateTime prevTo
+        ) BuildPeriodRangeUtc(DateTime nowUtc, string periodType)
         {
             periodType = (periodType ?? "M").Trim().ToUpperInvariant();
 
@@ -29,8 +31,8 @@
 
             static DateTime StartOfQuarter(DateTime dt)
             {
-                var q = (dt.Month - 1) / 3;          // 0..3
-                var startMonth = q * 3 + 1;          // 1,4,7,10
+                var q = (dt.Month - 1) / 3; // 0..3
+                var startMonth = q * 3 + 1; // 1,4,7,10
                 return new(dt.Year, startMonth, 1, 0, 0, 0, DateTimeKind.Utc);
             }
 
@@ -82,17 +84,20 @@
                     thisTo: StartOfMonth(nowUtc).AddMonths(1),
                     prevFrom: StartOfMonth(nowUtc).AddMonths(-1),
                     prevTo: StartOfMonth(nowUtc)
-                )
+                ),
             };
         }
 
-        private static (DateTime thisFrom, DateTime thisTo, DateTime prevFrom, DateTime prevTo) BuildPeriodRangeUtc(
-            DateTime nowUtc,
-            string? periodType,
-            string? periodUnit
-        )
+        private static (
+            DateTime thisFrom,
+            DateTime thisTo,
+            DateTime prevFrom,
+            DateTime prevTo
+        ) BuildPeriodRangeUtc(DateTime nowUtc, string periodType, string periodUnit)
         {
-            periodType = string.IsNullOrWhiteSpace(periodType) ? "M" : periodType.Trim().ToUpperInvariant();
+            periodType = string.IsNullOrWhiteSpace(periodType)
+                ? "M"
+                : periodType.Trim().ToUpperInvariant();
             periodUnit = string.IsNullOrWhiteSpace(periodUnit) ? null : periodUnit.Trim();
 
             return periodType switch
@@ -102,21 +107,26 @@
                 "Q" => BuildQuarterly(nowUtc, periodUnit),
                 "H" => BuildHalfYear(nowUtc, periodUnit),
                 "Y" => BuildYearly(nowUtc, periodUnit),
-                _ => BuildMonthly(nowUtc, periodUnit)
+                _ => BuildMonthly(nowUtc, periodUnit),
             };
         }
 
-        private static (DateTime thisFrom, DateTime thisTo, DateTime prevFrom, DateTime prevTo) BuildDaily(
-            DateTime nowUtc,
-            string? unit
-        )
+        private static (
+            DateTime thisFrom,
+            DateTime thisTo,
+            DateTime prevFrom,
+            DateTime prevTo
+        ) BuildDaily(DateTime nowUtc, string unit)
         {
             _ = nowUtc.Date;
             DateTime day;
             if (!string.IsNullOrWhiteSpace(unit))
             {
                 if (!DateTime.TryParse(unit, out var parsed))
-                    throw new ArgumentException("PeriodUnit for D must be yyyy-MM-dd", nameof(unit));
+                    throw new ArgumentException(
+                        "PeriodUnit for D must be yyyy-MM-dd",
+                        nameof(unit)
+                    );
 
                 day = DateTime.SpecifyKind(parsed.Date, DateTimeKind.Utc);
             }
@@ -134,10 +144,12 @@
             return (thisFrom, thisTo, prevFrom, prevTo);
         }
 
-        private static (DateTime thisFrom, DateTime thisTo, DateTime prevFrom, DateTime prevTo) BuildMonthly(
-            DateTime nowUtc,
-            string? unit
-        )
+        private static (
+            DateTime thisFrom,
+            DateTime thisTo,
+            DateTime prevFrom,
+            DateTime prevTo
+        ) BuildMonthly(DateTime nowUtc, string unit)
         {
             // unit: "1..12" => month in current year
             var year = nowUtc.Year;
@@ -146,7 +158,10 @@
             if (!string.IsNullOrWhiteSpace(unit))
             {
                 if (!int.TryParse(unit, out var m) || m < 1 || m > 12)
-                    throw new ArgumentException("PeriodUnit for M must be month number 1..12", nameof(unit));
+                    throw new ArgumentException(
+                        "PeriodUnit for M must be month number 1..12",
+                        nameof(unit)
+                    );
 
                 month = m;
             }
@@ -160,10 +175,12 @@
             return (thisFrom, thisTo, prevFrom, prevTo);
         }
 
-        private static (DateTime thisFrom, DateTime thisTo, DateTime prevFrom, DateTime prevTo) BuildQuarterly(
-            DateTime nowUtc,
-            string? unit
-        )
+        private static (
+            DateTime thisFrom,
+            DateTime thisTo,
+            DateTime prevFrom,
+            DateTime prevTo
+        ) BuildQuarterly(DateTime nowUtc, string unit)
         {
             // unit: "1..4"
             var year = nowUtc.Year;
@@ -172,7 +189,10 @@
             if (!string.IsNullOrWhiteSpace(unit))
             {
                 if (!int.TryParse(unit, out var qq) || qq < 1 || qq > 4)
-                    throw new ArgumentException("PeriodUnit for Q must be quarter number 1..4", nameof(unit));
+                    throw new ArgumentException(
+                        "PeriodUnit for Q must be quarter number 1..4",
+                        nameof(unit)
+                    );
 
                 q = qq;
             }
@@ -187,10 +207,12 @@
             return (thisFrom, thisTo, prevFrom, prevTo);
         }
 
-        private static (DateTime thisFrom, DateTime thisTo, DateTime prevFrom, DateTime prevTo) BuildHalfYear(
-            DateTime nowUtc,
-            string? unit
-        )
+        private static (
+            DateTime thisFrom,
+            DateTime thisTo,
+            DateTime prevFrom,
+            DateTime prevTo
+        ) BuildHalfYear(DateTime nowUtc, string unit)
         {
             // unit: "1" (Jan-Jun) or "2" (Jul-Dec)
             var year = nowUtc.Year;
@@ -214,10 +236,12 @@
             return (thisFrom, thisTo, prevFrom, prevTo);
         }
 
-        private static (DateTime thisFrom, DateTime thisTo, DateTime prevFrom, DateTime prevTo) BuildYearly(
-            DateTime nowUtc,
-            string? unit
-        )
+        private static (
+            DateTime thisFrom,
+            DateTime thisTo,
+            DateTime prevFrom,
+            DateTime prevTo
+        ) BuildYearly(DateTime nowUtc, string unit)
         {
             // unit: "yyyy"
             var year = nowUtc.Year;
@@ -238,9 +262,5 @@
 
             return (thisFrom, thisTo, prevFrom, prevTo);
         }
-
     }
-
-
-
 }

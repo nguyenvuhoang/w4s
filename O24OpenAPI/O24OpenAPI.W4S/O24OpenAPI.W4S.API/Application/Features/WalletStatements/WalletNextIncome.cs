@@ -14,9 +14,7 @@ using O24OpenAPI.W4S.Infrastructure.Configurations;
 
 namespace O24OpenAPI.W4S.API.Application.Features.WalletStatements;
 
-public class WalletNextIncomeCommand
-    : BaseTransactionModel,
-        ICommand<WalletNextIncomeResponseModel>
+public class WalletNextIncomeCommand : BaseTransactionModel, ICommand<WalletNextIncomeResponseModel>
 {
     public string ContractNumber { get; set; } = default!;
 
@@ -70,17 +68,15 @@ public class WalletNextIncomeHandler(
 
             var contractNumber = request.ContractNumber.Trim();
 
-            var walletProfiles = await walletProfileRepository.GetByContractNumber(contractNumber)
+            var walletProfiles =
+                await walletProfileRepository.GetByContractNumber(contractNumber)
                 ?? throw await O24Exception.CreateAsync(
                     O24W4SResourceCode.Validation.WalletContractNotFound,
                     request.Language,
                     contractNumber
                 );
 
-            var walletIds = walletProfiles
-                .Select(x => x.Id)
-                .Distinct()
-                .ToList();
+            var walletIds = walletProfiles.Select(x => x.Id).Distinct().ToList();
 
             if (walletIds.Count == 0)
                 throw await O24Exception.CreateAsync(
@@ -98,7 +94,15 @@ public class WalletNextIncomeHandler(
 
             // "Closing" = balance at next income checkpoint.
             // Default: first day of next month 00:00 UTC (change if your business logic differs)
-            var nextDateUtc = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc).AddMonths(1);
+            var nextDateUtc = new DateTime(
+                now.Year,
+                now.Month,
+                1,
+                0,
+                0,
+                0,
+                DateTimeKind.Utc
+            ).AddMonths(1);
 
             // Build rate map from request.TransferRates
             var rateMap = BuildRateMapFromRequest(request.TransferRates, baseCurrency);
@@ -107,7 +111,11 @@ public class WalletNextIncomeHandler(
             var openingRows = await GetLatestClosingBeforeAsync(walletIds, now, cancellationToken);
 
             // Closing balances: last closing before nextDateUtc
-            var closingRows = await GetLatestClosingBeforeAsync(walletIds, nextDateUtc, cancellationToken);
+            var closingRows = await GetLatestClosingBeforeAsync(
+                walletIds,
+                nextDateUtc,
+                cancellationToken
+            );
 
             var openingBase = SumClosingToBase(openingRows, baseCurrency, rateMap);
             var closingBase = SumClosingToBase(closingRows, baseCurrency, rateMap);
@@ -133,15 +141,15 @@ public class WalletNextIncomeHandler(
                         new NetBalanceDetailModel
                         {
                             Label = openingLabel.ResourceValue,
-                            Amount = openingBase
+                            Amount = openingBase,
                         },
                         new NetBalanceDetailModel
                         {
                             Label = closingLabel.ResourceValue,
-                            Amount = closingBase
-                        }
-                    ]
-                }
+                            Amount = closingBase,
+                        },
+                    ],
+                },
             };
         }
         catch (Exception ex)
@@ -160,20 +168,16 @@ public class WalletNextIncomeHandler(
         CancellationToken cancellationToken
     )
     {
-        var rows = await walletStatementRepository.Table
-            .Where(x =>
-                walletIds.Contains(x.WalletId) &&
-                x.TransactionOnUtc < beforeUtc
-            )
+        var rows = await walletStatementRepository
+            .Table.Where(x => walletIds.Contains(x.WalletId) && x.TransactionOnUtc < beforeUtc)
             .GroupBy(x => new { x.WalletId, x.CurrencyCode })
             .Select(g => new
             {
                 g.Key.CurrencyCode,
-                Closing = g
-                    .OrderByDescending(s => s.TransactionOnUtc)
+                Closing = g.OrderByDescending(s => s.TransactionOnUtc)
                     .ThenByDescending(s => s.Id)
                     .Select(s => s.ClosingBalance)
-                    .FirstOrDefault()
+                    .FirstOrDefault(),
             })
             .ToListAsync(cancellationToken);
 
@@ -203,13 +207,13 @@ public class WalletNextIncomeHandler(
     /// baseCurrency is always 1.
     /// </summary>
     private static Dictionary<string, decimal> BuildRateMapFromRequest(
-        IList<TransferRateResponseModel>? transferRates,
+        IList<TransferRateResponseModel> transferRates,
         string baseCurrency
     )
     {
         var map = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase)
         {
-            [baseCurrency] = 1m
+            [baseCurrency] = 1m,
         };
 
         if (transferRates == null || transferRates.Count == 0)
@@ -217,10 +221,12 @@ public class WalletNextIncomeHandler(
 
         foreach (var r in transferRates)
         {
-            if (r == null) continue;
+            if (r == null)
+                continue;
 
             var ccy = r.CurrencyCode?.Trim();
-            if (string.IsNullOrWhiteSpace(ccy)) continue;
+            if (string.IsNullOrWhiteSpace(ccy))
+                continue;
 
             if (ccy.Equals(baseCurrency, StringComparison.OrdinalIgnoreCase))
             {
@@ -248,14 +254,16 @@ public class WalletNextIncomeHandler(
             return 1m;
 
         if (!rateMap.TryGetValue(fromCurrency, out var rate) || rate <= 0m)
-            throw new InvalidOperationException($"Missing exchange rate for {fromCurrency}->{baseCurrency}");
+            throw new InvalidOperationException(
+                $"Missing exchange rate for {fromCurrency}->{baseCurrency}"
+            );
 
         return rate;
     }
 
     private static decimal ConvertToBase(
         decimal amount,
-        string? currencyCode,
+        string currencyCode,
         string baseCurrency,
         IReadOnlyDictionary<string, decimal> rateMap
     )
