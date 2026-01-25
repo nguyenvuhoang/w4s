@@ -40,7 +40,7 @@ public class SyncUserInfoHandle(IUserAccountRepository userAccountRepository)
             return false;
         }
 
-        var newPhone = NormalizePhone(request.PhoneNumber);
+        string newPhone = NormalizePhone(request.PhoneNumber);
         if (string.IsNullOrWhiteSpace(newPhone))
         {
             return false;
@@ -59,9 +59,9 @@ public class SyncUserInfoHandle(IUserAccountRepository userAccountRepository)
         return true;
     }
 
-    private static string NormalizePhone(string? input)
+    private static string NormalizePhone(string input)
     {
-        var v = (input ?? string.Empty).Trim();
+        string v = (input ?? string.Empty).Trim();
         if (v.Length == 0)
         {
             return string.Empty;

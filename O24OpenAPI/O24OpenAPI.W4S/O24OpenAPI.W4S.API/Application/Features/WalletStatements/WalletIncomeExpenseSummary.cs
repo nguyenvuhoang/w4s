@@ -30,7 +30,6 @@ public class WalletIncomeExpenseSummaryCommand
     public List<TransferRateResponseModel> TransferRates { get; set; } = [];
 }
 
-
 public class WalletIncomeExpenseSummaryResponseModel : BaseO24OpenAPIModel
 {
     public IncomeExpenseSummaryModel IncomeExpenseSummary { get; set; } = new();
@@ -70,9 +69,10 @@ public class WalletIncomeExpenseSummaryHandler(
                     request.ContractNumber
                 );
 
-            var contractNumber = request.ContractNumber.Trim();
+            string contractNumber = request.ContractNumber.Trim();
 
-            var walletProfiles = await walletProfileRepository.GetByContractNumber(contractNumber)
+            List<WalletProfile> walletProfiles =
+                await walletProfileRepository.GetByContractNumber(contractNumber)
                 ?? throw await O24Exception.CreateAsync(
                     O24W4SResourceCode.Validation.WalletContractNotFound,
                     request.Language,
@@ -80,10 +80,7 @@ public class WalletIncomeExpenseSummaryHandler(
                 );
 
             // User confirmed: walletProfiles.Id is WalletId
-            var walletIds = walletProfiles
-                .Select(x => x.Id)
-                .Distinct()
-                .ToList();
+            List<int> walletIds = walletProfiles.Select(x => x.Id).Distinct().ToList();
 
             if (walletIds.Count == 0)
                 throw await O24Exception.CreateAsync(
@@ -92,64 +89,77 @@ public class WalletIncomeExpenseSummaryHandler(
                     contractNumber
                 );
 
-            var baseCurrency = string.IsNullOrWhiteSpace(w4SSettings.BaseCurrency)
+            string baseCurrency = string.IsNullOrWhiteSpace(w4SSettings.BaseCurrency)
                 ? "VND"
                 : w4SSettings.BaseCurrency.Trim();
 
-            var now = DateTime.UtcNow;
-            var (thisFrom, thisTo, prevFrom, prevTo) =
+            DateTime now = DateTime.UtcNow;
+            (DateTime thisFrom, DateTime thisTo, DateTime prevFrom, DateTime prevTo) =
                 WalletPeriodType.BuildPeriodRangeUtc(now, request.PeriodType);
 
             // Pull minimal rows (tracker: no ledger)
-            var thisRows = await walletStatementRepository.Table
-                .Where(x =>
-                    walletIds.Contains(x.WalletId) &&
-                    x.StatementOnUtc >= thisFrom &&
-                    x.StatementOnUtc < thisTo
+            var thisRows = await walletStatementRepository
+                .Table.Where(x =>
+                    walletIds.Contains(x.WalletId)
+                    && x.StatementOnUtc >= thisFrom
+                    && x.StatementOnUtc < thisTo
                 )
                 .Select(x => new
                 {
-                    x.EntryType,      // Code.EntryType.DEBIT / CREDIT
+                    x.EntryType, // Code.EntryType.DEBIT / CREDIT
                     x.Amount,
-                    x.CurrencyCode
+                    x.CurrencyCode,
                 })
                 .ToListAsync(cancellationToken);
 
-            var prevRows = await walletStatementRepository.Table
-                .Where(x =>
-                    walletIds.Contains(x.WalletId) &&
-                    x.StatementOnUtc >= prevFrom &&
-                    x.StatementOnUtc < prevTo
+            var prevRows = await walletStatementRepository
+                .Table.Where(x =>
+                    walletIds.Contains(x.WalletId)
+                    && x.StatementOnUtc >= prevFrom
+                    && x.StatementOnUtc < prevTo
                 )
                 .Select(x => new
                 {
                     x.EntryType,
                     x.Amount,
-                    x.CurrencyCode
+                    x.CurrencyCode,
                 })
                 .ToListAsync(cancellationToken);
 
             // Build rate map from request.TransferRates
-            var rateMap = RateHelper.BuildRateMapFromRequest(request.TransferRates, baseCurrency);
+            Dictionary<string, decimal> rateMap = RateHelper.BuildRateMapFromRequest(
+                request.TransferRates,
+                baseCurrency
+            );
 
             // Sum after conversion to base
-            decimal thisIncomeBase = 0m, thisExpenseBase = 0m;
+            decimal thisIncomeBase = 0m,
+                thisExpenseBase = 0m;
 
             foreach (var r in thisRows)
             {
-                var amtBase = ConvertToBase(r.Amount, r.CurrencyCode, baseCurrency, rateMap);
-                AccumulateByEntryType(r.EntryType, amtBase, ref thisIncomeBase, ref thisExpenseBase);
+                decimal amtBase = ConvertToBase(r.Amount, r.CurrencyCode, baseCurrency, rateMap);
+                AccumulateByEntryType(
+                    r.EntryType,
+                    amtBase,
+                    ref thisIncomeBase,
+                    ref thisExpenseBase
+                );
             }
 
-
-            decimal prevIncomeBase = 0m, prevExpenseBase = 0m;
+            decimal prevIncomeBase = 0m,
+                prevExpenseBase = 0m;
 
             foreach (var r in prevRows)
             {
-                var amtBase = ConvertToBase(r.Amount, r.CurrencyCode, baseCurrency, rateMap);
-                AccumulateByEntryType(r.EntryType, amtBase, ref prevIncomeBase, ref prevExpenseBase);
+                decimal amtBase = ConvertToBase(r.Amount, r.CurrencyCode, baseCurrency, rateMap);
+                AccumulateByEntryType(
+                    r.EntryType,
+                    amtBase,
+                    ref prevIncomeBase,
+                    ref prevExpenseBase
+                );
             }
-
 
             return new WalletIncomeExpenseSummaryResponseModel
             {
@@ -158,14 +168,14 @@ public class WalletIncomeExpenseSummaryHandler(
                     Expense = new SummaryItemModel
                     {
                         Total = thisExpenseBase,
-                        ChangePercent = CalcChangePercent(thisExpenseBase, prevExpenseBase)
+                        ChangePercent = CalcChangePercent(thisExpenseBase, prevExpenseBase),
                     },
                     Income = new SummaryItemModel
                     {
                         Total = thisIncomeBase,
-                        ChangePercent = CalcChangePercent(thisIncomeBase, prevIncomeBase)
-                    }
-                }
+                        ChangePercent = CalcChangePercent(thisIncomeBase, prevIncomeBase),
+                    },
+                },
             };
         }
         catch (Exception ex)
@@ -177,17 +187,17 @@ public class WalletIncomeExpenseSummaryHandler(
 
     private static decimal ConvertToBase(
         decimal amount,
-        string? currencyCode,
+        string currencyCode,
         string baseCurrency,
         IReadOnlyDictionary<string, decimal> rateMap
     )
     {
-        var ccy = string.IsNullOrWhiteSpace(currencyCode) ? baseCurrency : currencyCode.Trim();
+        string ccy = string.IsNullOrWhiteSpace(currencyCode) ? baseCurrency : currencyCode.Trim();
 
         if (ccy.Equals(baseCurrency, StringComparison.OrdinalIgnoreCase))
             return amount;
 
-        var rate = RateHelper.GetRateToBase(ccy, baseCurrency, rateMap);
+        decimal rate = RateHelper.GetRateToBase(ccy, baseCurrency, rateMap);
         return amount * rate;
     }
 
@@ -199,9 +209,8 @@ public class WalletIncomeExpenseSummaryHandler(
         return Math.Round((current - previous) / previous * 100m, 1, MidpointRounding.AwayFromZero);
     }
 
-
     private static void AccumulateByEntryType(
-        string? entryType,
+        string entryType,
         decimal amountBase,
         ref decimal income,
         ref decimal expense
@@ -210,7 +219,7 @@ public class WalletIncomeExpenseSummaryHandler(
         if (string.IsNullOrWhiteSpace(entryType))
             return;
 
-        var type = entryType.Trim();
+        string type = entryType.Trim();
 
         if (string.Equals(type, Code.EntryType.CREDIT, StringComparison.OrdinalIgnoreCase))
         {
@@ -221,6 +230,4 @@ public class WalletIncomeExpenseSummaryHandler(
             expense += amountBase;
         }
     }
-
-
 }

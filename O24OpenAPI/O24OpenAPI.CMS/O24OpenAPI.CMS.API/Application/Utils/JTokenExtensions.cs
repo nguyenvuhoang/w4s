@@ -131,16 +131,14 @@ public static class JsonExtension
         try
         {
             string strObject = JsonConvert.SerializeObject(jObject);
-            T? result = System.Text.Json.JsonSerializer.Deserialize<T>(strObject);
+            T result = System.Text.Json.JsonSerializer.Deserialize<T>(strObject);
             return result;
         }
-        catch (Exception ex)
+        catch
         {
             throw;
         }
     }
-
-
 
     /// <summary>
     ///
@@ -164,10 +162,7 @@ public static class JsonExtension
                 return JsonConvert.DeserializeObject<T>(strObject);
             }
         }
-        catch (Exception ex)
-        {
-            ;
-        }
+        catch { }
 
         return default;
     }
@@ -201,7 +196,7 @@ public static class JsonExtension
             T? result = System.Text.Json.JsonSerializer.Deserialize<T>(jsonSerial, options);
             return result;
         }
-        catch (Exception ex)
+        catch
         {
             throw;
         }
@@ -220,9 +215,7 @@ public static class JsonExtension
             string strObject = JsonConvert.SerializeObject(jObject);
             return JsonConvert.DeserializeObject<T>(strObject);
         }
-        catch (Exception ex)
-        {
-        }
+        catch { }
 
         return default;
     }
@@ -405,7 +398,7 @@ public static class JsonExtension
                 }
             }
         }
-        catch (Exception ex)
+        catch
         {
             throw;
         }
@@ -628,7 +621,8 @@ public static class JsonExtension
 
     public static JObject AddContextFo(this JObject jObject)
     {
-        JWebUIObjectContextModel? _context = EngineContext.Current.Resolve<JWebUIObjectContextModel>();
+        JWebUIObjectContextModel? _context =
+            EngineContext.Current.Resolve<JWebUIObjectContextModel>();
 
         Dictionary<string, object> dictionary = _context.Bo.GetFoInput().input;
         foreach (KeyValuePair<string, object> kvp in dictionary)

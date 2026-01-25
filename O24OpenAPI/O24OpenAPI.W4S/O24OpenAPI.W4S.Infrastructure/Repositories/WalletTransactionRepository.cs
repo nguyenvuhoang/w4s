@@ -69,7 +69,7 @@ public class WalletTransactionRepository(
             .ToListAsync();
     }
 
-    public async Task<WalletTransaction?> GetByTransactionIdAsync(
+    public async Task<WalletTransaction> GetByTransactionIdAsync(
         string transactionId,
         CancellationToken cancellationToken = default
     )

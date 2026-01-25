@@ -1,4 +1,4 @@
-﻿namespace O24OpenAPI.NCH.API.Application.Features.Zalo;
+﻿namespace O24OpenAPI.NCH.API.Application.Zalo;
 
 public class ZaloZnsOptions
 {

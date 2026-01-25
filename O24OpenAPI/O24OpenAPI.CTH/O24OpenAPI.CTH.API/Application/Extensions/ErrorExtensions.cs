@@ -26,9 +26,9 @@ namespace O24OpenAPI.CTH.API.Application.Extensions
                 };
             }
 
-            if (result.TryGetValue("error_message", out JToken? messageToken))
+            if (result.TryGetValue("error_message", out JToken messageToken))
             {
-                var msg = messageToken?.ToString();
+                string msg = messageToken?.ToString();
                 if (!string.IsNullOrEmpty(msg))
                 {
                     result["data"] = new JObject

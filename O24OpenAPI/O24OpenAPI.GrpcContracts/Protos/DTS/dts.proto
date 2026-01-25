@@ -3,7 +3,6 @@
 package dts;
 option csharp_namespace = "O24OpenAPI.Grpc.DTS";
 
-import "google/protobuf/timestamp.proto";
 import "Common/common.proto";
 
 service DTSGrpcService {

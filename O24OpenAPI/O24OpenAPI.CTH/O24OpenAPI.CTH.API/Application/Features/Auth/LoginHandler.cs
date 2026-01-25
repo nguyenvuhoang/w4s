@@ -131,7 +131,7 @@ public class LoginHandler(
         string hashedToken = token.Hash();
         string hashedRefreshToken = refreshToken.Hash();
         string stringJson = model.RoleChannel;
-        int[]? listRoles = System.Text.Json.JsonSerializer.Deserialize<int[]>(stringJson);
+        int[] listRoles = System.Text.Json.JsonSerializer.Deserialize<int[]>(stringJson);
         HashSet<string> channelRoles = await userRightChannelRepository.GetSetChannelInRoleAsync(
             listRoles
         );
@@ -218,7 +218,7 @@ public class LoginHandler(
         string stringJson = !string.IsNullOrEmpty(userAccount.RoleChannel)
             ? userAccount.RoleChannel
             : model.RoleChannel;
-        int[]? listRoles = System.Text.Json.JsonSerializer.Deserialize<int[]>(stringJson);
+        int[] listRoles = System.Text.Json.JsonSerializer.Deserialize<int[]>(stringJson);
         HashSet<string> channelRoles = await userRightChannelRepository.GetSetChannelInRoleAsync(
             listRoles
         );
@@ -388,7 +388,7 @@ public class LoginHandler(
                 []
             );
 
-        ControlHubSetting? setting = EngineContext.Current.Resolve<ControlHubSetting>();
+        ControlHubSetting setting = EngineContext.Current.Resolve<ControlHubSetting>();
 
         if (user.Status == Common.BLOCK && user.LockedUntil.HasValue)
         {

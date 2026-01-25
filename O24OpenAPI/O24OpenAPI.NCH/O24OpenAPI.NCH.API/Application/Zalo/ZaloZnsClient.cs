@@ -1,13 +1,8 @@
-﻿using System;
-using System.Net.Http;
+﻿using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 
-namespace O24OpenAPI.NCH.API.Application.Features.Zalo;
+namespace O24OpenAPI.NCH.API.Application.Zalo;
 
 public class ZaloZnsClient : IZaloZnsClient
 {
@@ -31,9 +26,9 @@ public class ZaloZnsClient : IZaloZnsClient
         CancellationToken cancellationToken = default
     )
     {
-        var msisdn = NormalizePhone(phoneNumber);
+        string msisdn = NormalizePhone(phoneNumber);
 
-        var url = $"{_options.BaseUrl.TrimEnd('/')}{_options.SendOtpPath}";
+        string url = $"{_options.BaseUrl.TrimEnd('/')}{_options.SendOtpPath}";
 
         var payload = new
         {
@@ -46,7 +41,7 @@ public class ZaloZnsClient : IZaloZnsClient
             tracking_id = trackingId,
         };
 
-        using var request = new HttpRequestMessage(HttpMethod.Post, url);
+        using HttpRequestMessage request = new(HttpMethod.Post, url);
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
         request.Headers.Authorization = new AuthenticationHeaderValue(
@@ -57,9 +52,9 @@ public class ZaloZnsClient : IZaloZnsClient
         request.Content = JsonContent.Create(payload);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        string content = await response.Content.ReadAsStringAsync(cancellationToken);
 
-        var result = new ZaloSendOtpResult
+        ZaloSendOtpResult result = new()
         {
             StatusCode = (int)response.StatusCode,
             RawResponse = content,
@@ -101,7 +96,7 @@ public class ZaloZnsClient : IZaloZnsClient
         if (string.IsNullOrWhiteSpace(phoneNumber))
             return phoneNumber;
 
-        var p = phoneNumber.Trim();
+        string p = phoneNumber.Trim();
 
         if (p.StartsWith("+"))
             p = p[1..];
@@ -115,7 +110,7 @@ public class ZaloZnsClient : IZaloZnsClient
     private class ZaloZnsSendResponse
     {
         public int error_code { get; set; }
-        public string? error_message { get; set; }
-        public string? msg_id { get; set; }
+        public string error_message { get; set; }
+        public string msg_id { get; set; }
     }
 }

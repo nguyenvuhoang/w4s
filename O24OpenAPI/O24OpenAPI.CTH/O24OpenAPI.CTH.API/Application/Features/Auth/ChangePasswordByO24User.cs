@@ -46,7 +46,7 @@ public class ChangePasswordByO24UserHandle(
         CancellationToken cancellationToken = default
     )
     {
-        var userAccount =
+        UserAccount userAccount =
             await GetLoginAccount(
                 request.LoginName,
                 password: request.Password,
@@ -59,7 +59,7 @@ public class ChangePasswordByO24UserHandle(
             );
         string hashPassword = O9Encrypt.sha_sha256(request.NewPassword, userAccount.UserCode);
 
-        var userPassword = await userPasswordRepository.GetByUserCodeAsync(userAccount.UserCode);
+        UserPassword userPassword = await userPasswordRepository.GetByUserCodeAsync(userAccount.UserCode);
 
         if (userPassword == null)
         {
@@ -110,7 +110,7 @@ public class ChangePasswordByO24UserHandle(
                 []
             );
 
-        ControlHubSetting? setting = EngineContext.Current.Resolve<ControlHubSetting>();
+        ControlHubSetting setting = EngineContext.Current.Resolve<ControlHubSetting>();
 
         if (user.Status == Common.BLOCK && user.LockedUntil.HasValue)
         {

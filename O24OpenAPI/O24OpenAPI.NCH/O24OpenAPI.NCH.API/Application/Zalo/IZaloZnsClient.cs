@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace O24OpenAPI.NCH.API.Application.Features.Zalo;
+﻿namespace O24OpenAPI.NCH.API.Application.Zalo;
 
 public interface IZaloZnsClient
 {
@@ -9,7 +6,8 @@ public interface IZaloZnsClient
         string phoneNumber,
         string otp,
         string trackingId,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }
 
 public class ZaloSendOtpResult
@@ -17,8 +15,8 @@ public class ZaloSendOtpResult
     public bool Success { get; set; }
     public int StatusCode { get; set; }
     public int? ErrorCode { get; set; }
-    public string? ErrorMessage { get; set; }
-    public string? ZnsMessageId { get; set; }
-    public string? RawResponse { get; set; }
-    public string? TrackingId { get; set; }
+    public string ErrorMessage { get; set; }
+    public string ZnsMessageId { get; set; }
+    public string RawResponse { get; set; }
+    public string TrackingId { get; set; }
 }
