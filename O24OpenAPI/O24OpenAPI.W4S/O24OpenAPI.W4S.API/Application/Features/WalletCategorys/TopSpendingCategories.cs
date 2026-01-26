@@ -8,6 +8,7 @@ using O24OpenAPI.Framework.Models;
 using O24OpenAPI.W4S.API.Application.Constants;
 using O24OpenAPI.W4S.API.Application.Helpers;
 using O24OpenAPI.W4S.API.Application.Models.Currency;
+using O24OpenAPI.W4S.API.Application.Models.WalletCategorys;
 using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 using O24OpenAPI.W4S.Domain.AggregatesModel.WalletMasterAggregate;
 
@@ -31,21 +32,6 @@ public class TopSpendingCategoriesCommand
     public List<TransferRateResponseModel> TransferRates { get; set; } = [];
 }
 
-public class TopSpendingCategoriesResponseModel : BaseO24OpenAPIModel
-{
-    public List<TopSpendingCategoryItem> TopCategories { get; set; } = [];
-}
-
-public class TopSpendingCategoryItem
-{
-    public int CategoryId { get; set; } = default!;
-    public string Name { get; set; } = default!;
-    public string Icon { get; set; } = default!;
-    public string Color { get; set; } = default!;
-    public int TransactionCount { get; set; }
-    public decimal TotalAmount { get; set; }
-    public decimal Percentage { get; set; }
-}
 
 [CqrsHandler]
 public class TopSpendingCategoriesCommandHandler(
@@ -113,8 +99,8 @@ public class TopSpendingCategoriesCommandHandler(
                     walletIds.Contains(x.WalletId) &&
                     x.StatementOnUtc >= fromUtc &&
                     x.StatementOnUtc < toUtc &&
-                    x.EntryType == Code.EntryType.DEBIT &&
-                    x.CategoryId != null
+                    x.EntryType.Equals(Code.EntryType.DEBIT, StringComparison.InvariantCultureIgnoreCase) &&
+                    x.CategoryId > 0
                 )
                 .Select(x => new
                 {

@@ -31,4 +31,13 @@ public interface IWalletCategoryRepository : IRepository<WalletCategory>
     /// <param name="walletid"></param>
     /// <returns></returns>
     Task<List<WalletCategory>> GetWalletCategoryByWalletIdAsync(int walletid);
+    /// <summary>
+    /// Exist by wallet group and name asynchronous.
+    /// </summary>
+    /// <param name="walletId"></param>
+    /// <param name="categoryGroup"></param>
+    /// <param name="categoryName"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<bool> ExistsByWalletGroupAndNameAsync(int walletId, string categoryGroup, string categoryName, CancellationToken cancellationToken = default);
 }

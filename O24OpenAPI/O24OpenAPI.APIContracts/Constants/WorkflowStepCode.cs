@@ -154,6 +154,8 @@ public static class WorkflowStepCode
         public const string WF_STEP_W4S_WALLET_NET_INCOME = "WF_STEP_W4S_WALLET_NET_INCOME";
         public const string WF_STEP_W4S_TOP_SPENDING_CATEGORIES = "WF_STEP_W4S_TOP_SPENDING_CATEGORIES";
         public const string WF_STEP_W4S_WALLET_RECENT_TRANSACTIONS = "WF_STEP_W4S_WALLET_RECENT_TRANSACTIONS";
+        public const string WF_STEP_W4S_CREATE_WALLET_CATEGORY = "WF_STEP_W4S_CREATE_WALLET_CATEGORY";
+
     }
     #endregion
 
