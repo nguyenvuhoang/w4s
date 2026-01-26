@@ -1,0 +1,44 @@
+diff a/O24OpenAPI/O24OpenAPI.AI/O24OpenAPI.AI.API/App_Data/appsettings.json b/O24OpenAPI/O24OpenAPI.AI/O24OpenAPI.AI.API/App_Data/appsettings.json	(rejected hunks)
+@@ -44,12 +42,40 @@
+     "WFOHttpURL": "https://192.168.1.103:105",
+     "WFOGrpcURL": "https://192.168.1.103:109",
+     "YourServiceID": "AI",
+-    "YourGrpcURL": "https://192.168.1.103:5081",
++    "YourGrpcURL": "https://192.168.1.103:5051",
+     "YourDatabase": "o24ai",
+     "YourSchema": "dbo",
+     "FanoutExchanges": [
+       "exchange_log_workflow_step"
+     ],
+     "OpenAPIURI": ""
++  },
++  "QdrantSettingConfig": {
++    "ClientName": "qdrant",
++    "Host": "192.168.1.103",
++    "Port": 6334,
++    "TimeoutInSeconds": 30,
++    "Collection": "o24_static_knowledge_v1"
++  },
++  "RagConfig": {
++    "ChunkSize": 800,
++    "ChunkOverlap": 120,
++    "TopK": 5,
++    "MinScore": 0.25
++  },
++  "LLMProviderConfig": {
++    "ProviderName": "OpenAI",
++    "OpenAI": {
++      "ApiKey": "",
++      "BaseUrl": "",
++      "ChatModel": "",
++      "EmbedModel": ""
++    },
++    "Ollama": {
++      "ApiKey": "",
++      "BaseUrl": "",
++      "ChatModel": "",
++      "EmbedModel": ""
++    }
+   }
+ }
+\ No newline at end of file
