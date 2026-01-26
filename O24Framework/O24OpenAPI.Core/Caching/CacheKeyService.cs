@@ -69,7 +69,7 @@ public abstract class CacheKeyService(AppSettings appSettings)
             new Func<object, object>(CreateCacheKeyParameters),
             cacheKeyParameters
         );
-        cacheKey1.CacheTime = _appSettings.Get<CacheConfig>().DefaultCacheTime;
+        cacheKey1.CacheTime = _appSettings.Get<CacheConfig>()?.DefaultCacheTime ?? 60;
         return cacheKey1;
     }
 
@@ -82,7 +82,7 @@ public abstract class CacheKeyService(AppSettings appSettings)
             new Func<object, object>(CreateCacheKeyParameters),
             cacheKeyParameters
         );
-        cacheKey1.CacheTime = _appSettings.Get<CacheConfig>().NeptuneCacheTime;
+        cacheKey1.CacheTime = _appSettings.Get<CacheConfig>()?.NeptuneCacheTime ?? 60;
         return cacheKey1;
     }
 
@@ -95,7 +95,7 @@ public abstract class CacheKeyService(AppSettings appSettings)
             new Func<object, object>(CreateCacheKeyParameters),
             cacheKeyParameters
         );
-        cacheKey1.CacheTime = _appSettings.Get<CacheConfig>().ShortTermCacheTime;
+        cacheKey1.CacheTime = _appSettings.Get<CacheConfig>()?.ShortTermCacheTime ?? 60;
         return cacheKey1;
     }
 }

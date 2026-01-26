@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="LinKit.Core" />
+    <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Logging\O24OpenAPI.Logging.csproj" />
+    <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Core\O24OpenAPI.Core.csproj" />
+    <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Data\O24OpenAPI.Data.csproj" />
+    <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Client\O24OpenAPI.Client.csproj" />
+    <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Framework\O24OpenAPI.Framework.csproj" />
+    <ProjectReference Include="..\..\O24OpenAPI.APIContracts\O24OpenAPI.APIContracts.csproj" />
+    <ProjectReference Include="..\..\O24OpenAPI.GrpcContracts\O24OpenAPI.GrpcContracts.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.W4S.Domain\O24OpenAPI.W4S.Domain.csproj" />
+  </ItemGroup>
+</Project>

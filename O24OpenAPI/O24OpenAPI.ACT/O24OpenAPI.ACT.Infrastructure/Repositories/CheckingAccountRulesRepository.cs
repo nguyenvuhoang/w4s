@@ -1,0 +1,81 @@
+using LinKit.Core.Abstractions;
+using LinqToDB;
+using O24OpenAPI.ACT.Domain.AggregatesModel.RulesAggregate;
+using O24OpenAPI.Core;
+using O24OpenAPI.Core.Caching;
+using O24OpenAPI.Data;
+
+namespace O24OpenAPI.ACT.Infrastructure.Repositories;
+
+[RegisterService(Lifetime.Scoped)]
+public class CheckingAccountRulesRepository(
+    IO24OpenAPIDataProvider dataProvider,
+    IStaticCacheManager staticCacheManager
+)
+    : EntityRepository<CheckingAccountRules>(dataProvider, staticCacheManager),
+        ICheckingAccountRulesRepository
+{
+    public async Task<IReadOnlyList<CheckingAccountRules>> GetActiveAsync() =>
+        await Table.ToListAsync();
+
+    public virtual async Task CheckingRuleAccount(
+        string accls,
+        string rbal,
+        string bside,
+        string pside,
+        string acgrp,
+        string accat
+    )
+    {
+        var ruleClassification = await GetAll(query =>
+        {
+            query = query.Where(c => c.AccountClassification.ToUpper().Equals(accls.ToUpper()));
+            return query;
+        });
+
+        if (ruleClassification.Count == 0)
+        {
+            throw new O24OpenAPIException("Invalid field name Account Classification");
+        }
+
+        var ruleReverseBalance = ruleClassification.Where(c =>
+            c.ReverseBalance.ToUpper().Equals(rbal.ToUpper())
+        );
+        if (ruleReverseBalance.ToList().Count == 0)
+        {
+            throw new O24OpenAPIException("Invalid field name Reverse Balance");
+        }
+
+        var ruleBalanceSide = ruleReverseBalance.Where(c =>
+            c.BalanceSide.ToUpper().Equals(bside.ToUpper())
+        );
+        if (ruleBalanceSide.ToList().Count == 0)
+        {
+            throw new O24OpenAPIException("Invalid field name Balance Side");
+        }
+
+        var rulePostingSide = ruleBalanceSide.Where(c =>
+            c.PostingSide.ToUpper().Equals(pside.ToUpper())
+        );
+        if (rulePostingSide.ToList().Count == 0)
+        {
+            throw new O24OpenAPIException("Invalid field name Posting Side");
+        }
+
+        var ruleAccountGroup = rulePostingSide.Where(c =>
+            c.AccountGroup.ToUpper().Equals(acgrp.ToUpper())
+        );
+        if (ruleAccountGroup.ToList().Count == 0)
+        {
+            throw new O24OpenAPIException("Invalid field name Account Group");
+        }
+
+        var ruleAccountCategories = ruleAccountGroup.Where(c =>
+            c.AccountCategories.ToUpper().Equals(accat.ToUpper())
+        );
+        if (ruleAccountCategories.ToList().Count == 0)
+        {
+            throw new O24OpenAPIException("Invalid field name Account Categories");
+        }
+    }
+}

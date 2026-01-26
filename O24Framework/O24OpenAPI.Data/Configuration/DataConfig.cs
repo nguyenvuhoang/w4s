@@ -1,10 +1,9 @@
+using System.Text;
+using System.Text.Json.Serialization;
 using FluentMigrator.Runner.Initialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Enums;
 using O24OpenAPI.Core.Helper;
-using System.Text;
 
 namespace O24OpenAPI.Data.Configuration;
 
@@ -15,24 +14,21 @@ namespace O24OpenAPI.Data.Configuration;
 /// <seealso cref="IConnectionStringAccessor"/>
 public class DataConfig : IConfig, IConnectionStringAccessor
 {
-    /// <summary>
-    /// The empty
-    /// </summary>
     private string _connectionString = string.Empty;
-
-    /// <summary>
-    /// The decrypted connection string
-    /// </summary>
     private string _decryptedConnectionString;
-
-    /// <summary>
-    /// The lock
-    /// </summary>
     private readonly object _lock = new();
 
-    /// <summary>
-    /// Gets or sets the value of the connection string
-    /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public DataProviderType DataProvider { get; set; } = DataProviderType.SqlServer;
+    public int? SQLCommandTimeout { get; set; } = new int?();
+    private string _defaultConnectionEncrypted = string.Empty;
+    private string _defaultConnectionDecrypted = null;
+    public string SchemaName { get; set; } = "dbo";
+
+    public int LoadTimeout() => SQLCommandTimeout ?? 60;
+
+    public string LoadSchema() => string.IsNullOrWhiteSpace(SchemaName) ? "dbo" : SchemaName;
+
     public string ConnectionString
     {
         get
@@ -61,13 +57,6 @@ public class DataConfig : IConfig, IConnectionStringAccessor
     }
 
     /// <summary>
-    /// Gets or sets the value of the data provider
-    /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
-    public DataProviderType DataProvider { get; set; } = DataProviderType.SqlServer;
-
-
-    /// <summary>
     /// Load type
     /// </summary>
     /// <returns></returns>
@@ -80,37 +69,9 @@ public class DataConfig : IConfig, IConnectionStringAccessor
             DataProviderType.Oracle => DbTypeEnum.oracle,
             DataProviderType.MySql => DbTypeEnum.mysql,
             DataProviderType.PostgreSQL => DbTypeEnum.postgresql,
-            _ => throw new Exception($"Unsupported provider: {DataProvider}")
+            _ => throw new Exception($"Unsupported provider: {DataProvider}"),
         };
     }
-    /// <summary>
-    /// Gets or sets the value of the sql command timeout
-    /// </summary>
-    public int? SQLCommandTimeout { get; set; } = new int?();
-
-    /// <summary>
-    /// The empty
-    /// </summary>
-    private string _defaultConnectionEncrypted = string.Empty;
-
-    /// <summary>
-    /// The default connection decrypted
-    /// </summary>
-    private string _defaultConnectionDecrypted = null;
-    /// <summary>
-    /// Schema name
-    /// </summary>
-    public string SchemaName { get; set; } = "dbo";
-    /// <summary>
-    /// Load timeout
-    /// </summary>
-    /// <returns></returns>
-    public int LoadTimeout() => SQLCommandTimeout ?? 60;
-    /// <summary>
-    /// Load schema
-    /// </summary>
-    /// <returns></returns>
-    public string LoadSchema() => string.IsNullOrWhiteSpace(SchemaName) ? "dbo" : SchemaName;
 
     /// <summary>
     /// Gets or sets the value of the default connection
@@ -148,12 +109,6 @@ public class DataConfig : IConfig, IConnectionStringAccessor
     /// <returns>The int</returns>
     public int GetOrder() => 0;
 
-    /// <summary>
-    /// Decrypts the connection string using the specified encrypted connection string
-    /// </summary>
-    /// <param name="encryptedConnectionString">The encrypted connection string</param>
-    /// <param name="encryptionKey">The encryption key</param>
-    /// <returns>The string</returns>
     private static string DecryptConnectionString(
         string encryptedConnectionString,
         string encryptionKey

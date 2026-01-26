@@ -1,6 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Linh.JsonKit.Json;
+using LinKit.Json.Runtime;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using O24OpenAPI.Core.Helper;
@@ -18,7 +18,7 @@ public static class ObjectExtensions
             return false;
         }
 
-        var str = s.ToString();
+        string? str = s.ToString();
         if (string.IsNullOrWhiteSpace(str))
         {
             return false;
@@ -28,13 +28,13 @@ public static class ObjectExtensions
         {
             if (typeof(T) == typeof(JObject))
             {
-                var jObject = JObject.Parse(str);
+                JObject jObject = JObject.Parse(str);
                 result = jObject.ToObject<T>();
                 return true;
             }
             else if (typeof(T) == typeof(JArray))
             {
-                var jArray = JArray.Parse(str);
+                JArray jArray = JArray.Parse(str);
                 result = jArray.ToObject<T>();
                 return true;
             }
@@ -57,6 +57,8 @@ public static class ObjectExtensions
 
     public static string ToSerialize(this object obj)
     {
+        if (obj == null)
+            return string.Empty;
         return JsonConvert.SerializeObject(obj);
     }
 
@@ -66,7 +68,7 @@ public static class ObjectExtensions
         {
             bool b => b,
             null => false,
-            _ => bool.TryParse(obj.ToString(), out var result) && result,
+            _ => bool.TryParse(obj.ToString(), out bool result) && result,
         };
     }
 
@@ -76,7 +78,7 @@ public static class ObjectExtensions
         {
             int i => i,
             null => 0,
-            _ => int.TryParse(obj.ToString(), out var result) ? result : 0,
+            _ => int.TryParse(obj.ToString(), out int result) ? result : 0,
         };
     }
 
@@ -86,7 +88,7 @@ public static class ObjectExtensions
         {
             long l => l,
             null => 0,
-            _ => long.TryParse(obj.ToString(), out var result) ? result : 0,
+            _ => long.TryParse(obj.ToString(), out long result) ? result : 0,
         };
     }
 
@@ -96,7 +98,7 @@ public static class ObjectExtensions
         {
             double d => d,
             null => 0,
-            _ => double.TryParse(obj.ToString(), out var result) ? result : 0,
+            _ => double.TryParse(obj.ToString(), out double result) ? result : 0,
         };
     }
 
@@ -106,7 +108,7 @@ public static class ObjectExtensions
         {
             decimal d => d,
             null => 0,
-            _ => decimal.TryParse(obj.ToString(), out var result) ? result : 0,
+            _ => decimal.TryParse(obj.ToString(), out decimal result) ? result : 0,
         };
     }
 
@@ -162,14 +164,14 @@ public static class ObjectExtensions
 
         try
         {
-            var settings = new JsonSerializerSettings
+            JsonSerializerSettings settings = new()
             {
                 DateFormatHandling = DateFormatHandling.IsoDateFormat,
                 NullValueHandling = NullValueHandling.Ignore,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             };
 
-            var jsonModel = JsonConvert.SerializeObject(model, settings);
+            string jsonModel = JsonConvert.SerializeObject(model, settings);
 
             return JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonModel, settings)
                 ?? [];
@@ -210,16 +212,23 @@ public static class ObjectExtensions
         return JConvert.FromJson<T>(obj.ToJson());
     }
 
-    public static string WriteIndentedJson(this object obj, JsonSerializerOptions? options = null)
+    public static string WriteIndentedJson(
+        this object? obj,
+        JsonSerializerSettings? settings = null
+    )
     {
         if (obj is null)
         {
             return string.Empty;
         }
 
-        options ??= JsonOptions.IgnoreCyclesAndWriteIndented;
+        settings ??= new JsonSerializerSettings
+        {
+            Formatting = Formatting.Indented,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+        };
 
-        return System.Text.Json.JsonSerializer.Serialize(obj, options);
+        return JsonConvert.SerializeObject(obj, settings);
     }
 
     public static JsonNode? ToJsonNode(this object obj)

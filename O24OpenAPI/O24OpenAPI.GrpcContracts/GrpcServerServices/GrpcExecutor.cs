@@ -1,5 +1,4 @@
 ﻿using Grpc.Core;
-using Linh.JsonKit.Json;
 using Microsoft.Extensions.DependencyInjection;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Domain;
@@ -24,30 +23,35 @@ public class GrpcExecutor
     {
         try
         {
-            var serviceProvider = context.GetHttpContext().RequestServices;
-            using var scope = serviceProvider.CreateAsyncScope();
+            IServiceProvider serviceProvider = context.GetHttpContext().RequestServices;
+            using AsyncServiceScope scope = serviceProvider.CreateAsyncScope();
             AsyncScope.Scope = scope;
-            var header = context.RequestHeaders;
+            Metadata header = context.RequestHeaders;
             var stringWorkContext = header
                 .FirstOrDefault(x => x.Key.EndsWithOrdinalIgnoreCase("work_context"))
                 ?.Value;
-            if (stringWorkContext.HasValue())
+            if (!string.IsNullOrWhiteSpace(stringWorkContext))
             {
-                var workContext =
+                WorkContextTemplate workContext =
                     stringWorkContext.ToObject<WorkContextTemplate>()
                     ?? throw new ArgumentNullException(
                         nameof(stringWorkContext),
                         "Cannot parse work context from request headers."
                     );
-                EngineContext.Current.Resolve<WorkContext>().SetWorkContext(workContext);
+                EngineContext.Current.ResolveRequired<WorkContext>().SetWorkContext(workContext);
             }
             var result = await operation();
-
+            //if (result is null)
+            //{
+            //    throw new Exception("Notfound");
+            //}
             return new GrpcResponse
             {
                 Code = GrpcResponseCode.Success,
                 Message = "OK",
-                Data = result is string json ? json : result?.ToJson() ?? "",
+                Detail = "",
+                Data = "Notfound",//result is string json ? json : result?.ToJson() ?? "",
+                ErrorCode = ""
             };
         }
         catch (Exception ex)

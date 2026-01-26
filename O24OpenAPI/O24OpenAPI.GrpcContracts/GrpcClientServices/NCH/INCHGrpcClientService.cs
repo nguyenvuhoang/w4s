@@ -13,6 +13,6 @@ public interface INCHGrpcClientService
         Dictionary<string, object> data,
         Dictionary<string, object> dataTemplate,
         List<DTSMimeEntityModel> mimeEntities,
-        string messsage = ""
+        string message = ""
     );
 }

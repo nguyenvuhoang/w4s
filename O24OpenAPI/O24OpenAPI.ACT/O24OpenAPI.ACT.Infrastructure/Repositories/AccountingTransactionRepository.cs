@@ -1,0 +1,19 @@
+using LinKit.Core.Abstractions;
+using LinqToDB;
+using O24OpenAPI.ACT.Domain.AggregatesModel.TransactionAggregate;
+using O24OpenAPI.Core.Caching;
+using O24OpenAPI.Data;
+
+namespace O24OpenAPI.ACT.Infrastructure.Repositories;
+
+[RegisterService(Lifetime.Scoped)]
+public class AccountingTransactionRepository(
+    IO24OpenAPIDataProvider dataProvider,
+    IStaticCacheManager staticCacheManager
+)
+    : EntityRepository<AccountingTransaction>(dataProvider, staticCacheManager),
+        IAccountingTransactionRepository
+{
+    public async Task<IReadOnlyList<AccountingTransaction>> GetByRefAsync(string referenceId) =>
+        await Table.Where(x => x.ReferenceId == referenceId).ToListAsync();
+}

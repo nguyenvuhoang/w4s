@@ -1,16 +1,16 @@
-﻿using O24OpenAPI.Kit.Models;
-using O24OpenAPI.O24OpenAPIClient.Infisical;
+﻿using O24OpenAPI.Client.Infisical;
+using O24OpenAPI.Kit.Models;
 
 namespace O24OpenAPI.Kit.Keyvault.Extensions;
 
 public static class KeyvaultExtension
 {
-    private readonly static string key = "O24OpenAPI.SecretKey";
+    private static readonly string key = "O24OpenAPI.SecretKey";
+
     public static string GetSecretKey()
     {
-        var json = InfisicalManager.GetSecretByKey<SecretVaultModel>(key);
-        string vaultKey = json.SecretKey;
+        SecretVaultModel? secretVaultModel = InfisicalManager.GetSecretByKey<SecretVaultModel>(key);
+        string? vaultKey = secretVaultModel?.SecretKey;
         return vaultKey;
     }
-
 }

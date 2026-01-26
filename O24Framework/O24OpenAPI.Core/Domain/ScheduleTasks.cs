@@ -6,7 +6,7 @@ namespace O24OpenAPI.Core.Domain;
 /// The schedule task class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class ScheduleTask : BaseEntity
+public partial class ScheduleTask : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the name

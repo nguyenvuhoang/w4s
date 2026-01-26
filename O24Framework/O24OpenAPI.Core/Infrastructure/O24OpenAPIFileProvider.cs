@@ -12,24 +12,19 @@ namespace O24OpenAPI.Core.Infrastructure;
 /// <seealso cref="PhysicalFileProvider"/>
 /// <seealso cref="IO24OpenAPIFileProvider"/>
 /// <seealso cref="IFileProvider"/>
-public class O24OpenAPIFileProvider : PhysicalFileProvider, IO24OpenAPIFileProvider, IFileProvider
+/// <remarks>
+/// Initializes a new instance of the <see cref="O24OpenAPIFileProvider"/> class
+/// </remarks>
+/// <param name="webHostEnvironment">The web host environment</param>
+public class O24OpenAPIFileProvider(IWebHostEnvironment webHostEnvironment)
+    : PhysicalFileProvider(
+        File.Exists(webHostEnvironment.ContentRootPath)
+            ? Path.GetDirectoryName(webHostEnvironment.ContentRootPath)!
+            : webHostEnvironment.ContentRootPath
+    ),
+        IO24OpenAPIFileProvider,
+        IFileProvider
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="O24OpenAPIFileProvider"/> class
-    /// </summary>
-    /// <param name="webHostEnvironment">The web host environment</param>
-    public O24OpenAPIFileProvider(IWebHostEnvironment webHostEnvironment)
-        : base(
-            File.Exists(webHostEnvironment.ContentRootPath)
-                ? Path.GetDirectoryName(webHostEnvironment.ContentRootPath)
-                : webHostEnvironment.ContentRootPath
-        )
-    {
-        this.WebRootPath = File.Exists(webHostEnvironment.WebRootPath)
-            ? Path.GetDirectoryName(webHostEnvironment.WebRootPath)
-            : webHostEnvironment.WebRootPath;
-    }
-
     /// <summary>
     /// Deletes the directory recursive using the specified path
     /// </summary>
@@ -57,7 +52,7 @@ public class O24OpenAPIFileProvider : PhysicalFileProvider, IO24OpenAPIFileProvi
     /// <returns>The bool</returns>
     protected static bool IsUncPath(string path)
     {
-        Uri result;
+        Uri? result;
         return Uri.TryCreate(path, UriKind.Absolute, out result) && result.IsUnc;
     }
 
@@ -174,7 +169,10 @@ public class O24OpenAPIFileProvider : PhysicalFileProvider, IO24OpenAPIFileProvi
     /// <summary>
     /// Gets the value of the web root path
     /// </summary>
-    protected string WebRootPath { get; }
+    protected string WebRootPath { get; } =
+        File.Exists(webHostEnvironment.WebRootPath)
+            ? Path.GetDirectoryName(webHostEnvironment.WebRootPath)!
+            : webHostEnvironment.WebRootPath;
 
     /// <summary>
     /// Describes whether this instance directory exists
@@ -258,7 +256,7 @@ public class O24OpenAPIFileProvider : PhysicalFileProvider, IO24OpenAPIFileProvi
     /// <returns>The string</returns>
     public virtual string GetAbsolutePath(params string[] paths)
     {
-        List<string> stringList = new List<string>();
+        List<string> stringList = [];
         if (
             paths.Any<string>()
             && !paths[0].Contains(this.WebRootPath, StringComparison.InvariantCulture)
@@ -319,7 +317,7 @@ public class O24OpenAPIFileProvider : PhysicalFileProvider, IO24OpenAPIFileProvi
     /// </summary>
     /// <param name="path">The path</param>
     /// <returns>The string</returns>
-    public virtual string GetDirectoryName(string path) => Path.GetDirectoryName(path);
+    public virtual string? GetDirectoryName(string path) => Path.GetDirectoryName(path);
 
     /// <summary>
     /// Gets the directory name only using the specified path
@@ -408,9 +406,9 @@ public class O24OpenAPIFileProvider : PhysicalFileProvider, IO24OpenAPIFileProvi
     /// </summary>
     /// <param name="directoryPath">The directory path</param>
     /// <returns>The string</returns>
-    public virtual string GetParentDirectory(string directoryPath)
+    public virtual string? GetParentDirectory(string directoryPath)
     {
-        return Directory.GetParent(directoryPath).FullName;
+        return Directory.GetParent(directoryPath)?.FullName;
     }
 
     /// <summary>
@@ -418,7 +416,7 @@ public class O24OpenAPIFileProvider : PhysicalFileProvider, IO24OpenAPIFileProvi
     /// </summary>
     /// <param name="path">The path</param>
     /// <returns>The string</returns>
-    public virtual string GetVirtualPath(string path)
+    public virtual string? GetVirtualPath(string? path)
     {
         if (string.IsNullOrEmpty(path))
         {
@@ -430,7 +428,7 @@ public class O24OpenAPIFileProvider : PhysicalFileProvider, IO24OpenAPIFileProvi
             path = new FileInfo(path).DirectoryName;
         }
 
-        string str;
+        string? str;
         if (path == null)
         {
             str = null;
@@ -496,12 +494,7 @@ public class O24OpenAPIFileProvider : PhysicalFileProvider, IO24OpenAPIFileProvi
     {
         StreamReader streamReader;
         await using (
-            FileStream fileStream = new FileStream(
-                path,
-                FileMode.Open,
-                FileAccess.Read,
-                FileShare.ReadWrite
-            )
+            FileStream fileStream = new(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
         )
         {
             streamReader = new StreamReader(fileStream, encoding);
@@ -528,15 +521,10 @@ public class O24OpenAPIFileProvider : PhysicalFileProvider, IO24OpenAPIFileProvi
     public virtual string ReadAllText(string path, Encoding encoding)
     {
         using (
-            FileStream fileStream = new FileStream(
-                path,
-                FileMode.Open,
-                FileAccess.Read,
-                FileShare.ReadWrite
-            )
+            FileStream fileStream = new(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
         )
         {
-            using (StreamReader streamReader = new StreamReader(fileStream, encoding))
+            using (StreamReader streamReader = new(fileStream, encoding))
             {
                 return streamReader.ReadToEnd();
             }

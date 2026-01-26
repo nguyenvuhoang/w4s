@@ -1,0 +1,19 @@
+using LinKit.Core.Abstractions;
+using LinqToDB;
+using O24OpenAPI.ACT.Domain.AggregatesModel.AccountAggregate;
+using O24OpenAPI.Core.Caching;
+using O24OpenAPI.Data;
+
+namespace O24OpenAPI.ACT.Infrastructure.Repositories;
+
+[RegisterService(Lifetime.Scoped)]
+public class AccountStatementRepository(
+    IO24OpenAPIDataProvider dataProvider,
+    IStaticCacheManager staticCacheManager
+)
+    : EntityRepository<AccountStatement>(dataProvider, staticCacheManager),
+        IAccountStatementRepository
+{
+    public async Task<IReadOnlyList<AccountStatement>> GetByTransIdAsync(string transId) =>
+        await Table.Where(x => x.TransId == transId).ToListAsync();
+}

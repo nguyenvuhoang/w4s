@@ -2,7 +2,7 @@
 
 public class CTHUserPushModel
 {
-    public string UserCode { get; set; }
-    public string PushID { get; set; }
-    public string UserDeviceID { get; set; }
+    public string? UserCode { get; set; }
+    public string? PushID { get; set; }
+    public string? UserDeviceID { get; set; }
 }

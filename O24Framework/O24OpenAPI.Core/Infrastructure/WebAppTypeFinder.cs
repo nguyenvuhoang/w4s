@@ -17,7 +17,7 @@ public class WebAppTypeFinder : AppDomainTypeFinder
     /// Initializes a new instance of the <see cref="WebAppTypeFinder"/> class
     /// </summary>
     /// <param name="fileProvider">The file provider</param>
-    public WebAppTypeFinder(IO24OpenAPIFileProvider fileProvider = null)
+    public WebAppTypeFinder(IO24OpenAPIFileProvider? fileProvider = null)
         : base(fileProvider) { }
 
     /// <summary>

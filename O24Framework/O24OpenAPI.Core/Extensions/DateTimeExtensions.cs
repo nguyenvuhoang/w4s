@@ -15,4 +15,31 @@ public static class DateTimeExtensions
         var dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(unixTimeMilliseconds);
         return dateTimeOffset;
     }
+
+    /// <summary>
+    /// Convert DateTime to Unix timestamp in milliseconds
+    /// </summary>
+    public static long ToUnixTimeMilliseconds(this DateTime dateTime)
+    {
+        // Đảm bảo dùng UTC
+        if (dateTime.Kind == DateTimeKind.Unspecified)
+        {
+            dateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
+        }
+
+        return new DateTimeOffset(dateTime.ToUniversalTime()).ToUnixTimeMilliseconds();
+    }
+
+    public static long? ToUnixTimeMilliseconds(this DateTime? dateTime)
+    {
+        if (!dateTime.HasValue)
+            return null;
+
+        var dt = dateTime.Value;
+
+        if (dt.Kind == DateTimeKind.Unspecified)
+            dt = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+
+        return new DateTimeOffset(dt.ToUniversalTime()).ToUnixTimeMilliseconds();
+    }
 }

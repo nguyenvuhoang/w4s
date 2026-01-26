@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <VersionMajor>10</VersionMajor>
+    <VersionMinor>0</VersionMinor>
+    <AssemblyVersion>$(VersionMajor).$(VersionMinor).0.0</AssemblyVersion>
+    <InformationalVersion>$(Version)</InformationalVersion>
+    <Authors>O24</Authors>
+    <Company>JITS</Company>
+    <Copyright>© JITS 2025. All rights reserved.</Copyright>
+    <PackRelease>true</PackRelease>
+    <BuildDate>$([System.DateTime]::Now.ToString("yyyy-MM-dd HH:mm:ss"))</BuildDate>
+    <BuildUser>$(USERNAME)</BuildUser>
+    <BuildUser Condition="'$(BuildUser)' == ''">$(USER)</BuildUser>
+    <PublishTrimmed>false</PublishTrimmed>
+  </PropertyGroup>
+  <Target Name="SetGitVersion" BeforeTargets="BeforeBuild">
+    <ReadLinesFromFile File="githeight.txt">
+      <Output TaskParameter="Lines" PropertyName="GitHeight" />
+    </ReadLinesFromFile>
+    <PropertyGroup>
+      <Version>2.0.0</Version>
+      <FileVersion>$(VersionMajor).$(VersionMinor).$(GitHeight).0</FileVersion>
+    </PropertyGroup>
+  </Target>
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>BuildDate</_Parameter1>
+      <_Parameter2>$(BuildDate)</_Parameter2>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>BuildUser</_Parameter1>
+      <_Parameter2>$(BuildUser)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="LinKit.Core" />
+    <PackageReference Include="LinKit.Json.Runtime" />
+    <PackageReference Include="Swashbuckle.AspNetCore" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="App_Data\appsettings.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="App_Data\appsettings.Development.json">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\O24OpenAPI.GrpcContracts\O24OpenAPI.GrpcContracts.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.WFO.Domain\O24OpenAPI.WFO.Domain.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.WFO.Infrastructure\O24OpenAPI.WFO.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="NT.pfx" CopyToPublishDirectory="Always" />
+    <Content Include="__jits_com_vn.pfx" CopyToPublishDirectory="Always" />
+    <Content Include="App_Data\CreateDatabase.sql" CopyToPublishDirectory="Always" />
+    <Content Include="App_Data\EnableCDC.sql" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+</Project>

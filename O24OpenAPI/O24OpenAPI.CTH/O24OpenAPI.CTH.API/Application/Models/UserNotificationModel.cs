@@ -1,0 +1,19 @@
+﻿namespace O24OpenAPI.CTH.API.Application.Models;
+
+using O24OpenAPI.Core.Abstractions;
+
+/// <summary>
+/// Defines the <see cref="UserNotificationModel" />
+/// </summary>
+public class UserNotificationModel : BaseO24OpenAPIModel
+{
+    /// <summary>
+    /// Gets or sets the UserCode
+    /// </summary>
+    public string UserCode { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the NotificationId
+    /// </summary>
+    public string NotificationId { get; set; } = string.Empty;
+}

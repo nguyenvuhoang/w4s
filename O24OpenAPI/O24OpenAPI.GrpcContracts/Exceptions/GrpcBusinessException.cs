@@ -1,12 +1,9 @@
 ﻿namespace O24OpenAPI.GrpcContracts.Exceptions;
 
-public class GrpcBusinessException : Exception
+public class GrpcBusinessException(string message, string errorCode, string? detail = null)
+    : Exception(
+        $"{message} | Code: {errorCode}{(string.IsNullOrWhiteSpace(detail) ? "" : $" | Detail: {detail}")}"
+    )
 {
-    public string ErrorCode { get; }
-
-    public GrpcBusinessException(string message, string errorCode, string? detail = null)
-        : base($"{message} | Code: {errorCode}{(string.IsNullOrWhiteSpace(detail) ? "" : $" | Detail: {detail}")}")
-    {
-        ErrorCode = errorCode;
-    }
+    public string ErrorCode { get; } = errorCode;
 }

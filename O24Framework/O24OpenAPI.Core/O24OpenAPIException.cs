@@ -58,7 +58,7 @@ public class O24OpenAPIException : Exception
     /// </summary>
     /// <param name="message">The message</param>
     /// <param name="innerException">The inner exception</param>
-    public O24OpenAPIException(string message, Exception innerException)
+    public O24OpenAPIException(string message, Exception? innerException)
         : base(message, innerException) { }
 
     /// <summary>
@@ -67,7 +67,7 @@ public class O24OpenAPIException : Exception
     /// <param name="message">The message</param>
     /// <param name="innerException">The inner exception</param>
     /// <param name="sourceLine">The source line</param>
-    public O24OpenAPIException(string message, Exception innerException, string sourceLine)
+    public O24OpenAPIException(string message, Exception? innerException, string sourceLine)
         : base(message, innerException)
     {
         this.SourceLine = sourceLine;
@@ -76,12 +76,12 @@ public class O24OpenAPIException : Exception
     /// <summary>
     /// Gets or sets the value of the error code
     /// </summary>
-    public virtual string ErrorCode { get; set; }
+    public virtual string ErrorCode { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the value of the source line
     /// </summary>
-    public string SourceLine { get; set; }
+    public string SourceLine { get; set; } = string.Empty;
 
-    public string NextAction { get; set; }
+    public string NextAction { get; set; } = string.Empty;
 }

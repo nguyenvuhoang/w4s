@@ -1,20 +1,31 @@
-﻿using Linh.JsonKit.Json;
+﻿using Grpc.Core;
+using LinKit.Json.Runtime;
 using O24OpenAPI.APIContracts.Models.DTS;
+using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Grpc.NCH;
-using O24OpenAPI.GrpcContracts.GrpcClient;
+using O24OpenAPI.GrpcContracts.Extensions;
+using O24OpenAPI.GrpcContracts.Factory;
 
 namespace O24OpenAPI.GrpcContracts.GrpcClientServices.NCH;
 
 public class NCHGrpcClientService : BaseGrpcClientService, INCHGrpcClientService
 {
-    public NCHGrpcClientService()
+    private readonly IGrpcClientFactory _grpcClientFactory;
+    private readonly Metadata _defaultHeader;
+
+    public NCHGrpcClientService(IGrpcClientFactory grpcClientFactory)
     {
         ServerId = "NCH";
+        _grpcClientFactory = grpcClientFactory;
+        _defaultHeader = new Metadata()
+        {
+            {
+                "flow",
+                $"{Singleton<O24OpenAPIConfiguration>.Instance?.YourServiceID} -> {ServerId}"
+            },
+        };
     }
-
-    private readonly IGrpcClient<NCHGrpcService.NCHGrpcServiceClient> _nchGrpcClient =
-        EngineContext.Current.Resolve<IGrpcClient<NCHGrpcService.NCHGrpcServiceClient>>();
 
     public async Task<string> SendNotificationAsync(
         string userCode,
@@ -25,10 +36,10 @@ public class NCHGrpcClientService : BaseGrpcClientService, INCHGrpcClientService
         Dictionary<string, object> data,
         Dictionary<string, object> dataTemplate,
         List<DTSMimeEntityModel> mimeEntities,
-        string messsage = ""
+        string message = ""
     )
     {
-        var request = new SendNotificationRequest
+        SendNotificationRequest request = new()
         {
             UserCode = userCode,
             LoginName = loginName,
@@ -38,11 +49,12 @@ public class NCHGrpcClientService : BaseGrpcClientService, INCHGrpcClientService
             Data = data.ToJson(),
             DataTemplate = dataTemplate.ToJson(),
             MimeEntities = mimeEntities.ToJson(),
-            Message = messsage
+            Message = message,
         };
-
-        return await InvokeAsync<string>(
-            async (header) => await _nchGrpcClient.Client.SendNotificationAsync(request, header)
-        );
+        var nchGrpcClient =
+            await _grpcClientFactory.GetClientAsync<NCHGrpcService.NCHGrpcServiceClient>();
+        return await nchGrpcClient
+            .SendNotificationAsync(request, _defaultHeader)
+            .CallAsync<string>();
     }
 }

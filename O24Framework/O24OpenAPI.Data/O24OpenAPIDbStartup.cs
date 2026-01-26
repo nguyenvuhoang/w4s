@@ -1,3 +1,4 @@
+using System.Reflection;
 using FluentMigrator;
 using FluentMigrator.Runner;
 using FluentMigrator.Runner.Conventions;
@@ -9,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Data.Mapping;
 using O24OpenAPI.Data.Migrations;
-using System.Reflection;
 
 namespace O24OpenAPI.Data;
 

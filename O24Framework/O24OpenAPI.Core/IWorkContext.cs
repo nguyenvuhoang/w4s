@@ -14,7 +14,7 @@ public interface IWorkContext
     /// <returns>A task containing the user</returns>
     UserContext GetUserContext();
 
-    void SetUserContext(UserContext userContext = null);
+    void SetUserContext(UserContext? userContext = null);
 
     /// <summary>
     /// Gets the working language

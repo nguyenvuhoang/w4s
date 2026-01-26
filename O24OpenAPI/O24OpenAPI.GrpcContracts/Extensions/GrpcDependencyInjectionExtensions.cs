@@ -1,21 +1,22 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using LinKit.Core.Cqrs;
+using Microsoft.Extensions.DependencyInjection;
+using O24OpenAPI.Contracts.Abstractions;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Core.Logging.Helpers;
+using O24OpenAPI.Grpc.Mediator.Generated;
 using O24OpenAPI.Grpc.WFO;
 using O24OpenAPI.GrpcContracts.Configuration;
 using O24OpenAPI.GrpcContracts.Factory;
 using O24OpenAPI.GrpcContracts.GrpcClient;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CBG;
-using O24OpenAPI.GrpcContracts.GrpcClientServices.CMS;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.CTH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.DTS;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.DWH;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.LOG;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.NCH;
-using O24OpenAPI.GrpcContracts.GrpcClientServices.TEL;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
+using O24OpenAPI.Logging.Helpers;
 
 namespace O24OpenAPI.GrpcContracts.Extensions;
 
@@ -23,17 +24,19 @@ public static class GrpcDependencyInjectionExtensions
 {
     public static void AddGrpcContracts(this IServiceCollection services)
     {
+        services.AddKeyedScoped<IMediator, GrpcMediator>("grpc");
         services.AddSingleton<IGrpcClientFactory, GrpcClientFactory>();
         services.AddSingleton(typeof(IGrpcClient<>), typeof(ClientGrpc<>));
+        services.AddLinKitDependency();
 
         services.AddScoped<IWFOGrpcClientService, WFOGrpcClientService>();
+        services.AddScoped<IWFOGrpcClientBaseService, WFOGrpcClientService>();
         services.AddScoped<ICTHGrpcClientService, CTHGrpcClientService>();
-        services.AddScoped<ICMSGrpcClientService, CMSGrpcClientService>();
+        //services.AddScoped<IPMTGrpcClientService, PMTGrpcClientService>();
         services.AddScoped<ICTHGrpcClientService, CTHGrpcClientService>();
         services.AddScoped<ICBGGrpcClientService, CBGGrpcClientService>();
         services.AddScoped<IDTSGrpcClientService, DTSGrpcClientService>();
         services.AddScoped<INCHGrpcClientService, NCHGrpcClientService>();
-        services.AddScoped<ITELGrpcClientService, TELGrpcClientService>();
         services.AddScoped<IDWHGrpcClientService, DWHGrpcClientService>();
         services.AddScoped<ILOGGrpcClientService, LOGGrpcClientService>();
 
@@ -43,35 +46,31 @@ public static class GrpcDependencyInjectionExtensions
 
         try
         {
-            var grpcClientsConfig = new GrpcClientsConfig
+            O24OpenAPIConfiguration o24Config =
+                Singleton<O24OpenAPIConfiguration>.Instance
+                ?? throw new Exception(
+                    "O24OpenAPIConfiguration is not initialized when regitry grpc."
+                );
+            GrpcClientsConfig grpcClientsConfig = new()
             {
-                {
-                    typeof(WFOGrpcService).Name,
-                    Singleton<O24OpenAPIConfiguration>.Instance.WFOGrpcURL
-                },
+                { typeof(WFOGrpcService).Name, o24Config.WFOGrpcURL },
             };
             Singleton<GrpcClientsConfig>.Instance = grpcClientsConfig;
-            if (
-                Singleton<O24OpenAPIConfiguration>.Instance.ConnectToWFO
-                && Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID != "WFO"
-            )
+            if (o24Config.ConnectToWFO && !o24Config.YourServiceID.EqualsOrdinalIgnoreCase("WFO"))
             {
-                var serviceProvider = services.BuildServiceProvider();
-                using var scope = serviceProvider.CreateScope();
+                ServiceProvider serviceProvider = services.BuildServiceProvider();
+                using IServiceScope scope = serviceProvider.CreateScope();
                 AsyncScope.Scope = scope;
-                var wfoGrpcClientService =
+                IWFOGrpcClientService wfoGrpcClientService =
                     serviceProvider.GetRequiredService<IWFOGrpcClientService>();
-                var grpcService =
-                    $"{Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID}GrpcService";
+                string grpcService = $"{o24Config.YourServiceID}GrpcService";
                 wfoGrpcClientService
                     .RegisterServiceGrpcEndpointAsync(
-                        serviceCode: Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID,
+                        serviceCode: o24Config.YourServiceID,
                         serviceHandleName: grpcService,
-                        grpcEndpointURL: Singleton<O24OpenAPIConfiguration>.Instance.YourGrpcURL,
-                        instanceID: Singleton<O24OpenAPIConfiguration>.Instance.InstanceId,
-                        serviceAssemblyName: Singleton<O24OpenAPIConfiguration>
-                            .Instance
-                            .AssemblyMigration
+                        grpcEndpointURL: o24Config.YourGrpcURL,
+                        instanceID: o24Config.YourInstanceID,
+                        serviceAssemblyName: o24Config.AssemblyMigration
                     )
                     .GetAsyncResult();
             }

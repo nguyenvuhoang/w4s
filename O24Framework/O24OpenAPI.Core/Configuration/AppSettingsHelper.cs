@@ -1,3 +1,4 @@
+using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Core.Infrastructure;
 
 namespace O24OpenAPI.Core.Configuration;
@@ -28,42 +29,6 @@ public class AppSettingsHelper
 
         Singleton<AppSettings>.Instance = appSettings;
         Singleton<O24OpenAPIConfiguration>.Instance = appSettings.Get<O24OpenAPIConfiguration>();
-
-        //string str = fileProvider.MapPath(O24OpenAPIConfigurationDefaults.AppSettingsFilePath);
-        //bool flag = fileProvider.FileExists(str);
-        //fileProvider.CreateFile(str);
-        //Dictionary<string, JToken> source =
-        //    JsonConvert
-        //        .DeserializeObject<AppSettings>(fileProvider.ReadAllText(str, Encoding.UTF8))
-        //        ?.Configuration ?? new Dictionary<string, JToken>();
-
-        //foreach (IConfig configuration in (IEnumerable<IConfig>)configurations)
-        //    source[configuration.Name] = JToken.FromObject(configuration);
-
-        //appSettings.Configuration = source
-        //    .SelectMany(
-        //        outConfig =>
-        //            configurations
-        //                .Where<IConfig>(inConfig => inConfig.Name == outConfig.Key)
-        //                .DefaultIfEmpty<IConfig>(),
-        //        (outConfig, inConfig) => new { OutConfig = outConfig, InConfig = inConfig }
-        //    )
-        //    .OrderBy(config =>
-        //    {
-        //        IConfig inConfig = config.InConfig;
-        //        return inConfig == null ? int.MaxValue : inConfig.GetOrder();
-        //    })
-        //    .Select(config => config.OutConfig)
-        //    .ToDictionary<KeyValuePair<string, JToken>, string, JToken>(
-        //        config => config.Key,
-        //        config => config.Value
-        //    );
-
-        //if (!flag | overwrite)
-        //{
-        //    string contents = JsonConvert.SerializeObject(appSettings, (Formatting)1);
-        //    fileProvider.WriteAllText(str, contents, Encoding.UTF8);
-        //}
         return appSettings;
     }
 
@@ -72,14 +37,14 @@ public class AppSettingsHelper
     /// </summary>
     /// <param name="type">The type</param>
     /// <returns>The schema name</returns>
-    public static string GetSchemaName(Type type)
+    public static string? GetSchemaName(Type type)
     {
         if (type == null)
         {
             return string.Empty;
         }
 
-        O24OpenAPIConfiguration config = Singleton<O24OpenAPIConfiguration>.Instance;
+        var config = Singleton<O24OpenAPIConfiguration>.Instance;
 
         if (config == null)
         {
@@ -91,9 +56,9 @@ public class AppSettingsHelper
             return config.GetCdcDbSchema();
         }
 
-        string ns = type.Namespace;
+        var ns = type.Namespace;
 
-        if (ns.StartsWith("O24OpenAPI.DataWarehouse", StringComparison.OrdinalIgnoreCase))
+        if (ns.StartsWithOrdinalIgnoreCase("O24OpenAPI.DataWarehouse"))
         {
             return config.DWHSchema;
         }

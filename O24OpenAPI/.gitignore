@@ -5,3 +5,6 @@ bin
 obj
 packages
 .vs/
+
+**/appsettings.json
+**/appsettings.*.json

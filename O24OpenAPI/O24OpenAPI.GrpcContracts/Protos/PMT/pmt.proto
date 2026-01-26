@@ -1,0 +1,25 @@
+﻿syntax = "proto3";
+
+package pmt;
+
+option csharp_namespace = "O24OpenAPI.Grpc.PMT";
+
+import "Common/common.proto";
+
+// PMT gRPC service
+service PMTGrpcService {
+  rpc VNPayProcessPay (VNPayProcessPayRequest) returns (common.GrpcResponse);
+  rpc VNPayProcessReturn (VNPayProcessReturnRequest) returns (common.GrpcResponse);
+}
+
+
+message VNPayProcessPayRequest {
+	string amount = 1;
+	string transaction_description = 2;
+	string language_code = 3;
+	string vnpay_transaction_date = 4;
+}
+
+message VNPayProcessReturnRequest {
+	string raw_query = 1;
+}

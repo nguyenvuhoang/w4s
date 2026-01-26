@@ -1,14 +1,14 @@
-﻿using Grpc.Core;
-using Linh.JsonKit.Json;
+﻿using System.Runtime.CompilerServices;
+using Grpc.Core;
+using LinKit.Json.Runtime;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Domain;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Core.Logging.Enums;
 using O24OpenAPI.Grpc.Common;
 using O24OpenAPI.GrpcContracts.Exceptions;
+using O24OpenAPI.Logging.Enums;
 using Serilog;
-using System.Runtime.CompilerServices;
 
 namespace O24OpenAPI.GrpcContracts.GrpcClientServices;
 
@@ -86,12 +86,17 @@ public abstract class BaseGrpcClientService
         var flow = $"{Singleton<O24OpenAPIConfiguration>.Instance.YourServiceID} -> {ServerId}";
 
         Log.ForContext("LogType", LogType.Grpc)
-           .ForContext("Direction", "Out")
-           .ForContext("Action", operation ?? "Unknown")
-           .ForContext("Error", ex)
-           .ForContext("CorrelationId", correlationId)
-           .ForContext("Flow", flow)
-           .Error(ex, "[gRPC Error] {Operation} failed: {Message}", operation ?? "Unknown", ex.Message);
+            .ForContext("Direction", "Out")
+            .ForContext("Action", operation ?? "Unknown")
+            .ForContext("Error", ex)
+            .ForContext("CorrelationId", correlationId)
+            .ForContext("Flow", flow)
+            .Error(
+                ex,
+                "[gRPC Error] {Operation} failed: {Message}",
+                operation ?? "Unknown",
+                ex.Message
+            );
 
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine("==================================================");
@@ -100,7 +105,9 @@ public abstract class BaseGrpcClientService
         Console.WriteLine($"Message                  : {ex.Message}");
         if (ex.InnerException != null)
         {
-            Console.WriteLine($"InnerException           : {ex.InnerException.GetType().FullName} - {ex.InnerException.Message}");
+            Console.WriteLine(
+                $"InnerException           : {ex.InnerException.GetType().FullName} - {ex.InnerException.Message}"
+            );
         }
         Console.WriteLine("StackTrace:");
         Console.WriteLine(ex.StackTrace ?? "(no stack trace)");

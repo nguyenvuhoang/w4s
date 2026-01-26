@@ -1,0 +1,49 @@
+using Newtonsoft.Json;
+using O24OpenAPI.Core.Attributes;
+using O24OpenAPI.Core.Domain;
+
+namespace O24OpenAPI.ACT.Domain.AggregatesModel.AccountAggregate;
+
+////S_ACCLR
+/// <summary>
+/// AccountClearing
+/// </summary>
+[Auditable]
+public partial class AccountClearing : BaseEntity
+{
+    /// <summary>
+    /// BranchCodeOriginal
+    /// </summary>
+    [JsonProperty("branch_code")]
+    public string? BranchCode { get; set; }
+
+    /// <summary>
+    /// CurrencyId
+    /// </summary>
+    [JsonProperty("currency_code")]
+    public string? CurrencyId { get; set; }
+
+    /// <summary>
+    /// ClearingId
+    /// </summary>
+    [JsonProperty("clearing_branch_code")]
+    public string? ClearingBranchCode { get; set; }
+
+    /// <summary>
+    /// ClearingType
+    /// </summary>
+    [JsonProperty("clearing_type")]
+    public string? ClearingType { get; set; }
+
+    /// <summary>
+    /// AccountName
+    /// </summary>
+    [JsonProperty("account_name")]
+    public string? AccountName { get; set; }
+
+    /// <summary>
+    /// AccountNumber
+    /// </summary>
+    [JsonProperty("account_number")]
+    public string? AccountNumber { get; set; }
+}

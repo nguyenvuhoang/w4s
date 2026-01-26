@@ -14,7 +14,7 @@ public static class StringUtils
     /// </summary>
     /// <param name="values">The values</param>
     /// <returns>The string</returns>
-    public static string Coalesce(params string[] values)
+    public static string? Coalesce(params string[] values)
     {
         foreach (var value in values)
         {
@@ -31,7 +31,7 @@ public static class StringUtils
     /// <param name="input">The input</param>
     /// <param name="mask">The mask</param>
     /// <returns>The string</returns>
-    public static string ApplyMask(object input, string mask)
+    public static string? ApplyMask(object input, string mask)
     {
         CultureInfo culture = new("en-GB");
 
@@ -52,7 +52,7 @@ public static class StringUtils
 
         if (input is int || input is long || input is decimal || input is double || input is float)
         {
-            string inputStr = input.ToString();
+            var inputStr = input.ToString();
             if (mask.Contains('#'))
             {
                 StringBuilder formatted = new();
@@ -62,7 +62,7 @@ public static class StringUtils
                 {
                     if (c == '#')
                     {
-                        if (inputIndex < inputStr.Length)
+                        if (inputIndex < inputStr?.Length)
                         {
                             formatted.Append(inputStr[inputIndex++]);
                         }

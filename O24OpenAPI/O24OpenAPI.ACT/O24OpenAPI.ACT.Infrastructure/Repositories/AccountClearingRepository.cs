@@ -1,0 +1,18 @@
+using LinKit.Core.Abstractions;
+using LinqToDB;
+using O24OpenAPI.ACT.Domain.AggregatesModel.AccountAggregate;
+using O24OpenAPI.Core.Caching;
+using O24OpenAPI.Data;
+
+namespace O24OpenAPI.ACT.Infrastructure.Repositories;
+
+[RegisterService(Lifetime.Scoped)]
+public class AccountClearingRepository(
+    IO24OpenAPIDataProvider dataProvider,
+    IStaticCacheManager staticCacheManager
+) : EntityRepository<AccountClearing>(dataProvider, staticCacheManager), IAccountClearingRepository
+{
+    public async Task<IReadOnlyList<AccountClearing>> GetByAccountNumberAsync(
+        string accountNumber
+    ) => await Table.Where(x => x.AccountNumber == accountNumber).ToListAsync();
+}

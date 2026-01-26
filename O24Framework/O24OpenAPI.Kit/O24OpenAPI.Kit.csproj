@@ -1,14 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
     <!-- Bật build NuGet package -->
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>O24OpenAPI.Kit</PackageId>
-    <Version>1.0.0</Version>
     <Authors>JITS</Authors>
     <Company>JITS</Company>
     <Description>Bộ Kit cho O24OpenAPI (Keyvault, Signature, Models...)</Description>
@@ -18,16 +14,18 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <!-- hoặc thay bằng license của bạn -->
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="BouncyCastle" Version="1.8.9" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="BouncyCastle" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="OpenCV" />
+    <PackageReference Include="OpenCvSharp4" />
+    <PackageReference Include="OpenCvSharp4.runtime.win" />
+    <PackageReference Include="Tesseract" />
+    <PackageReference Include="Tesseract.Helper" />
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\O24OpenAPI.O24OpenAPIClient\O24OpenAPI.O24OpenAPIClient.csproj" />
-    <ProjectReference Include="..\O24OpenAPI.Web.Framework\O24OpenAPI.Web.Framework.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.Client\O24OpenAPI.Client.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.Framework\O24OpenAPI.Framework.csproj" />
   </ItemGroup>
-
 </Project>

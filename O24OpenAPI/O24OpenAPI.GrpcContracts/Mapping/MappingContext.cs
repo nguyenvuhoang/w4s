@@ -4,6 +4,8 @@ using O24OpenAPI.APIContracts.Models.NCH;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Grpc.CTH;
 using O24OpenAPI.Grpc.DTS;
+using O24OpenAPI.Grpc.PMT;
+using O24OpenAPI.GrpcContracts.Models.PMTModels;
 
 namespace O24OpenAPI.GrpcContracts.Mapping;
 
@@ -23,14 +25,11 @@ public partial class MappingContext : IMappingConfigurator
                         src => src.DueDate
                     )
             )
-            .ForMember(
-                d => d.TotalPayment,
-                o => o.MapFrom(src => decimal.Parse(src.TotalPayment))
-            );
+            .ForMember(d => d.TotalPayment, o => o.MapFrom(src => decimal.Parse(src.TotalPayment)));
         ;
-        builder.
-            CreateMap<GetUserNotificationReply, CTHUserNotificationModel>();
+        builder.CreateMap<GetUserNotificationReply, CTHUserNotificationModel>();
         builder.CreateMap<UserCommandReply, CTHUserCommandModel>();
+        builder.CreateMap<VNPayProcessPayCommand, VNPayProcessPayRequest>();
+        builder.CreateMap<VNPayProcessReturnCommand, VNPayProcessReturnRequest>();
     }
-
 }

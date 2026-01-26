@@ -1,32 +1,25 @@
-﻿using O24OpenAPI.APIContracts.Models.CBG;
+﻿using Grpc.Core;
+using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Grpc.CMS;
-using O24OpenAPI.GrpcContracts.GrpcClient;
+using O24OpenAPI.GrpcContracts.Factory;
 
 namespace O24OpenAPI.GrpcContracts.GrpcClientServices.CMS;
 
 public class CMSGrpcClientService : BaseGrpcClientService, ICMSGrpcClientService
 {
-    public CMSGrpcClientService()
+    private readonly IGrpcClientFactory _grpcClientFactory;
+    private readonly Metadata _defaultHeader;
+
+    public CMSGrpcClientService(IGrpcClientFactory grpcClientFactory)
     {
         ServerId = "CMS";
-    }
-
-    private readonly IGrpcClient<CMSGrpcService.CMSGrpcServiceClient> _CMSGrpcClient =
-        EngineContext.Current.Resolve<IGrpcClient<CMSGrpcService.CMSGrpcServiceClient>>();
-
-    public async Task<CBGUserSessionModel> GetUserSessionAsync(string token)
-    {
-        var getUserSessionRequest = new GetUserSessionRequest { Token = token };
-        var result = await InvokeAsync<CBGUserSessionModel>(
-            async (header) =>
+        _grpcClientFactory = grpcClientFactory;
+        _defaultHeader = new Metadata()
+        {
             {
-                return await _CMSGrpcClient.Client.GetUserSessionAsync(
-                    getUserSessionRequest,
-                    header
-                );
-            }
-        );
-        return result;
+                "flow",
+                $"{Singleton<O24OpenAPIConfiguration>.Instance?.YourServiceID} -> {ServerId}"
+            },
+        };
     }
 }

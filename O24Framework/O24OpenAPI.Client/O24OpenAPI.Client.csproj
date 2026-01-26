@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Version>2.0.0</Version>
+    <PackageId>O24OpenAPI.Client</PackageId>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" />
+    <PackageReference Include="Grpc.Core.Api" />
+    <PackageReference Include="Grpc.Net.Client" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Microsoft.ClearScript" />
+    <PackageReference Include="RabbitMQ.Client" />
+    <PackageReference Include="O24OpenAPI.KeyVault" />
+    <PackageReference Include="Polly.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Core\O24OpenAPI.Core.csproj" />
+    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Data\O24OpenAPI.Data.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.Contracts\O24OpenAPI.Contracts.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.Logging\O24OpenAPI.Logging.csproj" />
+  </ItemGroup>
+</Project>

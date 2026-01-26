@@ -1,37 +1,44 @@
 ﻿using Grpc.Core;
 using O24OpenAPI.Contracts.Configuration.Client;
+using O24OpenAPI.Core;
+using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Grpc.WFO;
+using O24OpenAPI.GrpcContracts.Extensions;
 using O24OpenAPI.GrpcContracts.Factory;
-using O24OpenAPI.GrpcContracts.GrpcClient;
 
 namespace O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
 
 public class WFOGrpcClientService : BaseGrpcClientService, IWFOGrpcClientService
 {
-    public WFOGrpcClientService()
+    private readonly IGrpcClientFactory _grpcClientFactory;
+    private readonly Metadata _defaultHeader;
+
+    public WFOGrpcClientService(IGrpcClientFactory grpcClientFactory)
     {
         ServerId = "WFO";
+        _grpcClientFactory = grpcClientFactory;
+        _defaultHeader = new Metadata()
+        {
+            {
+                "flow",
+                $"{Singleton<O24OpenAPIConfiguration>.Instance?.YourServiceID} -> {ServerId}"
+            },
+        };
     }
-
-    private readonly IGrpcClient<WFOGrpcService.WFOGrpcServiceClient> _wfoGrpcClient =
-        EngineContext.Current.Resolve<IGrpcClient<WFOGrpcService.WFOGrpcServiceClient>>();
 
     public async Task<string> ExecuteWorkflowAsync(string workflowInputJson)
     {
-        var executeWorkflowRequest = new ExecuteWorkflowRequest
+        ExecuteWorkflowRequest request = new() { WorkflowInputJson = workflowInputJson };
+        WFOGrpcService.WFOGrpcServiceClient wfoGrpcClient =
+            await _grpcClientFactory.GetClientAsync<WFOGrpcService.WFOGrpcServiceClient>();
+        string result = await wfoGrpcClient
+            .ExecuteWorkflowAsync(request, _defaultHeader)
+            .CallAsync<string>();
+        if (string.IsNullOrWhiteSpace(result))
         {
-            WorkflowInputJson = workflowInputJson,
-        };
-        var result = await InvokeAsync<string>(
-            async (header) =>
-            {
-                return await _wfoGrpcClient.Client.ExecuteWorkflowAsync(
-                    executeWorkflowRequest,
-                    header
-                );
-            }
-        );
+            throw new O24OpenAPIException("ExecuteWorkflowAsync return null.");
+        }
         return result;
     }
 
@@ -43,7 +50,7 @@ public class WFOGrpcClientService : BaseGrpcClientService, IWFOGrpcClientService
         string serviceAssemblyName
     )
     {
-        var request = new RegisterServiceGrpcEndpointRequest
+        RegisterServiceGrpcEndpointRequest request = new()
         {
             ServiceCode = serviceCode,
             ServiceHandleName = serviceHandleName,
@@ -51,15 +58,12 @@ public class WFOGrpcClientService : BaseGrpcClientService, IWFOGrpcClientService
             InstanceId = instanceID,
             ServiceAssemblyName = serviceAssemblyName,
         };
-        return await InvokeAsync<string>(
-            async (header) =>
-            {
-                return await _wfoGrpcClient.Client.RegisterServiceGrpcEndpointAsync(
-                    request,
-                    header
-                );
-            }
-        );
+        WFOGrpcService.WFOGrpcServiceClient wfoGrpcClient =
+            await _grpcClientFactory.GetClientAsync<WFOGrpcService.WFOGrpcServiceClient>();
+        string result = await wfoGrpcClient
+            .RegisterServiceGrpcEndpointAsync(request, _defaultHeader)
+            .CallAsync<string>();
+        return result;
     }
 
     public async Task<ServiceInfo> QueryServiceInfoAsync(
@@ -68,59 +72,34 @@ public class WFOGrpcClientService : BaseGrpcClientService, IWFOGrpcClientService
         string instanceID
     )
     {
-        var request = new QueryServiceInfoRequest
+        QueryServiceInfoRequest request = new()
         {
             FromServiceCode = fromServiceCode,
             ToServiceCode = toServiceCode,
             InstanceId = instanceID,
         };
-        return await InvokeAsync<ServiceInfo>(
-            async (header) =>
-            {
-                return await _wfoGrpcClient.Client.QueryServiceInfoAsync(request, header);
-            }
-        );
-        ;
+        WFOGrpcService.WFOGrpcServiceClient wfoGrpcClient =
+            await _grpcClientFactory.GetClientAsync<WFOGrpcService.WFOGrpcServiceClient>();
+        ServiceInfo result = await wfoGrpcClient
+            .QueryServiceInfoAsync(request, _defaultHeader)
+            .CallAsync<ServiceInfo>();
+        return result;
     }
 
     public async Task<ServiceInfo> GetServiceInstanceByServiceHandleNameAsync(
         string serviceHandleName
     )
     {
-        var request = new GetServiceInstanceByServiceHandleNameRequest
+        GetServiceInstanceByServiceHandleNameRequest request = new()
         {
             ServiceHandleName = serviceHandleName,
         };
-        return await InvokeAsync<ServiceInfo>(
-            async (header) =>
-            {
-                return await _wfoGrpcClient.Client.GetServiceInstanceByServiceHandleNameAsync(
-                    request,
-                    header
-                );
-            }
-        );
-    }
-
-    public async Task SayHelloAsync(string name)
-    {
-        var grpcFactory = EngineContext.Current.Resolve<IGrpcClientFactory>();
-
-        var streamClient = grpcFactory.GetServerStreamAsync<
-            WFOGrpcService.WFOGrpcServiceClient,
-            HelloRequest,
-            HelloReply
-        >(
-            (client, request, option) => client.SayHello(request, option),
-            new HelloRequest { Name = name }
-        );
-
-        using var streamingCall = await streamClient;
-
-        await foreach (var reply in streamingCall.ResponseStream.ReadAllAsync())
-        {
-            Console.WriteLine("Greeting: " + reply.Message);
-        }
+        WFOGrpcService.WFOGrpcServiceClient wfoGrpcClient =
+            await _grpcClientFactory.GetClientAsync<WFOGrpcService.WFOGrpcServiceClient>();
+        ServiceInfo result = await wfoGrpcClient
+            .GetServiceInstanceByServiceHandleNameAsync(request, _defaultHeader)
+            .CallAsync<ServiceInfo>();
+        return result;
     }
 
     /// <summary>
@@ -130,13 +109,10 @@ public class WFOGrpcClientService : BaseGrpcClientService, IWFOGrpcClientService
     /// <returns></returns>
     public async Task<string> PingAsync(string name)
     {
-        var request = new HelloRequest { Name = name };
-        var result = await InvokeAsync<string>(
-            async (header) =>
-            {
-                return await _wfoGrpcClient.Client.PingAsync(request, header);
-            }
-        );
+        HelloRequest request = new() { Name = name };
+        WFOGrpcService.WFOGrpcServiceClient wfoGrpcClient =
+            await _grpcClientFactory.GetClientAsync<WFOGrpcService.WFOGrpcServiceClient>();
+        string result = await wfoGrpcClient.PingAsync(request, _defaultHeader).CallAsync<string>();
         return result;
     }
 }

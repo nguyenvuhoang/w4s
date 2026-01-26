@@ -9,7 +9,6 @@ using LinqToDB.SqlProvider;
 using LinqToDB.Tools;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Domain;
-using O24OpenAPI.Core.Domain.O24OpenAPI;
 using O24OpenAPI.Core.Helper;
 using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Data.Extensions;
@@ -22,29 +21,14 @@ using System.Reflection;
 
 namespace O24OpenAPI.Data.DataProviders;
 
-/// <summary>
-/// The base data provider class
-/// </summary>
-/// <seealso cref="IMappingEntityAccessor"/>
 public abstract class BaseDataProvider : IMappingEntityAccessor
 {
-    /// <summary>
-    /// Gets the value of the entity descriptors
-    /// </summary>
     protected static ConcurrentDictionary<
         Type,
         O24OpenAPIEntityDescriptor
     > EntityDescriptors
     { get; } = new ConcurrentDictionary<Type, O24OpenAPIEntityDescriptor>();
-
-    /// <summary>
-    /// Gets the value of the linq to db data provider
-    /// </summary>
     protected abstract IDataProvider LinqToDbDataProvider { get; }
-
-    /// <summary>
-    /// Gets the value of the configuration name
-    /// </summary>
     public string ConfigurationName => LinqToDbDataProvider.Name;
 
     /// <summary>
@@ -128,10 +112,7 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
             {
                 string tableName = NameCompatibilityManager.GetTableName(t);
                 string schemaName = AppSettingsHelper.GetSchemaName(t);
-                CreateTableExpression expression = new CreateTableExpression
-                {
-                    TableName = tableName,
-                };
+                CreateTableExpression expression = new() { TableName = tableName };
                 CreateTableExpressionBuilder createTableExpressionBuilder = new(
                     expression,
                     new NullMigrationContext()
@@ -186,22 +167,23 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
             try
             {
                 return Array
-                .Find(
-                    targetType.GetProperties(
-                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty
-                    ),
-                    pi => name.Equals(NameCompatibilityManager.GetColumnName(targetType, pi.Name))
-                )
-                .PropertyType.GetTypeToMap()
-                .propType;
+                    .Find(
+                        targetType.GetProperties(
+                            BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty
+                        ),
+                        pi =>
+                            name.Equals(NameCompatibilityManager.GetColumnName(targetType, pi.Name))
+                    )
+                    .PropertyType.GetTypeToMap()
+                    .propType;
             }
             catch (Exception ex)
             {
-
-                Console.WriteLine($"[ERROR] Failed to get property type for column '{name}' in type '{targetType.Name}': {ex.Message}");
+                Console.WriteLine(
+                    $"[ERROR] Failed to get property type for column '{name}' in type '{targetType.Name}': {ex.Message}"
+                );
                 throw;
             }
-
         }
     }
 
@@ -260,7 +242,7 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
     public virtual async Task<TEntity> InsertEntity<TEntity>(TEntity entity)
         where TEntity : BaseEntity
     {
-        await using var dataContext = CreateDataConnection();
+        await using DataConnection dataContext = CreateDataConnection();
         entity.Id = await dataContext.InsertWithInt32IdentityAsync(entity);
         return entity;
     }
@@ -411,7 +393,7 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
             (actionType == "C")
                 ? (
                     x =>
-                        (Sql.Property<decimal?>(x, propertyName) * 100000m + value * 100000m)
+                        ((Sql.Property<decimal?>(x, propertyName) * 100000m) + (value * 100000m))
                         / 100000m
                 )
                 : (
@@ -420,8 +402,8 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
                         : (
                             x =>
                                 (
-                                    Sql.Property<decimal?>(x, propertyName) * 100000m
-                                    - value * 100000m
+                                    (Sql.Property<decimal?>(x, propertyName) * 100000m)
+                                    - (value * 100000m)
                                 ) / 100000m
                         )
                 );
@@ -777,11 +759,20 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
     /// <param name="predicate">The predicate</param>
     /// <returns>A task containing the int</returns>
     public virtual async Task<int> BulkDeleteEntities<TEntity>(
-        Expression<Func<TEntity, bool>> predicate
+        Expression<Func<TEntity, bool>> predicate,
+        int batchSize = 0
     )
         where TEntity : BaseEntity
     {
         using DataConnection dataContext = CreateDataConnection();
+        if (batchSize > 0)
+        {
+            return await dataContext
+                .GetTable<TEntity>()
+                .Where(predicate)
+                .Take(batchSize)
+                .DeleteAsync();
+        }
         return await dataContext.GetTable<TEntity>().Where(predicate).DeleteAsync();
     }
 
@@ -873,7 +864,7 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
     {
         CommandInfo commandInfo = CreateDbCommand(procedureName, parameters);
         List<T> list = commandInfo.QueryProc<T>()?.ToList();
-        return Task.FromResult((IList<T>)(list ?? new List<T>()));
+        return Task.FromResult((IList<T>)(list ?? []));
     }
 
     /// <summary>
@@ -901,9 +892,7 @@ public abstract class BaseDataProvider : IMappingEntityAccessor
     public virtual Task<IList<T>> Query<T>(string sql, params DataParameter[] parameters)
     {
         using DataConnection connection = CreateDataConnection();
-        return Task.FromResult(
-            (IList<T>)(connection.Query<T>(sql, parameters)?.ToList() ?? new List<T>())
-        );
+        return Task.FromResult((IList<T>)(connection.Query<T>(sql, parameters)?.ToList() ?? []));
     }
 
     /// <summary>

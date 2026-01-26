@@ -19,7 +19,7 @@ public class AppDomainTypeFinder : ITypeFinder
     /// <summary>
     /// The file provider
     /// </summary>
-    protected IO24OpenAPIFileProvider _fileProvider;
+    protected IO24OpenAPIFileProvider? _fileProvider;
 
     /// <summary>
     /// Finds the classes of type using the specified only concrete classes
@@ -64,7 +64,7 @@ public class AppDomainTypeFinder : ITypeFinder
         {
             foreach (Assembly assembly in assemblies)
             {
-                Type[] typeArray = null;
+                Type[]? typeArray = null;
                 try
                 {
                     typeArray = assembly.GetTypes();
@@ -73,7 +73,7 @@ public class AppDomainTypeFinder : ITypeFinder
                 {
                     foreach (var le in ex.LoaderExceptions)
                     {
-                        Console.WriteLine(le.Message);
+                        Console.WriteLine(le?.Message);
                     }
                 }
                 if (typeArray != null)
@@ -107,9 +107,9 @@ public class AppDomainTypeFinder : ITypeFinder
         catch (ReflectionTypeLoadException ex)
         {
             string message = string.Empty;
-            foreach (Exception loaderException in ex.LoaderExceptions)
+            foreach (Exception? loaderException in ex.LoaderExceptions)
             {
-                message = message + loaderException.Message + Environment.NewLine;
+                message = message + loaderException?.Message + Environment.NewLine;
             }
 
             Exception exception = new Exception(message, ex);
@@ -142,7 +142,11 @@ public class AppDomainTypeFinder : ITypeFinder
     {
         foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
-            if (Matches(assembly.FullName) && !addedAssemblyNames.Contains(assembly.FullName))
+            if (
+                !string.IsNullOrWhiteSpace(assembly.FullName)
+                && Matches(assembly.FullName)
+                && !addedAssemblyNames.Contains(assembly.FullName)
+            )
             {
                 assemblies.Add(assembly);
                 addedAssemblyNames.Add(assembly.FullName);
@@ -205,7 +209,10 @@ public class AppDomainTypeFinder : ITypeFinder
         foreach (string assemblyName in (IEnumerable<string>)AssemblyNames)
         {
             Assembly assembly = Assembly.Load(assemblyName);
-            if (!addedAssemblyNames.Contains(assembly.FullName))
+            if (
+                !string.IsNullOrWhiteSpace(assembly.FullName)
+                && !addedAssemblyNames.Contains(assembly.FullName)
+            )
             {
                 assemblies.Add(assembly);
                 addedAssemblyNames.Add(assembly.FullName);
@@ -222,8 +229,11 @@ public class AppDomainTypeFinder : ITypeFinder
         List<string> stringList = [];
         foreach (Assembly assembly in (IEnumerable<Assembly>)GetAssemblies())
         {
-            stringList.Add(assembly.FullName);
+            if (!string.IsNullOrWhiteSpace(assembly.FullName))
+                stringList.Add(assembly.FullName);
         }
+        if (_fileProvider is null)
+            return;
 
         if (!_fileProvider.DirectoryExists(directoryPath))
         {
@@ -281,14 +291,14 @@ public class AppDomainTypeFinder : ITypeFinder
     /// </summary>
     /// <param name="entityName">The entity name</param>
     /// <returns>The type</returns>
-    public Type FindEntityTypeByName(string entityName)
+    public Type? FindEntityTypeByName(string entityName)
     {
         try
         {
             var assemblies = GetAssemblies();
             foreach (Assembly assembly in assemblies)
             {
-                Type[] typeArray = null;
+                Type[]? typeArray = null;
                 try
                 {
                     typeArray = assembly.GetTypes();
@@ -321,9 +331,9 @@ public class AppDomainTypeFinder : ITypeFinder
         catch (ReflectionTypeLoadException ex)
         {
             string message = string.Empty;
-            foreach (Exception loaderException in ex.LoaderExceptions)
+            foreach (Exception? loaderException in ex.LoaderExceptions)
             {
-                message = message + loaderException.Message + Environment.NewLine;
+                message = message + loaderException?.Message + Environment.NewLine;
             }
 
             Exception exception = new Exception(message, ex);
@@ -364,7 +374,7 @@ public class AppDomainTypeFinder : ITypeFinder
     /// Initializes a new instance of the <see cref="AppDomainTypeFinder"/> class
     /// </summary>
     /// <param name="fileProvider">The file provider</param>
-    public AppDomainTypeFinder(IO24OpenAPIFileProvider fileProvider = null)
+    public AppDomainTypeFinder(IO24OpenAPIFileProvider? fileProvider = null)
     {
         _fileProvider = fileProvider ?? CommonHelper.DefaultFileProvider;
     }

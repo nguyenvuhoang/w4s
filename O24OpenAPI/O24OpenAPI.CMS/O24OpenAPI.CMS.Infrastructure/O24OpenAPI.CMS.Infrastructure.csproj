@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Scripts\CreateDatabase.sql">
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Scripts\CreateSchema.sql">
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Yarp.ReverseProxy" />
+    <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Framework\O24OpenAPI.Framework.csproj" />
+    <ProjectReference Include="..\..\O24OpenAPI.AI\O24OpenAPI.AI.Domain\O24OpenAPI.AI.Domain.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.CMS.Domain\O24OpenAPI.CMS.Domain.csproj" />
+  </ItemGroup>
+</Project>

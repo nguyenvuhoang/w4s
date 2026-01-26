@@ -1,10 +1,10 @@
-namespace O24OpenAPI.Core.Domain.Configuration;
+namespace O24OpenAPI.Core.Configuration;
 
 /// <summary>
 /// The setting class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class Setting : BaseEntity
+public partial class Setting : BaseEntity
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Setting"/> class
@@ -27,12 +27,12 @@ public class Setting : BaseEntity
     /// <summary>
     /// Gets or sets the value of the name
     /// </summary>
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the value
     /// </summary>
-    public string Value { get; set; }
+    public string? Value { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the organization id
@@ -43,5 +43,5 @@ public class Setting : BaseEntity
     /// Returns the string
     /// </summary>
     /// <returns>The string</returns>
-    public override string ToString() => this.Name;
+    public override string? ToString() => this.Name;
 }

@@ -1,3 +1,7 @@
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using FluentMigrator.Builders.Alter.Table;
 using FluentMigrator.Builders.Create;
 using FluentMigrator.Builders.Create.Table;
@@ -10,10 +14,6 @@ using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Data.Attributes;
 using O24OpenAPI.Data.Mapping;
 using O24OpenAPI.Data.Mapping.Builders;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace O24OpenAPI.Data.Extensions;
 
@@ -45,7 +45,7 @@ public static class FluentMigratorExtensions
         Type key3 = typeof(string);
         dictionary[key3] = c =>
         {
-            var dataProvider = DataSettingsManager.LoadSettings().DataProvider;
+            DataProviderType dataProvider = DataSettingsManager.LoadSettings().DataProvider;
 
             if (dataProvider == DataProviderType.Oracle)
             {
@@ -257,7 +257,7 @@ public static class FluentMigratorExtensions
             .FirstOrDefault(t =>
             {
                 bool isValidDbType = true;
-                var attribute = t.GetCustomAttribute<DatabaseTypeAttribute>();
+                DatabaseTypeAttribute attribute = t.GetCustomAttribute<DatabaseTypeAttribute>();
                 if (attribute != null)
                 {
                     if (
@@ -305,23 +305,22 @@ public static class FluentMigratorExtensions
         }
 
         foreach (
-            PropertyInfo propertyInfo in (
-                type.GetProperties(
-                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty
+            PropertyInfo propertyInfo in type.GetProperties(
+                    BindingFlags.Instance | BindingFlags.Public
                 )
-            ).Where(pi =>
-                pi.DeclaringType != typeof(BaseEntity)
-                && pi.CanWrite
-                && !pi.HasAttribute<NotMappedAttribute>()
-                && !pi.HasAttribute<NotColumnAttribute>()
-                && !expression.Columns.Any(x =>
-                    x.Name.Equals(
-                        NameCompatibilityManager.GetColumnName(type, pi.Name),
-                        StringComparison.OrdinalIgnoreCase
+                .Where(pi =>
+                    //pi.DeclaringType != typeof(BaseEntity) &&
+                    pi.CanWrite
+                    && !pi.HasAttribute<NotMappedAttribute>()
+                    && !pi.HasAttribute<NotColumnAttribute>()
+                    && !expression.Columns.Any(x =>
+                        x.Name.Equals(
+                            NameCompatibilityManager.GetColumnName(type, pi.Name),
+                            StringComparison.OrdinalIgnoreCase
+                        )
                     )
+                    && TypeMapping.ContainsKey(pi.PropertyType.GetTypeToMap().propType)
                 )
-                && TypeMapping.ContainsKey(pi.PropertyType.GetTypeToMap().propType)
-            )
         )
         {
             string columnName = NameCompatibilityManager.GetColumnName(type, propertyInfo.Name);

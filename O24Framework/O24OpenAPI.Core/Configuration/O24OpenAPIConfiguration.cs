@@ -29,7 +29,7 @@ public class O24OpenAPIConfiguration : IConfig
     /// <summary>
     /// Gets or sets the value of the your instance id
     /// </summary>
-    public string YourInstanceID { get; set; } = "";
+    public string YourInstanceID { get; set; } = Guid.NewGuid().ToString();
 
     /// <summary>
     /// Gets or sets the value of the your database
@@ -84,7 +84,7 @@ public class O24OpenAPIConfiguration : IConfig
     /// <summary>
     /// Gets or sets the value of the data warehouse entities
     /// </summary>
-    public HashSet<string> DataWarehouseEntities { get; set; } = new HashSet<string>();
+    public HashSet<string> DataWarehouseEntities { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the value of the dwh schema
@@ -114,7 +114,6 @@ public class O24OpenAPIConfiguration : IConfig
     public bool AutoDeleteCommandQueue { get; set; } = true;
     public bool AutoDeleteEventQueue { get; set; } = false;
     public string OpenAPICMSURI { get; set; } = "";
-    public string InstanceId { get; set; } = Guid.NewGuid().ToString();
     public string AllowedCorsOrigins { get; set; } = "";
 
     /// <summary>

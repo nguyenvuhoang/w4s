@@ -18,10 +18,7 @@ public class SqlExecutor
     /// <summary>
     /// Thực thi truy vấn và trả về giá trị scalar kiểu T.
     /// </summary>
-    public static async Task<T> ExecuteScalarAsync<T>(
-        string sql,
-        params SqlParameter[] parameters
-    )
+    public static async Task<T> ExecuteScalarAsync<T>(string sql, params SqlParameter[] parameters)
     {
         using var connection = new SqlConnection(ConnectionString);
         await connection.OpenAsync();
@@ -58,10 +55,7 @@ public class SqlExecutor
     /// </summary>
     /// <param name="sqlScript">The sql script</param>
     /// <param name="connectionString">The connection string</param>
-    public static async Task ExecuteSqlScriptAsync(
-        string sqlScript,
-        string connectionString = null
-    )
+    public static async Task ExecuteSqlScriptAsync(string sqlScript, string connectionString = null)
     {
         connectionString ??= Singleton<DataConfig>.Instance.DefaultConnection;
         await using SqlConnection connection = new(connectionString);
@@ -80,9 +74,10 @@ public class SqlExecutor
     /// <param name="filePath">The file path</param>
     /// <exception cref="FileNotFoundException">SQL file not found: {filePath}</exception>
     public static async Task ExecuteSqlFromFileAsync(
- string connectionString,
- string filePath,
- DataProviderType providerType = DataProviderType.SqlServer)
+        string connectionString,
+        string filePath,
+        DataProviderType providerType = DataProviderType.SqlServer
+    )
     {
         if (!File.Exists(filePath))
         {
@@ -95,7 +90,9 @@ public class SqlExecutor
         {
             DataProviderType.SqlServer => ["GO", "go"],
             DataProviderType.Oracle => ["/"],
-            _ => throw new NotSupportedException($"DataProvider '{providerType}' is not supported.")
+            _ => throw new NotSupportedException(
+                $"DataProvider '{providerType}' is not supported."
+            ),
         };
 
         string[] sqlStatements = sqlScript.Split(separator, StringSplitOptions.RemoveEmptyEntries);
@@ -121,7 +118,9 @@ public class SqlExecutor
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"[SQL SERVER] Failed statement:\n{trimmedSql}\nError: {ex.Message}\n");
+                            Console.WriteLine(
+                                $"[SQL SERVER] Failed statement:\n{trimmedSql}\nError: {ex.Message}\n"
+                            );
                         }
                     }
                 }
@@ -146,7 +145,9 @@ public class SqlExecutor
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"[ORACLE] Failed statement:\n{trimmedSql}\nError: {ex.Message}\n");
+                            Console.WriteLine(
+                                $"[ORACLE] Failed statement:\n{trimmedSql}\nError: {ex.Message}\n"
+                            );
                         }
                     }
                 }
@@ -189,11 +190,23 @@ public class SqlExecutor
             case DataProviderType.Oracle:
                 var oraQuery = "SELECT COUNT(*) FROM all_users WHERE username = :schemaName";
 
-                await using (var oraConn = new Oracle.ManagedDataAccess.Client.OracleConnection(connectionString))
+                await using (
+                    var oraConn = new Oracle.ManagedDataAccess.Client.OracleConnection(
+                        connectionString
+                    )
+                )
                 {
                     await oraConn.OpenAsync();
-                    await using var oraCmd = new Oracle.ManagedDataAccess.Client.OracleCommand(oraQuery, oraConn);
-                    oraCmd.Parameters.Add(new Oracle.ManagedDataAccess.Client.OracleParameter("schemaName", databaseNameOrSchema.ToUpper()));
+                    await using var oraCmd = new Oracle.ManagedDataAccess.Client.OracleCommand(
+                        oraQuery,
+                        oraConn
+                    );
+                    oraCmd.Parameters.Add(
+                        new Oracle.ManagedDataAccess.Client.OracleParameter(
+                            "schemaName",
+                            databaseNameOrSchema.ToUpper()
+                        )
+                    );
 
                     var result = Convert.ToInt32(await oraCmd.ExecuteScalarAsync());
                     return result > 0;
@@ -203,7 +216,6 @@ public class SqlExecutor
                 throw new NotSupportedException($"Unsupported provider: {providerType}");
         }
     }
-
 
     /// <summary>
     /// Cdcs the enable using the specified connection string

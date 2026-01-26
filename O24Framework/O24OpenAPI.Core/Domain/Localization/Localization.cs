@@ -4,25 +4,25 @@ namespace O24OpenAPI.Core.Domain.Localization;
 /// The locale string resource class
 /// </summary>
 /// <seealso cref="BaseEntity"/>
-public class LocaleStringResource : BaseEntity
+public partial class LocaleStringResource : BaseEntity
 {
     /// <summary>
     /// Gets or sets the value of the language
     /// </summary>
-    public string Language { get; set; }
+    public string? Language { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the resource name
     /// </summary>
-    public string ResourceName { get; set; }
+    public string? ResourceName { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the resource value
     /// </summary>
-    public string ResourceValue { get; set; }
+    public string? ResourceValue { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the resource value
     /// </summary>
-    public string ResourceCode { get; set; }
+    public string? ResourceCode { get; set; }
 }

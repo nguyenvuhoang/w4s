@@ -1,7 +1,8 @@
 using FluentMigrator;
 using O24OpenAPI.Core.Attributes;
+using O24OpenAPI.Core.Configuration;
+using O24OpenAPI.Core.Constants;
 using O24OpenAPI.Core.Domain;
-using O24OpenAPI.Core.Domain.Configuration;
 using O24OpenAPI.Core.Domain.Localization;
 using O24OpenAPI.Core.Extensions;
 
@@ -245,7 +246,7 @@ public class RequiredDataMigration(IO24OpenAPIDataProvider dataProvider) : BaseM
                     {
                         Language = "en",
                         ResourceName = "system.error",
-                        ResourceValue = "System error occurred",
+                        ResourceValue = "System error occurred {0}",
                     },
                     new LocaleStringResource()
                     {

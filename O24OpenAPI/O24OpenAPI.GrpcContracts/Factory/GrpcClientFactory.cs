@@ -3,26 +3,27 @@ using System.Linq.Expressions;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Grpc.Net.Client;
+using O24OpenAPI.Core;
 using O24OpenAPI.Core.Infrastructure;
-using O24OpenAPI.Core.Logging.Interceptors;
 using O24OpenAPI.GrpcContracts.Configuration;
 using O24OpenAPI.GrpcContracts.GrpcClientServices.WFO;
+using O24OpenAPI.GrpcContracts.Interceptors;
 
 namespace O24OpenAPI.GrpcContracts.Factory;
 
-public sealed class GrpcClientFactory(GrpcClientLoggingInterceptor loggingInterceptor) : IGrpcClientFactory, IDisposable
+public sealed class GrpcClientFactory(GrpcClientOutboundInterceptor grpcClientOutboundInterceptor)
+    : IGrpcClientFactory,
+        IDisposable
 {
     private readonly GrpcClientsConfig _configs = Singleton<GrpcClientsConfig>.Instance;
     private readonly ConcurrentDictionary<string, ChannelWrapper> _channels = new();
     private static readonly ConcurrentDictionary<Type, Lazy<Delegate>> _clientFactoryCache = new();
-
-    private GrpcClientLoggingInterceptor _loggingInterceptor = loggingInterceptor;
-
+    private GrpcClientOutboundInterceptor _grpcClientOutboundInterceptor =
+        grpcClientOutboundInterceptor;
     private readonly SemaphoreSlim _channelLock = new(1, 1);
 
     private const int MaxRetryAttempts = 3;
     private const int RetryDelayMs = 1000;
-
     private const int StaleChannelCleanupMs = 5 * 60 * 1000;
 
     public TClient GetClient<TClient>()
@@ -34,7 +35,7 @@ public sealed class GrpcClientFactory(GrpcClientLoggingInterceptor loggingInterc
     public async Task<TClient> GetClientAsync<TClient>()
         where TClient : ClientBase
     {
-        var (address, clientTypeName) = GetServiceAddress<TClient>();
+        var (address, clientTypeName) = await GetServiceAddress<TClient>();
         var channel = await GetOrCreateChannelAsync(clientTypeName, address).ConfigureAwait(false);
         return CreateClientFromChannel<TClient>(channel);
     }
@@ -61,7 +62,7 @@ public sealed class GrpcClientFactory(GrpcClientLoggingInterceptor loggingInterc
             }
             catch (RpcException ex) when (IsConnectionError(ex) && attempt < MaxRetryAttempts - 1)
             {
-                var (address, clientTypeName) = GetServiceAddress<TClient>();
+                var (address, clientTypeName) = await GetServiceAddress<TClient>();
                 await RecreateChannelAsync(clientTypeName, address).ConfigureAwait(false);
                 client = await GetClientAsync<TClient>().ConfigureAwait(false);
                 await Task.Delay(RetryDelayMs * (attempt + 1)).ConfigureAwait(false);
@@ -73,7 +74,7 @@ public sealed class GrpcClientFactory(GrpcClientLoggingInterceptor loggingInterc
         );
     }
 
-    private (string address, string clientTypeName) GetServiceAddress<TClient>()
+    private async Task<(string address, string clientTypeName)> GetServiceAddress<TClient>()
     {
         var clientTypeName =
             typeof(TClient).DeclaringType?.Name
@@ -83,14 +84,22 @@ public sealed class GrpcClientFactory(GrpcClientLoggingInterceptor loggingInterc
 
         if (!_configs.TryGetValue(clientTypeName, out var address) || string.IsNullOrEmpty(address))
         {
-            var wfoGrpcClient = EngineContext.Current.Resolve<IWFOGrpcClientService>();
-            var serviceInfo = wfoGrpcClient
-                .GetServiceInstanceByServiceHandleNameAsync(clientTypeName)
-                .GetAwaiter().GetResult();
+            var wfoGrpcClient =
+                EngineContext.Current.Resolve<IWFOGrpcClientService>()
+                ?? throw new O24OpenAPIException("IWFOGrpcClientService is not registered.");
+            var serviceInfo = await wfoGrpcClient.GetServiceInstanceByServiceHandleNameAsync(
+                clientTypeName
+            );
 
             if (serviceInfo != null)
             {
                 address = serviceInfo.service_grpc_url;
+                if (string.IsNullOrWhiteSpace(address))
+                {
+                    throw new O24OpenAPIException(
+                        "service_grpc_url {clientTypeName} is not config."
+                    );
+                }
                 Singleton<GrpcClientsConfig>.Instance[clientTypeName] = address;
 
                 if (string.IsNullOrEmpty(address))
@@ -175,7 +184,8 @@ public sealed class GrpcClientFactory(GrpcClientLoggingInterceptor loggingInterc
             {
                 var connectTask = channel.ConnectAsync();
                 var timeoutTask = Task.Delay(5000);
-                var completedTask = await Task.WhenAny(connectTask, timeoutTask).ConfigureAwait(false);
+                var completedTask = await Task.WhenAny(connectTask, timeoutTask)
+                    .ConfigureAwait(false);
 
                 return completedTask == connectTask;
             }
@@ -206,6 +216,7 @@ public sealed class GrpcClientFactory(GrpcClientLoggingInterceptor loggingInterc
 
         return new ChannelWrapper(channel, address);
     }
+
     private async Task CleanupStaleWrappersAsync()
     {
         try
@@ -215,7 +226,9 @@ public sealed class GrpcClientFactory(GrpcClientLoggingInterceptor loggingInterc
             {
                 if (kvp.Value.CreatedAt < threshold)
                 {
-                    _channels.TryRemove(new KeyValuePair<string, ChannelWrapper>(kvp.Key, kvp.Value));
+                    _channels.TryRemove(
+                        new KeyValuePair<string, ChannelWrapper>(kvp.Key, kvp.Value)
+                    );
                 }
             }
         }
@@ -227,8 +240,8 @@ public sealed class GrpcClientFactory(GrpcClientLoggingInterceptor loggingInterc
     private TClient CreateClientFromChannel<TClient>(GrpcChannel channel)
         where TClient : ClientBase
     {
-        _loggingInterceptor ??= new GrpcClientLoggingInterceptor();
-        var interceptedInvoker = channel.Intercept(_loggingInterceptor);
+        _grpcClientOutboundInterceptor ??= new GrpcClientOutboundInterceptor();
+        var interceptedInvoker = channel.Intercept(_grpcClientOutboundInterceptor);
 
         var factoryLazy = _clientFactoryCache.GetOrAdd(
             typeof(TClient),
@@ -242,7 +255,10 @@ public sealed class GrpcClientFactory(GrpcClientLoggingInterceptor loggingInterc
                     );
 
                 var newExpression = Expression.New(constructor, invokerParam);
-                var lambda = Expression.Lambda<Func<CallInvoker, TClient>>(newExpression, invokerParam);
+                var lambda = Expression.Lambda<Func<CallInvoker, TClient>>(
+                    newExpression,
+                    invokerParam
+                );
 
                 return lambda.Compile();
             })

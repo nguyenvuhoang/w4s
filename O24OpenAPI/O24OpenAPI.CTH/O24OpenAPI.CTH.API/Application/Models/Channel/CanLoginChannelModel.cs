@@ -1,0 +1,8 @@
+﻿using O24OpenAPI.Framework.Models;
+
+namespace O24OpenAPI.CTH.API.Application.Models.Channel;
+
+public class CanLoginChannelModel : BaseTransactionModel
+{
+    public string UserId { get; set; }
+}

@@ -1,0 +1,12 @@
+﻿{
+  "BackgroundJobConfig": {
+    "BackgroundJobs": [
+      {
+        "Name": "HealthCheck",
+        "IsActive": true,
+        "ScheduleType": "Interval",
+        "TimeIntervalSeconds": 300
+      }
+    ]
+  }
+}

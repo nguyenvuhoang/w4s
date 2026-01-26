@@ -1,7 +1,7 @@
+using System.Linq.Expressions;
 using LinqToDB;
 using O24OpenAPI.Core;
 using O24OpenAPI.Core.Domain;
-using System.Linq.Expressions;
 
 namespace O24OpenAPI.Data.System.Linq;
 
@@ -23,23 +23,6 @@ public static class AsyncIQueryableExtensions
     )
     {
         return AsyncExtensions.AllAsync<TSource>(source, predicate);
-    }
-
-    /// <summary>
-    /// Anies the source
-    /// </summary>
-    /// <typeparam name="TSource">The source</typeparam>
-    /// <param name="source">The source</param>
-    /// <param name="predicate">The predicate</param>
-    /// <returns>A task containing the bool</returns>
-    public static Task<bool> AnyAsync<TSource>(
-        this IQueryable<TSource> source,
-        Expression<Func<TSource, bool>> predicate = null
-    )
-    {
-        return predicate == null
-            ? AsyncExtensions.AnyAsync<TSource>(source)
-            : source.AnyAsync<TSource>(predicate);
     }
 
     /// <summary>
@@ -152,7 +135,13 @@ public static class AsyncIQueryableExtensions
         if (source == null)
         {
             return (IPagedList<T>)
-                new PagedList<T>((IList<T>)new List<T>(), pageIndex, pageSize, totalSuccess, totalFailed);
+                new PagedList<T>(
+                    (IList<T>)new List<T>(),
+                    pageIndex,
+                    pageSize,
+                    totalSuccess,
+                    totalFailed
+                );
         }
 
         if (pageSize == 0)
@@ -175,7 +164,14 @@ public static class AsyncIQueryableExtensions
             collection = (List<T>)null;
         }
         return (IPagedList<T>)
-            new PagedList<T>((IList<T>)data, pageIndex, pageSize, new int?(count), totalSuccess, totalFailed);
+            new PagedList<T>(
+                (IList<T>)data,
+                pageIndex,
+                pageSize,
+                new int?(count),
+                totalSuccess,
+                totalFailed
+            );
     }
 
     /// <summary>
@@ -206,5 +202,22 @@ public static class AsyncIQueryableExtensions
             )
         );
         return query;
+    }
+
+    public static async Task<List<T>> ToListAsync<T>(
+        this IQueryable<T> query,
+        int pageIndex,
+        int pageSize,
+        CancellationToken ct = default
+    )
+    {
+        pageIndex = pageIndex <= 0 ? 1 : pageIndex;
+
+        if (pageSize <= 0)
+            return await query.ToListAsync(ct);
+
+        var skip = (pageIndex - 1) * pageSize;
+
+        return await query.Skip(skip).Take(pageSize).ToListAsync(ct);
     }
 }

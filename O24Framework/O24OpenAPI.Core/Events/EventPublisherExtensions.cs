@@ -110,9 +110,9 @@ public static class EventPublisherExtensions
     )
         where T : BaseEntity
     {
-        var dataWarehouseEntities = Singleton<O24OpenAPIConfiguration>
+        HashSet<string>? dataWarehouseEntities = Singleton<O24OpenAPIConfiguration>
             .Instance
-            .DataWarehouseEntities;
+            ?.DataWarehouseEntities;
 
         if (dataWarehouseEntities == null || !dataWarehouseEntities.Contains(typeof(T).Name))
         {

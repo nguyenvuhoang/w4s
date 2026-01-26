@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Version>2.0.0</Version>
+    <FileVersion>10.0.1.1</FileVersion>
+    <Authors>O24</Authors>
+    <Company>JITS</Company>
+    <PackRelease>true</PackRelease>
+    <BuildDate>$([System.DateTime]::Now.ToString("yyyy-MM-dd HH:mm:ss"))</BuildDate>
+    <BuildUser>$(USERNAME)</BuildUser>
+    <BuildUser Condition="'$(BuildUser)' == ''">$(USER)</BuildUser>
+    <PublishTrimmed>false</PublishTrimmed>
+  </PropertyGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>BuildDate</_Parameter1>
+      <_Parameter2>$(BuildDate)</_Parameter2>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>BuildUser</_Parameter1>
+      <_Parameter2>$(BuildUser)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" />
+    <PackageReference Include="Swashbuckle.AspNetCore" />
+    <PackageReference Include="Stimulsoft.Reports.Web.NetCore" />
+    <PackageReference Include="Stimulsoft.Dashboards.Web.NetCore" />
+    <PackageReference Include="Riok.Mapperly" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="App_Data\appsettings.json">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+    <Content Update="App_Data\appsettings.Development.json">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+    <Content Include="App_Data\CreateDatabase.sql" CopyToPublishDirectory="Always" />
+    <Content Include="App_Data\EnableCDC.sql" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="GrpcServices\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\O24OpenAPI.GrpcContracts\O24OpenAPI.GrpcContracts.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.Report.Domain\O24OpenAPI.Report.Domain.csproj" />
+    <ProjectReference Include="..\O24OpenAPI.Report.Infrastructure\O24OpenAPI.Report.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

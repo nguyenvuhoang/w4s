@@ -1,7 +1,7 @@
-using O24OpenAPI.Core.Enums;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using O24OpenAPI.Core.Enums;
 
 namespace O24OpenAPI.Core.Extensions;
 
@@ -15,7 +15,7 @@ public static class StringExtensions
 
     public static bool NullOrEmpty(this string value) => string.IsNullOrEmpty(value);
 
-    public static bool NullOrWhiteSpace(this string value) => string.IsNullOrWhiteSpace(value);
+    public static bool NullOrWhiteSpace(this string value) => !value.HasValue();
 
     public static T ToEnum<T>(this string value, T defaultValue = default)
         where T : struct, Enum
@@ -40,7 +40,7 @@ public static class StringExtensions
             return str;
         }
 
-        foreach (var value in values)
+        foreach (string value in values)
         {
             if (!string.IsNullOrWhiteSpace(value))
             {
@@ -128,10 +128,11 @@ public static class StringExtensions
         return dateTime.ToString(format);
     }
 
-    public static string DecimalToString(this decimal value, string format = "o") => value.ToString(format);
+    public static string DecimalToString(this decimal value, string format = "o") =>
+        value.ToString(format);
 
     public static decimal StringToDecimal(string value) =>
-        decimal.TryParse(value, out var v) ? v : 0;
+        decimal.TryParse(value, out decimal v) ? v : 0;
 
     #region Equals Methods
 
@@ -150,7 +151,7 @@ public static class StringExtensions
         return string.Equals(strA, strB, StringComparison.Ordinal);
     }
 
-    public static bool EqualsOrdinalIgnoreCase(this string strA, string strB)
+    public static bool EqualsOrdinalIgnoreCase(this string? strA, string? strB)
     {
         if (ReferenceEquals(strA, strB))
         {
@@ -249,7 +250,7 @@ public static class StringExtensions
         return str.StartsWith(value, StringComparison.Ordinal);
     }
 
-    public static bool StartsWithOrdinalIgnoreCase(this string str, string value)
+    public static bool StartsWithOrdinalIgnoreCase(this string? str, string value)
     {
         if (str == null)
         {
@@ -477,7 +478,7 @@ public static class StringExtensions
 
     #region Contains Methods
 
-    public static bool ContainsOrdinal(this string str, string value)
+    public static bool ContainsOrdinal(this string? str, string value)
     {
         if (str == null)
         {
@@ -489,7 +490,7 @@ public static class StringExtensions
             return false;
         }
 
-        return str.IndexOf(value, StringComparison.Ordinal) >= 0;
+        return str.Contains(value);
     }
 
     public static bool ContainsOrdinalIgnoreCase(this string str, string value)
@@ -504,7 +505,7 @@ public static class StringExtensions
             return false;
         }
 
-        return str.IndexOf(value, StringComparison.OrdinalIgnoreCase) >= 0;
+        return str.Contains(value, StringComparison.OrdinalIgnoreCase);
     }
 
     public static bool ContainsCurrentCulture(this string str, string value)
@@ -519,7 +520,7 @@ public static class StringExtensions
             return false;
         }
 
-        return str.IndexOf(value, StringComparison.CurrentCulture) >= 0;
+        return str.Contains(value, StringComparison.CurrentCulture);
     }
 
     public static bool ContainsCurrentCultureIgnoreCase(this string str, string value)
@@ -534,7 +535,7 @@ public static class StringExtensions
             return false;
         }
 
-        return str.IndexOf(value, StringComparison.CurrentCultureIgnoreCase) >= 0;
+        return str.Contains(value, StringComparison.CurrentCultureIgnoreCase);
     }
 
     public static bool ContainsInvariantCulture(this string str, string value)
@@ -549,10 +550,10 @@ public static class StringExtensions
             return false;
         }
 
-        return str.IndexOf(value, StringComparison.InvariantCulture) >= 0;
+        return str.Contains(value, StringComparison.InvariantCulture);
     }
 
-    public static bool ContainsInvariantCultureIgnoreCase(this string str, string value)
+    public static bool ContainsInvariantCultureIgnoreCase(this string? str, string value)
     {
         if (str == null)
         {
@@ -564,7 +565,7 @@ public static class StringExtensions
             return false;
         }
 
-        return str.IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0;
+        return str.Contains(value, StringComparison.InvariantCultureIgnoreCase);
     }
 
     #endregion

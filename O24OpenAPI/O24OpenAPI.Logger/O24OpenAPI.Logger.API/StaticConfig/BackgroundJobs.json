@@ -1,0 +1,14 @@
+{
+  "BackgroundJobConfig": {
+    "BackgroundJobs": [
+      {
+        "Name": "ClearApplicationLog",
+        "AssemblyName": "O24OpenAPI.Logger.API",
+        "IsActive": true,
+        "RunOnStart": true,
+        "ScheduleType": "Daily",
+        "TimeOfDay": "00:00:01"
+      }
+    ]
+  }
+}

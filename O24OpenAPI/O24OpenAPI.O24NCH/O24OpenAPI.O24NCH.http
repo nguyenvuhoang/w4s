@@ -1,6 +1,0 @@
-O24OpenAPI.O24NCH_HostAddress = https://localhost:6100
-
-GET {{O24OpenAPI.O24NCH_HostAddress}}/Webchannel/
-Accept: application/json
-
-###

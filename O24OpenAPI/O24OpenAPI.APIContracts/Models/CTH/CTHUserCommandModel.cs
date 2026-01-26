@@ -2,12 +2,12 @@ namespace O24OpenAPI.APIContracts.Models.CTH;
 
 public class CTHUserCommandModel
 {
-    public string ApplicationCode { get; set; }
-    public string CommandId { get; set; }
-    public string ParentId { get; set; }
-    public string CommandName { get; set; }
-    public string CommandNameLanguage { get; set; }
-    public string CommandType { get; set; }
+    public string? ApplicationCode { get; set; }
+    public string? CommandId { get; set; }
+    public string? ParentId { get; set; }
+    public string? CommandName { get; set; }
+    public string? CommandNameLanguage { get; set; }
+    public string? CommandType { get; set; }
     public string CommandURI { get; set; } = string.Empty;
     public bool? Enabled { get; set; } = false;
     public bool? IsVisible { get; set; } = false;

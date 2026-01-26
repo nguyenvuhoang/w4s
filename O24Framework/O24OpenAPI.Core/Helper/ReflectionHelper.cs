@@ -107,7 +107,7 @@ public class ReflectionHelper
     /// <exception cref="ArgumentNullException">Cannot find Method with name [{methodName}] in class [{fullClassName}]]</exception>
     /// <exception cref="ArgumentNullException">Cannot find class with Name=[{fullClassName} in assembly [{neptuneAssemblyName}]]</exception>
     /// <returns>The</returns>
-    public static T DynamicInvoke<T>(string fullClassName, string methodName, object[] parameters)
+    public static T? DynamicInvoke<T>(string fullClassName, string methodName, object[] parameters)
     {
         try
         {
@@ -127,7 +127,7 @@ public class ReflectionHelper
                 ?? throw new ArgumentNullException(
                     "Cannot create an instance of [" + fullClassName + "]"
                 );
-            return (T)method.Invoke(obj, parameters);
+            return (T?)method.Invoke(obj, parameters);
         }
         catch
         {
@@ -226,9 +226,9 @@ public class ReflectionHelper
     /// <returns>The type</returns>
     public static Type FindEntity(string entityName)
     {
-        Type type =
+        var type =
             Singleton<ITypeFinder>
-                .Instance.FindClassesOfType<BaseEntity>()
+                .Instance?.FindClassesOfType<BaseEntity>()
                 .FirstOrDefault(t => t.Name.Equals(entityName))
             ?? throw new Exception("Cannot find the type " + entityName);
         return type;

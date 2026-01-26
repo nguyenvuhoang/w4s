@@ -17,58 +17,19 @@ public static class ExceptionExtensions
     /// <returns>The string</returns>
     public static string DebugMessage(this Exception ex, int frameNumber = -1)
     {
-        if (!(ex is O24OpenAPIException))
-        {
+        if (ex is not O24OpenAPIException)
             return ex.ToString();
-        }
 
-        StackTrace stackTrace = new StackTrace(ex, true);
-        if (frameNumber == -1)
-        {
+        var stackTrace = new StackTrace(ex, true);
+
+        if (frameNumber < 0 || frameNumber >= stackTrace.FrameCount)
             frameNumber = stackTrace.FrameCount - 1;
-        }
 
-        StackFrame frame = stackTrace.GetFrame(frameNumber);
-        int fileLineNumber = frame.GetFileLineNumber();
-        string fullName = frame.GetMethod().ReflectedType.FullName;
-        frame.GetMethod().GetMethodContextName();
-        DefaultInterpolatedStringHandler interpolatedStringHandler =
-            new DefaultInterpolatedStringHandler(12, 4);
-        interpolatedStringHandler.AppendFormatted(ex.GetType().Name);
-        interpolatedStringHandler.AppendLiteral(": ");
-        interpolatedStringHandler.AppendFormatted(ex.Message);
-        interpolatedStringHandler.AppendLiteral("\n");
-        interpolatedStringHandler.AppendFormatted(fullName);
-        interpolatedStringHandler.AppendLiteral(" at line ");
-        interpolatedStringHandler.AppendFormatted<int>(fileLineNumber);
-        return interpolatedStringHandler.ToStringAndClear();
-    }
+        var frame = stackTrace.GetFrame(frameNumber);
 
-    /// <summary>
-    /// Gets the method context name using the specified method
-    /// </summary>
-    /// <param name="method">The method</param>
-    /// <returns>The string</returns>
-    public static string GetMethodContextName(this MethodBase method)
-    {
-        if (!method.DeclaringType.GetInterfaces().Any<Type>(i => i == typeof(IAsyncStateMachine)))
-        {
-            return method.Name;
-        }
+        var line = frame?.GetFileLineNumber() ?? 0;
+        var typeName = frame?.GetMethod()?.ReflectedType?.FullName ?? "UnknownType";
 
-        Type generatedType = method.DeclaringType;
-        return generatedType
-            .DeclaringType.GetMethods(
-                BindingFlags.DeclaredOnly
-                    | BindingFlags.Instance
-                    | BindingFlags.Static
-                    | BindingFlags.Public
-                    | BindingFlags.NonPublic
-            )
-            .Single<MethodInfo>(m =>
-                m.GetCustomAttribute<AsyncStateMachineAttribute>()?.StateMachineType
-                == generatedType
-            )
-            .Name;
+        return $"{ex.GetType().Name}: {ex.Message}\n{typeName} at line {line}";
     }
 }

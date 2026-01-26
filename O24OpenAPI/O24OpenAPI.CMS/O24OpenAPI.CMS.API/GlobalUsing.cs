@@ -1,0 +1,13 @@
+global using System;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Threading.Tasks;
+global using O24OpenAPI.Client.Scheme.Workflow;
+global using O24OpenAPI.Core;
+global using O24OpenAPI.Core.Abstractions;
+global using O24OpenAPI.Core.Domain;
+global using O24OpenAPI.Core.Infrastructure;
+global using O24OpenAPI.Core.SeedWork;
+global using O24OpenAPI.Data;
+global using O24OpenAPI.Framework;
+global using O24OpenAPI.Framework.Models;

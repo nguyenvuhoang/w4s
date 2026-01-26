@@ -1,0 +1,6 @@
+@O24OpenAPI.ACT.API_HostAddress = http://localhost:5211
+
+GET {{O24OpenAPI.ACT.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

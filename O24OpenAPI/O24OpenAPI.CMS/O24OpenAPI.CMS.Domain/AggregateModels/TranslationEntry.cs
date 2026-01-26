@@ -1,0 +1,10 @@
+﻿namespace O24OpenAPI.CMS.Domain.AggregateModels;
+
+public partial class TranslationEntry : BaseEntity
+{
+    public string? Key { get; set; }
+    public string? English { get; set; }
+    public string? Vietnamese { get; set; }
+    public string? Lao { get; set; }
+    public string? Chinese { get; set; }
+}

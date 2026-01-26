@@ -1,8 +1,0 @@
-﻿using O24OpenAPI.Web.Framework.Models;
-
-namespace O24OpenAPI.O24ACT.Models;
-
-public class AccountingRuleDefinitionModel : BaseTransactionModel
-{
-    public List<TemporaryPosting> EntryJournals { get; set; } = new();
-}

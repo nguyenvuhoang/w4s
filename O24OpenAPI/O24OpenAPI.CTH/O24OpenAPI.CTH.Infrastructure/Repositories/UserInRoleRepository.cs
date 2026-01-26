@@ -1,0 +1,39 @@
+using LinKit.Core.Abstractions;
+using LinqToDB;
+using O24OpenAPI.Core.Caching;
+using O24OpenAPI.CTH.Domain.AggregatesModel.UserAggregate;
+using O24OpenAPI.Data;
+
+namespace O24OpenAPI.CTH.Infrastructure.Repositories;
+
+[RegisterService(Lifetime.Scoped)]
+public class UserInRoleRepository(
+    IO24OpenAPIDataProvider dataProvider,
+    IStaticCacheManager staticCacheManager
+) : EntityRepository<UserInRole>(dataProvider, staticCacheManager), IUserInRoleRepository
+{
+    public async Task<List<UserInRole>> GetUserInRolesByRoleIdAsync(int roleId)
+    {
+        return await Table.Where(x => x.RoleId == roleId).ToListAsync();
+    }
+
+    public async Task<List<UserInRole>> GetListRoleByUserCodeAsync(string userCode)
+    {
+        return await Table.Where(s => s.UserCode == userCode).ToListAsync();
+    }
+
+    public async Task DeleteByUserCodeAsync(string userCode)
+    {
+        List<UserInRole> roles = await Table.Where(x => x.UserCode == userCode).ToListAsync();
+        if (roles.Count > 0)
+        {
+            await BulkDelete(roles);
+        }
+    }
+
+    public async Task<List<UserInRole>> ListOfRole(string usercode)
+    {
+        List<UserInRole> listOfRole = await Table.Where(s => s.UserCode == usercode).ToListAsync();
+        return listOfRole;
+    }
+}

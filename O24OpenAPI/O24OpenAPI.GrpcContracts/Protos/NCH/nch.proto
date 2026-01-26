@@ -3,7 +3,6 @@
 package nch;
 option csharp_namespace = "O24OpenAPI.Grpc.NCH";
 
-import "google/protobuf/struct.proto";
 import "Common/common.proto";
 
 // Service

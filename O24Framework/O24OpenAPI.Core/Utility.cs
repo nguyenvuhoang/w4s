@@ -11,7 +11,7 @@ public static class Utility
     /// <typeparam name="T">The </typeparam>
     /// <param name="values">The values</param>
     /// <returns>The</returns>
-    public static T Coalesce<T>(params T[] values)
+    public static T? Coalesce<T>(params T[] values)
         where T : class
     {
         foreach (var value in values)
