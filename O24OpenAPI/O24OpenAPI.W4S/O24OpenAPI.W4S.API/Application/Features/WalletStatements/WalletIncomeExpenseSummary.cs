@@ -10,7 +10,6 @@ using O24OpenAPI.W4S.API.Application.Helpers;
 using O24OpenAPI.W4S.API.Application.Models.Currency;
 using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 using O24OpenAPI.W4S.Domain.AggregatesModel.WalletMasterAggregate;
-using O24OpenAPI.W4S.Infrastructure.Configurations;
 
 namespace O24OpenAPI.W4S.API.Application.Features.WalletStatements;
 
@@ -23,6 +22,7 @@ public class WalletIncomeExpenseSummaryCommand
     /// <summary>D=Day, M=Month, Q=Quarter, H=Half-year, Y=Year</summary>
     public string PeriodType { get; set; } = "M";
     public string PeriodUnit { get; set; }
+    public string CurrencyCode { get; set; }
 
     /// <summary>
     /// Rates are passed from outside (e.g. Core/CBG) and used to convert to BaseCurrency.
@@ -50,15 +50,14 @@ public class SummaryItemModel
 [CqrsHandler]
 public class WalletIncomeExpenseSummaryHandler(
     IWalletProfileRepository walletProfileRepository,
-    IWalletStatementRepository walletStatementRepository,
-    W4SSetting w4SSettings
+    IWalletStatementRepository walletStatementRepository
 ) : ICommandHandler<WalletIncomeExpenseSummaryCommand, WalletIncomeExpenseSummaryResponseModel>
 {
     [WorkflowStep(WorkflowStepCode.W4S.WF_STEP_W4S_WALLET_INCOME_EXPENSE_SUMMARY)]
     public async Task<WalletIncomeExpenseSummaryResponseModel> HandleAsync(
-        WalletIncomeExpenseSummaryCommand request,
-        CancellationToken cancellationToken = default
-    )
+    WalletIncomeExpenseSummaryCommand request,
+    CancellationToken cancellationToken = default
+)
     {
         try
         {
@@ -69,19 +68,16 @@ public class WalletIncomeExpenseSummaryHandler(
                     request.ContractNumber
                 );
 
-            string contractNumber = request.ContractNumber.Trim();
+            var contractNumber = request.ContractNumber.Trim();
 
-            List<WalletProfile> walletProfiles =
-                await walletProfileRepository.GetByContractNumber(contractNumber)
+            var walletProfiles = await walletProfileRepository.GetByContractNumber(contractNumber)
                 ?? throw await O24Exception.CreateAsync(
                     O24W4SResourceCode.Validation.WalletContractNotFound,
                     request.Language,
                     contractNumber
                 );
 
-            // User confirmed: walletProfiles.Id is WalletId
-            List<int> walletIds = walletProfiles.Select(x => x.Id).Distinct().ToList();
-
+            var walletIds = walletProfiles.Select(x => x.Id).Distinct().ToList();
             if (walletIds.Count == 0)
                 throw await O24Exception.CreateAsync(
                     O24W4SResourceCode.Validation.WalletContractNotFound,
@@ -89,76 +85,77 @@ public class WalletIncomeExpenseSummaryHandler(
                     contractNumber
                 );
 
-            string baseCurrency = string.IsNullOrWhiteSpace(w4SSettings.BaseCurrency)
-                ? "VND"
-                : w4SSettings.BaseCurrency.Trim();
+            // Base currency: default VND if missing
+            var baseCurrency = (request.CurrencyCode ?? "VND").Trim().ToUpperInvariant();
 
-            DateTime now = DateTime.UtcNow;
-            (DateTime thisFrom, DateTime thisTo, DateTime prevFrom, DateTime prevTo) =
+            var now = DateTime.UtcNow;
+            var (thisFrom, thisTo, prevFrom, prevTo) =
                 WalletPeriodType.BuildPeriodRangeUtc(now, request.PeriodType);
 
-            // Pull minimal rows (tracker: no ledger)
-            var thisRows = await walletStatementRepository
-                .Table.Where(x =>
-                    walletIds.Contains(x.WalletId)
-                    && x.StatementOnUtc >= thisFrom
-                    && x.StatementOnUtc < thisTo
-                )
-                .Select(x => new
-                {
-                    x.EntryType, // Code.EntryType.DEBIT / CREDIT
-                    x.Amount,
-                    x.CurrencyCode,
-                })
-                .ToListAsync(cancellationToken);
-
-            var prevRows = await walletStatementRepository
-                .Table.Where(x =>
-                    walletIds.Contains(x.WalletId)
-                    && x.StatementOnUtc >= prevFrom
-                    && x.StatementOnUtc < prevTo
+            // Query minimal rows
+            var thisRows = await walletStatementRepository.Table
+                .Where(x =>
+                    walletIds.Contains(x.WalletId) &&
+                    x.StatementOnUtc >= thisFrom &&
+                    x.StatementOnUtc < thisTo
                 )
                 .Select(x => new
                 {
                     x.EntryType,
                     x.Amount,
-                    x.CurrencyCode,
+                    x.CurrencyCode
                 })
                 .ToListAsync(cancellationToken);
 
-            // Build rate map from request.TransferRates
-            Dictionary<string, decimal> rateMap = RateHelper.BuildRateMapFromRequest(
-                request.TransferRates,
-                baseCurrency
+            var prevRows = await walletStatementRepository.Table
+                .Where(x =>
+                    walletIds.Contains(x.WalletId) &&
+                    x.StatementOnUtc >= prevFrom &&
+                    x.StatementOnUtc < prevTo
+                )
+                .Select(x => new
+                {
+                    x.EntryType,
+                    x.Amount,
+                    x.CurrencyCode
+                })
+                .ToListAsync(cancellationToken);
+
+            var rawVndRateMap = (request.TransferRates ?? [])
+            .Where(x =>
+                !string.IsNullOrWhiteSpace(x.CurrencyCode) &&
+                x.Transfer.HasValue &&
+                x.Transfer.Value > 0m
+            )
+            .GroupBy(x => x.CurrencyCode.Trim().ToUpperInvariant())
+            .ToDictionary(
+                g => g.Key,
+                g => g.Last().Transfer!.Value
             );
 
-            // Sum after conversion to base
-            decimal thisIncomeBase = 0m,
-                thisExpenseBase = 0m;
+            if (!rawVndRateMap.ContainsKey(baseCurrency))
+                throw await O24Exception.CreateAsync(
+                    O24W4SResourceCode.Validation.ExchangeRateNotFound,
+                    request.Language,
+                    baseCurrency
+                );
 
+            rawVndRateMap.TryAdd("VND", 1m);
+
+            var rateMap = BuildRateMapByBase(baseCurrency, rawVndRateMap);
+
+            decimal thisIncomeBase = 0m, thisExpenseBase = 0m;
             foreach (var r in thisRows)
             {
-                decimal amtBase = ConvertToBase(r.Amount, r.CurrencyCode, baseCurrency, rateMap);
-                AccumulateByEntryType(
-                    r.EntryType,
-                    amtBase,
-                    ref thisIncomeBase,
-                    ref thisExpenseBase
-                );
+                var amtBase = ConvertToBase(r.Amount, r.CurrencyCode, baseCurrency, rateMap);
+                AccumulateByEntryType(r.EntryType, amtBase, ref thisIncomeBase, ref thisExpenseBase);
             }
 
-            decimal prevIncomeBase = 0m,
-                prevExpenseBase = 0m;
-
+            decimal prevIncomeBase = 0m, prevExpenseBase = 0m;
             foreach (var r in prevRows)
             {
-                decimal amtBase = ConvertToBase(r.Amount, r.CurrencyCode, baseCurrency, rateMap);
-                AccumulateByEntryType(
-                    r.EntryType,
-                    amtBase,
-                    ref prevIncomeBase,
-                    ref prevExpenseBase
-                );
+                var amtBase = ConvertToBase(r.Amount, r.CurrencyCode, baseCurrency, rateMap);
+                AccumulateByEntryType(r.EntryType, amtBase, ref prevIncomeBase, ref prevExpenseBase);
             }
 
             return new WalletIncomeExpenseSummaryResponseModel
@@ -184,6 +181,43 @@ public class WalletIncomeExpenseSummaryHandler(
             throw;
         }
     }
+
+
+    public static Dictionary<string, decimal> BuildRateMapByBase(
+        string baseCurrency,
+        IReadOnlyDictionary<string, decimal> rawVndRateMap
+    )
+    {
+        var baseCcy = (baseCurrency ?? "VND").Trim().ToUpperInvariant();
+
+        var vndMap = rawVndRateMap.ToDictionary(
+            x => x.Key.Trim().ToUpperInvariant(),
+            x => x.Value
+        );
+
+        if (baseCcy == "VND")
+        {
+            var result = new Dictionary<string, decimal>(vndMap)
+            {
+                ["VND"] = 1m
+            };
+            return result;
+        }
+
+        if (!vndMap.TryGetValue(baseCcy, out var baseToVnd) || baseToVnd <= 0m)
+            throw new InvalidOperationException($"Missing exchange rate for {baseCcy}->VND");
+
+        var rateToBase = vndMap.ToDictionary(
+            x => x.Key,
+            x => x.Key == baseCcy ? 1m : x.Value / baseToVnd
+        );
+
+        rateToBase["VND"] = 1m / baseToVnd;
+
+        return rateToBase;
+    }
+
+
 
     private static decimal ConvertToBase(
         decimal amount,

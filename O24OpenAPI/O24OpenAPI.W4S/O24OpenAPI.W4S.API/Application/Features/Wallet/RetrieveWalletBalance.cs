@@ -16,6 +16,7 @@ namespace O24OpenAPI.W4S.API.Application.Features.Wallet;
 public class RetrieveWalletBalanceCommand : BaseTransactionModel, ICommand<RetrieveWalletBalanceResponseModel>
 {
     public string ContractNumber { get; set; }
+    public string CurrencyCode { get; set; }
     public List<TransferRateResponseModel> TransferRates { get; set; } = [];
 }
 
@@ -66,7 +67,7 @@ public class RetrieveWalletBalanceHandler(
                     CurrencyCode = string.Empty
                 };
 
-            var baseCurrency = w4SSetting.BaseCurrency?.Trim().ToUpperInvariant() ?? string.Empty;
+            var baseCurrency = request.CurrencyCode;
 
             var rateMap = (request.TransferRates ?? [])
             .Where(x => !string.IsNullOrWhiteSpace(x.CurrencyCode))
