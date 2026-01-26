@@ -12,7 +12,6 @@
   <ItemGroup>
     <PackageReference Include="LinKit.Core" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-    <PackageReference Include="OpenAI" />
     <PackageReference Include="Qdrant.Client" />
     <PackageReference Include="UglyToad.PdfPig" />
   </ItemGroup>

@@ -1,13 +1,16 @@
-﻿using LinKit.Core.Abstractions;
-using O24OpenAPI.AI.API.Application.Abstractions;
+﻿using O24OpenAPI.AI.API.Application.Abstractions;
 using OpenAI.Chat;
 
 namespace O24OpenAPI.AI.API.Application.Services.LLM;
 
-[RegisterService(Lifetime.Scoped)]
-public class OpenAIChatProvider(ChatClient chat) : ILlmChatProvider
+public class OpenAIChatProvider : ILlmChatProvider
 {
-    private readonly ChatClient _chat = chat;
+    private readonly ChatClient _chat;
+
+    public OpenAIChatProvider(ChatClient chat)
+    {
+        _chat = chat;
+    }
 
     public async Task<string> AskAsync(string system, string user, CancellationToken ct = default)
     {
