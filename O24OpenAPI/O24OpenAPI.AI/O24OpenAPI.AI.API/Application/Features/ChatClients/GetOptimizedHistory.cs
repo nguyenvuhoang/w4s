@@ -23,7 +23,7 @@ public class GetOptimizedHistoryHandler(
         CancellationToken cancellationToken
     )
     {
-        var userCode = request.UserCode;
+        string userCode = request.UserCode;
         ChatHistory lastSummary = await chatHistoryRepository
             .Table.Where(m => m.UserCode == userCode && m.Role == "summary")
             .OrderByDescending(m => m.CreatedOnUtc)
@@ -39,7 +39,7 @@ public class GetOptimizedHistoryHandler(
             return await SummarizeOldMessagesAsync(userCode, lastSummary, recentMessages);
         }
 
-        var historyForAI = new List<ChatMessage>();
+        List<ChatMessage> historyForAI = [];
         if (lastSummary != null)
         {
             historyForAI.Add(
@@ -63,8 +63,8 @@ public class GetOptimizedHistoryHandler(
     )
     {
         int messagesToSummarizeCount = recentMessages.Count - BufferSize;
-        var toSummarize = recentMessages.Take(messagesToSummarizeCount).ToList();
-        var remaining = recentMessages.Skip(messagesToSummarizeCount).ToList();
+        List<ChatHistory> toSummarize = recentMessages.Take(messagesToSummarizeCount).ToList();
+        List<ChatHistory> remaining = recentMessages.Skip(messagesToSummarizeCount).ToList();
 
         string historyText = string.Join("\n", toSummarize.Select(m => $"{m.Role}: {m.Content}"));
         string summaryPrompt = $"""
@@ -79,7 +79,10 @@ public class GetOptimizedHistoryHandler(
         string newSummaryContent = summaryResponse.Text ?? "";
 
         foreach (ChatHistory msg in toSummarize)
+        {
             msg.IsSummarized = true;
+            await chatHistoryRepository.Update(msg);
+        }
 
         await chatHistoryRepository.InsertAsync(
             new ChatHistory
@@ -90,11 +93,11 @@ public class GetOptimizedHistoryHandler(
             }
         );
 
-        var result = new List<ChatMessage>
-        {
+        List<ChatMessage> result =
+        [
             new(ChatRole.System, $"Tóm tắt hội thoại trước đó: {newSummaryContent}"),
-        };
-        result.AddRange(remaining.Select(m => new ChatMessage(new ChatRole(m.Role), m.Content)));
+            .. remaining.Select(m => new ChatMessage(new ChatRole(m.Role), m.Content)),
+        ];
         return result;
     }
 }
