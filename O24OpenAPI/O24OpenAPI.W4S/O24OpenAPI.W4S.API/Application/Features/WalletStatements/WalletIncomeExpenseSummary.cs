@@ -68,7 +68,7 @@ public class WalletIncomeExpenseSummaryHandler(
                     request.ContractNumber
                 );
 
-            var contractNumber = request.ContractNumber.Trim();
+            string contractNumber = request.ContractNumber.Trim();
 
             var walletProfiles = await walletProfileRepository.GetByContractNumber(contractNumber)
                 ?? throw await O24Exception.CreateAsync(
@@ -86,7 +86,7 @@ public class WalletIncomeExpenseSummaryHandler(
                 );
 
             // Base currency: default VND if missing
-            var baseCurrency = (request.CurrencyCode ?? "VND").Trim().ToUpperInvariant();
+            string baseCurrency = (request.CurrencyCode ?? "VND").Trim().ToUpperInvariant();
 
             var now = DateTime.UtcNow;
             var (thisFrom, thisTo, prevFrom, prevTo) =
@@ -147,14 +147,14 @@ public class WalletIncomeExpenseSummaryHandler(
             decimal thisIncomeBase = 0m, thisExpenseBase = 0m;
             foreach (var r in thisRows)
             {
-                var amtBase = ConvertToBase(r.Amount, r.CurrencyCode, baseCurrency, rateMap);
+                decimal amtBase = ConvertToBase(r.Amount, r.CurrencyCode, baseCurrency, rateMap);
                 AccumulateByEntryType(r.EntryType, amtBase, ref thisIncomeBase, ref thisExpenseBase);
             }
 
             decimal prevIncomeBase = 0m, prevExpenseBase = 0m;
             foreach (var r in prevRows)
             {
-                var amtBase = ConvertToBase(r.Amount, r.CurrencyCode, baseCurrency, rateMap);
+                decimal amtBase = ConvertToBase(r.Amount, r.CurrencyCode, baseCurrency, rateMap);
                 AccumulateByEntryType(r.EntryType, amtBase, ref prevIncomeBase, ref prevExpenseBase);
             }
 
@@ -188,7 +188,7 @@ public class WalletIncomeExpenseSummaryHandler(
         IReadOnlyDictionary<string, decimal> rawVndRateMap
     )
     {
-        var baseCcy = (baseCurrency ?? "VND").Trim().ToUpperInvariant();
+        string baseCcy = (baseCurrency ?? "VND").Trim().ToUpperInvariant();
 
         var vndMap = rawVndRateMap.ToDictionary(
             x => x.Key.Trim().ToUpperInvariant(),
@@ -204,7 +204,7 @@ public class WalletIncomeExpenseSummaryHandler(
             return result;
         }
 
-        if (!vndMap.TryGetValue(baseCcy, out var baseToVnd) || baseToVnd <= 0m)
+        if (!vndMap.TryGetValue(baseCcy, out decimal baseToVnd) || baseToVnd <= 0m)
             throw new InvalidOperationException($"Missing exchange rate for {baseCcy}->VND");
 
         var rateToBase = vndMap.ToDictionary(

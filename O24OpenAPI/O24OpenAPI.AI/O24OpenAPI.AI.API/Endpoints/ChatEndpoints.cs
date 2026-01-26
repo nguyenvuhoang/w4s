@@ -9,7 +9,7 @@ using System.Text.Json;
 
 namespace O24OpenAPI.AI.API.Endpoints;
 
-public record ChatRequestModel(string Message, int WalletId);
+public record ChatRequestModel(string Message, string UserCode);
 
 public record ChatResponseModel(string Data, bool Done);
 
@@ -53,7 +53,7 @@ public static class ChatEndpoints
                     new(ChatRole.System, PromptTemplates.Role),
                 ];
                 List<ChatMessage> optimizedHistory = await mediator.SendAsync(
-                    new GetOptimizedHistoryCommand { WalletId = request.WalletId }
+                    new GetOptimizedHistoryCommand { UserCode = request.UserCode }
                 );
                 chatHistory.AddRange(optimizedHistory);
                 //var userContext = await userContextService.BuildPromptAsync(userId);
@@ -82,10 +82,10 @@ public static class ChatEndpoints
                     }
                 }
                 await mediator.SendAsync(
-                    new SaveChatCommand(request.WalletId, "user", request.Message)
+                    new SaveChatCommand(request.UserCode, "user", request.Message)
                 );
                 await mediator.SendAsync(
-                    new SaveChatCommand(request.WalletId, "assistant", fullAIResponse.ToString())
+                    new SaveChatCommand(request.UserCode, "assistant", fullAIResponse.ToString())
                 );
                 string finalJson = JsonSerializer.Serialize(new { done = true });
                 await context.Response.WriteAsync($"data: {finalJson}\n\n");

@@ -1,10 +1,10 @@
+using System.Text.Json;
 using Microsoft.Extensions.AI;
 using O24OpenAPI.AI.Infrastructure.Configurations;
 using O24OpenAPI.Framework.Abstractions;
 using OpenAI;
 using OpenAI.Chat;
 using OpenAI.Embeddings;
-using System.Text.Json;
 
 namespace O24OpenAPI.AI.API.Application;
 

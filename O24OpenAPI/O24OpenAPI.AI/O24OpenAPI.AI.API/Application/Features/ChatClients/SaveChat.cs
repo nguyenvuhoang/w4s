@@ -7,14 +7,14 @@ public class SaveChatCommand : ICommand<bool>
 {
     public SaveChatCommand() { }
 
-    public SaveChatCommand(int walletId, string role, string content)
+    public SaveChatCommand(string userCode, string role, string content)
     {
-        WalletId = walletId;
+        UserCode = userCode;
         Role = role;
         Content = content;
     }
 
-    public int WalletId { get; set; }
+    public string UserCode { get; set; }
     public string Role { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
 }

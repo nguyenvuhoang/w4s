@@ -1,6 +1,6 @@
 ﻿using LinKit.Core.Mapping;
 using O24OpenAPI.AI.API.Application.Features.ChatClients;
-using O24OpenAPI.AI.Domain.AggregatesModel.ChatMessageAggregate;
+using O24OpenAPI.AI.Domain.AggregatesModel.ChatHistoryAggregate;
 
 namespace O24OpenAPI.AI.API.Application.Mapping;
 

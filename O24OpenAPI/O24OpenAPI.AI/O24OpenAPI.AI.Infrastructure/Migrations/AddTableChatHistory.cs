@@ -1,5 +1,5 @@
 ﻿using FluentMigrator;
-using O24OpenAPI.AI.Domain.AggregatesModel.ChatMessageAggregate;
+using O24OpenAPI.AI.Domain.AggregatesModel.ChatHistoryAggregate;
 using O24OpenAPI.Core.Attributes;
 using O24OpenAPI.Data.Extensions;
 using O24OpenAPI.Data.Migrations;
@@ -22,7 +22,7 @@ public class AddTableChatHistory : AutoReversingMigration
             Create
                 .Index()
                 .OnTable(nameof(ChatHistory))
-                .OnColumn(nameof(ChatHistory.WalletId))
+                .OnColumn(nameof(ChatHistory.UserCode))
                 .Ascending()
                 .OnColumn(nameof(ChatHistory.CreatedOnUtc))
                 .Ascending()
