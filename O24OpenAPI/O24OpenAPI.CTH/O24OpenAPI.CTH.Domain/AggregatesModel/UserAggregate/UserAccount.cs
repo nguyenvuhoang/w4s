@@ -98,6 +98,10 @@ public partial class UserAccount : BaseEntity
     /// </summary>
     public string NotificationType { get; set; } = string.Empty;
     public bool IsFirstLogin { get; set; } = true;
+    /// <summary>
+    /// CurrencyCode
+    /// </summary>
+    public string CurrencyCode { get; set; } = string.Empty;
 
     public UserAccount Clone()
     {

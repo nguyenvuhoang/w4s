@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.AI;
+using Microsoft.Extensions.AI;
 using O24OpenAPI.AI.Infrastructure.Configurations;
 using O24OpenAPI.Framework.Abstractions;
 using OpenAI;

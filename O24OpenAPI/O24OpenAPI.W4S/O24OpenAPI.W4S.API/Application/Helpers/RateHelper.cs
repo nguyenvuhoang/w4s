@@ -66,8 +66,77 @@ public static class RateHelper
             return 1m;
 
         if (!rateMap.TryGetValue(fromCurrency, out var rate) || rate <= 0m)
-            throw new InvalidOperationException($"Missing exchange rate for {fromCurrency}->{baseCurrency}");
+            throw new InvalidOperationException(
+                $"Missing exchange rate for {fromCurrency}->{baseCurrency}"
+            );
 
         return rate;
+    }
+
+
+    // Convert raw VND quote map -> rateToBase map (1 CCY => baseCurrency)
+    public static Dictionary<string, decimal> BuildRateMapByBase(
+        string baseCurrency,
+        IReadOnlyDictionary<string, decimal> rawVndRateMap
+    )
+    {
+        var baseCcy = (baseCurrency ?? "VND").Trim().ToUpperInvariant();
+
+        // normalize keys
+        var vndMap = rawVndRateMap.ToDictionary(
+            x => x.Key.Trim().ToUpperInvariant(),
+            x => x.Value
+        );
+
+        if (baseCcy == "VND")
+        {
+            var result = new Dictionary<string, decimal>(vndMap, StringComparer.OrdinalIgnoreCase)
+            {
+                ["VND"] = 1m
+            };
+            return result;
+        }
+
+        if (!vndMap.TryGetValue(baseCcy, out var baseToVnd) || baseToVnd <= 0m)
+            throw new InvalidOperationException($"Missing exchange rate for {baseCcy}->VND");
+
+        var rateToBase = vndMap.ToDictionary(
+            x => x.Key,
+            x => x.Key.Equals(baseCcy, StringComparison.OrdinalIgnoreCase) ? 1m : x.Value / baseToVnd,
+            StringComparer.OrdinalIgnoreCase
+        );
+
+        // allow VND in statements
+        rateToBase["VND"] = 1m / baseToVnd;
+
+        return rateToBase;
+    }
+
+    /// <summary>
+    /// Convert amount from currencyCode to baseCurrency using rateMap.
+    /// </summary>
+    /// <param name="amount"></param>
+    /// <param name="currencyCode"></param>
+    /// <param name="baseCurrency"></param>
+    /// <param name="rateMap"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    public static decimal ConvertToBase(
+        decimal amount,
+        string? currencyCode,
+        string baseCurrency,
+        IReadOnlyDictionary<string, decimal> rateMap
+    )
+    {
+        var baseCcy = (baseCurrency ?? "VND").Trim().ToUpperInvariant();
+        var ccy = string.IsNullOrWhiteSpace(currencyCode) ? baseCcy : currencyCode.Trim().ToUpperInvariant();
+
+        if (ccy.Equals(baseCcy, StringComparison.OrdinalIgnoreCase))
+            return amount;
+
+        if (!rateMap.TryGetValue(ccy, out var rate) || rate <= 0m)
+            throw new InvalidOperationException($"Missing exchange rate for {ccy}->{baseCcy}");
+
+        return amount * rate;
     }
 }

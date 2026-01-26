@@ -74,6 +74,7 @@ public static class WorkflowStepCode
         public const string WF_STEP_CTH_CREATE_MENU = "WF_STEP_CTH_CREATE_MENU";
         public const string WF_STEP_CTH_MODIFY_MENU = "WF_STEP_CTH_MODIFY_MENU";
         public const string WF_STEP_CTH_DELETE_MENU = "WF_STEP_CTH_DELETE_MENU";
+        public const string WF_STEP_CTH_UPDATE_CURRENCY_CODE = "WF_STEP_CTH_UPDATE_CURRENCY_CODE";
     }
     #endregion
 
@@ -151,6 +152,8 @@ public static class WorkflowStepCode
         public const string WF_STEP_W4S_RETRIEVE_WALLET_BALANCE = "WF_STEP_W4S_RETRIEVE_WALLET_BALANCE";
         public const string WF_STEP_W4S_WALLET_INCOME_EXPENSE_SUMMARY = "WF_STEP_W4S_WALLET_INCOME_EXPENSE_SUMMARY";
         public const string WF_STEP_W4S_WALLET_NET_INCOME = "WF_STEP_W4S_WALLET_NET_INCOME";
+        public const string WF_STEP_W4S_TOP_SPENDING_CATEGORIES = "WF_STEP_W4S_TOP_SPENDING_CATEGORIES";
+        public const string WF_STEP_W4S_WALLET_RECENT_TRANSACTIONS = "WF_STEP_W4S_WALLET_RECENT_TRANSACTIONS";
     }
     #endregion
 

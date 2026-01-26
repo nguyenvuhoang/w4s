@@ -118,6 +118,10 @@ public class UserAccountBuilder : O24OpenAPIEntityBuilder<UserAccount>
             .Nullable()
             .WithColumn(nameof(UserAccount.IsFirstLogin))
             .AsBoolean()
-            .Nullable();
+            .Nullable().
+            WithColumn(nameof(UserAccount.CurrencyCode))
+            .AsString(3)
+            .Nullable()
+            ;
     }
 }

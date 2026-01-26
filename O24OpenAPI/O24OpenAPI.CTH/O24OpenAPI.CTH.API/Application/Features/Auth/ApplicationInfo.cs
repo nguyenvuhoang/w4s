@@ -28,7 +28,8 @@ public class ApplicationInfoResponseModel(
     string userBanner,
     List<UserInRole> role,
     bool? isFirstLogin,
-    List<UserRoleChannelModel> roleChannel
+    List<UserRoleChannelModel> roleChannel,
+    string currencyCode = "VND"
 )
 {
     public string UserCode { get; set; } = userCode;
@@ -44,6 +45,7 @@ public class ApplicationInfoResponseModel(
     public string UserBanner { get; set; } = userBanner;
     public DateTime LastLoginTime { get; set; } = lastLoginTime ?? DateTime.MinValue;
     public List<UserRoleChannelModel> RoleChannel { get; set; } = roleChannel;
+    public string CurrencyCode { get; set; } = currencyCode;
 }
 public class UserRoleChannelModel
 {
@@ -148,7 +150,8 @@ public class ApplicationInfoHandler(
             role: listRoleofUser,
             isFirstLogin: userAccount.IsFirstLogin,
             userBanner: userBanner ?? "",
-            roleChannel: roleChannelModels
+            roleChannel: roleChannelModels,
+            currencyCode: userAccount.CurrencyCode ?? "VND"
         );
         return responsedata;
     }

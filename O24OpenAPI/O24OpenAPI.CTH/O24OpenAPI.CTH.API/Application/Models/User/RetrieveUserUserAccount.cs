@@ -6,5 +6,6 @@ namespace O24OpenAPI.CTH.API.Application.Models.User
     {
         public string ContractNumber { get; set; }
         public string PhoneNumber { get; set; }
+        public string CurrencyCode { get; set; }
     }
 }
