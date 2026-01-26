@@ -1,10 +1,12 @@
-﻿using O24OpenAPI.AI.API.Application.Abstractions;
+﻿using LinKit.Core.Abstractions;
+using O24OpenAPI.AI.API.Application.Abstractions;
 using O24OpenAPI.AI.Infrastructure.Configurations;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
 
 namespace O24OpenAPI.AI.API.Application.Services.LLM;
 
+[RegisterService(Lifetime.Scoped)]
 public class OllamaChatProvider : ILlmChatProvider
 {
     private readonly HttpClient _http;

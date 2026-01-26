@@ -16,6 +16,7 @@
     <Folder Include="Persistances\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="OpenAI" />
     <PackageReference Include="Qdrant.Client" />
   </ItemGroup>
 </Project>
