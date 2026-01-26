@@ -23,9 +23,9 @@ public class OllamaEmbeddingProvider : IEmbeddingProvider
     public async Task<float[]> EmbedAsync(string text, CancellationToken ct = default)
     {
         var body = new { model = llmProviderConfig.Ollama.EmbedModel, input = text };
-        var resp = await _http.PostAsJsonAsync("api/embeddings", body, ct);
+        HttpResponseMessage resp = await _http.PostAsJsonAsync("api/embeddings", body, ct);
         resp.EnsureSuccessStatusCode();
-        var json = await resp.Content.ReadFromJsonAsync<dynamic>(cancellationToken: ct);
+        dynamic json = await resp.Content.ReadFromJsonAsync<dynamic>(cancellationToken: ct);
         var vec = ((IEnumerable<object>)json.embedding).Select(o => Convert.ToSingle(o)).ToArray();
         _dim ??= vec.Length;
         return vec;

@@ -1,10 +1,12 @@
-﻿using O24OpenAPI.AI.API.Application.Abstractions;
+﻿using LinKit.Core.Abstractions;
+using O24OpenAPI.AI.API.Application.Abstractions;
 using O24OpenAPI.AI.Infrastructure.Configurations;
 using O24OpenAPI.Core.Configuration;
 using O24OpenAPI.Core.Infrastructure;
 
 namespace O24OpenAPI.AI.API.Application.Services.LLM;
 
+[RegisterService(Lifetime.Scoped)]
 public class OllamaChatProvider : ILlmChatProvider
 {
     private readonly HttpClient _http;
@@ -29,9 +31,9 @@ public class OllamaChatProvider : ILlmChatProvider
             stream = false,
             options = new { temperature = 0.2 }
         };
-        var resp = await _http.PostAsJsonAsync("api/chat", body, ct);
+        HttpResponseMessage resp = await _http.PostAsJsonAsync("api/chat", body, ct);
         resp.EnsureSuccessStatusCode();
-        var json = await resp.Content.ReadFromJsonAsync<dynamic>(cancellationToken: ct);
+        dynamic json = await resp.Content.ReadFromJsonAsync<dynamic>(cancellationToken: ct);
         return (string)json.message.content;
     }
 }

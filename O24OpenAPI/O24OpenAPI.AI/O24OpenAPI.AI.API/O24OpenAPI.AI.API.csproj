@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
 
     <Nullable>disable</Nullable>
@@ -12,6 +12,8 @@
   <ItemGroup>
     <PackageReference Include="LinKit.Core" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.Extensions.AI" />
+    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" />
     <PackageReference Include="OpenAI" />
     <PackageReference Include="Qdrant.Client" />
     <PackageReference Include="UglyToad.PdfPig" />

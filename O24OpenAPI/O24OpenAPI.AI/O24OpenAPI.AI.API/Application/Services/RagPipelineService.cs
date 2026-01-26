@@ -2,31 +2,36 @@
 using O24OpenAPI.AI.API.Application.Abstractions;
 using O24OpenAPI.AI.API.Application.Models;
 
-namespace O24OpenAPI.AI.API.Application.Services
+namespace O24OpenAPI.AI.API.Application.Services;
+
+[RegisterService(Lifetime.Scoped)]
+public class RagPipelineService(IQdrantService qdrantService) : IRagPipelineService
 {
-    [RegisterService(Lifetime.Scoped)]
-    public class RagPipelineService(IQdrantService qdrantService) : IRagPipelineService
+    private readonly IEmbeddingProvider _embeddingProvider;
+
+    public async Task IngestAsync(
+        IEnumerable<(string text, string source)> chunks,
+        CancellationToken ct = default
+    )
     {
-        private readonly IEmbeddingProvider _embeddingProvider;
-        public async Task IngestAsync(IEnumerable<(string text, string source)> chunks, CancellationToken ct = default)
+        int dim = await _embeddingProvider.GetDimAsync(ct);
+
+        await qdrantService.EnsureCollectionAsync(dim, ct);
+
+        List<VecPoint> list = [];
+        foreach ((string text, string source) in chunks)
         {
-            int dim = await _embeddingProvider.GetDimAsync(ct);
-
-            await qdrantService.EnsureCollectionAsync(dim, ct);
-
-            var list = new List<VecPoint>();
-            foreach (var (text, source) in chunks)
-            {
-                var vec = await _embeddingProvider.EmbedAsync(text, ct);
-                list.Add(new VecPoint
+            float[] vec = await _embeddingProvider.EmbedAsync(text, ct);
+            list.Add(
+                new VecPoint
                 {
                     Id = Guid.NewGuid().ToString("N"),
                     Vector = vec,
                     Text = text,
-                    Source = source
-                });
-            }
-            await qdrantService.UpsertAsync(list, ct);
+                    Source = source,
+                }
+            );
         }
+        await qdrantService.UpsertAsync(list, ct);
     }
 }

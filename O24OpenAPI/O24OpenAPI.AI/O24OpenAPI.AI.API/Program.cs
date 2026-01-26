@@ -9,7 +9,7 @@ using O24OpenAPI.GrpcContracts.Extensions;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.ConfigureApplicationServices(builder);
-builder.Services.AddApplicationServices();
+builder.Services.AddApplicationServices(builder);
 builder.Services.AddInfrastructureServices();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();

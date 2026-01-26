@@ -51,7 +51,7 @@ public sealed class SearchPointsCommandHandler()
         float[] vector = Embedding.BuildFakeEmbedding(request.QueryText, request.VectorSize);
 
         // 2) build filter: tenant_id must match, doc_type/language optional
-        var must = new List<Condition>
+        List<Condition> must = new()
         {
             new()
             {
@@ -91,7 +91,7 @@ public sealed class SearchPointsCommandHandler()
             );
         }
 
-        var filter = new Filter();
+        Filter filter = new();
         filter.Must.AddRange(must);
 
         // 3) search
@@ -120,7 +120,7 @@ public sealed class SearchPointsCommandHandler()
         }
 
         // 4) map payload
-        var hits = results
+        List<SearchHit> hits = results
             .Select(p =>
             {
                 string id = p.Id?.Uuid ?? p.Id?.Num.ToString() ?? "";

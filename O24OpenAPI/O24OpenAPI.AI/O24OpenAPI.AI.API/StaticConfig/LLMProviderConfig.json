@@ -1,0 +1,16 @@
+{
+  "LLMProviderConfig": {
+    "ProviderName": "OpenAI",
+    "OpenAI": {
+      "ApiKey": "",
+      "BaseUrl": "https://api.openai.com/v1/",
+      "ChatModel": "gpt-4o-mini",
+      "EmbedModel": "text-embedding-3-small"
+    },
+    "Ollama": {
+      "BaseUrl": "http://localhost:11434/",
+      "ChatModel": "llama2-7b-chat",
+      "EmbedModel": "llama2-7b-embed"
+    }
+  }
+}

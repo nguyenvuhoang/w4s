@@ -14,8 +14,8 @@ public partial class RagQdrantController([FromKeyedServices(MediatorKey.AI)] IMe
     [HttpPost]
     public async Task<IActionResult> Upsert([FromBody] UpsertPointRequest req, CancellationToken ct)
     {
-        var pointId = Guid.NewGuid().ToString("N");
-        var cmd = new UpsertPointCommand
+        string pointId = Guid.NewGuid().ToString("N");
+        UpsertPointCommand cmd = new()
         {
             TransactionCode = Guid.NewGuid().ToString("N"),
             Language = req.Language,
@@ -27,14 +27,14 @@ public partial class RagQdrantController([FromKeyedServices(MediatorKey.AI)] IMe
             Content = req.Content,
             Extra = req.Extra,
         };
-        var upsertPointResponse = await mediator.SendAsync(cmd, ct);
+        UpsertPointResponse upsertPointResponse = await mediator.SendAsync(cmd, ct);
         return Ok(upsertPointResponse);
     }
 
     [HttpPost]
     public async Task<IActionResult> Search([FromBody] SearchPointRequest req, CancellationToken ct)
     {
-        var searchPointCommand = new SearchPointsCommand
+        SearchPointsCommand searchPointCommand = new()
         {
             TransactionCode = Guid.NewGuid().ToString("N"),
             TenantId = req.TenantId,
@@ -47,14 +47,14 @@ public partial class RagQdrantController([FromKeyedServices(MediatorKey.AI)] IMe
                 : req.Collection!,
         };
 
-        var result = await mediator.SendAsync(searchPointCommand, ct);
+        SearchPointsResponse result = await mediator.SendAsync(searchPointCommand, ct);
         return Ok(result);
     }
 
     [HttpPost]
     public async Task<IActionResult> Ask([FromBody] AskRequest req, CancellationToken ct)
     {
-        var query = new AskCommand
+        AskCommand query = new()
         {
             TransactionCode = Guid.NewGuid().ToString("N"),
             Language = req.Language ?? "vi",
@@ -70,7 +70,7 @@ public partial class RagQdrantController([FromKeyedServices(MediatorKey.AI)] IMe
                 : req.Collection!,
         };
 
-        var result = await mediator.SendAsync(query, ct);
+        AskResponse result = await mediator.SendAsync(query, ct);
         return Ok(result);
     }
 
@@ -82,8 +82,8 @@ public partial class RagQdrantController([FromKeyedServices(MediatorKey.AI)] IMe
     {
         if (files == null || files.Count == 0) return BadRequest("No files.");
 
-        var cmd = new UpsertFileCommand { Files = files };
-        var upsertPointResponse = await mediator.SendAsync(cmd, ct);
+        UpsertFileCommand cmd = new() { Files = files };
+        UpsertFileResponse upsertPointResponse = await mediator.SendAsync(cmd, ct);
         return Ok(upsertPointResponse);
     }
 }

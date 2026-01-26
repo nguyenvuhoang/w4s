@@ -19,11 +19,11 @@ public class UpsertFileResponse
     public string ErrorMessage { get; set; } = "Success";
     public int Ingested { get; set; }
     public int Files { get; set; }
-
 };
 
 [CqrsHandler]
-public class UpsertFileCommandHandler(IRagPipelineService qdrantService) : ICommandHandler<UpsertFileCommand, UpsertFileResponse>
+public class UpsertFileCommandHandler(IRagPipelineService qdrantService)
+    : ICommandHandler<UpsertFileCommand, UpsertFileResponse>
 {
     public async Task<UpsertFileResponse> HandleAsync(
         UpsertFileCommand request,
@@ -32,25 +32,27 @@ public class UpsertFileCommandHandler(IRagPipelineService qdrantService) : IComm
     {
         RagConfig? ragConfig = Singleton<AppSettings>.Instance?.Get<RagConfig>();
 
-        var chunks = new List<(string text, string? source)>();
-        foreach (var file in request.Files)
+        List<(string text, string source)> chunks = [];
+        foreach (IFormFile file in request.Files)
         {
             var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
-            if (ext is not (".pdf" or ".txt" or ".md")) continue;
+            if (ext is not (".pdf" or ".txt" or ".md"))
+                continue;
 
             var tmp = Path.GetTempFileName();
-            await using (var fs = System.IO.File.Create(tmp))
+            await using (FileStream fs = System.IO.File.Create(tmp))
                 await file.CopyToAsync(fs, cancellationToken);
 
             string raw = ext switch
             {
                 ".pdf" => PdfTextExtractor.Extract(tmp),
                 ".txt" or ".md" => await System.IO.File.ReadAllTextAsync(tmp, cancellationToken),
-                _ => ""
+                _ => "",
             };
             System.IO.File.Delete(tmp);
 
-            if (string.IsNullOrWhiteSpace(raw)) continue;
+            if (string.IsNullOrWhiteSpace(raw))
+                continue;
 
             foreach (var ch in TextChunker.Chunk(raw, ragConfig.ChunkSize, ragConfig.ChunkOverlap))
                 chunks.Add((ch, file.FileName));
@@ -63,7 +65,7 @@ public class UpsertFileCommandHandler(IRagPipelineService qdrantService) : IComm
                 ErrorCode = "1",
                 ErrorMessage = "No extractable text. Support: .pdf, .txt, .md",
                 Ingested = 0,
-                Files = request.Files.Count
+                Files = request.Files.Count,
             };
         }
 
@@ -73,8 +75,7 @@ public class UpsertFileCommandHandler(IRagPipelineService qdrantService) : IComm
             ErrorCode = "0",
             ErrorMessage = "Success",
             Ingested = chunks.Count,
-            Files = request.Files.Count
-
+            Files = request.Files.Count,
         };
     }
 }

@@ -1,8 +1,9 @@
-﻿using O24OpenAPI.AI.API.Application.Abstractions;
-namespace O24OpenAPI.AI.API.Application.Services.Embedding;
-
-using LinKit.Core.Abstractions;
+﻿using LinKit.Core.Abstractions;
+using O24OpenAPI.AI.API.Application.Abstractions;
 using OpenAI.Embeddings;
+using System.ClientModel;
+
+namespace O24OpenAPI.AI.API.Application.Services.Embedding;
 
 [RegisterService(Lifetime.Scoped)]
 public class OpenAIEmbeddingProvider(EmbeddingClient client) : IEmbeddingProvider
@@ -12,7 +13,7 @@ public class OpenAIEmbeddingProvider(EmbeddingClient client) : IEmbeddingProvide
 
     public async Task<float[]> EmbedAsync(string text, CancellationToken ct = default)
     {
-        var result = await _client.GenerateEmbeddingAsync(text, cancellationToken: ct);
+        ClientResult<OpenAIEmbedding> result = await _client.GenerateEmbeddingAsync(text, cancellationToken: ct);
         var vec = result.Value.ToFloats().ToArray();
         _dim ??= vec.Length;
         return vec;
