@@ -1,8 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using O24OpenAPI.Client.EventBus.Abstractions;
 using O24OpenAPI.Contracts.Events;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace O24OpenAPI.Client.EventBus.Extensions;
 
@@ -45,6 +45,7 @@ public static class EventBusBuilderExtensions
         // Lấy tất cả các type là class, không phải abstract từ các assembly
         var handlerTypes = assembliesToScan
             .SelectMany(a => a.GetTypes())
+            .Where(s => s != null)
             .Where(t => t.IsClass && !t.IsAbstract)
             .ToList();
 

@@ -1,16 +1,16 @@
 ﻿using LinKit.Core.Cqrs;
 using Microsoft.AspNetCore.Mvc;
 using O24OpenAPI.AI.API.Application.Features;
+using O24OpenAPI.AI.API.Application.Features.RAG;
 using O24OpenAPI.AI.Domain.AggregatesModel.AskAggreate;
 using O24OpenAPI.AI.Domain.AggregatesModel.QdrantAggreate;
+using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.Framework.Controllers;
 
 namespace O24OpenAPI.AI.API.Controllers;
 
-public partial class RagQdrantController(IMediator mediator) : BaseController
+public partial class RagQdrantController([FromKeyedServices(MediatorKey.AI)] IMediator mediator) : BaseController
 {
-    private readonly IMediator _mediator = mediator;
-
     [HttpPost]
     public async Task<IActionResult> Upsert([FromBody] UpsertPointRequest req, CancellationToken ct)
     {
@@ -27,7 +27,7 @@ public partial class RagQdrantController(IMediator mediator) : BaseController
             Content = req.Content,
             Extra = req.Extra,
         };
-        var upsertPointResponse = await _mediator.SendAsync(cmd, ct);
+        var upsertPointResponse = await mediator.SendAsync(cmd, ct);
         return Ok(upsertPointResponse);
     }
 
@@ -47,7 +47,7 @@ public partial class RagQdrantController(IMediator mediator) : BaseController
                 : req.Collection!,
         };
 
-        var result = await _mediator.SendAsync(searchPointCommand, ct);
+        var result = await mediator.SendAsync(searchPointCommand, ct);
         return Ok(result);
     }
 
@@ -70,7 +70,20 @@ public partial class RagQdrantController(IMediator mediator) : BaseController
                 : req.Collection!,
         };
 
-        var result = await _mediator.SendAsync(query, ct);
+        var result = await mediator.SendAsync(query, ct);
         return Ok(result);
+    }
+
+    [HttpPost]
+    [Consumes("multipart/form-data")]
+    [DisableRequestSizeLimit]
+    [RequestFormLimits(MultipartBodyLengthLimit = 1024L * 1024L * 200L)] // 200MB
+    public async Task<IActionResult> Upload([FromForm] List<IFormFile> files, CancellationToken ct)
+    {
+        if (files == null || files.Count == 0) return BadRequest("No files.");
+
+        var cmd = new UpsertFileCommand { Files = files };
+        var upsertPointResponse = await mediator.SendAsync(cmd, ct);
+        return Ok(upsertPointResponse);
     }
 }
