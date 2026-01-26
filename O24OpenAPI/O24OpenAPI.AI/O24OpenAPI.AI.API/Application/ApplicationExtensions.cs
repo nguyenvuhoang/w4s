@@ -1,10 +1,12 @@
-using System.Text.Json;
 using Microsoft.Extensions.AI;
 using O24OpenAPI.AI.Infrastructure.Configurations;
+using O24OpenAPI.Core.Configuration;
+using O24OpenAPI.Core.Infrastructure;
 using O24OpenAPI.Framework.Abstractions;
 using OpenAI;
 using OpenAI.Chat;
 using OpenAI.Embeddings;
+using System.Text.Json;
 
 namespace O24OpenAPI.AI.API.Application;
 
@@ -26,8 +28,16 @@ internal static class ApplicationExtensions
         );
 
         LLMProviderConfig llmConfig = new();
-        builder.Configuration.GetSection("LLMProviderConfig").Bind(llmConfig);
+        if (builder.Environment.IsDevelopment())
+        {
+            builder.Configuration.GetSection("LLMProviderConfig").Bind(llmConfig);
+        }
+        else
+        {
+            llmConfig = Singleton<AppSettings>.Instance.Get<LLMProviderConfig>();
+        }
         builder.Services.AddSingleton(llmConfig);
+
 
         services.AddLinKitCqrs("ai");
         services.AddKeyedSingleton<IWorkflowStepInvoker, Workflow.Generated.WorkflowStepInvoker>(
