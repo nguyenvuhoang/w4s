@@ -6,6 +6,9 @@ using O24OpenAPI.Framework.Exceptions;
 using O24OpenAPI.Framework.Extensions;
 using O24OpenAPI.Framework.Models;
 using O24OpenAPI.W4S.API.Application.Constants;
+using O24OpenAPI.W4S.API.Application.Helpers;
+using O24OpenAPI.W4S.API.Application.Models.Currency;
+using O24OpenAPI.W4S.API.Application.Models.WalletTransactions;
 using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
 using O24OpenAPI.W4S.Domain.AggregatesModel.WalletMasterAggregate;
 
@@ -16,27 +19,13 @@ public class RecentTransactionsCommand
         ICommand<RecentTransactionsResponseModel>
 {
     public string ContractNumber { get; set; } = default!;
-
-    /// <summary>Max items. Default 5.</summary>
     public int Take { get; set; } = 5;
-}
 
-public class RecentTransactionsResponseModel : BaseO24OpenAPIModel
-{
-    public List<RecentTransactionItem> RecentTransactions { get; set; } = [];
-}
+    /// <summary>Base currency to return amounts (e.g. VND, USD)</summary>
+    public string CurrencyCode { get; set; } = "VND";
 
-public class RecentTransactionItem
-{
-    public string TransactionId { get; set; } = default!;
-    public string Type { get; set; } = default!; // EXPENSE / INCOME
-    public int Category { get; set; } = default!;
-    public string Title { get; set; } = default!;
-    public decimal Amount { get; set; }
-    public string Currency { get; set; } = default!;
-    public string OccurredAt { get; set; } = default!; // ISO8601 +07:00
-    public string Icon { get; set; } = default!;
-    public string Color { get; set; } = default!;
+    /// <summary>Raw rates from outside. Typically quote to VND: 1 CCY = Transfer VND</summary>
+    public List<TransferRateResponseModel> TransferRates { get; set; } = [];
 }
 
 [CqrsHandler]
@@ -79,6 +68,22 @@ public class RecentTransactionsCommandHandler(
                 );
 
             var take = request.Take <= 0 ? 5 : Math.Min(request.Take, 50);
+            var baseCurrency = (request.CurrencyCode ?? "VND").Trim().ToUpperInvariant();
+
+            // --- Build rate map: rawVndRateMap (1 CCY = Transfer VND) -> rateMap (1 CCY = ? baseCurrency)
+            var rawVndRateMap = (request.TransferRates ?? [])
+                .Where(x =>
+                    !string.IsNullOrWhiteSpace(x.CurrencyCode) &&
+                    x.Transfer.HasValue &&
+                    x.Transfer.Value > 0m
+                )
+                .GroupBy(x => x.CurrencyCode!.Trim().ToUpperInvariant())
+                .ToDictionary(g => g.Key, g => g.Last().Transfer!.Value);
+
+            rawVndRateMap.TryAdd("VND", 1m);
+
+            var rateMap = RateHelper.BuildRateMapByBase(baseCurrency, rawVndRateMap);
+            // --- End rate map
 
             // Pull recent statements
             var rows = await walletStatementRepository.Table
@@ -90,7 +95,7 @@ public class RecentTransactionsCommandHandler(
                     x.Id,
                     x.ReferenceId,
                     x.EntryType,
-                    x.CategoryId,
+                    x.CategoryId,      // int?
                     x.Description,
                     x.Amount,
                     x.CurrencyCode,
@@ -118,18 +123,23 @@ public class RecentTransactionsCommandHandler(
 
             foreach (var r in rows)
             {
-                categoryMap.TryGetValue(r.CategoryId, out var cat);
+                WalletCategory? cat = null;
+                if (r.CategoryId > 0)
+                    categoryMap.TryGetValue(r.CategoryId, out cat);
 
                 var type = string.Equals(r.EntryType, Code.EntryType.DEBIT, StringComparison.OrdinalIgnoreCase)
                     ? "EXPENSE"
                     : "INCOME";
 
-                // occurredAt ISO8601 with offset
+                // occurredAt ISO8601 +07:00
                 var local = TimeZoneInfo.ConvertTimeFromUtc(
                     DateTime.SpecifyKind(r.StatementOnUtc, DateTimeKind.Utc),
                     tz
                 );
                 var occurredAt = new DateTimeOffset(local, tz.GetUtcOffset(local)).ToString("o");
+
+                // Convert amount to baseCurrency
+                var amtBase = RateHelper.ConvertToBase(r.Amount, r.CurrencyCode, baseCurrency, rateMap);
 
                 result.RecentTransactions.Add(new RecentTransactionItem
                 {
@@ -137,8 +147,8 @@ public class RecentTransactionsCommandHandler(
                     Type = type,
                     Category = r.CategoryId,
                     Title = r.Description,
-                    Amount = r.Amount,
-                    Currency = string.IsNullOrWhiteSpace(r.CurrencyCode) ? "VND" : r.CurrencyCode.Trim().ToUpperInvariant(),
+                    Amount = amtBase,
+                    Currency = baseCurrency,
                     OccurredAt = occurredAt,
                     Icon = cat?.Icon ?? (type == "EXPENSE" ? "bag" : "cash"),
                     Color = cat?.Color ?? (type == "EXPENSE" ? "#2196F3" : "#4CAF50")

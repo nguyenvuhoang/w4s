@@ -3,6 +3,7 @@ using LinqToDB;
 using O24OpenAPI.Core.Caching;
 using O24OpenAPI.Data;
 using O24OpenAPI.W4S.Domain.AggregatesModel.BudgetWalletAggregate;
+using System.Linq.Dynamic.Core;
 
 namespace O24OpenAPI.W4S.Infrastructure.Repositories;
 
@@ -28,6 +29,25 @@ public class WalletCategoryRepository(
         return await Table.AnyAsync(wc =>
             wc.WalletId == walletId && wc.CategoryCode == categorycode
         );
+    }
+
+    /// <summary>
+    /// Exist by wallet group and name asynchronous.
+    /// </summary>
+    /// <param name="walletId"></param>
+    /// <param name="categoryGroup"></param>
+    /// <param name="categoryName"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public async Task<bool> ExistsByWalletGroupAndNameAsync(int walletId, string categoryGroup, string categoryName, CancellationToken cancellationToken = default)
+    {
+        var existing = await Table.Where(wc =>
+            wc.WalletId == walletId &&
+            wc.CategoryGroup == categoryGroup &&
+            wc.CategoryName == categoryName
+        ).FirstOrDefaultAsync(token: cancellationToken);
+
+        return existing != null;
     }
 
     public async Task<List<WalletCategory>> GetByWalletIdsAsync(List<int> walletIds)
