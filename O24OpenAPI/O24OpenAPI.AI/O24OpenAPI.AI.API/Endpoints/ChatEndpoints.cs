@@ -17,7 +17,7 @@ public static class ChatEndpoints
 {
     public static void MapChatEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapGet(
+        app.MapPost(
             "api/chat",
             async (
                 HttpContext context,
