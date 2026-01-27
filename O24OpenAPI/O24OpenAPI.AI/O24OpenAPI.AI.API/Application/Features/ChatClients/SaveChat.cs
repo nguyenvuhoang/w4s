@@ -7,13 +7,15 @@ public class SaveChatCommand : ICommand<bool>
 {
     public SaveChatCommand() { }
 
-    public SaveChatCommand(string userCode, string role, string content)
+    public SaveChatCommand(string conversationId, string userCode, string role, string content)
     {
+        ConversationId = conversationId;
         UserCode = userCode;
         Role = role;
         Content = content;
     }
 
+    public string ConversationId { get; set; }
     public string UserCode { get; set; }
     public string Role { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;

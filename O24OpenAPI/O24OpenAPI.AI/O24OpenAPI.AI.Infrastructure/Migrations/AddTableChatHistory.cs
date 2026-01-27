@@ -7,7 +7,7 @@ using O24OpenAPI.Data.Migrations;
 namespace O24OpenAPI.AI.Infrastructure.Migrations;
 
 [O24OpenAPIMigration(
-    "2025/01/01 10:01:01:0000000",
+    "2025/01/01 10:01:03:0000000",
     "AddTableChatHistory",
     MigrationProcessType.Installation
 )]
@@ -19,13 +19,28 @@ public class AddTableChatHistory : AutoReversingMigration
         if (!Schema.Table(nameof(ChatHistory)).Exists())
         {
             Create.TableFor<ChatHistory>();
+
             Create
                 .Index()
                 .OnTable(nameof(ChatHistory))
-                .OnColumn(nameof(ChatHistory.UserCode))
+                .OnColumn(nameof(ChatHistory.ConversationId))
+                .Ascending()
+                .OnColumn(nameof(ChatHistory.Role))
                 .Ascending()
                 .OnColumn(nameof(ChatHistory.CreatedOnUtc))
+                .Descending()
+                .WithOptions()
+                .NonClustered();
+
+            Create
+                .Index()
+                .OnTable(nameof(ChatHistory))
+                .OnColumn(nameof(ChatHistory.ConversationId))
                 .Ascending()
+                .OnColumn(nameof(ChatHistory.IsSummarized))
+                .Ascending()
+                .OnColumn(nameof(ChatHistory.CreatedOnUtc))
+                .Descending()
                 .WithOptions()
                 .NonClustered();
         }

@@ -7,6 +7,15 @@ namespace O24OpenAPI.AI.API.Application.Features.ChatClients;
 
 public class GetOptimizedHistoryCommand : ICommand<List<ChatMessage>>
 {
+    public GetOptimizedHistoryCommand() { }
+
+    public GetOptimizedHistoryCommand(string conversationId, string userCode)
+    {
+        ConversationId = conversationId;
+        UserCode = userCode;
+    }
+
+    public string ConversationId { get; set; }
     public string UserCode { get; set; }
 }
 
@@ -23,20 +32,22 @@ public class GetOptimizedHistoryHandler(
         CancellationToken cancellationToken
     )
     {
-        string userCode = request.UserCode;
+        string conversationId = request.ConversationId;
         ChatHistory lastSummary = await chatHistoryRepository
-            .Table.Where(m => m.UserCode == userCode && m.Role == "summary")
+            .Table.Where(m => m.ConversationId == conversationId && m.Role == "summary")
             .OrderByDescending(m => m.CreatedOnUtc)
             .FirstOrDefaultAsync();
 
         List<ChatHistory> recentMessages = await chatHistoryRepository
-            .Table.Where(m => m.UserCode == userCode && m.Role != "summary" && !m.IsSummarized)
+            .Table.Where(m =>
+                m.ConversationId == conversationId && m.Role != "summary" && !m.IsSummarized
+            )
             .OrderBy(m => m.CreatedOnUtc)
             .ToListAsync(token: cancellationToken);
 
         if (recentMessages.Count > BufferSize)
         {
-            return await SummarizeOldMessagesAsync(userCode, lastSummary, recentMessages);
+            return await SummarizeOldMessagesAsync(conversationId, lastSummary, recentMessages);
         }
 
         List<ChatMessage> historyForAI = [];
@@ -57,7 +68,7 @@ public class GetOptimizedHistoryHandler(
     }
 
     private async Task<List<ChatMessage>> SummarizeOldMessagesAsync(
-        string userCode,
+        string conversationId,
         ChatHistory oldSummary,
         List<ChatHistory> recentMessages
     )
@@ -87,7 +98,8 @@ public class GetOptimizedHistoryHandler(
         await chatHistoryRepository.InsertAsync(
             new ChatHistory
             {
-                UserCode = userCode,
+                ConversationId = conversationId,
+                UserCode = oldSummary?.UserCode ?? toSummarize.First().UserCode,
                 Role = "summary",
                 Content = newSummaryContent,
             }

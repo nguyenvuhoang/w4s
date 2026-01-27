@@ -15,6 +15,11 @@ public static class YarpConfiguration
         services
             .AddReverseProxy()
             .LoadFromConfig(configuration.GetSection("ReverseProxy"))
+            .ConfigureHttpClient((context, handler) =>
+            {
+                handler.SslOptions.RemoteCertificateValidationCallback =
+                    (_, _, _, _) => true;
+            })
             .AddTransforms(builderContext =>
             {
                 builderContext.AddRequestTransform(context =>
