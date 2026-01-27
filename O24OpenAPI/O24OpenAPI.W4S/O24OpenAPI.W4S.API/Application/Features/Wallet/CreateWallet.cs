@@ -89,13 +89,13 @@ public class CreateWalletHandle(
 
             WalletProfile profile = WalletProfile.Create(
                 walletProfileCode: GenerateWalletProfileCode(
-                    Code.WalletType.TWDR,
+                    Code.WalletType.TWCR,
                     request.Classification
                 ),
                 contractNumber: contract.ContractNumber,
                 userCode: request.Phone,
                 walletName: $"{request.FirstName} {request.MiddleName} {request.LastName}".Trim(),
-                walletType: Code.WalletType.TWDR,
+                walletType: Code.WalletType.TWCR,
                 defaultCurrency: w4SSetting.BaseCurrency,
                 icon: w4SSetting.DefaultWalletIcon,
                 color: w4SSetting.DefaultWalletColor

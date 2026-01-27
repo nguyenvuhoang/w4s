@@ -38,6 +38,7 @@ public class CreateUserCommand : BaseTransactionModel, ICommand<UserResponseMode
     public string NotificationType { get; set; } = "MAIL";
     public string ContractType { get; set; }
     public string UserType { get; set; } = "0502";
+    public string CurrencyCode { get; set; } = "VND";
 }
 
 [CqrsHandler]
@@ -132,6 +133,7 @@ public class CreateUserHandle(
                 NotificationType = !string.IsNullOrWhiteSpace(request.NotificationType)
                     ? request.NotificationType
                     : "MAIL",
+                CurrencyCode = !string.IsNullOrWhiteSpace(request.CurrencyCode) ? request.CurrencyCode : "VND",
             };
             await userAccountRepository.AddAsync(userAccount);
             isUserAccountCreated = true;

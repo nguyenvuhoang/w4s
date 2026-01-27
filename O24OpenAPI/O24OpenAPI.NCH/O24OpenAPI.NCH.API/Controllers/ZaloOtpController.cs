@@ -2,12 +2,9 @@
 
 namespace O24OpenAPI.NCH.API.Controllers;
 
-// Controller độc lập, không liên quan BaseController
-[ApiController]
-[Route("api/zalo-otp-test")]
-public class ZaloOtpTestController : ControllerBase
+
+public class ZaloOtpController : ControllerBase
 {
-    // GET https://localhost:5090/api/zalo-otp-test/ping
     [HttpGet("ping")]
     public IActionResult Ping()
     {

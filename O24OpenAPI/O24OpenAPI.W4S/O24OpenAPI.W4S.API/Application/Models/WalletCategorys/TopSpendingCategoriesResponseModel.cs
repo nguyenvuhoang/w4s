@@ -8,6 +8,7 @@
 
     public class TopSpendingCategoryItem
     {
+        public string TransactionNumber { get; set; }
         public int CategoryId { get; set; } = default!;
         public string Name { get; set; } = default!;
         public string Icon { get; set; } = default!;

@@ -12,7 +12,7 @@
       "AIService": {
         "Destinations": {
           "primary": {
-            "Address": "http://localhost:5080/"
+            "Address": "https://192.168.1.103:5050"
           }
         },
         "HttpRequest": {

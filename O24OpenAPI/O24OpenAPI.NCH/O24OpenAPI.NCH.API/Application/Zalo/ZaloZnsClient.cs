@@ -4,20 +4,14 @@ using System.Text.Json;
 
 namespace O24OpenAPI.NCH.API.Application.Zalo;
 
-public class ZaloZnsClient : IZaloZnsClient
+public class ZaloZnsClient(HttpClient httpClient, IOptions<ZaloZnsOptions> options) : IZaloZnsClient
 {
-    private readonly HttpClient _httpClient;
-    private readonly ZaloZnsOptions _options;
+    private readonly HttpClient _httpClient = httpClient;
+    private readonly ZaloZnsOptions _options = options.Value;
     private readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
     };
-
-    public ZaloZnsClient(HttpClient httpClient, IOptions<ZaloZnsOptions> options)
-    {
-        _httpClient = httpClient;
-        _options = options.Value;
-    }
 
     public async Task<ZaloSendOtpResult> SendOtpAsync(
         string phoneNumber,
@@ -37,7 +31,7 @@ public class ZaloZnsClient : IZaloZnsClient
             phone = msisdn,
             sending_mode = "default",
             template_id = _options.OtpTemplateId,
-            template_data = new { otp = otp, expired_time = "5" },
+            template_data = new { otp, expired_time = "5" },
             tracking_id = trackingId,
         };
 
@@ -98,10 +92,10 @@ public class ZaloZnsClient : IZaloZnsClient
 
         string p = phoneNumber.Trim();
 
-        if (p.StartsWith("+"))
+        if (p.StartsWith('+'))
             p = p[1..];
 
-        if (p.StartsWith("0"))
+        if (p.StartsWith('0'))
             return "84" + p[1..];
 
         return p;

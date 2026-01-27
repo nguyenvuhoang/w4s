@@ -16,7 +16,7 @@ namespace O24OpenAPI.W4S.API.Application.Features.WalletCategorys;
 
 public class TopSpendingCategoriesCommand
     : BaseTransactionModel,
-        ICommand<List<TopSpendingCategoriesResponseModel>>
+        ICommand<TopSpendingCategoriesResponseModel>
 {
     public string ContractNumber { get; set; } = default!;
 
@@ -30,6 +30,7 @@ public class TopSpendingCategoriesCommand
     /// Raw rates from outside. Typically quote to VND: 1 CCY = Transfer VND
     /// </summary>
     public List<TransferRateResponseModel> TransferRates { get; set; } = [];
+    public int Take { get; set; } = 5;
 }
 
 
@@ -38,10 +39,10 @@ public class TopSpendingCategoriesCommandHandler(
     IWalletProfileRepository walletProfileRepository,
     IWalletStatementRepository walletStatementRepository,
     IWalletCategoryRepository walletCategoryRepository
-) : ICommandHandler<TopSpendingCategoriesCommand, List<TopSpendingCategoriesResponseModel>>
+) : ICommandHandler<TopSpendingCategoriesCommand, TopSpendingCategoriesResponseModel>
 {
     [WorkflowStep(WorkflowStepCode.W4S.WF_STEP_W4S_TOP_SPENDING_CATEGORIES)]
-    public async Task<List<TopSpendingCategoriesResponseModel>> HandleAsync(
+    public async Task<TopSpendingCategoriesResponseModel> HandleAsync(
         TopSpendingCategoriesCommand request,
         CancellationToken cancellationToken = default
     )
@@ -95,20 +96,22 @@ public class TopSpendingCategoriesCommandHandler(
 
             // pull expense rows for period
             var rows = await walletStatementRepository.Table
-                .Where(x =>
-                    walletIds.Contains(x.WalletId) &&
-                    x.StatementOnUtc >= fromUtc &&
-                    x.StatementOnUtc < toUtc &&
-                    x.EntryType.Equals(Code.EntryType.DEBIT, StringComparison.InvariantCultureIgnoreCase) &&
-                    x.CategoryId > 0
-                )
-                .Select(x => new
-                {
-                    CategoryId = x.CategoryId!,
-                    x.Amount,
-                    x.CurrencyCode
-                })
-                .ToListAsync(cancellationToken);
+            .Where(x =>
+                walletIds.Contains(x.WalletId) &&
+                x.StatementOnUtc >= fromUtc &&
+                x.StatementOnUtc < toUtc &&
+                x.EntryType == Code.EntryType.DEBIT &&
+                x.CategoryId > 0
+            )
+            .Select(x => new
+            {
+                TransactionNumber = x.ReferenceId!,
+                CategoryId = x.CategoryId!,
+                x.Amount,
+                x.CurrencyCode
+            })
+            .ToListAsync(cancellationToken);
+
 
             // aggregate by category (after convert)
             var categoryAgg = new Dictionary<int, (decimal total, int count)>();
@@ -122,13 +125,16 @@ public class TopSpendingCategoriesCommandHandler(
                 if (!categoryAgg.TryGetValue(r.CategoryId, out var agg))
                     agg = (0m, 0);
 
-                categoryAgg[r.CategoryId] = (agg.total + amountBase, agg.count + 1);
+                categoryAgg[r.CategoryId] = (
+                      agg.total + amountBase,
+                      agg.count + 1
+                  );
             }
 
-            // pick top 5
+            // pick top Take
             var top = categoryAgg
                 .OrderByDescending(x => x.Value.total)
-                .Take(5)
+                .Take(request.Take)
                 .Select(x => new { CategoryId = x.Key, Total = x.Value.total, Count = x.Value.count })
                 .ToList();
 
@@ -159,8 +165,7 @@ public class TopSpendingCategoriesCommandHandler(
                 });
             }
 
-            // keep your signature: List<TopSpendingCategoriesResponseModel>
-            return [response];
+            return response;
         }
         catch (Exception ex)
         {

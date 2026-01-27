@@ -42,6 +42,17 @@ public class ScanExchangeRateJobHandler(
             string xml = await FetchXmlAsync(vcbUrl, cancellationToken);
 
             var parsed = ParseVietcombankXml(xml);
+            // Add base currency VND (VCB does not return VND)
+            if (!parsed.Items.Any(x => x.CurrencyCode.Equals("VND", StringComparison.OrdinalIgnoreCase)))
+            {
+                parsed.Items.Add(new VcbRateItem(
+                    CurrencyCode: "VND",
+                    CurrencyName: "VIET NAM DONG",
+                    Buy: 1m,
+                    Transfer: 1m,
+                    Sell: 1m
+                ));
+            }
 
             await exchangeRateRepository.Truncate(resetIdentity: true);
 
