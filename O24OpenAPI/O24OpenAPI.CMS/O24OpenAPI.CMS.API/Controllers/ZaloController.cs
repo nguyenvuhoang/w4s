@@ -10,26 +10,28 @@ namespace O24OpenAPI.CMS.API.Controllers;
 public class ZaloController([FromKeyedServices(MediatorKey.CMS)] IMediator mediator) : BaseController
 {
 
-    [HttpPost]
+    [HttpGet]
     public virtual async Task<IActionResult> Create(
-        [FromBody] GenerateAccessTokenCommand request,
         CancellationToken cancellationToken
     )
     {
+        var request = new GenerateAccessTokenCommand();
         var result = await mediator.SendAsync(request, cancellationToken);
         return Ok(result);
     }
 
-    [HttpGet]
-    public virtual async Task<IActionResult> Return(
-        [FromQuery] ZaloProcessModel request,
-        CancellationToken cancellationToken
-    )
+    [HttpGet("/api/zalo/return")]
+    public async Task<IActionResult> Return([FromQuery] ZaloProcessModel request, CancellationToken ct)
     {
-        string oaid = request.OaId ?? string.Empty;
-        string code = request.Code ?? string.Empty;
+        var cmd = new ZaloExchangeTokenCommand
+        {
+            OaId = request.OaId ?? "",
+            Code = request.Code ?? "",
+            State = request.State ?? ""
+        };
 
-        return Ok();
+        var result = await mediator.SendAsync(cmd, ct);
+        return Ok(result);
     }
 
 }

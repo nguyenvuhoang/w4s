@@ -10,10 +10,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Core\O24OpenAPI.Core.csproj" />
     <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Logging\O24OpenAPI.Logging.csproj" />
-    <ProjectReference
-      Include="..\..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj"
-      OutputItemType="Analyzer"
-      ReferenceOutputAssembly="false"
-    />
+    <ProjectReference Include="..\..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>

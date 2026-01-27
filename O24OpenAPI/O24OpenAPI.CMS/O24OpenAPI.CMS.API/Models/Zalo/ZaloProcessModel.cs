@@ -8,6 +8,8 @@ namespace O24OpenAPI.CMS.API.Models.Zalo
         public string? OaId { get; set; }
 
         [FromQuery(Name = "code")]
-        public string? Code { get; set; } // nếu bạn cần luôn
+        public string? Code { get; set; }
+        [FromQuery(Name = "state")]
+        public string? State { get; set; }
     }
 }

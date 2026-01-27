@@ -7,15 +7,16 @@ using O24OpenAPI.NCH.Domain.AggregatesModel.NotificationAggregate;
 using O24OpenAPI.NCH.Domain.AggregatesModel.OtpAggregate;
 using O24OpenAPI.NCH.Domain.AggregatesModel.SmsAggregate;
 using O24OpenAPI.NCH.Domain.AggregatesModel.TelegramAggregate;
+using O24OpenAPI.NCH.Domain.AggregatesModel.ZaloAggregate;
 
-namespace O24OpenAPI.NCH.Migrations;
+namespace O24OpenAPI.NCH.Infrastructure.Migrations;
 
 /// <summary>
 /// The schema migration class
 /// </summary>
 /// <seealso cref="AutoReversingMigration"/>
 [O24OpenAPIMigration(
-    "2025/12/08 17:00:07:0000000",
+    "2026/01/28 17:54:07:0000000",
     "5. Init Table For NCH",
     MigrationProcessType.Installation
 )]
@@ -382,5 +383,51 @@ public class SchemaMigration : AutoReversingMigration
                 .WithOptions()
                 .Unique();
         }
+
+        if (!Schema.Table(nameof(ZaloOAToken)).Exists())
+        {
+            Create.TableFor<ZaloOAToken>();
+
+            Create
+                .Index("UX_ZaloOAToken_OaId_Active")
+                .OnTable(nameof(ZaloOAToken))
+                .OnColumn(nameof(ZaloOAToken.OaId))
+                .Ascending()
+                .OnColumn(nameof(ZaloOAToken.IsActive))
+                .Ascending()
+                .WithOptions()
+                .Unique();
+        }
+
+        if (!Schema.Table(nameof(ZaloZNSSendout)).Exists())
+        {
+            Create.TableFor<ZaloZNSSendout>();
+
+            Create
+                .Index("UX_ZaloZNSSendout_RefId")
+                .OnTable(nameof(ZaloZNSSendout))
+                .OnColumn(nameof(ZaloZNSSendout.RefId))
+                .Ascending()
+                .WithOptions()
+                .Unique();
+
+            Create
+                .Index("IX_ZaloZNSSendout_OaId_CreatedOnUtc")
+                .OnTable(nameof(ZaloZNSSendout))
+                .OnColumn(nameof(ZaloZNSSendout.OaId))
+                .Ascending()
+                .OnColumn(nameof(ZaloZNSSendout.CreatedOnUtc))
+                .Descending();
+
+            Create
+                .Index("IX_ZaloZNSSendout_Phone_CreatedOnUtc")
+                .OnTable(nameof(ZaloZNSSendout))
+                .OnColumn(nameof(ZaloZNSSendout.Phone))
+                .Ascending()
+                .OnColumn(nameof(ZaloZNSSendout.CreatedOnUtc))
+                .Descending();
+        }
+
+
     }
 }
