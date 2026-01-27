@@ -151,11 +151,11 @@ public class CreateWalletTransactionCommandHandler(
             TRANSACTIONNAME = WalletAccountTypeHelper.GetDisplayName(transactiontype)
         };
 
-        var direction = entity.TRANSACTIONCODE switch
+        var direction = request.Type switch
         {
-            "INCOME" => DrCr.D,
-            "EXPENSE" => DrCr.C,
-            "LOAN" => DrCr.D,      // nếu tracker có loan
+            "01" => DrCr.C,
+            "02" => DrCr.D,
+            "03" => DrCr.D,      // nếu tracker có loan
             _ => DrCr.D
         };
 
@@ -187,7 +187,8 @@ public class CreateWalletTransactionCommandHandler(
                 transactionOnUtc: now,
                 categoryId: request.CategoryId ,
                 reconciledOnUtc: now,
-                reconciledBy: currentUserCode
+                reconciledBy: currentUserCode,
+                eventId: request.EventId != null ? int.Parse(request.EventId) : 0
             )
         };
 
@@ -199,10 +200,12 @@ public class CreateWalletTransactionCommandHandler(
             if (fee > 0)
                 await walletBalanceRepository.DebitBalanceAsync(accountNumber, fee, currencycode);
         }
-        else if (direction == DrCr.C)
+        else
         {
-            var totalDebit = amount + fee;
-            await walletBalanceRepository.CreditBalanceAsync(accountNumber, totalDebit, currencycode);
+            await walletBalanceRepository.CreditBalanceAsync(accountNumber, amount, currencycode);
+
+            if (fee > 0)
+                await walletBalanceRepository.DebitBalanceAsync(accountNumber, fee, currencycode); // fee là chi phí
         }
 
 

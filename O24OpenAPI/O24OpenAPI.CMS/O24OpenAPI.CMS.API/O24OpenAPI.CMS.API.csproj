@@ -57,5 +57,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Application\Services\Services\Media\" />
+    <Folder Include="Application\Validators\" />
   </ItemGroup>
 </Project>

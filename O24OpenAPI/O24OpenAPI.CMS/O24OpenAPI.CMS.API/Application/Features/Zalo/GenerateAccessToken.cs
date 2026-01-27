@@ -1,5 +1,4 @@
 ﻿using LinKit.Core.Cqrs;
-using Microsoft.Extensions.Caching.Distributed;
 using O24OpenAPI.CMS.API.Application.Utils;
 using O24OpenAPI.CMS.Infrastructure.Configurations;
 using O24OpenAPI.Core.Caching;
@@ -23,7 +22,7 @@ public class GenerateZaloAuthUrlResponse
 
 [CqrsHandler]
 public class GenerateAccessTokenHandler(
-    IStaticCacheManager cache,
+    IStaticCacheManager staticCacheManager,
     ZaloConfiguration zaloConfiguration
 ) : ICommandHandler<GenerateAccessTokenCommand, GenerateZaloAuthUrlResponse>
 {
@@ -44,16 +43,12 @@ public class GenerateAccessTokenHandler(
         var codeVerifier = PkceUtil.GenerateCodeVerifier();
         var codeChallenge = PkceUtil.GenerateCodeChallenge(codeVerifier);
 
-        //  Store verifier (TTL 10 minutes)
-        await cache.SetStringAsync(
-            PKCE_CACHE_KEY + state,
-            codeVerifier,
-            new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
-            },
-            cancellationToken
-        );
+        var cacheKey = new CacheKey(PKCE_CACHE_KEY);
+
+        var cache = staticCacheManager.PrepareKeyForDefaultCache(cacheKey, state);
+        cache.CacheTime = 10;
+
+        await staticCacheManager.Set(cacheKey, codeVerifier);
 
         var qs = HttpUtility.ParseQueryString(string.Empty);
         qs["app_id"] = appId;
