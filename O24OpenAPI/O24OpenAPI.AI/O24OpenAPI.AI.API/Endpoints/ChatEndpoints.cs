@@ -1,12 +1,12 @@
-﻿using System.Text;
-using System.Text.Json;
-using LinKit.Core.Cqrs;
+﻿using LinKit.Core.Cqrs;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.AI;
 using O24OpenAPI.AI.API.Application.AITools;
 using O24OpenAPI.AI.API.Application.Features.ChatClients;
 using O24OpenAPI.APIContracts.Constants;
 using O24OpenAPI.Core.Extensions;
+using System.Text;
+using System.Text.Json;
 
 namespace O24OpenAPI.AI.API.Endpoints;
 
@@ -148,15 +148,8 @@ public static class ChatEndpoints
             AIFunctionFactory.Create(
                 async (string fromDate, string toDate) =>
                 {
-                    if (
-                        !DateTime.TryParse(fromDate, out var from)
-                        || !DateTime.TryParse(toDate, out var to)
-                    )
-                    {
-                        return "Ngày không hợp lệ. Vui lòng dùng định dạng yyyy-MM-dd.";
-                    }
 
-                    return await userTools.GetUserSpending(userCode, from, to);
+                    return await userTools.GetUserSpending(userCode, fromDate, toDate);
                 },
                 "get_my_spend",
                 "Lấy danh sách chi tiêu của tôi. fromDate và toDate dùng yyyy-MM-dd"
@@ -218,7 +211,7 @@ public static class ChatEndpoints
 
     private static async Task WriteSseError(HttpContext context, string message)
     {
-        var errorJson = JsonSerializer.Serialize(new { error = message, done = true });
+        string errorJson = JsonSerializer.Serialize(new { error = message, done = true });
         await context.Response.WriteAsync($"event: error\n");
         await context.Response.WriteAsync($"data: {errorJson}\n\n");
         await context.Response.Body.FlushAsync();

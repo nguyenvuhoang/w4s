@@ -1,0 +1,16 @@
+﻿syntax = "proto3";
+
+package w4s;
+
+option csharp_namespace = "O24OpenAPI.Grpc.W4S";
+
+import "Common/common.proto";
+
+service W4SGrpcService {
+  rpc GetUserBalance (GetUserBalanceRequest) returns (common.GrpcResponse);
+}
+
+message GetUserBalanceRequest{
+  string user_code =1;
+  string period_type =2;
+}

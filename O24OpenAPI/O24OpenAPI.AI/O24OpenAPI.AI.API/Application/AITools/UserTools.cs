@@ -1,8 +1,8 @@
-using System.ComponentModel;
-using System.Text.Json;
 using LinKit.Core.Abstractions;
 using LinKit.Core.Cqrs;
 using O24OpenAPI.GrpcContracts.Models.W4SModels;
+using System.ComponentModel;
+using System.Text.Json;
 
 namespace O24OpenAPI.AI.API.Application.AITools;
 
@@ -14,17 +14,17 @@ public class UserTools(IMediator mediator)
     [Description("Lấy thông tin số dư của người dùng, bao gồm tổng số dư và chi tiết từng ví")]
     public async Task<string> GetUserBalance(string userCode)
     {
-        var result = await _mediator.QueryAsync(new GetUserBalanceQuery(userCode));
-        return JsonSerializer.Serialize(result);
+        string result = await _mediator.QueryAsync(new GetUserBalanceQuery(userCode));
+        return result;
     }
 
     [Description(
         "Lấy thông tin chi tiêu của người dùng. Có thể lọc theo category hoặc ví nếu cần."
     )]
-    public async Task<string> GetUserSpending(string userCode, DateTime fromDate, DateTime toDate)
+    public async Task<string> GetUserSpending(string userCode, string fromDate, string toDate)
     {
-        var result = await _mediator.QueryAsync(
-            new GetUserSpendingQuery(userCode, fromDate, toDate)
+        object result = await _mediator.QueryAsync(
+            new GetUserSpendingQuery(userCode, "D")
         );
         return JsonSerializer.Serialize(result);
     }
