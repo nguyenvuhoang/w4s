@@ -145,13 +145,14 @@ public class RecentTransactionsCommandHandler(
                 {
                     TransactionId = !string.IsNullOrWhiteSpace(r.ReferenceId) ? r.ReferenceId : r.Id.ToString(),
                     Type = type,
-                    Category = r.CategoryId,
-                    Title = r.Description,
+                    CategoryId = r.CategoryId,
+                    CategoryName = cat?.CategoryName,
                     Amount = amtBase,
                     Currency = baseCurrency,
                     OccurredAt = occurredAt,
                     Icon = cat?.Icon ?? (type == "EXPENSE" ? "bag" : "cash"),
-                    Color = cat?.Color ?? (type == "EXPENSE" ? "#2196F3" : "#4CAF50")
+                    Color = cat?.Color ?? (type == "EXPENSE" ? "#2196F3" : "#4CAF50"),
+                    Title = !string.IsNullOrWhiteSpace(r.Description) ? cat?.CategoryName + " " + r.Description : cat?.CategoryName
                 });
             }
 

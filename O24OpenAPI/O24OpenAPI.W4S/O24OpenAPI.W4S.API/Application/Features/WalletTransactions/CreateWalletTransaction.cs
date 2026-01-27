@@ -185,7 +185,9 @@ public class CreateWalletTransactionCommandHandler(
                 externalRef: refid,
                 source: walletId    ,
                 transactionOnUtc: now,
-                categoryId: request.CategoryId
+                categoryId: request.CategoryId ,
+                reconciledOnUtc: now,
+                reconciledBy: currentUserCode
             )
         };
 

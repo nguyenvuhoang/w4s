@@ -64,7 +64,9 @@ public partial class WalletStatement : BaseEntity
         string? referenceId = null,
         string? externalRef = null,
         DateTime? transactionOnUtc = null,
-        string status = WalletStatementStatus.POSTED
+        string status = WalletStatementStatus.POSTED,
+        DateTime? reconciledOnUtc = null,
+        string? reconciledBy = null
     )
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(walletId);
@@ -76,7 +78,7 @@ public partial class WalletStatement : BaseEntity
             throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be > 0");
 
         // Statement entry type: Debit/Credit/Adjustment (string)
-        string entryType = drCr == DrCr.C ? "Credit" : "Debit";
+        string entryType = drCr == DrCr.C ? "CREDIT" : "DEBIT";
 
         // Ledger rule: Credit => +, Debit => -
         decimal signed = drCr == DrCr.C ? amount : -amount;
@@ -110,6 +112,8 @@ public partial class WalletStatement : BaseEntity
 
             Status = status,
             IsReconciled = true,
+            ReconciledOnUtc = reconciledOnUtc,
+            ReconciledBy = reconciledBy
         };
     }
 }
