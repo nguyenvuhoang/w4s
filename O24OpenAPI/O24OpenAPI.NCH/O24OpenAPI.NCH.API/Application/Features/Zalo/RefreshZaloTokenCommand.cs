@@ -1,10 +1,10 @@
 ﻿using LinKit.Core.Cqrs;
-using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.NCH.Domain.AggregatesModel.ZaloAggregate;
 
 namespace O24OpenAPI.NCH.API.Application.Features.Zalo
 {
-    public class RefreshZaloTokenCommand : BaseO24OpenAPIModel, ICommand<ZaloOAToken>
+    public class RefreshZaloTokenCommand : BaseTransactionModel, ICommand<ZaloOAToken>
     {
         public string OaId { get; set; } = default!;
     }

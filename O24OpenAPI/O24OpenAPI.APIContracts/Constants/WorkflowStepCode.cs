@@ -104,6 +104,10 @@ public static class WorkflowStepCode
         public const string WF_STEP_NCH_INSERT_SMS_TEMPLATE = "WF_STEP_NCH_INSERT_SMS_TEMPLATE";
         public const string WF_STEP_NCH_UPDATE_SMS_TEMPLATE = "WF_STEP_NCH_UPDATE_SMS_TEMPLATE";
         public const string WF_STEP_NCH_DEVICE_SEND = "WF_STEP_NCH_DEVICE_SEND";
+        public const string WF_STEP_NCH_CREATE_ZBS_TEMPLATE = "WF_STEP_NCH_CREATE_ZBS_TEMPLATE";
+        public const string WF_STEP_NCH_GET_ZBS_TEMPLATE_LIST = "WF_STEP_NCH_GET_ZBS_TEMPLATE_LIST";
+        public const string WF_STEP_NCH_SEND_ZBS_OTP = "WF_STEP_NCH_SEND_ZBS_OTP";
+
     }
     #endregion
 

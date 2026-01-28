@@ -13,4 +13,6 @@ public class O24NCHSetting : ISettings
     public string TelegramBotToken { get; set; } = string.Empty;
     public string DefaultLanguage { get; set; } = "en";
     public string FirebaseProjectId { get; set; } = string.Empty;
+    public string ZnsSendEndpoint { get; set; } = string.Empty;
+    public string ZnsCreateTemplateEndpoint { get; set; } = string.Empty;
 }

@@ -8,16 +8,8 @@
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Contracts\O24OpenAPI.Contracts.csproj" />
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Logging\O24OpenAPI.Logging.csproj" />
     <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Core\O24OpenAPI.Core.csproj" />
-    <ProjectReference
-      Include="..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj"
-      OutputItemType="Analyzer"
-      ReferenceOutputAssembly="false"
-    />
-    <ProjectReference
-      Include="..\..\O24Framework\O24OpenAPI.Grpc.Generator\O24OpenAPI.Grpc.Generator.csproj"
-      OutputItemType="Analyzer"
-      ReferenceOutputAssembly="false"
-    />
+    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Generator\O24OpenAPI.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\..\O24Framework\O24OpenAPI.Grpc.Generator\O24OpenAPI.Grpc.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\O24OpenAPI.APIContracts\O24OpenAPI.APIContracts.csproj" />
     <PackageReference Include="Grpc.AspNetCore" />
     <PackageReference Include="LinKit.Core" />

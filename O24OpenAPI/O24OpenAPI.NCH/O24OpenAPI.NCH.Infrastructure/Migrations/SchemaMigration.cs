@@ -16,7 +16,7 @@ namespace O24OpenAPI.NCH.Infrastructure.Migrations;
 /// </summary>
 /// <seealso cref="AutoReversingMigration"/>
 [O24OpenAPIMigration(
-    "2026/01/28 17:54:07:0000000",
+    "2026/01/28 23:55:07:0000000",
     "5. Init Table For NCH",
     MigrationProcessType.Installation
 )]
@@ -426,6 +426,34 @@ public class SchemaMigration : AutoReversingMigration
                 .Ascending()
                 .OnColumn(nameof(ZaloZNSSendout.CreatedOnUtc))
                 .Descending();
+        }
+        if (!Schema.Table(nameof(ZaloZNSTemplate)).Exists())
+        {
+            Create.TableFor<ZaloZNSTemplate>();
+
+            Create.Index("UX_ZaloZNSTemplate_TemplateCode")
+                .OnTable(nameof(ZaloZNSTemplate))
+                .OnColumn(nameof(ZaloZNSTemplate.TemplateCode))
+                .Ascending()
+                .WithOptions().Unique();
+
+            Create.Index("IX_ZaloZNSTemplate_OaId_Status")
+                .OnTable(nameof(ZaloZNSTemplate))
+                .OnColumn(nameof(ZaloZNSTemplate.OaId))
+                .Ascending()
+                .OnColumn(nameof(ZaloZNSTemplate.Status))
+                .Ascending();
+        }
+        if (!Schema.Table(nameof(ZaloZNSTemplateDefinition)).Exists())
+        {
+            Create.TableFor<ZaloZNSTemplateDefinition>();
+
+            Create.Index("UX_ZaloZNSTemplateDef_OaId_Code_Active")
+                .OnTable(nameof(ZaloZNSTemplateDefinition))
+                .OnColumn(nameof(ZaloZNSTemplateDefinition.OaId)).Ascending()
+                .OnColumn(nameof(ZaloZNSTemplateDefinition.TemplateCode)).Ascending()
+                .OnColumn(nameof(ZaloZNSTemplateDefinition.IsActive)).Ascending()
+                .WithOptions().Unique();
         }
 
 

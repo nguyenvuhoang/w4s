@@ -1,114 +1,160 @@
 ﻿using LinKit.Core.Cqrs;
-using O24OpenAPI.Core.Abstractions;
+using O24OpenAPI.APIContracts.Constants;
+using O24OpenAPI.Framework.Attributes;
+using O24OpenAPI.Framework.Models;
 using O24OpenAPI.NCH.Domain.AggregatesModel.ZaloAggregate;
+using O24OpenAPI.NCH.Infrastructure.Configurations;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 
-namespace O24OpenAPI.NCH.API.Application.Features.Zalo
+namespace O24OpenAPI.NCH.API.Application.Features.Zalo;
+
+public class SendZnsOtpCommand : BaseTransactionModel, ICommand<bool>
 {
-    public class SendZnsOtpCommand : BaseO24OpenAPIModel, ICommand<bool>
-    {
-        public string RefId { get; set; } = default!;
-        public string OaId { get; set; } = default!;
-        public string Phone { get; set; } = default!;
-        public string TemplateId { get; set; } = default!;
+    // required by Zalo API
+    public string Phone { get; set; } = null!;
+    public string TemplateId { get; set; } = null!;
+    public string Otp { get; set; } = null!;
+    // to lookup active token
+    public string OaId { get; set; } = null!;
+    public string? TrackingId { get; set; }
+}
 
-        public Dictionary<string, object> TemplateData { get; set; } = [];
-    }
-
-    [CqrsHandler]
-    public class SendZnsOtpHandler(
+[CqrsHandler]
+public class SendZnsOtpHandler(
     IZaloOATokenRepository tokenRepo,
     IHttpClientFactory httpClientFactory,
-    IMediator mediator,
-    IZaloZNSSendoutRepository sendoutRepo
+    IZaloZNSSendoutRepository sendoutRepo,
+    O24NCHSetting o24NCHSetting
 ) : ICommandHandler<SendZnsOtpCommand, bool>
+{
+
+    [WorkflowStep(WorkflowStepCode.NCH.WF_STEP_NCH_SEND_ZBS_OTP)]
+    public async Task<bool> HandleAsync(SendZnsOtpCommand request, CancellationToken ct = default)
     {
-        private static readonly TimeSpan SafetyWindow = TimeSpan.FromMinutes(5);
+        // Idempotent by RefId (your internal key)
+        if (await sendoutRepo.ExistsByRefIdAsync(request.RefId, ct))
+            return true;
 
-        public async Task<bool> HandleAsync(SendZnsOtpCommand request, CancellationToken ct = default)
+        var token = await tokenRepo.GetActiveByOaIdAsync(request.OaId, ct)
+            ?? throw new InvalidOperationException($"No active Zalo token for OA {request.OaId}");
+
+        var trackingId = string.IsNullOrWhiteSpace(request.TrackingId) ? request.RefId : request.TrackingId;
+
+        var payload = new
         {
-            // 0) Idempotency: RefId unique
-            if (await sendoutRepo.ExistsByRefIdAsync(request.RefId, ct))
-                return true;
-
-            // 1) Get token
-            var token = await tokenRepo.GetActiveByOaIdAsync(request.OaId, ct)
-                ?? throw new InvalidOperationException($"No active Zalo token for OA {request.OaId}");
-
-            //// 2) Refresh if near expiry
-            //if (token.ExpiresAtUtc <= DateTime.UtcNow.Add(SafetyWindow))
-            //    token = await mediator.SendAsync(new RefreshZaloTokenCommand { OaId = request.OaId }, ct);
-
-            // 3) Build payload 
-            var payload = new
+            phone = NormalizeZaloPhone(request.Phone),
+            template_id = request.TemplateId,
+            template_data = new Dictionary<string, string>
             {
-                phone = request.Phone,
-                template_id = request.TemplateId,
-                template_data = request.TemplateData,
-                tracking_id = request.RefId
-            };
+                ["otp"] = request.Otp
+            },
+            tracking_id = trackingId
+        };
 
-            var payloadJson = System.Text.Json.JsonSerializer.Serialize(payload);
+        var payloadJson = JsonSerializer.Serialize(payload);
 
-            // 4) Try send (1st attempt)
-            var sendResult = await TrySendAsync(token.AccessToken, payloadJson, ct);
+        // SEND
+        var sendResult = await TrySendAsync(token.AccessToken, payloadJson, ct);
 
-            //// 5) If unauthorized/token expired => refresh + retry once
-            //if (sendResult.ShouldRefreshToken)
-            //{
-            //    token = await mediator.Send(new RefreshZaloTokenCommand { OaId = request.OaId }, ct);
-            //    sendResult = await TrySendAsync(token.AccessToken, payloadJson, ct);
-            //}
+        // LOG
+        await sendoutRepo.InsertAsync(new ZaloZNSSendout
+        {
+            RefId = request.RefId,
+            OaId = request.OaId,
+            Phone = request.Phone,
+            TemplateId = request.TemplateId,
+            PayloadJson = payloadJson,
+            Status = sendResult.Success ? "SUCCESS" : "FAIL",
+            ErrorCode = sendResult.ErrorCode,
+            ErrorMessage = sendResult.ErrorMessage,
+            ZaloMsgId = sendResult.ZaloMsgId,
+            AttemptCount = 1,
+            CreatedOnUtc = DateTime.UtcNow
+        });
 
-            // 6) Log result
-            await sendoutRepo.InsertAsync(new ZaloZNSSendout
+        if (sendResult.Success)
+        {
+            await tokenRepo.UpdateLastUsedAsync(token.OaId, ct);
+            return true;
+        }
+
+        throw new Exception($"ZNS send failed: {sendResult.ErrorCode} - {sendResult.ErrorMessage}");
+    }
+
+    private async Task<ZnsSendResult> TrySendAsync(string accessToken, string payloadJson, CancellationToken ct)
+    {
+        var endpoint = o24NCHSetting.ZnsSendEndpoint ?? "https://business.openapi.zalo.me/message/template";
+
+        var client = httpClientFactory.CreateClient(nameof(SendZnsOtpHandler));
+
+        using var http = new HttpRequestMessage(HttpMethod.Post, endpoint);
+
+        http.Headers.TryAddWithoutValidation("access_token", accessToken);
+        http.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        http.Content = new StringContent(payloadJson, Encoding.UTF8, "application/json");
+
+        var resp = await client.SendAsync(http, ct);
+        var raw = await resp.Content.ReadAsStringAsync(ct);
+
+        if (resp.StatusCode == HttpStatusCode.Unauthorized)
+            return ZnsSendResult.Refresh("401", raw);
+
+        if (!resp.IsSuccessStatusCode)
+            return ZnsSendResult.Fail(((int)resp.StatusCode).ToString(), raw);
+
+        try
+        {
+            using var doc = JsonDocument.Parse(raw);
+            var root = doc.RootElement;
+
+            var error = root.TryGetProperty("error", out var errEl)
+                ? (errEl.ValueKind == JsonValueKind.Number ? errEl.GetInt32() : int.TryParse(errEl.GetString(), out var e) ? e : -1)
+                : -1;
+
+            var message = root.TryGetProperty("message", out var msgEl) ? msgEl.GetString() : null;
+
+            if (error != 0)
+                return ZnsSendResult.Fail(error.ToString(), message ?? raw);
+
+            string? msgId = null;
+            string? sentTime = null;
+
+            if (root.TryGetProperty("data", out var dataEl) && dataEl.ValueKind == JsonValueKind.Object)
             {
-                RefId = request.RefId,
-                OaId = request.OaId,
-                Phone = request.Phone,
-                TemplateId = request.TemplateId,
-                PayloadJson = payloadJson,
-                Status = sendResult.Success ? "SUCCESS" : "FAIL",
-                ErrorCode = sendResult.ErrorCode,
-                ErrorMessage = sendResult.ErrorMessage,
-                ZaloMsgId = sendResult.ZaloMsgId
-            });
-
-            if (sendResult.Success)
-            {
-                await tokenRepo.UpdateLastUsedAsync(token.OaId, ct);
-                return true;
+                if (dataEl.TryGetProperty("msg_id", out var midEl)) msgId = midEl.GetString();
+                if (dataEl.TryGetProperty("sent_time", out var stEl)) sentTime = stEl.GetString();
             }
 
-            throw new Exception($"ZNS send failed: {sendResult.ErrorCode} - {sendResult.ErrorMessage}");
+            return ZnsSendResult.Ok(msgId, sentTime);
         }
-
-        private async Task<ZnsSendResult> TrySendAsync(string accessToken, string payloadJson, CancellationToken ct)
+        catch
         {
-            var client = httpClientFactory.CreateClient("ZaloZns");
-            using var http = new HttpRequestMessage(HttpMethod.Post, "<<<ZNS_ENDPOINT_HERE>>>");
-            http.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-            http.Content = new StringContent(payloadJson, System.Text.Encoding.UTF8, "application/json");
-
-            var resp = await client.SendAsync(http, ct);
-            var raw = await resp.Content.ReadAsStringAsync(ct);
-
-            if (resp.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                return ZnsSendResult.Refresh("401", raw);
-
-            if (!resp.IsSuccessStatusCode)
-                return ZnsSendResult.Fail(((int)resp.StatusCode).ToString(), raw);
-
-            // parse json -> msg id / error code if any
-            // nếu success: Success=true
-            return ZnsSendResult.Ok(zaloMsgId: null);
-        }
-
-        private record ZnsSendResult(bool Success, bool ShouldRefreshToken, string? ErrorCode, string? ErrorMessage, string? ZaloMsgId)
-        {
-            public static ZnsSendResult Ok(string? zaloMsgId) => new(true, false, null, null, zaloMsgId);
-            public static ZnsSendResult Fail(string code, string msg) => new(false, false, code, msg, null);
-            public static ZnsSendResult Refresh(string code, string msg) => new(false, true, code, msg, null);
+            return ZnsSendResult.Ok(zaloMsgId: null, sentTime: null);
         }
     }
 
+    private static string NormalizeZaloPhone(string phone)
+    {
+        var p = (phone ?? string.Empty).Trim();
+        if (p.StartsWith('+')) p = p[1..];
+        if (p.StartsWith('0')) p = "84" + p[1..];
+        return p;
+    }
+
+    private record ZnsSendResult(
+        bool Success,
+        bool ShouldRefreshToken,
+        string? ErrorCode,
+        string? ErrorMessage,
+        string? ZaloMsgId,
+        string? SentTime
+    )
+    {
+        public static ZnsSendResult Ok(string? zaloMsgId, string? sentTime) => new(true, false, null, null, zaloMsgId, sentTime);
+        public static ZnsSendResult Fail(string code, string msg) => new(false, false, code, msg, null, null);
+        public static ZnsSendResult Refresh(string code, string msg) => new(false, true, code, msg, null, null);
+    };
 }

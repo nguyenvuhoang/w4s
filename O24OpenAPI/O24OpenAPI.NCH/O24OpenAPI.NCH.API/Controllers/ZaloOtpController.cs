@@ -1,29 +1,22 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using LinKit.Core.Cqrs;
+using Microsoft.AspNetCore.Mvc;
+using O24OpenAPI.APIContracts.Constants;
+using O24OpenAPI.Framework.Controllers;
+using O24OpenAPI.NCH.API.Application.Features.Zalo;
 
 namespace O24OpenAPI.NCH.API.Controllers;
 
 
-public class ZaloOtpController : ControllerBase
+public class ZaloOtpController([FromKeyedServices(MediatorKey.NCH)] IMediator mediator) : BaseController
 {
-    [HttpGet("ping")]
-    public IActionResult Ping()
+    [HttpPost]
+    public virtual async Task<IActionResult> Send(
+        [FromBody] SendZnsOtpCommand request,
+        CancellationToken cancellationToken
+    )
     {
-        return Ok("NCH Zalo OTP Test OK");
+        var result = await mediator.SendAsync(request, cancellationToken);
+        return Ok(result);
     }
 
-    // GET https://localhost:5090/api/zalo-otp-test/hash-otp?otp=123456
-    // chỉ để test hash, không dùng framework cũ
-    [HttpGet("hash-otp")]
-    public IActionResult HashOtp([FromQuery] string otp)
-    {
-        if (string.IsNullOrWhiteSpace(otp))
-            return BadRequest("otp is required");
-
-        using var sha = System.Security.Cryptography.SHA256.Create();
-        var bytes = System.Text.Encoding.UTF8.GetBytes(otp);
-        var hashBytes = sha.ComputeHash(bytes);
-        var hash = Convert.ToHexString(hashBytes);
-
-        return Ok(hash);
-    }
 }

@@ -8,6 +8,7 @@ import "Common/common.proto";
 // Service
 service NCHGrpcService {
   rpc SendNotification (SendNotificationRequest) returns (common.GrpcResponse);
+  rpc CreateZaloOAToken (CreateZaloTokenRequest) returns (common.GrpcResponse);
 }
 
 // Request message
@@ -21,4 +22,13 @@ message SendNotificationRequest {
   string data_template = 7;
   string mime_entities = 8;
   string message = 9;
+}
+
+// Request message
+message CreateZaloTokenRequest {
+  string oa_id = 1;
+  string app_id = 2;
+  string access_token = 3;
+  string refresh_token = 4;
+  string expires_in = 5;
 }

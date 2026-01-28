@@ -1,9 +1,11 @@
 ﻿namespace O24OpenAPI.CMS.API.Application.Features.Zalo
 {
     using LinKit.Core.Cqrs;
+    using O24OpenAPI.APIContracts.Constants;
     using O24OpenAPI.CMS.Infrastructure.Configurations;
     using O24OpenAPI.Core.Caching;
     using O24OpenAPI.Core.Configuration;
+    using O24OpenAPI.GrpcContracts.Models.NCHModels;
     using System.Text.Json;
 
     public class ZaloExchangeTokenCommand : BaseO24OpenAPIModel, ICommand<ExchangeZaloTokenResponse>
@@ -23,7 +25,8 @@
     [CqrsHandler]
     public class ExchangeZaloTokenHandler(
         IHttpClientFactory httpClientFactory,
-        IStaticCacheManager staticCacheManager
+        IStaticCacheManager staticCacheManager,
+        [FromKeyedServices(MediatorKey.Grpc)] IMediator grpcMediator
     ) : ICommandHandler<ZaloExchangeTokenCommand, ExchangeZaloTokenResponse>
     {
 
@@ -77,6 +80,16 @@
 
             if (string.IsNullOrWhiteSpace(accessToken))
                 throw new Exception($"Zalo response missing access_token: {raw}");
+
+
+            await grpcMediator.SendAsync(new CreateZaloOATokenCommand
+            {
+                OaId = request.OaId,
+                AccessToken = accessToken,
+                ExpiresIn = expiresIn,
+                RefreshToken = refreshToken
+            }, ct);
+
 
             return new ExchangeZaloTokenResponse
             {

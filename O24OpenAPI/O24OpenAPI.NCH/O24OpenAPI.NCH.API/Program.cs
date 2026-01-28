@@ -21,6 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.AddBackgroundJobs("StaticConfig/BackgroundJobsConfig.json");
 builder.Services.AddInfrastructureServices().AddApplicationServices();
 builder.Services.AddGrpcContracts();
+builder.Services.AddHttpClient();
 
 if (!builder.Environment.IsDevelopment())
 {

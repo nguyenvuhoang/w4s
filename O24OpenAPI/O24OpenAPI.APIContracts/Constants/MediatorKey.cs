@@ -8,4 +8,5 @@ public class MediatorKey
     public const string Grpc = "grpc";
     public const string PMT = "pmt";
     public const string AI = "ai";
+    public const string NCH = "nch";
 }

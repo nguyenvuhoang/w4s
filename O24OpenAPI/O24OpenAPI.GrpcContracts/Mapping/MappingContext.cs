@@ -4,8 +4,10 @@ using O24OpenAPI.APIContracts.Models.NCH;
 using O24OpenAPI.Core.Extensions;
 using O24OpenAPI.Grpc.CTH;
 using O24OpenAPI.Grpc.DTS;
+using O24OpenAPI.Grpc.NCH;
 using O24OpenAPI.Grpc.PMT;
 using O24OpenAPI.Grpc.W4S;
+using O24OpenAPI.GrpcContracts.Models.NCHModels;
 using O24OpenAPI.GrpcContracts.Models.PMTModels;
 using O24OpenAPI.GrpcContracts.Models.W4SModels;
 
@@ -34,5 +36,6 @@ public partial class MappingContext : IMappingConfigurator
         builder.CreateMap<VNPayProcessPayCommand, VNPayProcessPayRequest>();
         builder.CreateMap<VNPayProcessReturnCommand, VNPayProcessReturnRequest>();
         builder.CreateMap<GetUserBalanceQuery, GetUserBalanceRequest>();
+        builder.CreateMap<CreateZaloOATokenCommand, CreateZaloTokenRequest>();
     }
 }
